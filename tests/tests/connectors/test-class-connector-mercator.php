@@ -21,7 +21,7 @@ class Test_WP_Stream_Connector_Mercator extends WP_StreamTestCase {
 		// created with an options table to use.
 		add_filter( 'site_details', array( $this, 'get_testsite_details' ) );
 
-		// Make partial of Connector_ACF class, with mocked "log" function.
+		// Make partial of Connector_Mercator class, with mocked "log" function.
 		$this->mock = $this->getMockBuilder( Connector_Mercator::class )
 			->setMethods( array( 'log' ) )
 			->getMock();
