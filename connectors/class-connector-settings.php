@@ -664,7 +664,7 @@ class Connector_Settings extends Connector {
 	 * @param mixed  $old_value  Option old value.
 	 */
 	public function callback_update_site_option( $option, $value, $old_value ) {
-		$this->callback_updated_option( $option, $value, $old_value );
+		$this->callback_updated_option( $option, $old_value, $value );
 	}
 
 	/**

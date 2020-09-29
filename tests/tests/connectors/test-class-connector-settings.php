@@ -47,11 +47,16 @@ class Test_Connector_Settings extends WP_StreamTestCase {
 	}
 
 	public function test_callback_updated_option() {
+		// If multisite use site_option methods and test "update_site_option" callback
+		// instead of the update_option callback.
+		$add_method    = is_multisite() ? 'add_site_option' : 'add_option';
+		$update_method = is_multisite() ? 'update_site_option' : 'update_option';
+
 		// Create options in database for later use.
-		add_option( 'users_can_register', false );
-		add_option( 'permalink_structure', '' );
-		add_option( 'category_base', '' );
-		add_option( 'tag_base', '' );
+		call_user_func( $add_method, 'users_can_register', 0 );
+		call_user_func( $add_method, 'permalink_structure', '' );
+		call_user_func( $add_method, 'category_base', '' );
+		call_user_func( $add_method, 'tag_base', '' );
 
 		$this->mock->expects( $this->exactly( 4 ) )
 			->method( 'log' )
@@ -123,22 +128,26 @@ class Test_Connector_Settings extends WP_StreamTestCase {
 		do_action( 'customize_save', new \WP_Customize_Manager( array() ) );
 
 		// Update options to trigger callback.
-		update_option( 'users_can_register', true );
+		call_user_func( $update_method, 'users_can_register', 1 );
 
 		// Use this to prevent repeated log calls.
 		global $wp_actions;
 		unset( $wp_actions['customize_save'] );
 
-		update_option( 'permalink_structure', '/%year%/%postname%/' );
-		update_option( 'category_base', 'cat/' );
-		update_option( 'tag_base', 'tag/' );
+		call_user_func( $update_method, 'permalink_structure', '/%year%/%postname%/' );
+		call_user_func( $update_method, 'category_base', 'cat/' );
+		call_user_func( $update_method, 'tag_base', 'tag/' );
 
-
-		// Check callback test action.
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_updated_option' ) );
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_update_option_tag_base' ) );
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_update_option_category_base' ) );
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_update_option_permalink_structure' ) );
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_update_option' ) );
+		// If multisite only check update_site_option test callback.
+		if ( is_multisite() ) {
+			$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_update_site_option' ) );
+		} else {
+			// Check callback test action.
+			$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_update_option_tag_base' ) );
+			$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_update_option_category_base' ) );
+			$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_update_option_permalink_structure' ) );
+			$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_updated_option' ) );
+			$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_update_option' ) );
+		}
 	}
 }
