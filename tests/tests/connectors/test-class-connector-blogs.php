@@ -146,7 +146,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 				$this->equalTo( $blog_id ),
 				$this->equalTo( 'testsite' ),
 				$this->equalTo( 'created' ),
-				1,
+				1
 			);
 
 		// Activate blog to trigger callback.
@@ -419,7 +419,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 					$this->equalTo( $blog_id ),
 					$this->equalTo( 'testsite' ),
 					$this->equalTo( 'updated' )
-				),
+				)
 			);
 
 		// Update blog status blog to trigger callback.
