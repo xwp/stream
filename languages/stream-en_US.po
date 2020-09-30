@@ -222,7 +222,7 @@ msgid "Records per page"
 msgstr ""
 
 #: classes/class-list-table.php:64
-msgid "Sorry, no activity records were found."
+msgid "No activity records were found."
 msgstr ""
 
 #: classes/class-list-table.php:78
