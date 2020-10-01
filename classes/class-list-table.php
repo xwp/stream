@@ -396,6 +396,12 @@ class List_Table extends \WP_List_Table {
 
 				if ( ! empty( $inserted_columns ) && is_array( $inserted_columns ) ) {
 					foreach ( $inserted_columns as $column_title ) {
+
+						// Set default value of column to column name.
+						if ( empty( $out ) ) {
+							$out = $column_name;
+						}
+
 						/**
 						 * If column title inserted via wp_stream_register_column_defaults ($column_title) exists
 						 * among columns registered with get_columns ($column_name) and there is an action associated
@@ -413,8 +419,6 @@ class List_Table extends \WP_List_Table {
 							 * @return string
 							 */
 							$out = apply_filters( "wp_stream_insert_column_default_{$column_title}", $column_name, $record );
-						} else {
-							$out = $column_name;
 						}
 					}
 				} else {
