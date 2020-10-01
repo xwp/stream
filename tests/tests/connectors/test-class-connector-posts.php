@@ -35,7 +35,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 
 		// Make partial of Connector_Posts class, with mocked "log" function.
 		$this->mock = $this->getMockBuilder( Connector_Posts::class )
-			->setMethods( [ 'log' ] )
+			->setMethods( array( 'log' ) )
 			->getMock();
 
 		// Register connector.
@@ -334,7 +334,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 					$this->greaterThan( 0 ),
 					$this->equalTo( 'post' ),
 					$this->equalTo( 'created' ),
-				),
+				)
 			);
 
 		// Create post/update post status trigger callbacks.
