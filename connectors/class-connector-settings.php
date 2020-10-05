@@ -618,12 +618,12 @@ class Connector_Settings extends Connector {
 	 * @action update_option
 	 *
 	 * @param string $option     Option name.
-	 * @param mixed  $value      Option new value.
 	 * @param mixed  $old_value  Option old value.
+	 * @param mixed  $value      Option new value.
 	 */
-	public function callback_update_option( $option, $value, $old_value ) {
+	public function callback_update_option( $option, $old_value, $value ) {
 		if ( ( defined( '\WP_CLI' ) && \WP_CLI || did_action( 'customize_save' ) ) && array_key_exists( $option, $this->labels ) ) {
-			$this->callback_updated_option( $option, $value, $old_value );
+			$this->callback_updated_option( $option, $old_value, $value );
 		}
 	}
 
