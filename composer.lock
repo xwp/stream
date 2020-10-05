@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1d58819e7fbef294b0721f50a6564b19",
+    "content-hash": "9ea430268ec38a2b87542c340bc6f5fe",
     "packages": [
         {
             "name": "composer/installers",
@@ -6138,6 +6138,24 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/easy-digital-downloads/"
+        },
+        {
+            "name": "wpackagist-plugin/user-switching",
+            "version": "1.5.5",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/user-switching/",
+                "reference": "tags/1.5.5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/user-switching.1.5.5.zip"
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/user-switching/"
         },
         {
             "name": "wpsh/local",

@@ -219,13 +219,9 @@ class Connector_User_Switching extends Connector {
 	public function callback_switch_off_user( $old_user_id ) {
 
 		$old_user = get_userdata( $old_user_id );
-		$message  = __(
-			'Switched off',
-			'stream'
-		);
 
 		$this->log(
-			$message,
+			__( 'Switched off', 'stream' ),
 			array(),
 			$old_user->ID,
 			'sessions',
