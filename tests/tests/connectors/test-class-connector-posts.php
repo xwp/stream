@@ -1,10 +1,6 @@
 <?php
 /**
-<<<<<<< HEAD
- * Tests for Post connector class callbacks.
-=======
  * Tests for Posts connector class callbacks.
->>>>>>> Settings connector test implemented.
  *
  * @package WP_Stream
  */
