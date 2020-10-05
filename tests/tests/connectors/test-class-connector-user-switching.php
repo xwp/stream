@@ -81,7 +81,7 @@ class Test_WP_Stream_Connector_User_Switching extends WP_StreamTestCase {
 		\switch_to_user( $user_id );
 
 		// Check callback test action.
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_switch_to_user' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_switch_to_user' ) );
 	}
 
 	public function test_callback_switch_back_user() {
@@ -131,7 +131,7 @@ class Test_WP_Stream_Connector_User_Switching extends WP_StreamTestCase {
 		\switch_to_user( $old_user_id, false, false );
 
 		// Check callback test action.
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_switch_back_user' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_switch_back_user' ) );
 	}
 
 	public function test_callback_switch_off_user() {
@@ -160,6 +160,6 @@ class Test_WP_Stream_Connector_User_Switching extends WP_StreamTestCase {
 		\switch_off_user();
 
 		// Check callback test action.
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_switch_off_user' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_switch_off_user' ) );
 	}
 }

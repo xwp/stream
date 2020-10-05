@@ -12,7 +12,13 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 	 * Runs before all tests
 	 */
 	public static function wpSetUpBeforeClass() {
+		global $wpdb;
+
+		$suppress = $wpdb->suppress_errors();
+
 		edd_install();
+
+		$wpdb->suppress_errors( $suppress );
 	}
 
 	/**
@@ -28,7 +34,7 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 
 		// Make partial of Connector_EDD class, with mocked "log" function.
 		$this->mock = $this->getMockBuilder( Connector_EDD::class )
-			->setMethods( [ 'log' ] )
+			->setMethods( array( 'log' ) )
 			->getMock();
 
 		$this->mock->register();
@@ -117,7 +123,7 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 		$this->mock->expects( $this->exactly( 3 ) )
 			->method( 'log' )
 			->withConsecutive(
-				[
+				array(
 					$this->equalTo( __( '"%s" setting updated', 'stream' ) ),
 					$this->equalTo(
 						array(
@@ -131,8 +137,8 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 					$this->equalTo( null ),
 					$this->equalTo( 'settings' ),
 					$this->equalTo( 'updated' )
-				],
-				[
+				),
+				array(
 					$this->equalTo( __( '"%s" setting updated', 'stream' ) ),
 					$this->equalTo(
 						array(
@@ -146,8 +152,8 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 					$this->equalTo( null ),
 					$this->equalTo( 'settings' ),
 					$this->equalTo( 'updated' )
-				],
-				[
+				),
+				array(
 					$this->equalTo( __( '"%s" setting updated', 'stream' ) ),
 					$this->equalTo(
 						array(
@@ -161,7 +167,7 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 					$this->equalTo( null ),
 					$this->equalTo( 'settings' ),
 					$this->equalTo( 'updated' )
-				]
+				)
 			);
 
 		// Update option to trigger callback.
@@ -170,8 +176,8 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 		edd_update_option( 'thousands_separator' );
 
 		// Check callback test action.
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_add_option' ) );
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_update_option' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_add_option' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_update_option' ) );
 	}
 
 	public function test_log_override() {
@@ -214,10 +220,10 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 					)
 				),
 				$this->equalTo(
-					[
+					array(
 						'post_id' => $post_id,
 						'status'  => 'inactive',
-					]
+					)
 				),
 				$this->equalTo( $post_id ),
 				$this->equalTo( 'discounts' ),
@@ -228,7 +234,7 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 		$discount->update_status( 'inactive' );
 
 		// Check callback test action.
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_edd_pre_update_discount_status' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_edd_pre_update_discount_status' ) );
 	}
 
 	public function test_settings_transport_callbacks() {
@@ -236,20 +242,20 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 		$this->mock->expects( $this->exactly( 2 ) )
 			->method( 'log' )
 			->withConsecutive(
-				[
+				array(
 					$this->equalTo( __( 'Imported Settings', 'stream' ) ),
 					$this->equalTo( array() ),
 					$this->equalTo( null ),
 					$this->equalTo( 'settings' ),
 					$this->equalTo( 'imported' ),
-				],
-				[
+				),
+				array(
 					$this->equalTo( __( 'Exported Settings', 'stream' ) ),
 					$this->equalTo( array() ),
 					$this->equalTo( null ),
 					$this->equalTo( 'settings' ),
 					$this->equalTo( 'exported' ),
-				]
+				)
 			);
 
 		// Manually trigger callbacks.
@@ -257,13 +263,13 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 		do_action( 'edd_export_settings' );
 
 		// Check callback test action.
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_edd_import_settings' ) );
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_edd_export_settings' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_edd_import_settings' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_edd_export_settings' ) );
 	}
 
 	public function test_meta() {
 		// Create and authenticate user.
-		$user_id = self::factory()->user->create( [ 'role' => 'administrator' ] );
+		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
 		\wp_set_current_user( $user_id );
 
 		// Expected log calls.
@@ -271,7 +277,7 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 			->method( 'log' )
 			->with(
 				$this->equalTo( __( 'User API Key created', 'stream' ) ),
-				$this->equalTo( [ 'meta_value' => 1 ] ),
+				$this->equalTo( array( 'meta_value' => 1 ) ),
 				$this->equalTo( $user_id ),
 				$this->equalTo( 'api_keys' ),
 				'created'
@@ -282,6 +288,6 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 		\edd_update_user_api_key( $user_id );
 
 		// Check callback test action.
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_add_user_meta' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_add_user_meta' ) );
 	}
 }
