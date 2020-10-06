@@ -57,7 +57,7 @@ class Test_WP_Stream_Connector_Taxonomies extends WP_StreamTestCase {
 		wp_insert_term( 'test', 'category' );
 
 		// Check callback test action.
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_created_term' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_created_term' ) );
 	}
 
 	public function test_callback_delete_term() {
@@ -93,7 +93,7 @@ class Test_WP_Stream_Connector_Taxonomies extends WP_StreamTestCase {
 		wp_delete_term( $term_data['term_id'], 'category' );
 
 		// Check callback test action.
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_delete_term' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_delete_term' ) );
 	}
 
 	public function test_callback_edited_term() {
@@ -137,7 +137,7 @@ class Test_WP_Stream_Connector_Taxonomies extends WP_StreamTestCase {
 		);
 
 		// Check callback test action.
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_edit_term' ) );
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_edited_term' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_edit_term' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_edited_term' ) );
 	}
 }

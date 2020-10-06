@@ -149,7 +149,7 @@ class Test_WP_Stream_Connector_ACF extends WP_StreamTestCase {
 		$this->update_acf_field();
 
 		// Check callback test action.
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_save_post' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_save_post' ) );
 
 		// 'acf/update_field_group' is called at the end of "acf_update_field()".
 		$this->assertSame( 1, did_action( 'acf/update_field_group' ) );
@@ -185,7 +185,7 @@ class Test_WP_Stream_Connector_ACF extends WP_StreamTestCase {
 		$this->update_acf_field_group( $field_group );
 
 		// Check callback test action.
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_post_updated' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_post_updated' ) );
 
 		// 'acf/update_field_group' is called at the end of "acf_update_field()".
 		$this->assertSame( 2, did_action( 'acf/update_field_group' ) );
@@ -289,7 +289,7 @@ class Test_WP_Stream_Connector_ACF extends WP_StreamTestCase {
 		update_field( 'test_field', 'Yes sir!', "user_{$user_id}" );
 
 		// Check callback test actions.
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_added_post_meta' ) );
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_updated_post_meta' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_added_post_meta' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_updated_post_meta' ) );
 	}
 }
