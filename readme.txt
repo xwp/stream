@@ -3,7 +3,7 @@ Contributors: xwp
 Tags: wp stream, stream, activity, logs, track
 Requires at least: 4.5
 Tested up to: 5.5
-Stable tag: 3.5.1
+Stable tag: 3.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -90,6 +90,15 @@ Past Contributors: fjarrett, shadyvb, chacha, westonruter, johnregan3, jacobschw
 
 
 == Changelog ==
+
+= 3.6.0 - October 14, 2020 =
+
+* New: Introduce the `wp_stream_db_query_where` filter [#1160](https://github.com/xwp/stream/pull/1160), props [@kidunot89](https://github.com/kidunot89) and [@nprasath002](https://github.com/nprasath002).
+* Fix: Replace the deprecated jQuery `.load()` calls [#1162](https://github.com/xwp/stream/pull/1162), props [@kidunot89](https://github.com/kidunot89).
+* Fix: Log the correct post status change [#1121](https://github.com/xwp/stream/pull/1121), props [@kidunot89](https://github.com/kidunot89).
+* Fix: Update the [Advanced Custom Fields](https://wordpress.org/plugins/advanced-custom-fields/) connector to support versions 5 of the plugin [#1118](https://github.com/xwp/stream/pull/1118), props [@kidunot89](https://github.com/kidunot89).
+* Fix: Update the [Easy Digital Downloads](https://wordpress.org/plugins/easy-digital-downloads/) connector to support version 2.5 of the plugin [#1137](https://github.com/xwp/stream/pull/1137), props [@kidunot89](https://github.com/kidunot89).
+* Tweak: Clarify the messaging when no Stream records found [#1178](https://github.com/xwp/stream/issues/1178), props [@kidunot89](https://github.com/kidunot89) and [@johnbillion](https://github.com/johnbillion).
 
 = 3.5.1 - August 14, 2020 =
 
