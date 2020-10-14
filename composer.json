@@ -4,6 +4,12 @@
   "homepage": "https://wordpress.org/plugins/stream/",
   "type": "wordpress-plugin",
   "license": "GPL-2.0-or-later",
+  "repositories": [
+    {
+      "type":"composer",
+      "url":"https://wpackagist.org"
+    }
+  ],
   "require": {
     "composer/installers": "~1.0"
   },
@@ -15,7 +21,10 @@
     "wp-cli/wp-cli-bundle": "^2.2",
     "wp-coding-standards/wpcs": "^2.2",
     "wp-phpunit/wp-phpunit": "^5.4",
-    "wpsh/local": "^0.2.3"
+    "wpsh/local": "^0.2.3",
+    "wpackagist-plugin/advanced-custom-fields": "5.8.12",
+    "wpackagist-plugin/easy-digital-downloads": "^2.9.23",
+    "wpackagist-plugin/user-switching": "^1.5.5"
   },
   "config": {
     "process-timeout": 600,
@@ -25,7 +34,10 @@
     }
   },
   "extra": {
-    "wordpress-install-dir": "local/public"
+    "wordpress-install-dir": "local/public",
+    "installer-paths": {
+      "local/public/wp-content/plugins/{$name}/": ["type:wordpress-plugin"]
+    }
   },
   "scripts": {
     "release": [

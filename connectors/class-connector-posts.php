@@ -170,7 +170,8 @@ class Connector_Posts extends Connector {
 			return;
 		}
 
-		if ( in_array( $new, array( 'auto-draft', 'inherit' ), true ) ) {
+		$start_statuses = array( 'auto-draft', 'inherit', 'new' );
+		if ( in_array( $new, $start_statuses, true ) ) {
 			return;
 		} elseif ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
@@ -196,7 +197,7 @@ class Connector_Posts extends Connector {
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-		} elseif ( 'publish' === $new && 'draft' === $old ) {
+		} elseif ( 'publish' === $new && ! in_array( $old, array( 'future', 'publish' ), true ) ) {
 			/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post") */
 			$summary = _x(
 				'"%1$s" %2$s published',
@@ -255,7 +256,7 @@ class Connector_Posts extends Connector {
 			);
 		}
 
-		if ( 'auto-draft' === $old && 'auto-draft' !== $new ) {
+		if ( in_array( $old, $start_statuses, true ) && ! in_array( $new, $start_statuses, true ) ) {
 			$action = 'created';
 		}
 

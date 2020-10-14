@@ -14,6 +14,31 @@ define( 'WP_STREAM_DEV_DEBUG', true );
 // @see https://core.trac.wordpress.org/browser/trunk/tests/phpunit/includes/functions.php
 require_once $_tests_dir . '/includes/functions.php';
 
+/**
+ * Force plugins defined in a constant (supplied by phpunit.xml) to be active at runtime.
+ *
+ * @filter site_option_active_sitewide_plugins
+ * @filter option_active_plugins
+ *
+ * @param array $active_plugins
+ * @return array
+ */
+function xwp_filter_active_plugins_for_phpunit( $active_plugins ) {
+	$forced_active_plugins = array();
+	if ( defined( 'WP_TEST_ACTIVATED_PLUGINS' ) ) {
+		$forced_active_plugins = preg_split( '/\s*,\s*/', WP_TEST_ACTIVATED_PLUGINS );
+	}
+
+	if ( ! empty( $forced_active_plugins ) ) {
+		foreach ( $forced_active_plugins as $forced_active_plugin ) {
+			$active_plugins[] = $forced_active_plugin;
+		}
+	}
+	return $active_plugins;
+}
+tests_add_filter( 'site_option_active_sitewide_plugins', 'xwp_filter_active_plugins_for_phpunit' );
+tests_add_filter( 'option_active_plugins', 'xwp_filter_active_plugins_for_phpunit' );
+
 tests_add_filter(
 	'muplugins_loaded',
 	function() {

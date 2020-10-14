@@ -7,6 +7,12 @@
 	convertNoticesToExceptions="true"
 	convertWarningsToExceptions="true"
 	>
+	<php>
+		<const
+			name="WP_TEST_ACTIVATED_PLUGINS"
+			value="advanced-custom-fields/acf.php,easy-digital-downloads/easy-digital-downloads.php,user-switching/user-switching.php"
+		/>
+	</php>
 	<testsuites>
 		<testsuite name="stream">
 			<directory prefix="test-" suffix=".php">tests</directory>

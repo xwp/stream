@@ -330,14 +330,8 @@ class Connector_EDD extends Connector {
 		$replacement = str_replace( '-', '_', $option );
 
 		if ( method_exists( $this, 'check_' . $replacement ) ) {
-			call_user_func(
-				array(
-					$this,
-					'check_' . $replacement,
-				),
-				$old_value,
-				$new_value
-			);
+			$method = "check_{$replacement}";
+			$this->{$method}( $old_value, $new_value );
 		} else {
 			$data         = $this->options[ $option ];
 			$option_title = $data['label'];
@@ -376,6 +370,7 @@ class Connector_EDD extends Connector {
 
 		foreach ( $options as $option => $option_value ) {
 			$field = null;
+			$tab   = null;
 
 			if ( 'banned_email' === $option ) {
 				$field = array(
@@ -383,10 +378,13 @@ class Connector_EDD extends Connector {
 				);
 				$tab   = 'general';
 			} else {
-				foreach ( $settings as $tab => $fields ) {
-					if ( isset( $fields[ $option ] ) ) {
-						$field = $fields[ $option ];
-						break;
+				foreach ( $settings as $current_tab => $tab_sections ) {
+					foreach ( $tab_sections as $section => $section_fields ) {
+						if ( in_array( $option, array_keys( $section_fields ), true ) ) {
+							$field = $section_fields[ $option ];
+							$tab   = $current_tab;
+							break;
+						}
 					}
 				}
 			}
@@ -401,8 +399,8 @@ class Connector_EDD extends Connector {
 				array(
 					'option_title' => $field['name'],
 					'option'       => $option,
-					'old_value'    => $old_value,
-					'value'        => $new_value,
+					'old_value'    => isset( $old_value[ $option ] ) ? $old_value[ $option ] : null,
+					'value'        => isset( $new_value[ $option ] ) ? $new_value[ $option ] : null,
 					'tab'          => $tab,
 				),
 				null,
@@ -652,6 +650,12 @@ class Connector_EDD extends Connector {
 	 * @param bool   $is_add     Is this a new meta?.
 	 */
 	public function meta( $object_id, $key, $value, $is_add = false ) {
+		// For catching "edd_user_public_key" in newer versions of EDD.
+		if ( in_array( $value, $this->user_meta, true ) ) {
+			$key   = $value;
+			$value = 1; // Probably, should avoid storing the api key.
+		}
+
 		if ( ! in_array( $key, $this->user_meta, true ) ) {
 			return false;
 		}
@@ -662,15 +666,8 @@ class Connector_EDD extends Connector {
 			return false;
 		}
 
-		return call_user_func(
-			array(
-				$this,
-				'meta_' . $key,
-			),
-			$object_id,
-			$value,
-			$is_add
-		);
+		$method = "meta_{$key}";
+		return $this->{$method}( $object_id, $value, $is_add );
 	}
 
 	/**

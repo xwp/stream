@@ -141,7 +141,8 @@ jQuery(
 			}
 		);
 
-		$( window ).load(
+		$( window ).on(
+			'load',
 			function() {
 				$( '.toplevel_page_wp_stream input[type="search"]' ).off( 'mousedown' );
 			}
