@@ -99,7 +99,7 @@ class List_Table extends \WP_List_Table {
 	public function no_items() {
 		?>
 		<div class="stream-list-table-no-items">
-			<p><?php esc_html_e( 'Sorry, no activity records were found.', 'stream' ); ?></p>
+			<p><?php esc_html_e( 'No activity records were found.', 'stream' ); ?></p>
 		</div>
 		<?php
 	}

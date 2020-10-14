@@ -217,6 +217,16 @@ class Query {
 		$select = implode( ', ', $selects );
 
 		/**
+		 * Filters query WHERE statement as an alternative to filtering
+		 * the $query using the hook below.
+		 *
+		 * @param string $where  WHERE statement.
+		 *
+		 * @return string
+		 */
+		$where = apply_filters( 'wp_stream_db_query_where', $where );
+
+		/**
 		 * BUILD THE FINAL QUERY
 		 */
 		$query = "SELECT SQL_CALC_FOUND_ROWS {$select}
