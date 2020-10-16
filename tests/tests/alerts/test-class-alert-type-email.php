@@ -24,19 +24,23 @@ class Test_Alert_Type_Email extends WP_StreamTestCase {
 	public function test_alert() {
 
 		// Set alert fields
-		$_REQUEST['wp_stream_alerts_nonce'] = wp_create_nonce( 'save_alert' );
-		$_POST['wp_stream_trigger_author']  = 1;
-		$_POST['wp_stream_trigger_context'] = 'posts-post';
-		$_POST['wp_stream_trigger_action']  = 'created';
-		$_POST['wp_stream_alert_type']      = 'email';
-		$_POST['wp_stream_alert_status']    = 'wp_stream_enabled';
+		try {
+			$_POST['wp_stream_alerts_nonce'] = wp_create_nonce( 'save_alert' );
+			$_POST['wp_stream_trigger_author']  = 1;
+			$_POST['wp_stream_trigger_context'] = 'posts-post';
+			$_POST['wp_stream_trigger_action']  = 'created';
+			$_POST['wp_stream_alert_type']      = 'email';
+			$_POST['wp_stream_alert_status']    = 'wp_stream_enabled';
 
-		// Email alert meta.
-		$_POST['wp_stream_email_recipient'] = 'admin@example.com';
-		$_POST['wp_stream_email_subject']   = 'Test email';
+			// Email alert meta.
+			$_POST['wp_stream_email_recipient'] = 'admin@example.com';
+			$_POST['wp_stream_email_subject']   = 'Test email';
 
-		// Simulate saving an alert.
-		$alert_id = $this->plugin->alerts->save_new_alert( false );
+			// Simulate saving an alert.
+			$this->_handleAjax( 'save_new_alert' );
+		} catch ( \WPAjaxDieContinueException $e ) {
+			$exception = $e;
+		}
 
 		// Set assertion callback
 		add_action(
