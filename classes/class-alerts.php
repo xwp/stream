@@ -729,8 +729,10 @@ class Alerts {
 
 	/**
 	 * Save a new alert
+	 *
+	 * @param bool $die  Optional flag for bypassing "wp_send_json_success()". Debugging only.
 	 */
-	public function save_new_alert() {
+	public function save_new_alert( $die = true ) {
 		check_ajax_referer( 'save_alert', 'wp_stream_alerts_nonce' );
 		$trigger_author                = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_author' );
 		$trigger_connector_and_context = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_context' );
@@ -788,6 +790,11 @@ class Alerts {
 		);
 		$alert_meta = apply_filters( 'wp_stream_alerts_save_meta', $alert_meta, $alert_type );
 		add_post_meta( $post_id, 'alert_meta', $alert_meta );
+
+		if ( ! $die ) {
+			return $post_id;
+		}
+
 		wp_send_json_success(
 			array(
 				'success' => true,

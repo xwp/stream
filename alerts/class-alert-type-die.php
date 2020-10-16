@@ -12,7 +12,7 @@ namespace WP_Stream;
  *
  * @package WP_Stream
  */
-class Alert_Type_Die extends Alert_Type {
+class Alert_Type_Die extends Alert_Type { // @codingStandardsIgnoreLine
 
 	/**
 	 * Alert type name
@@ -40,6 +40,6 @@ class Alert_Type_Die extends Alert_Type {
 		echo '<pre>';
 		print_r( $recordarr ); // @codingStandardsIgnoreLine debug not loaded in production
 		echo '</pre>';
-		die( 'You have been notified!' );
+		throw new Die_Exception( 'You have been notified!' );
 	}
 }

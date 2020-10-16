@@ -34,6 +34,9 @@ class Query {
 		/**
 		 * PARSE CORE PARAMS
 		 */
+		if ( is_numeric( $args['ID'] ) ) {
+			$where .= $wpdb->prepare( " AND $wpdb->stream.ID = %d", $args['ID'] );
+		}
 		if ( is_numeric( $args['site_id'] ) ) {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.site_id = %d", $args['site_id'] );
 		}
