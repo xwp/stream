@@ -25,7 +25,7 @@ class Test_Alert_Type_Email extends WP_StreamTestCase {
 
 		// Set alert fields
 		try {
-			$_POST['wp_stream_alerts_nonce'] = wp_create_nonce( 'save_alert' );
+			$_POST['wp_stream_alerts_nonce']    = wp_create_nonce( 'save_alert' );
 			$_POST['wp_stream_trigger_author']  = 1;
 			$_POST['wp_stream_trigger_context'] = 'posts-post';
 			$_POST['wp_stream_trigger_action']  = 'created';
@@ -42,13 +42,15 @@ class Test_Alert_Type_Email extends WP_StreamTestCase {
 			$exception = $e;
 		}
 
-		// Set assertion callback
+		// Use filter callback to the 'wp_mail' as a place to run assertions.
+		$asserted = false;
 		add_action(
 			'wp_mail',
-			function( $mail_props ) {
+			function( $mail_props ) use ( &$asserted ) {
 				$this->assertEquals( 'admin@example.com', $mail_props['to'] );
 				$this->assertEquals( 'Test email', $mail_props['subject'] );
 				$this->assertContains( 'A Stream Alert was triggered on Test Blog', $mail_props['message'] );
+				$asserted = true;
 			}
 		);
 
@@ -63,6 +65,7 @@ class Test_Alert_Type_Email extends WP_StreamTestCase {
 			)
 		);
 
-		//$this->assertGreaterThan( 0, did_action( 'wp_mail' ) );
+		// Confirm assertion were run.
+		$this->assertTrue( $asserted );
 	}
 }
