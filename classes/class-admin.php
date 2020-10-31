@@ -319,6 +319,15 @@ class Admin {
 		$main_menu_title = apply_filters( 'wp_stream_admin_menu_title', esc_html__( 'Stream', 'stream' ) );
 
 		/**
+		 * Filter the main admin menu icon
+		 *
+		 * Note: The URL to the icon to be used for this menu, see Codex
+		 *
+		 * @return string
+		 */
+		$main_menu_icon = apply_filters( 'wp_stream_admin_menu_icon', 'div' );
+
+		/**
 		 * Filter the main admin menu position
 		 *
 		 * Note: Using longtail decimal string to reduce the chance of position conflicts, see Codex
@@ -340,7 +349,7 @@ class Admin {
 			$this->view_cap,
 			$this->records_page_slug,
 			array( $this, 'render_list_table' ),
-			'div',
+			$main_menu_icon,
 			$main_menu_position
 		);
 
@@ -736,13 +745,7 @@ class Admin {
 		global $wpdb;
 
 		// Don't purge when in Network Admin unless Stream is network activated.
-		if (
-			is_multisite()
-			&&
-			is_network_admin()
-			&&
-			! $this->plugin->is_network_activated()
-		) {
+		if ( is_multisite() && is_network_admin() && ! $this->plugin->is_network_activated() ) {
 			return;
 		}
 
@@ -988,7 +991,7 @@ class Admin {
 	 * @param string $cap      Require cap.
 	 * @param string $role     User role.
 	 *
-	 * @return array
+	 * @return array $allcaps
 	 */
 	public function filter_role_caps( $allcaps, $cap, $role ) {
 		$stream_view_caps = array( $this->view_cap );
@@ -1055,7 +1058,7 @@ class Admin {
 	 * Return relevant user meta data.
 	 *
 	 * @param array $authors  Author data.
-	 * @return array
+	 * @return array $authors_records
 	 */
 	public function get_users_record_meta( $authors ) {
 		$authors_records = array();
