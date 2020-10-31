@@ -282,6 +282,7 @@ class Alert {
 		} elseif ( ! array_key_exists( $alert_slug, $alerts_triggered ) || ! is_array( $alerts_triggered[ $alert_slug ] ) ) {
 			$alerts_triggered[ $alert_slug ] = $alert_meta;
 		}
+
 		return $record->update_meta( Alerts::ALERTS_TRIGGERED_META_KEY, $alerts_triggered );
 	}
 

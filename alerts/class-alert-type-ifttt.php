@@ -99,6 +99,7 @@ class Alert_Type_IFTTT extends Alert_Type {
 	 */
 	public function alert( $record_id, $recordarr, $alert ) {
 		$recordarr['ID'] = $record_id;
+		error_log( 'here' );
 		$this->notify_ifttt( $alert, $recordarr );
 	}
 
