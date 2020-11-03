@@ -148,6 +148,8 @@ class Connector_Blogs extends Connector {
 			),
 			array(
 				'site_name' => ! empty( $blogname ) ? $blogname : 'Site %d',
+				'siteurl'   => $new_site->siteurl,
+				'id'        => $new_site->blog_id,
 			),
 			$blog_id,
 			sanitize_key( $blogname ),
@@ -172,6 +174,8 @@ class Connector_Blogs extends Connector {
 			),
 			array(
 				'site_name' => $old_site->blogname,
+				'siteurl'   => $old_site->siteurl,
+				'id'        => $old_site->blog_id,
 			),
 			$old_site->blog_id,
 			sanitize_key( $old_site->blogname ),
@@ -199,6 +203,8 @@ class Connector_Blogs extends Connector {
 			),
 			array(
 				'site_name' => $blog->blogname,
+				'siteurl'   => $blog->siteurl,
+				'id'        => $blog->blog_id,
 			),
 			$blog_id,
 			sanitize_key( $blog->blogname ),
@@ -234,6 +240,8 @@ class Connector_Blogs extends Connector {
 			array(
 				'user_name' => $user->display_name,
 				'site_name' => $blog->blogname,
+				'siteurl'   => $blog->siteurl,
+				'id'        => $blog->blog_id,
 				'role_name' => $role,
 			),
 			$blog_id,
@@ -268,6 +276,8 @@ class Connector_Blogs extends Connector {
 			array(
 				'user_name' => $user->display_name,
 				'site_name' => $blog->blogname,
+				'siteurl'   => $blog->siteurl,
+				'id'        => $blog->blog_id,
 			),
 			$blog_id,
 			sanitize_key( $blog->blogname ),
@@ -401,6 +411,8 @@ class Connector_Blogs extends Connector {
 			),
 			array(
 				'site_name' => $blog->blogname,
+				'siteurl'   => $blog->siteurl,
+				'id'        => $blog->blog_id,
 				'status'    => $status,
 			),
 			$blog_id,
