@@ -110,6 +110,16 @@ class Connector_Woocommerce extends Connector {
 	}
 
 	/**
+	 * Unregister connection callbacks
+	 */
+	public function unregister() {
+		parent::unregister();
+
+		remove_filter( 'wp_stream_posts_exclude_post_types', array( $this, 'exclude_order_post_types' ) );
+		remove_action( 'wp_stream_comments_exclude_comment_types', array( $this, 'exclude_order_comment_types' ) );
+	}
+
+	/**
 	 * Check if plugin dependencies are satisfied and add an admin notice if not
 	 *
 	 * @return bool
@@ -328,6 +338,13 @@ class Connector_Woocommerce extends Connector {
 	}
 
 	/**
+	 * Clears logged order
+	 */
+	public function flush_logged_order() {
+		$this->order_update_logged = false;
+	}
+
+	/**
 	 * Log Order major status changes ( creating / updating / trashing )
 	 *
 	 * @action transition_post_status
@@ -337,6 +354,7 @@ class Connector_Woocommerce extends Connector {
 	 * @param \WP_Post $post  Post object.
 	 */
 	public function callback_transition_post_status( $new, $old, $post ) {
+
 		// Only track orders.
 		if ( 'shop_order' !== $post->post_type ) {
 			return;
@@ -357,9 +375,10 @@ class Connector_Woocommerce extends Connector {
 			return;
 		}
 
-		if ( in_array( $new, array( 'auto-draft', 'draft', 'inherit' ), true ) ) {
+		$start_statuses = array( 'auto-draft', 'inherit', 'new' );
+		if ( in_array( $new, $start_statuses, true ) ) {
 			return;
-		} elseif ( 'auto-draft' === $old && 'publish' === $new ) {
+		} elseif ( in_array( $old, $start_statuses, true ) && ! in_array( $new, $start_statuses, true ) ) {
 			/* translators: %s: an order title (e.g. "Order #42") */
 			$message = esc_html_x(
 				'%s created',
@@ -375,7 +394,7 @@ class Connector_Woocommerce extends Connector {
 				'stream'
 			);
 			$action  = 'trashed';
-		} elseif ( 'trash' === $old && 'publish' === $new ) {
+		} elseif ( 'trash' === $old && ! in_array( $new, $start_statuses, true ) ) {
 			/* translators: %s: an order title (e.g. "Order #42") */
 			$message = esc_html_x(
 				'%s restored from the trash',
@@ -390,10 +409,7 @@ class Connector_Woocommerce extends Connector {
 				'Order title',
 				'stream'
 			);
-		}
-
-		if ( empty( $action ) ) {
-			$action = 'updated';
+			$action  = 'updated';
 		}
 
 		$order           = new \WC_Order( $post->ID );
@@ -468,6 +484,7 @@ class Connector_Woocommerce extends Connector {
 	 * @param string $new       New status.
 	 */
 	public function callback_woocommerce_order_status_changed( $order_id, $old, $new ) {
+
 		// Don't track customer actions.
 		if ( ! is_admin() ) {
 			return;
@@ -488,19 +505,21 @@ class Connector_Woocommerce extends Connector {
 			$old_status_name = $old_status->name;
 		}
 
-		/* translators: %1$s: an order title, %2$s: order status, %3$s: another order status (e.g. "Order #42", "processing", "complete") */
-		$message = esc_html_x(
-			'%1$s status changed from %2$s to %3$s',
-			'1. Order title, 2. Old status, 3. New status',
-			'stream'
+		$order       = new \WC_Order( $order_id );
+		$order_title = sprintf(
+			/* translators: %d: Order number */
+			__( 'Order number %d', 'stream' ),
+			$order->get_order_number()
 		);
-
-		$order           = new \WC_Order( $order_id );
-		$order_title     = esc_html__( 'Order number', 'stream' ) . ' ' . esc_html( $order->get_order_number() );
 		$order_type_name = esc_html__( 'order', 'stream' );
 
 		$this->log(
-			$message,
+			/* translators: %1$s: an order title, %2$s: order status, %3$s: another order status (e.g. "Order #42", "processing", "complete") */
+			esc_html_x(
+				'%1$s status changed from %2$s to %3$s',
+				'1. Order title, 2. Old status, 3. New status',
+				'stream'
+			),
 			array(
 				'post_title'      => $order_title,
 				'old_status_name' => $old_status_name,

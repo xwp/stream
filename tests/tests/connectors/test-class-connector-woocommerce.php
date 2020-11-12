@@ -16,12 +16,14 @@ class Test_WP_Stream_Connector_Woocommerce extends WP_StreamTestCase {
 	public function setUp() {
 		parent::setUp();
 
+		$this->plugin->connectors->unload_connector( 'woocommerce' );
 		// Make partial of Connector_Woocommmerce class, with mocked "log" function.
 		$this->mock = $this->getMockBuilder( Connector_Woocommerce::class )
 			->setMethods( array( 'log' ) )
 			->getMock();
 
 		// Register connector.
+		$this->mock->is_dependency_satisfied();
 		$this->mock->register();
 	}
 
@@ -160,13 +162,12 @@ class Test_WP_Stream_Connector_Woocommerce extends WP_StreamTestCase {
 		$order->set_cart_tax( 0 );
 		$order->set_shipping_tax( 0 );
 		$order->set_total( 50 ); // 4 x $10 simple helper product
-		$order->save();
 
-		return $order;
+		return $order->save();
 	}
 
 	public function test_callback_transition_post_status() {
-		$this->mock->expects( $this->exactly( 2 ) )
+		$this->mock->expects( $this->exactly( 4 ) )
 			->method( 'log' )
 			->withConsecutive(
 				array(
@@ -177,58 +178,388 @@ class Test_WP_Stream_Connector_Woocommerce extends WP_StreamTestCase {
 							'stream'
 						)
 					),
-					$this->equalTo(
-						array(
-							'post_title'    => 'shop_order',
-							'singular_name' => 'order',
-							'new_status'    => 'publish',
-							'old_status'    => 'auto-draft',
-							'revision_id'   => null,
-						)
+					$this->callback(
+						function( $meta ) {
+							$expected_meta = array(
+								'singular_name' => 'order',
+								'new_status'    => 'wc-pending',
+								'old_status'    => 'new',
+								'revision_id'   => null,
+							);
+
+							return $expected_meta === array_intersect_key( $expected_meta, $meta );
+						}
 					),
 					$this->greaterThan( 0 ),
 					$this->equalTo( 'shop_order' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'created' ),
+				),
+				array(
+					$this->equalTo(
+						esc_html_x(
+							'%s trashed',
+							'Order title',
+							'stream'
+						)
+					),
+					$this->callback(
+						function( $meta ) {
+							$expected_meta = array(
+								'singular_name' => 'order',
+								'new_status'    => 'trashed',
+								'old_status'    => 'wc-pending',
+								'revision_id'   => null,
+							);
+
+							return $expected_meta === array_intersect_key( $expected_meta, $meta );
+						}
+					),
+					$this->greaterThan( 0 ),
+					$this->equalTo( 'shop_order' ),
+					$this->equalTo( 'trashed' ),
+				),
+				array(
+					$this->equalTo(
+						esc_html_x(
+							'%s restored from the trash',
+							'Order title',
+							'stream'
+						)
+					),
+					$this->callback(
+						function( $meta ) {
+							$expected_meta = array(
+								'singular_name' => 'order',
+								'new_status'    => 'wc-pending',
+								'old_status'    => 'trashed',
+								'revision_id'   => null,
+							);
+
+							return $expected_meta === array_intersect_key( $expected_meta, $meta );
+						}
+					),
+					$this->greaterThan( 0 ),
+					$this->equalTo( 'shop_order' ),
+					$this->equalTo( 'untrashed' ),
+				),
+				array(
+					$this->equalTo(
+						esc_html_x(
+							'%s updated',
+							'Order title',
+							'stream'
+						)
+					),
+					$this->callback(
+						function( $meta ) {
+							$expected_meta = array(
+								'singular_name' => 'order',
+								'new_status'    => 'wc-failed',
+								'old_status'    => 'wc-pending',
+								'revision_id'   => null,
+							);
+
+							return $expected_meta === array_intersect_key( $expected_meta, $meta );
+						}
+					),
+					$this->greaterThan( 0 ),
+					$this->equalTo( 'shop_order' ),
+					$this->equalTo( 'updated' ),
 				)
 			);
 
 		// Create/update/trash/restore order to trigger callback.
-		$order = $this->create_order();
+		$order_id = $this->create_order();
+		$this->mock->flush_logged_order();
+
+		wp_trash_post( $order_id );
+		$this->mock->flush_logged_order();
+
+		wp_untrash_post( $order_id );
+		$this->mock->flush_logged_order();
+
+		wp_update_post(
+			array(
+			    'ID'          => $order_id,
+				'post_status' => 'wc-failed',
+			)
+		);
 
 		// Check callback test action.
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_transition_post_status' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_transition_post_status' ) );
 	}
 
 	public function test_callback_deleted_post() {
+		// Create order for later use.
+		$order_id = $this->create_order();
+		$order    = \wc_get_order( $order_id );
 
+		// Expected log call.
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->with(
+				$this->equalTo(
+					_x(
+						'"%s" deleted from trash',
+						'Order title',
+						'stream'
+					)
+				),
+				$this->equalTo(
+					array(
+						'post_title'    => 'Order number '. $order->get_order_number(),
+						'singular_name' => 'order',
+					)
+				),
+				$this->equalTo( $order_id ),
+				$this->equalTo( 'shop_order' ),
+				$this->equalTo( 'deleted' )
+			);
+
+		// Delete order to trigger callback.
+		wp_delete_post( $order_id );
+
+		// Check callback test action.
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_deleted_post' ) );
 	}
 
 	public function test_callback_woocommerce_order_status_changed() {
+		// Create order for later use.
+		$order_id = $this->create_order();
+		$order    = \wc_get_order( $order_id );
 
+		// Expected log call.
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->with(
+				$this->equalTo( '%1$s status changed from %2$s to %3$s' ),
+				$this->equalTo(
+					array(
+						'post_title'      => 'Order number '. $order->get_order_number(),
+						'old_status_name' => 'Pending payment',
+						'new_status_name' => 'Completed',
+						'singular_name'   => 'order',
+						'new_status'      => 'completed',
+						'old_status'      => 'pending',
+						'revision_id'     => null,
+					)
+				),
+				$this->equalTo( $order_id ),
+				$this->equalTo( 'shop_order' ),
+				$this->equalTo( 'updated' )
+			);
+
+		// Update order status to trigger callback.
+		$order->update_status( 'completed' );
+		$order->save();
+
+		// Check callback test action.
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_woocommerce_order_status_changed' ) );
 	}
 
 	public function test_callback_woocommerce_attribute_added() {
+		// Expected log calls
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->with(
+				$this->equalTo( '"%s" product attribute created' ),
+				$this->equalTo(
+					array(
+						'attribute_label'   => 'color',
+						'attribute_name'    => 'color',
+						'attribute_type'    => 'select',
+						'attribute_orderby' => 'menu_order',
+						'attribute_public'  => 0,
+					)
+				),
+				$this->greaterThan( 0 ),
+				$this->equalTo( 'attributes' ),
+				$this->equalTo( 'created' )
+			);
 
+		// Create attribute to product to trigger callback.
+		\wc_create_attribute(
+			array(
+				'name' => 'color',
+				'slug' => 'color',
+				'text' => 'text',
+			)
+		);
+
+		// Check callback test action.
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_woocommerce_attribute_added' ) );
 	}
 
 	public function test_callback_woocommerce_attribute_updated() {
+		// Create attribute for later use.
+		$attribute_id = \wc_create_attribute(
+			array(
+				'name' => 'color',
+				'slug' => 'color',
+				'text' => 'text',
+			)
+		);
 
+		// Expected log calls
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->with(
+				$this->equalTo( '"%s" product attribute updated' ),
+				$this->equalTo(
+					array(
+						'attribute_label'   => 'color',
+						'attribute_name'    => 'colors',
+						'attribute_type'    => 'select',
+						'attribute_orderby' => 'menu_order',
+						'attribute_public'  => 0,
+					)
+				),
+				$this->equalTo( $attribute_id ),
+				$this->equalTo( 'attributes' ),
+				$this->equalTo( 'updated' )
+			);
+
+		// Update attribute to trigger callback.
+		\wc_update_attribute( $attribute_id, array( 'slug' => 'colors' ) );
+
+		// Check callback test action.
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_woocommerce_attribute_updated' ) );
 	}
 
 	public function test_callback_woocommerce_attribute_deleted() {
+		// Create attribute for later use.
+		$attribute_id = \wc_create_attribute(
+			array(
+				'name' => 'color',
+				'slug' => 'color',
+				'text' => 'text',
+			)
+		);
 
+		// Expected log calls
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->with(
+				$this->equalTo( '"%s" product attribute deleted' ),
+				$this->equalTo(
+					array(
+						'attribute_name' => 'color'
+					)
+				),
+				$this->equalTo( $attribute_id ),
+				$this->equalTo( 'attributes' ),
+				$this->equalTo( 'deleted' )
+			);
+
+		// Delete attribute to trigger callback.
+		\wc_delete_attribute( $attribute_id );
+
+		// Check callback test action.
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_woocommerce_attribute_deleted' ) );
 	}
 
 	public function test_callback_woocommerce_tax_rate_added() {
+		// Create tax rate array for later use.
+		$tax_rate = array(
+			'tax_rate_country'  => 'USA',
+			'tax_rate_state'    => 'Pennsylvania',
+			'tax_rate'          => '10',
+			'tax_rate_name'     => 'test tax rate',
+			'tax_rate_priority' => 1,
+			'tax_rate_compound' => 1,
+			'tax_rate_shipping' => 1,
+			'tax_rate_order'    => 0,
+			'tax_rate_class'    => '',
+		);
 
+		// Expected log calls
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->with(
+				$this->equalTo( '"%4$s" tax rate created' ),
+				$this->equalTo( $tax_rate ),
+				$this->notEqualTo( '' ),
+				$this->equalTo( 'tax' ),
+				$this->equalTo( 'created' )
+			);
+
+		// Create tax rate to trigger callback.
+		\WC_Tax::_insert_tax_rate( $tax_rate );
+
+		// Check callback test action.
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_woocommerce_tax_rate_added' ) );
 	}
 
 	public function test_callback_woocommerce_tax_rate_updated() {
+		// Create tax rate for later use.
+		$tax_rate    = array(
+			'tax_rate_country'  => 'USA',
+			'tax_rate_state'    => 'Pennsylvania',
+			'tax_rate'          => '10',
+			'tax_rate_name'     => 'test tax rate',
+			'tax_rate_priority' => 1,
+			'tax_rate_compound' => 1,
+			'tax_rate_shipping' => 1,
+			'tax_rate_order'    => 0,
+			'tax_rate_class'    => '',
+		);
+		$tax_rate_id = \WC_Tax::_insert_tax_rate( $tax_rate );
 
+		// Check tax rate data here for use in the upcoming `with()`.
+		$tax_rate['tax_rate_state'] = 'Virginia';
+
+		// Expected log calls
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->with(
+				$this->equalTo( '"%4$s" tax rate updated' ),
+				$this->equalTo( $tax_rate ),
+				$this->equalTo( $tax_rate_id ),
+				$this->equalTo( 'tax' ),
+				$this->equalTo( 'updated' )
+			);
+
+		// Update tax rate to trigger callback.
+		\WC_Tax::_update_tax_rate( $tax_rate_id, $tax_rate );
+
+
+		// Check callback test action.
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_woocommerce_tax_rate_updated' ) );
 	}
 
 	public function test_callback_woocommerce_tax_rate_deleted() {
+		// Create tax rate for later use.
+		$tax_rate    = array(
+			'tax_rate_country'  => 'USA',
+			'tax_rate_state'    => 'Pennsylvania',
+			'tax_rate'          => '10',
+			'tax_rate_name'     => 'test tax rate',
+			'tax_rate_priority' => 1,
+			'tax_rate_compound' => 1,
+			'tax_rate_shipping' => 1,
+			'tax_rate_order'    => 0,
+			'tax_rate_class'    => '',
+		);
+		$tax_rate_id = \WC_Tax::_insert_tax_rate( $tax_rate );
 
+		// Expected log calls
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->with(
+				$this->equalTo( '"%s" tax rate deleted' ),
+				$this->equalTo(
+					array( 'tax_rate_name' => 'test tax rate' )
+				),
+				$this->equalTo( $tax_rate_id ),
+				$this->equalTo( 'tax' ),
+				$this->equalTo( 'deleted' )
+			);
+
+		// Delete tax rate to trigger callback.
+		\WC_Tax::_delete_tax_rate( $tax_rate_id );
+
+		// Check callback test action.
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_woocommerce_tax_rate_deleted' ) );
 	}
 
 	public function test_callback_updated_option() {
