@@ -461,15 +461,8 @@ class Test_WP_Stream_Connector_Woocommerce extends WP_StreamTestCase {
 	public function test_callback_woocommerce_tax_rate_added() {
 		// Create tax rate array for later use.
 		$tax_rate = array(
-			'tax_rate_country'  => 'USA',
-			'tax_rate_state'    => 'Pennsylvania',
 			'tax_rate'          => '10',
 			'tax_rate_name'     => 'test tax rate',
-			'tax_rate_priority' => 1,
-			'tax_rate_compound' => 1,
-			'tax_rate_shipping' => 1,
-			'tax_rate_order'    => 0,
-			'tax_rate_class'    => '',
 		);
 
 		// Expected log calls
@@ -478,7 +471,7 @@ class Test_WP_Stream_Connector_Woocommerce extends WP_StreamTestCase {
 			->with(
 				$this->equalTo( '"%4$s" tax rate created' ),
 				$this->equalTo( $tax_rate ),
-				$this->notEqualTo( '' ),
+				$this->greaterThan( 0 ),
 				$this->equalTo( 'tax' ),
 				$this->equalTo( 'created' )
 			);
@@ -546,10 +539,8 @@ class Test_WP_Stream_Connector_Woocommerce extends WP_StreamTestCase {
 		$this->mock->expects( $this->once() )
 			->method( 'log' )
 			->with(
-				$this->equalTo( '"%s" tax rate deleted' ),
-				$this->equalTo(
-					array( 'tax_rate_name' => 'test tax rate' )
-				),
+				$this->equalTo( 'Tax rate identified by ID:"%s" deleted' ),
+				$this->equalTo( compact( 'tax_rate_id' ) ),
 				$this->equalTo( $tax_rate_id ),
 				$this->equalTo( 'tax' ),
 				$this->equalTo( 'deleted' )
@@ -563,6 +554,6 @@ class Test_WP_Stream_Connector_Woocommerce extends WP_StreamTestCase {
 	}
 
 	public function test_callback_updated_option() {
-
+		$this->markTestSkipped( 'This test needs to be written.' );
 	}
 }
