@@ -7,7 +7,23 @@
   "repositories": [
     {
       "type": "composer",
-      "url": "https://wpackagist.org"
+      "url":"https://wpackagist.org"
+    },
+    {
+      "type": "package",
+      "package": {
+        "name": "gravityforms/gravityforms",
+        "version": "2.4.21.3",
+        "type": "wordpress-plugin",
+        "dist": {
+          "type": "zip",
+          "url": "https://www.gravityhelp.com/wp-content/plugins/gravitymanager/api.php?op=get_plugin&slug=gravityforms&key={%GRAVITYFORMS_KEY}"
+        },
+        "require": {
+          "composer/installers": "^1.4",
+          "gotoandplay/gravityforms-composer-installer": "^2.3"
+        }
+      }
     }
   ],
   "require": {
@@ -25,15 +41,12 @@
     "wpackagist-plugin/advanced-custom-fields": "5.8.12",
     "wpackagist-plugin/easy-digital-downloads": "^2.9.23",
     "wpackagist-plugin/user-switching": "^1.5.5",
-    "wp-premium/gravityforms": "^2.4.17",
+    "gravityforms/gravityforms": "2.4.21.3",
     "wpsh/local": "^0.2.3"
   },
   "config": {
     "process-timeout": 600,
-    "sort-packages": true,
-    "platform": {
-      "php": "5.6.20"
-    }
+    "sort-packages": true
   },
   "extra": {
     "wordpress-install-dir": "local/public",

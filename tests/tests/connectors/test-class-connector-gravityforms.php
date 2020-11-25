@@ -25,6 +25,11 @@ class Test_WP_Stream_Connector_GravityForms extends WP_StreamTestCase {
 			->getMock();
 
 		$this->mock->register();
+
+		// Load needed Gravity Forms files.
+		require_once( \GFCommon::get_base_path() . '/form_settings.php' );
+		require_once( \GFCommon::get_base_path() . '/notification.php' );
+		require_once( \GFCommon::get_base_path() . '/export.php' );
 	}
 
 	/**
@@ -140,7 +145,7 @@ class Test_WP_Stream_Connector_GravityForms extends WP_StreamTestCase {
 		do_action( 'gform_after_save_form', $form_meta, true, array() );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_gform_after_save_form' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_gform_after_save_form' ) );
 	}
 
 	public function test_callback_gform_pre_confirmation_save() {
@@ -181,7 +186,7 @@ class Test_WP_Stream_Connector_GravityForms extends WP_StreamTestCase {
 		\gf_apply_filters( array( 'gform_pre_confirmation_save', $form_id ), $confirmation, $form, true );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_gform_pre_confirmation_save' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_gform_pre_confirmation_save' ) );
 	}
 
 	public function test_callback_gform_pre_notification_save() {
@@ -221,7 +226,7 @@ class Test_WP_Stream_Connector_GravityForms extends WP_StreamTestCase {
 		\gf_apply_filters( array( 'gform_pre_notification_save', $form_id ), $notification, $form, true );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_gform_pre_notification_save' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_gform_pre_notification_save' ) );
 	}
 
 	public function test_callback_gform_pre_notification_deleted() {
@@ -261,7 +266,7 @@ class Test_WP_Stream_Connector_GravityForms extends WP_StreamTestCase {
 		\GFNotification::delete_notification( $notification['id'], $form_id );
 
 		// Check callback test action..
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_gform_pre_notification_deleted' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_gform_pre_notification_deleted' ) );
 	}
 
 	public function test_callback_gform_pre_confirmation_deleted() {
@@ -302,7 +307,7 @@ class Test_WP_Stream_Connector_GravityForms extends WP_StreamTestCase {
 		\GFFormSettings::delete_confirmation( $confirmation['id'], $form_id );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_gform_pre_confirmation_deleted' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_gform_pre_confirmation_deleted' ) );
 	}
 
 	public function test_check() {
@@ -373,8 +378,8 @@ class Test_WP_Stream_Connector_GravityForms extends WP_StreamTestCase {
 		update_option( 'rg_gforms_key', '' );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_add_option' ) );
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_update_option' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_add_option' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_update_option' ) );
 	}
 
 	public function test_callback_gform_delete_lead() {
@@ -426,7 +431,7 @@ class Test_WP_Stream_Connector_GravityForms extends WP_StreamTestCase {
 		\GFFormsModel::delete_entry( $entry_id );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_gform_delete_lead' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_gform_delete_lead' ) );
 	}
 
 	public function test_callback_gform_post_note_added() {
@@ -486,7 +491,7 @@ class Test_WP_Stream_Connector_GravityForms extends WP_StreamTestCase {
 		\GFFormsModel::add_note( $entry_id, $user_id, 'johndoe', $note, 'user' );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_gform_post_note_added' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_gform_post_note_added' ) );
 	}
 
 	public function test_callback_gform_pre_note_deleted() {
@@ -560,7 +565,7 @@ class Test_WP_Stream_Connector_GravityForms extends WP_StreamTestCase {
 		\GFFormsModel::delete_note( $note_id );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_gform_pre_note_deleted' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_gform_pre_note_deleted' ) );
 	}
 
 	public function test_callback_gform_update_status() {
@@ -634,7 +639,7 @@ class Test_WP_Stream_Connector_GravityForms extends WP_StreamTestCase {
 		do_action( 'gform_update_status', $entry_id, 'active', 'trash' );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_gform_update_status' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_gform_update_status' ) );
 	}
 
 	public function test_callback_gform_update_is_read() {
@@ -704,7 +709,7 @@ class Test_WP_Stream_Connector_GravityForms extends WP_StreamTestCase {
 		\GFFormsModel::update_entry_property( $entry_id, 'is_read', 0 );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_gform_update_is_read' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_gform_update_is_read' ) );
 	}
 
 	public function test_callback_gform_update_is_starred() {
@@ -774,7 +779,7 @@ class Test_WP_Stream_Connector_GravityForms extends WP_StreamTestCase {
 		\GFFormsModel::update_entry_property( $entry_id, 'is_starred', 0 );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_gform_update_is_starred' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_gform_update_is_starred' ) );
 	}
 
 	public function test_log_form_action() {
@@ -951,13 +956,13 @@ class Test_WP_Stream_Connector_GravityForms extends WP_StreamTestCase {
 		\RGFormsModel::delete_form( $form_id );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_gform_before_delete_form' ) );
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_gform_post_form_trashed' ) );
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_gform_post_form_restored' ) );
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_gform_post_form_activated' ) );
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_gform_post_form_deactivated' ) );
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_gform_post_form_duplicated' ) );
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_gform_post_form_views_deleted' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_gform_before_delete_form' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_gform_post_form_trashed' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_gform_post_form_restored' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_gform_post_form_activated' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_gform_post_form_deactivated' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_gform_post_form_duplicated' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_gform_post_form_views_deleted' ) );
 	}
 
 	public function test_callback_gform_post_export_entries() {
@@ -989,7 +994,7 @@ class Test_WP_Stream_Connector_GravityForms extends WP_StreamTestCase {
 		\GFExport::start_export( $form, 0, $export_id );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_gform_post_export_entries' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_gform_post_export_entries' ) );
 	}
 
 	public function test_callback_gform_forms_post_import() {
@@ -1021,7 +1026,7 @@ class Test_WP_Stream_Connector_GravityForms extends WP_StreamTestCase {
 		\GFExport::import_json( $forms_json );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_gform_forms_post_import' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_gform_forms_post_import' ) );
 	}
 
 	public function test_callback_gform_export_form() {
@@ -1049,6 +1054,6 @@ class Test_WP_Stream_Connector_GravityForms extends WP_StreamTestCase {
 		\GFExport::prepare_forms_for_export( $forms );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_gform_export_form' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_gform_export_form' ) );
 	}
 }
