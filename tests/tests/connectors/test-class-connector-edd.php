@@ -178,7 +178,6 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 		edd_update_option( 'thousands_separator' );
 
 		// Check callback test action.
-		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_add_option' ) );
 		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_update_option' ) );
 	}
 
