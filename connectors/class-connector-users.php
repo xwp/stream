@@ -317,7 +317,6 @@ class Connector_Users extends Connector {
 		$user_id = get_current_user_id();
 		$user    = get_user_by( 'ID', $user_id );
 
-		error_log( print_r( $user, true ) );
 		// For some reason, incognito mode calls clear_auth_cookie on failed login attempts.
 		if ( empty( $user ) || ! $user->exists() ) {
 			return;
