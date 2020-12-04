@@ -156,7 +156,6 @@ class Test_WP_Stream_Connector_Users extends WP_StreamTestCase {
 	}
 
 	public function test_callback_clear_auth_cookie() {
-		$this->markTestSkipped( 'This test is to be skipped until scenario issue resolved.' );
 		// Create and authenticate user.
 		$user_id = self::factory()->user->create( array( 'display_name' => 'TestGuy' ) );
 		wp_set_current_user( $user_id );
@@ -175,7 +174,8 @@ class Test_WP_Stream_Connector_Users extends WP_StreamTestCase {
 			);
 
 		// Manually trigger the action to execute callback.
-		do_action( 'clear_auth_cookie' );
+		add_filter( 'send_auth_cookies', '__return_false' );
+		wp_clear_auth_cookie();
 
 		// Check callback test action.
 		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_clear_auth_cookie' ) );
