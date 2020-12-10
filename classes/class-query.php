@@ -229,7 +229,7 @@ class Query {
 		/**
 		 * BUILD THE FINAL QUERY
 		 */
-		$query = "SELECT SQL_CALC_FOUND_ROWS {$select}
+		$query = "SELECT {$select}
 		FROM $wpdb->stream
 		{$join}
 		WHERE 1=1 {$where}
@@ -246,12 +246,29 @@ class Query {
 		 */
 		$query = apply_filters( 'wp_stream_db_query', $query, $args );
 
-		$result = array();
+		// Build result count query.
+		$count_query = "SELECT COUNT(*) as found
+		FROM $wpdb->stream
+		{$join}
+		WHERE 1=1 {$where}";
+
+		/**
+		 * Filter allows the result count query to be modified before execution.
+		 *
+		 * @param string $query
+		 * @param array  $args
+		 *
+		 * @return string
+		 */
+		$count_query = apply_filters( 'wp_stream_db_count_query', $count_query, $args );
+
 		/**
 		 * QUERY THE DATABASE FOR RESULTS
 		 */
-		$result['items'] = $wpdb->get_results( $query ); // @codingStandardsIgnoreLine $query already prepared
-		$result['count'] = $result['items'] ? absint( $wpdb->get_var( 'SELECT FOUND_ROWS()' ) ) : 0;
+		$result = array(
+			'items' => $wpdb->get_results( $query ), // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			'count' => absint( $wpdb->get_var( $count_query ) ), // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		);
 
 		return $result;
 	}
