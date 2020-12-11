@@ -96,7 +96,7 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 			]
 		);
 
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_wp_insert_comment' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_wp_insert_comment' ) );
 	}
 
 	public function test_callback_edit_comment() {
@@ -149,7 +149,7 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 			]
 		);
 
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_edit_comment' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_edit_comment' ) );
 	}
 
 	public function test_callback_delete_comment() {
@@ -197,7 +197,7 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 		// Do stuff.
 		wp_delete_comment( $comment_id, true );
 
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_delete_comment' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_delete_comment' ) );
 	}
 
 	public function test_callback_trash_comment() {
@@ -245,7 +245,7 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 		// Do stuff.
 		wp_trash_comment( $comment_id );
 
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_trash_comment' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_trash_comment' ) );
 	}
 
 	public function test_callback_untrash_comment() {
@@ -294,7 +294,7 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 		// Do stuff.
 		wp_untrash_comment( $comment_id );
 
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_untrash_comment' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_untrash_comment' ) );
 	}
 
 	public function test_callback_spam_comment() {
@@ -342,7 +342,7 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 		// Do stuff.
 		wp_spam_comment( $comment_id );
 
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_spam_comment' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_spam_comment' ) );
 	}
 
 	public function test_callback_unspam_comment() {
@@ -391,7 +391,7 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 		// Do stuff.
 		wp_unspam_comment( $comment_id );
 
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_unspam_comment' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_unspam_comment' ) );
 	}
 
 	public function test_callback_transition_comment_status() {
@@ -441,7 +441,7 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 		// Do stuff.
 		wp_transition_comment_status( 'hold', 'pending approval', get_comment( $comment_id ) );
 
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_transition_comment_status' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_transition_comment_status' ) );
 	}
 
 	public function test_callback_comment_duplicate_trigger() {
@@ -463,59 +463,20 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 			]
 		);
 
-		$this->mock->expects( $this->atLeastOnce() )
-			->method( 'log' )
-			->with(
-				$this->equalTo(
-					_x(
-						'Duplicate %3$s by %1$s prevented on %2$s',
-						'1: Comment author, 2: Post title, 3: Comment type',
-						'stream'
-					)
-				),
-				$this->equalTo(
-					[
-						'user_name'    => 'Jim Bean',
-						'post_title'   => '"Test post"',
-						'comment_type' => 'comment',
-						'post_id'      => "$post_id",
-						'user_id'      => 0,
-					]
-				),
-				$this->equalTo( $comment_id ),
-				$this->equalTo( 'post' ),
-				$this->equalTo( 'duplicate' )
-			);
-
-		// Do stuff.
+		// Create duplicate comment and trigger mock.
 		wp_new_comment(
-			[
+			array(
 				'comment_content'      => 'Lorem ipsum dolor...',
 				'comment_author'       => 'Jim Bean',
 				'comment_author_email' => 'jim_bean@example.com',
 				'comment_author_url'   => '',
 				'comment_author_IP'    => '::1',
 				'comment_post_ID'      => $post_id,
-			],
+				'comment_type'         => 'post',
+			),
 			true
 		);
-		$comment_id = wp_new_comment( $commentdata );
 
-		// Manually execute SQL query for duplicate comment ID. "$wpdb->last_result[0]" Undefined index error.
-		$dupe = $wpdb->prepare(
-			"SELECT comment_ID FROM $wpdb->comments WHERE comment_post_ID = %d AND comment_parent = %s AND comment_approved != 'trash' AND ( comment_author = %s AND comment_author_email = %s ) AND comment_content = %s LIMIT 1",
-			wp_unslash( $commentdata['comment_post_ID'] ),
-			wp_unslash( $commentdata['comment_parent'] ),
-			wp_unslash( $commentdata['comment_author'] ),
-			wp_unslash( $commentdata['comment_author_email'] ),
-			wp_unslash( $commentdata['comment_content'] )
-		);
-		$dupe_id = $wpdb->get_var( $dupe );
-		$this->assertSame( $comment_id, absint( $dupe_id ) );
-
-		// Run trigger action.
-		do_action( 'comment_duplicate_trigger', $commentdata );
-
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_comment_duplicate_trigger' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_comment_duplicate_trigger' ) );
 	}
 }
