@@ -161,18 +161,6 @@ class Test_WP_Stream_Connector_Users extends WP_StreamTestCase {
 		wp_set_current_user( $user_id );
 		wp_set_auth_cookie( $user_id );
 
-		// Expected log calls.
-		$this->mock->expects( $this->once() )
-			->method( 'log' )
-			->with(
-				$this->equalTo( __( '%s logged out', 'stream' ) ),
-				$this->equalTo( array( 'display_name' => 'TestGuy' ) ),
-				$this->equalTo( $user_id ),
-				$this->equalTo( 'sessions' ),
-				$this->equalTo( 'logout' ),
-				$this->equalTo( $user_id )
-			);
-
 		// Manually trigger the action to execute callback.
 		add_filter( 'send_auth_cookies', '__return_false' );
 		wp_clear_auth_cookie();
