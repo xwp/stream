@@ -78,6 +78,29 @@ function xwp_install_edd() {
 		}
 	);
 }
+tests_add_filter(
+	'bp_core_loaded',
+	function() {
+		$components = array(
+			'members',
+			'activity',
+			'blogs',
+			'friends',
+			'groups',
+			'messages',
+			'notifications',
+			'settings',
+			'xprofile',
+		);
+		$active_components =& buddypress()->active_components;
+		foreach( $components as $component ) {
+			$active_components[ $component ] = 1;
+		}
+
+		\bp_delete_option( 'bp-active-components');
+		\bp_delete_option( 'bp-deactivated-components' );
+	}
+);
 
 // @see https://core.trac.wordpress.org/browser/trunk/tests/phpunit/includes/bootstrap.php
 require $_tests_dir . '/includes/bootstrap.php';
