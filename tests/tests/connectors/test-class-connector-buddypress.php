@@ -90,8 +90,6 @@ class Test_WP_Stream_Connector_BuddyPress extends WP_StreamTestCase {
 	public function setUp() {
 		parent::setUp();
 
-		$this->plugin->connectors->unload_connector( 'buddypress' );
-
 		// Make partial of Connector_BuddyPress class, with mocked "log" function.
 		$this->mock = $this->getMockBuilder( Connector_BuddyPress::class )
 			->setMethods( array( 'log' ) )
@@ -671,7 +669,7 @@ class Test_WP_Stream_Connector_BuddyPress extends WP_StreamTestCase {
 			'name'           => 'Test field',
 			'description'    => 'Lorem ipsum dolor',
 			'type'           => 'textbox',
-			'field_group_id' => $group
+			'field_group_id' => $group_id
 		);
 		$field_id         = \xprofile_insert_field( $field_args );
 		$field            = new \BP_XProfile_Field( $field_id );
@@ -691,11 +689,11 @@ class Test_WP_Stream_Connector_BuddyPress extends WP_StreamTestCase {
 		$this->assertTrue( xprofile_admin_delete_group( $group->id ) );
 
 		// Check callback test actions.
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_xprofile_group_before_save' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_xprofile_group_after_save' ) );
 		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_xprofile_field_before_save' ) );
 		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_xprofile_field_after_save' ) );
 		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_xprofile_fields_deleted_field' ) );
-		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_xprofile_group_before_save' ) );
-		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_xprofile_group_after_save' ) );
 		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_xprofile_groups_deleted_group' ) );
 	}
 }
