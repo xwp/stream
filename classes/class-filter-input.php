@@ -35,8 +35,6 @@ class Filter_Input {
 		FILTER_SANITIZE_SPECIAL_CHARS => 'htmlspecialchars',
 		FILTER_SANITIZE_STRING        => 'sanitize_text_field',
 		FILTER_SANITIZE_URL           => 'esc_url_raw',
-		// Other.
-		FILTER_UNSAFE_RAW             => null,
 	);
 
 	/**
