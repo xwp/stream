@@ -31,7 +31,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-if ( ! version_compare( PHP_VERSION, '5.3', '>=' ) ) {
+if ( version_compare( PHP_VERSION, '5.3', '<' ) ) {
 	load_plugin_textdomain( 'stream', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	add_action( 'shutdown', 'wp_stream_fail_php_version' );
 } else {
