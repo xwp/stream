@@ -1,6 +1,6 @@
 <?php
 /**
- * Tests for Post connector class callbacks.
+ * Tests for Posts connector class callbacks.
  *
  * @package WP_Stream
  */
