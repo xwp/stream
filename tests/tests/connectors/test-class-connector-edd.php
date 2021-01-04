@@ -3,6 +3,8 @@
  * WP Integration Test w/ Easy Digital Downloads
  *
  * Tests for EDD Connector class callbacks.
+ *
+ * @package WP_Stream
  */
 
 namespace WP_Stream;
