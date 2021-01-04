@@ -172,6 +172,7 @@ class DB {
 
 		// Additional property fields.
 		$properties = array(
+			'ID'        => null,
 			'user_id'   => null,
 			'user_role' => null,
 			'ip'        => null,

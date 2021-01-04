@@ -20,6 +20,9 @@ class Test_WP_Stream_Connector_ACF extends WP_StreamTestCase {
 	public function setUp() {
 		parent::setUp();
 
+		global $unit_test;
+		$unit_test = $this;
+
 		$this->plugin->connectors->unload_connectors();
 
 		// Make partial of Connector_ACF class, with mocked "log" function.
