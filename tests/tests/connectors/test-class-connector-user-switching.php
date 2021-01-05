@@ -6,7 +6,6 @@
  *
  * @package WP_Stream
  */
-
 namespace WP_Stream;
 
 class Test_WP_Stream_Connector_User_Switching extends WP_StreamTestCase {

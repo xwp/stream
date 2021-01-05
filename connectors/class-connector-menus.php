@@ -92,6 +92,15 @@ class Connector_Menus extends Connector {
 	}
 
 	/**
+	 * Unregister connection actions.
+	 */
+	public function unregister() {
+		parent::unregister();
+
+		remove_action( 'update_option_theme_mods_' . get_option( 'stylesheet' ), array( $this, 'callback_update_option_theme_mods' ), 10 );
+	}
+
+	/**
 	 * Add action links to Stream drop row in admin list screen
 	 *
 	 * @filter wp_stream_action_links_{connector}
@@ -173,7 +182,7 @@ class Connector_Menus extends Connector {
 		unset( $tt_id );
 
 		$name    = $deleted_term->name;
-		$menu_id = $term->term_id;
+		$menu_id = $term;
 
 		$this->log(
 			/* translators: %s: a menu name (e.g. "Primary Menu") */
