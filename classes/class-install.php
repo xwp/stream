@@ -71,9 +71,6 @@ class Install {
 		$this->db_version = $this->get_db_version();
 		$this->stream_url = self_admin_url( $this->plugin->admin->admin_parent_page . '&page=' . $this->plugin->admin->settings_page_slug );
 
-		// Install the plugin.
-		add_action( 'wp_stream_before_db_notices', array( $this, 'check' ) );
-
 		register_activation_hook( $this->plugin->locations['plugin'], array( $this, 'check' ) );
 	}
 
