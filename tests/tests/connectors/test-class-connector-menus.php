@@ -1,6 +1,8 @@
 <?php
 /**
  * Tests for the Menus Connector class callbacks.
+ *
+ * @package WP_Stream
  */
 namespace WP_Stream;
 
@@ -41,7 +43,7 @@ class Test_WP_Stream_Connector_Menus extends WP_StreamTestCase {
 		wp_create_nav_menu( 'test-menu' );
 
 		// Check callback test action.
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_wp_create_nav_menu' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_wp_create_nav_menu' ) );
 	}
 
 	public function test_callback_wp_update_nav_menu() {
@@ -78,7 +80,7 @@ class Test_WP_Stream_Connector_Menus extends WP_StreamTestCase {
 		);
 
 		// Check callback test action.
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_wp_update_nav_menu' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_wp_update_nav_menu' ) );
 	}
 
 	public function test_callback_delete_nav_menu() {
@@ -108,7 +110,7 @@ class Test_WP_Stream_Connector_Menus extends WP_StreamTestCase {
 		wp_delete_nav_menu( $menu_id );
 
 		// Check callback test action.
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_delete_nav_menu' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_delete_nav_menu' ) );
 	}
 
 	public function test_callback_update_option_theme_mods() {
