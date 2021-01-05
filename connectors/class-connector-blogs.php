@@ -24,7 +24,8 @@ class Connector_Blogs extends Connector {
 	 * @var array
 	 */
 	public $actions = array(
-		'wpmu_new_blog',
+		'wp_initialize_site',
+		'wp_delete_site',
 		'wpmu_activate_blog',
 		'wpmu_new_user',
 		'add_user_to_blog',
@@ -127,14 +128,16 @@ class Connector_Blogs extends Connector {
 	}
 
 	/**
-	 * Blog created
+	 * Blog created.
 	 *
-	 * @action wpmu_new_blog
+	 * @action wp_initialize_site
 	 *
-	 * @param int $blog_id  Blog ID.
+	 * @param WP_Site $new_site  New site object.
+	 * @param array   $args      Arguments for the initialization.
 	 */
-	public function callback_wpmu_new_blog( $blog_id ) {
-		$blog = get_blog_details( $blog_id );
+	public function callback_wp_initialize_site( $new_site, $args ) {
+		$blogname = ! empty( $args['title'] ) ? $args['title'] : $new_site->blogname;
+		$blog_id  = $new_site->blog_id;
 
 		$this->log(
 			/* translators: %s: site name (e.g. "FooBar Blog") */
@@ -144,11 +147,39 @@ class Connector_Blogs extends Connector {
 				'stream'
 			),
 			array(
-				'site_name' => $blog->blogname,
+				'site_name' => ! empty( $blogname ) ? $blogname : 'Site %d',
+				'siteurl'   => $new_site->siteurl,
+				'id'        => $new_site->blog_id,
 			),
 			$blog_id,
-			sanitize_key( $blog->blogname ),
+			sanitize_key( $blogname ),
 			'created'
+		);
+	}
+
+	/**
+	 * A site has been deleted from the database.
+	 *
+	 * @action wp_deleted_site
+	 *
+	 * @param WP_Site $old_site  Deleted site object.
+	 */
+	public function callback_wp_delete_site( $old_site ) {
+		$this->log(
+			/* translators: %s: site name (e.g. "FooBar Blog") */
+			_x(
+				'"%s" site was deleted',
+				'1. Site name',
+				'stream'
+			),
+			array(
+				'site_name' => $old_site->blogname,
+				'siteurl'   => $old_site->siteurl,
+				'id'        => $old_site->blog_id,
+			),
+			$old_site->blog_id,
+			sanitize_key( $old_site->blogname ),
+			'deleted'
 		);
 	}
 
@@ -161,7 +192,7 @@ class Connector_Blogs extends Connector {
 	 * @param int $user_id  User ID.
 	 */
 	public function callback_wpmu_activate_blog( $blog_id, $user_id ) {
-		$blog = get_blog_details( $blog_id );
+		$blog = get_site( $blog_id );
 
 		$this->log(
 			/* translators: %s: site name (e.g. "FooBar Blog") */
@@ -172,6 +203,8 @@ class Connector_Blogs extends Connector {
 			),
 			array(
 				'site_name' => $blog->blogname,
+				'siteurl'   => $blog->siteurl,
+				'id'        => $blog->blog_id,
 			),
 			$blog_id,
 			sanitize_key( $blog->blogname ),
@@ -190,7 +223,7 @@ class Connector_Blogs extends Connector {
 	 * @param int    $blog_id  Blog ID.
 	 */
 	public function callback_add_user_to_blog( $user_id, $role, $blog_id ) {
-		$blog = get_blog_details( $blog_id );
+		$blog = get_site( $blog_id );
 		$user = get_user_by( 'id', $user_id );
 
 		if ( ! is_a( $user, 'WP_User' ) ) {
@@ -207,6 +240,8 @@ class Connector_Blogs extends Connector {
 			array(
 				'user_name' => $user->display_name,
 				'site_name' => $blog->blogname,
+				'siteurl'   => $blog->siteurl,
+				'id'        => $blog->blog_id,
 				'role_name' => $role,
 			),
 			$blog_id,
@@ -224,7 +259,7 @@ class Connector_Blogs extends Connector {
 	 * @param int $blog_id  Blog ID.
 	 */
 	public function callback_remove_user_from_blog( $user_id, $blog_id ) {
-		$blog = get_blog_details( $blog_id );
+		$blog = get_site( $blog_id );
 		$user = get_user_by( 'id', $user_id );
 
 		if ( ! is_a( $user, 'WP_User' ) ) {
@@ -241,6 +276,8 @@ class Connector_Blogs extends Connector {
 			array(
 				'user_name' => $user->display_name,
 				'site_name' => $blog->blogname,
+				'siteurl'   => $blog->siteurl,
+				'id'        => $blog->blog_id,
 			),
 			$blog_id,
 			sanitize_key( $blog->blogname ),
@@ -322,7 +359,7 @@ class Connector_Blogs extends Connector {
 	 * @param int $blog_id  Blog ID.
 	 */
 	public function callback_make_delete_blog( $blog_id ) {
-		$this->callback_update_blog_status( $blog_id, esc_html__( 'deleted', 'stream' ), 'deleted' );
+		$this->callback_update_blog_status( $blog_id, esc_html__( 'trashed', 'stream' ), 'trashed' );
 	}
 
 	/**
@@ -333,7 +370,7 @@ class Connector_Blogs extends Connector {
 	 * @param int $blog_id  Blog ID.
 	 */
 	public function callback_make_undelete_blog( $blog_id ) {
-		$this->callback_update_blog_status( $blog_id, esc_html__( 'restored', 'stream' ), 'updated' );
+		$this->callback_update_blog_status( $blog_id, esc_html__( 'restored', 'stream' ), 'restored' );
 	}
 
 	/**
@@ -345,7 +382,7 @@ class Connector_Blogs extends Connector {
 	 * @param string $value    Status flag.
 	 */
 	public function callback_update_blog_public( $blog_id, $value ) {
-		if ( $value ) {
+		if ( absint( $value ) ) {
 			$status = esc_html__( 'marked as public', 'stream' );
 		} else {
 			$status = esc_html__( 'marked as private', 'stream' );
@@ -364,8 +401,7 @@ class Connector_Blogs extends Connector {
 	 * @param string $action   Action.
 	 */
 	public function callback_update_blog_status( $blog_id, $status, $action ) {
-		$blog = get_blog_details( $blog_id );
-
+		$blog = get_site( $blog_id );
 		$this->log(
 			/* translators: %1$s: a site name, %2$s: a blog status (e.g. "FooBar Blog", "archived") */
 			_x(
@@ -375,6 +411,8 @@ class Connector_Blogs extends Connector {
 			),
 			array(
 				'site_name' => $blog->blogname,
+				'siteurl'   => $blog->siteurl,
+				'id'        => $blog->blog_id,
 				'status'    => $status,
 			),
 			$blog_id,
