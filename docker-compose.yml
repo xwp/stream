@@ -31,6 +31,7 @@ services:
       - ./local/config/wp-cli.yml:/var/www/html/wp-cli.yml
       - ./local/config/wp-config.php:/var/www/html/wp-config.php
       - ./local/config/wp-tests-config.php:/var/www/html/wp-tests-config.php
+      - ./local/config/sunrise.php:/var/www/html/wp-content/sunrise.php
     restart: always
     environment:
       COMPOSER_HOME: /tmp/.composer

@@ -27,4 +27,7 @@ define( 'WP_DEBUG', false );
 
 define( 'ABSPATH', __DIR__ . '/' );
 
+// For mercator.
+define( 'SUNRISE', true );
+
 require_once ABSPATH . 'wp-settings.php';

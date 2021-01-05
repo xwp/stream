@@ -46,6 +46,12 @@ tests_add_filter(
 		require dirname( __DIR__ ) . '/stream.php';
 	}
 );
+function xwp_manually_load_mercator() {
+	define( 'MERCATOR_SKIP_CHECKS', true );
+	require WPMU_PLUGIN_DIR . '/mercator/mercator.php';
+}
+
+tests_add_filter( 'muplugins_loaded', 'xwp_manually_load_mercator' );
 
 // @see https://core.trac.wordpress.org/browser/trunk/tests/phpunit/includes/bootstrap.php
 require $_tests_dir . '/includes/bootstrap.php';
