@@ -72,7 +72,7 @@ class Test_WP_Stream_Connector_Installer extends WP_StreamTestCase {
 		// Simulate installing plugin and updating theme to trigger callback.
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_upgrader_process_complete' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_upgrader_process_complete' ) );
 	}
 
 	public function test_callback_activate_plugin() {
@@ -102,7 +102,7 @@ class Test_WP_Stream_Connector_Installer extends WP_StreamTestCase {
 		\activate_plugin( 'hello.php' );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_activate_plugin' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_activate_plugin' ) );
 	}
 
 	public function test_callback_deactivate_plugin() {
@@ -135,7 +135,7 @@ class Test_WP_Stream_Connector_Installer extends WP_StreamTestCase {
 		\deactivate_plugins( array( 'hello.php' ) );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_deactivate_plugin' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_deactivate_plugin' ) );
 	}
 
 	public function test_callback_switch_theme() {
@@ -154,7 +154,7 @@ class Test_WP_Stream_Connector_Installer extends WP_StreamTestCase {
 		switch_theme( 'twentytwenty' );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_switch_theme' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_switch_theme' ) );
 	}
 
 	public function test_callback_delete_site_transient_update_themes() {
@@ -173,7 +173,7 @@ class Test_WP_Stream_Connector_Installer extends WP_StreamTestCase {
 		delete_theme( 'twentyninteen' );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_delete_site_transient_update_themes' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_delete_site_transient_update_themes' ) );
 	}
 
 	public function test_callback_pre_set_site_transient_update_plugins() {
@@ -201,7 +201,7 @@ class Test_WP_Stream_Connector_Installer extends WP_StreamTestCase {
 
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_pre_set_site_transient_update_plugins' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_pre_set_site_transient_update_plugins' ) );
 	}
 
 	public function test_callback__core_updated_successfully() {
@@ -243,6 +243,6 @@ class Test_WP_Stream_Connector_Installer extends WP_StreamTestCase {
 		// Do stuff.
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback__core_updated_successfully' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback__core_updated_successfully' ) );
 	}
 }
