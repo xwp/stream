@@ -64,11 +64,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 		$this->assertArrayHasKey( 'blog-' . $id, $labels );
 	}
 
-<<<<<<< HEAD
-	public function test_callback_wp_insert_site() {
-=======
 	public function test_callback_wp_initialize_site() {
->>>>>>> "wp_delete_site" callback added.
 		// Expected log calls.
 		$this->mock->expects( $this->once() )
 			->method( 'log' )
