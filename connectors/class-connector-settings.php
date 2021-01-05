@@ -572,7 +572,7 @@ class Connector_Settings extends Connector {
 				// The first applicable rule wins.
 				$rule         = array_shift( $applicable_rules );
 				$menu_slug    = $rule['menu_slug'];
-				$submenu_slug = ( is_object( $rule['submenu_slug'] ) && $rule['submenu_slug'] instanceof Closure ? $rule['submenu_slug']( $record ) : $rule['submenu_slug'] );
+				$submenu_slug = ( is_object( $rule['submenu_slug'] ) && $rule['submenu_slug'] instanceof \Closure ? $rule['submenu_slug']( $record ) : $rule['submenu_slug'] );
 				$url          = $rule['url']( $rule, $record );
 
 				if ( isset( $submenu[ $menu_slug ] ) ) {
