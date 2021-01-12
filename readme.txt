@@ -3,7 +3,7 @@ Contributors: xwp
 Tags: wp stream, stream, activity, logs, track
 Requires at least: 4.5
 Tested up to: 5.5
-Stable tag: 3.6.0
+Stable tag: 3.6.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -90,6 +90,27 @@ Past Contributors: fjarrett, shadyvb, chacha, westonruter, johnregan3, jacobschw
 
 
 == Changelog ==
+
+= 3.6.1 - January 12, 2020 =
+
+* New: Action add for when a blog is deleted [#1177](https://github.com/xwp/stream/pull/1177), props [@kidunot89](https://github.com/kidunot89)
+* Fix: Refactored Stream's Records table custom column functionality to output the correct column values [#1185](https://github.com/xwp/stream/pull/1185), props [@Nikschavan](https://github.com/Nikschavan), [@kidunot89](https://github.com/kidunot89), and [@derekherman](https://github.com/derekherman)
+* Fix: Refactored deprecated SQL statement for retrieving the result count [#1203](https://github.com/xwp/stream/pull/1203), props [@kidunot89](https://github.com/kidunot89)
+* Fix: Fixed a namespace of a call to the Closure class [#1215](https://github.com/xwp/stream/pull/1215), props [@szepeviktor](https://github.com/szepeviktor)
+* Fix: The default options are made available during the "wp_stream_auto_purge" callback [#1159](https://github.com/xwp/stream/pull/1159), props [@kidunot89](https://github.com/kidunot89)
+* Fix: Expensive functions removed [#1201](https://github.com/xwp/stream/pull/1201), props [@kidunot89](https://github.com/kidunot89)
+* Tweak: Remove redundant textdomain initialization [#1213](https://github.com/xwp/stream/pull/1213), props [@szepeviktor](https://github.com/szepeviktor)
+* Tweak: Cleaned up PHP version check [#1212](https://github.com/xwp/stream/pull/1212), props [@szepeviktor](https://github.com/szepeviktor)
+* Development: Unit test added for Menu connector class [#1164](https://github.com/xwp/stream/pull/1164), props [@kidunot89](https://github.com/kidunot89)
+* Development: Unit test added for Blog connector class [#1177](https://github.com/xwp/stream/pull/1177), props [@kidunot89](https://github.com/kidunot89)
+* Development Fix: Micro patch provided for Mercator actions register to deprecated hooks [#1217](https://github.com/xwp/stream/pull/1217), props [@kidunot89](https://github.com/kidunot89)
+* Development: Unit test added for Mercator connector class [#1180](https://github.com/xwp/stream/pull/1180), props [@kidunot89](https://github.com/kidunot89)
+* Development: Unit test added for Settings connector class [#1165](https://github.com/xwp/stream/pull/1165), props [@kidunot89](https://github.com/kidunot89)
+* Development: Unit test added for Installer connector class [#1155](https://github.com/xwp/stream/pull/1155), props [@kidunot89](https://github.com/kidunot89)
+* Development: Unit test added for User connector class [#1151](https://github.com/xwp/stream/pull/1151), props [@kidunot89](https://github.com/kidunot89)
+* Development: Unit test added for Editor connector class [#1138](https://github.com/xwp/stream/pull/1138), props [@kidunot89](https://github.com/kidunot89)
+* Development: Unit test added for Comments connector class [#1134](https://github.com/xwp/stream/pull/1134), props [@kidunot89](https://github.com/kidunot89)
+
 
 = 3.6.0 - October 14, 2020 =
 
