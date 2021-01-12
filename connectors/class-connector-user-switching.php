@@ -1,6 +1,6 @@
 <?php
 /**
- * Connector for User-Switching
+ * Connector for the User-Switching plugin
  *
  * @package WP_Stream
  */
