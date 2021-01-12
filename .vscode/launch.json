@@ -6,6 +6,9 @@
       "type": "php",
       "request": "launch",
       "port": 9000,
+      "ignore": [
+        "vendor/"
+      ],
       "pathMappings": {
         "/var/www/html/wp-content/plugins/stream-src": "${workspaceRoot}",
         "/var/www/html/wp-content/plugins/stream": "${workspaceRoot}/build",
