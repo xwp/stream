@@ -160,7 +160,7 @@ class Connector_Blogs extends Connector {
 	/**
 	 * A site has been deleted from the database.
 	 *
-	 * @action wp_deleted_site
+	 * @action wp_delete_site
 	 *
 	 * @param WP_Site $old_site  Deleted site object.
 	 */

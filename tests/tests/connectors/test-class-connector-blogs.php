@@ -131,7 +131,11 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 			);
 
 		// Delete blog to trigger callback.
-		\wp_delete_site( $blog_id );
+		// Fix Mercator actions.
+		remove_all_actions( 'delete_blog' );
+		add_action( 'wp_delete_blog', '\Mercator\clear_mappings_on_delete' );
+
+		wpmu_delete_blog( $blog_id, true );
 		$wpdb->suppress_errors( $suppress );
 
 		// Check callback test action.
