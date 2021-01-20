@@ -11,19 +11,6 @@ namespace WP_Stream;
 
 class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 	/**
-	 * Runs before all tests
-	 */
-	public static function wpSetUpBeforeClass() {
-		global $wpdb;
-
-		$suppress = $wpdb->suppress_errors();
-
-		edd_install();
-
-		$wpdb->suppress_errors( $suppress );
-	}
-
-	/**
 	 * Runs before each test
 	 */
 	public function setUp() {
