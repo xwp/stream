@@ -20,7 +20,7 @@ class Test_WP_Stream_Connector_BbPress extends WP_StreamTestCase {
 
 		// Make partial of Connector_BbPress class, with mocked "log" function.
 		$this->mock = $this->getMockBuilder( Connector_BbPress::class )
-			->setMethods( [ 'log' ] )
+			->setMethods( array( 'log' ) )
 			->getMock();
 
 		$this->mock->register();
@@ -52,7 +52,7 @@ class Test_WP_Stream_Connector_BbPress extends WP_StreamTestCase {
 			'wp_stream_log_data',
 			function( $data ) use( &$asserted ) {
 				$message = _x(
-					'"%1$s" %2$s updated',
+					'"%1$s" %2$s published',
 					'1: Post title, 2: Post type singular name',
 					'stream'
 				);
@@ -86,10 +86,10 @@ class Test_WP_Stream_Connector_BbPress extends WP_StreamTestCase {
 		// Create forum and topic for later use.
 		$forum_id = bbp_insert_forum( [ 'post_title' => 'Test Forum' ] );
 		$topic_id = bbp_insert_topic(
-			[
+			array(
 				'post_title'  => 'Test Topic',
 				'post_parent' => $forum_id,
-			]
+			)
 		);
 		$topic = get_post( $topic_id );
 
@@ -123,6 +123,6 @@ class Test_WP_Stream_Connector_BbPress extends WP_StreamTestCase {
 		);
 
 		// Check callback test action.
-		$this->assertGreaterThan( 0, did_action( 'wp_stream_test_callback_bbp_toggle_topic_admin' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_bbp_toggle_topic_admin' ) );
 	}
 }
