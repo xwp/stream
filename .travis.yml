@@ -9,8 +9,14 @@ jobs:
 
     - stage: test
       name: Default Test
+      before_script:
+        - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+        - chmod +x ./cc-test-reporter
+        - ./cc-test-reporter before-build
       after_script:
         - test -f ./tests/reports/clover.xml && composer test-report || true
+        - ./cc-test-reporter format-coverage --input-type clover tests/reports/clover.xml --output tests/reports/codeclimate.json
+        - ./cc-test-reporter upload-coverage --input tests/reports/codeclimate.json
 
     - name: Test with PHP 5.6
       env:
