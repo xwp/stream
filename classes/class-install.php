@@ -71,12 +71,6 @@ class Install {
 		$this->db_version = $this->get_db_version();
 		$this->stream_url = self_admin_url( $this->plugin->admin->admin_parent_page . '&page=' . $this->plugin->admin->settings_page_slug );
 
-		// Check DB and display an admin notice if there are tables missing.
-		add_action( 'init', array( $this, 'verify_db' ) );
-
-		// Install the plugin.
-		add_action( 'wp_stream_before_db_notices', array( $this, 'check' ) );
-
 		register_activation_hook( $this->plugin->locations['plugin'], array( $this, 'check' ) );
 	}
 
@@ -135,87 +129,6 @@ class Install {
 		}
 
 		$this->update_db_option();
-	}
-
-	/**
-	 * Verify that the required DB tables exists
-	 *
-	 * @return void
-	 */
-	public function verify_db() {
-		/**
-		 * Filter will halt install() if set to true
-		 *
-		 * @param bool
-		 *
-		 * @return bool
-		 */
-		if ( apply_filters( 'wp_stream_no_tables', false ) ) {
-			return;
-		}
-
-		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-			require_once ABSPATH . '/wp-admin/includes/plugin.php';
-		}
-
-		/**
-		 * Fires before admin notices are triggered for missing database tables.
-		 */
-		do_action( 'wp_stream_before_db_notices' );
-
-		global $wpdb;
-
-		$database_message  = '';
-		$uninstall_message = '';
-
-		// Check if all needed DB is present.
-		$missing_tables = array();
-
-		foreach ( $this->plugin->db->get_table_names() as $table_name ) {
-			$table_search = $wpdb->get_var(
-				$wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name )
-			);
-			if ( $table_search !== $table_name ) {
-				$missing_tables[] = $table_name;
-			}
-		}
-
-		if ( $missing_tables ) {
-			$database_message .= sprintf(
-				'%s <strong>%s</strong>',
-				_n(
-					'The following table is not present in the WordPress database:',
-					'The following tables are not present in the WordPress database:',
-					count( $missing_tables ),
-					'stream'
-				),
-				esc_html( implode( ', ', $missing_tables ) )
-			);
-		}
-
-		if ( $this->plugin->is_network_activated() && current_user_can( 'manage_network_plugins' ) ) {
-			$uninstall_message = sprintf(
-				/* translators: %#$s: HTML Link tags (e.g. "<a href="https://foo.com/wp-admin/">") */
-				__( 'Please %1$suninstall%2$s the Stream plugin and activate it again.', 'stream' ),
-				'<a href="' . network_admin_url( 'plugins.php#stream' ) . '">',
-				'</a>'
-			);
-		} elseif ( current_user_can( 'activate_plugins' ) ) {
-			$uninstall_message = sprintf(
-				/* translators: %#$s: HTML Link tags (e.g. "<a href="https://foo.com/wp-admin/">") */
-				__( 'Please %1$suninstall%2$s the Stream plugin and activate it again.', 'stream' ),
-				'<a href="' . admin_url( 'plugins.php#stream' ) . '">',
-				'</a>'
-			);
-		}
-
-		if ( ! empty( $database_message ) ) {
-			$this->plugin->admin->notice( $database_message );
-
-			if ( ! empty( $uninstall_message ) ) {
-				$this->plugin->admin->notice( $uninstall_message );
-			}
-		}
 	}
 
 	/**

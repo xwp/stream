@@ -31,7 +31,7 @@ class Connector_Settings extends Connector {
 	 * @var array
 	 */
 	public $actions = array(
-		'whitelist_options',
+		'allowed_options',
 		'update_option',
 		'update_site_option',
 		'update_option_permalink_structure',
@@ -572,7 +572,7 @@ class Connector_Settings extends Connector {
 				// The first applicable rule wins.
 				$rule         = array_shift( $applicable_rules );
 				$menu_slug    = $rule['menu_slug'];
-				$submenu_slug = ( is_object( $rule['submenu_slug'] ) && $rule['submenu_slug'] instanceof Closure ? $rule['submenu_slug']( $record ) : $rule['submenu_slug'] );
+				$submenu_slug = ( is_object( $rule['submenu_slug'] ) && $rule['submenu_slug'] instanceof \Closure ? $rule['submenu_slug']( $record ) : $rule['submenu_slug'] );
 				$url          = $rule['url']( $rule, $record );
 
 				if ( isset( $submenu[ $menu_slug ] ) ) {
@@ -618,12 +618,12 @@ class Connector_Settings extends Connector {
 	 * @action update_option
 	 *
 	 * @param string $option     Option name.
-	 * @param mixed  $value      Option new value.
 	 * @param mixed  $old_value  Option old value.
+	 * @param mixed  $value      Option new value.
 	 */
-	public function callback_update_option( $option, $value, $old_value ) {
+	public function callback_update_option( $option, $old_value, $value ) {
 		if ( ( defined( '\WP_CLI' ) && \WP_CLI || did_action( 'customize_save' ) ) && array_key_exists( $option, $this->labels ) ) {
-			$this->callback_updated_option( $option, $value, $old_value );
+			$this->callback_updated_option( $option, $old_value, $value );
 		}
 	}
 
@@ -636,7 +636,7 @@ class Connector_Settings extends Connector {
 	 *
 	 * @return array
 	 */
-	public function callback_whitelist_options( $options ) {
+	public function callback_allowed_options( $options ) {
 		add_action( 'updated_option', array( $this, 'callback' ), 10, 3 );
 
 		return $options;
@@ -664,7 +664,7 @@ class Connector_Settings extends Connector {
 	 * @param mixed  $old_value  Option old value.
 	 */
 	public function callback_update_site_option( $option, $value, $old_value ) {
-		$this->callback_updated_option( $option, $value, $old_value );
+		$this->callback_updated_option( $option, $old_value, $value );
 	}
 
 	/**

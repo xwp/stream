@@ -613,7 +613,9 @@ class Connector_Comments extends Connector {
 	 */
 	public function callback_comment_duplicate_trigger( $comment_data ) {
 		global $wpdb;
-		unset( $comment_data );
+		if ( ! empty( $wpdb->last_result ) ) {
+			return;
+		}
 
 		$comment_id = $wpdb->last_result[0]->comment_ID;
 		$comment    = get_comment( $comment_id );

@@ -44,11 +44,48 @@ tests_add_filter(
 	function() {
 		// Manually load the plugin.
 		require dirname( __DIR__ ) . '/stream.php';
+
+		// Install database.
+		$plugin = wp_stream_get_instance();
+		$plugin->install->check();
 	}
 );
 
+function xwp_manually_load_mercator() {
+	define( 'MERCATOR_SKIP_CHECKS', true );
+	require WPMU_PLUGIN_DIR . '/mercator/mercator.php';
+}
+
+tests_add_filter( 'muplugins_loaded', 'xwp_manually_load_mercator' );
+
+function xwp_install_edd() {
+	// Install Easy Digital Downloads
+	edd_install();
+
+	global $current_user, $edd_options;
+
+	$edd_options = get_option( 'edd_settings' );
+
+	$current_user = new WP_User(1);
+	$current_user->set_role('administrator');
+	wp_update_user( array( 'ID' => 1, 'first_name' => 'Admin', 'last_name' => 'User' ) );
+	add_filter( 'edd_log_email_errors', '__return_false' );
+
+	add_filter(
+		'pre_http_request',
+		function( $status = false, $args = array(), $url = '') {
+			return new WP_Error( 'no_reqs_in_unit_tests', __( 'HTTP Requests disabled for unit tests', 'easy-digital-downloads' ) );
+		}
+	);
+}
+
 // @see https://core.trac.wordpress.org/browser/trunk/tests/phpunit/includes/bootstrap.php
 require $_tests_dir . '/includes/bootstrap.php';
+
+define( 'EDD_USE_PHP_SESSIONS', false );
+define( 'WP_USE_THEMES', false );
+activate_plugin( 'easy-digital-downloads/easy-digital-downloads.php' );
+xwp_install_edd();
 
 require __DIR__ . '/testcase.php';
 

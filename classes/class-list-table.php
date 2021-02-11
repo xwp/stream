@@ -389,10 +389,11 @@ class List_Table extends \WP_List_Table {
 				 * Registers new Columns to be inserted into the table. The cell contents of this column is set
 				 * below with 'wp_stream_insert_column_default_'
 				 *
+				 * @param array $new_columns  Columns injected in the table.
+				 *
 				 * @return array
 				 */
-				$new_columns      = array();
-				$inserted_columns = apply_filters( 'wp_stream_register_column_defaults', $new_columns );
+				$inserted_columns = apply_filters( 'wp_stream_register_column_defaults', array() );
 
 				if ( ! empty( $inserted_columns ) && is_array( $inserted_columns ) ) {
 					foreach ( $inserted_columns as $column_title ) {
@@ -404,21 +405,20 @@ class List_Table extends \WP_List_Table {
 						 * Also, note that the action name must include the $column_title registered
 						 * with wp_stream_register_column_defaults
 						 */
-						if ( $column_title === $column_name && has_filter( "wp_stream_insert_column_default_{$column_title}" ) ) {
+						if ( $column_title === $column_name ) {
 							/**
 							 * Allows for the addition of content under a specified column.
 							 *
-							 * @param object $record Contents of the row
+							 * @param string $out          Column content.
+							 * @param object $record       Record with row content.
+							 * @param string $column_name  Column name.
 							 *
 							 * @return string
 							 */
-							$out = apply_filters( "wp_stream_insert_column_default_{$column_title}", $column_name, $record );
-						} else {
-							$out = $column_name;
+							$out = apply_filters( "wp_stream_insert_column_default_{$column_title}", $out, $record, $column_name );
+							break;
 						}
 					}
-				} else {
-					$out = $column_name;
 				}
 		}
 

@@ -6,25 +6,26 @@
   "license": "GPL-2.0-or-later",
   "repositories": [
     {
-      "type":"composer",
-      "url":"https://wpackagist.org"
+      "type": "composer",
+      "url": "https://wpackagist.org"
     }
   ],
   "require": {
     "composer/installers": "~1.0"
   },
   "require-dev": {
-    "johnpbloch/wordpress": "^5.4",
     "automattic/vipwpcs": "^2.0.0",
+    "humanmade/mercator": "^1.0",
+    "johnpbloch/wordpress": "^5.4",
     "php-coveralls/php-coveralls": "^2.1",
     "phpunit/phpunit": "^5.7",
     "wp-cli/wp-cli-bundle": "^2.2",
     "wp-coding-standards/wpcs": "^2.2",
     "wp-phpunit/wp-phpunit": "^5.4",
-    "wpsh/local": "^0.2.3",
     "wpackagist-plugin/advanced-custom-fields": "5.8.12",
     "wpackagist-plugin/easy-digital-downloads": "^2.9.23",
-    "wpackagist-plugin/user-switching": "^1.5.5"
+    "wpackagist-plugin/user-switching": "^1.5.5",
+    "wpsh/local": "^0.2.3"
   },
   "config": {
     "process-timeout": 600,
@@ -36,7 +37,8 @@
   "extra": {
     "wordpress-install-dir": "local/public",
     "installer-paths": {
-      "local/public/wp-content/plugins/{$name}/": ["type:wordpress-plugin"]
+      "local/public/wp-content/plugins/{$name}/": ["type:wordpress-plugin"],
+      "local/public/wp-content/mu-plugins/{$name}/": ["type:wordpress-muplugin"]
     }
   },
   "scripts": {

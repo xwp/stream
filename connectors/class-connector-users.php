@@ -41,6 +41,7 @@ class Connector_Users extends Connector {
 		'delete_user',
 		'deleted_user',
 		'set_user_role',
+		'set_current_user',
 	);
 
 	/**
@@ -242,7 +243,7 @@ class Connector_Users extends Connector {
 			/* translators: %s: a user display name (e.g. "Jane Doe") */
 			__( '%s\'s password was reset', 'stream' ),
 			array(
-				'email' => $user->display_name,
+				'display_name' => $user->display_name,
 			),
 			$user->ID,
 			'profiles',
@@ -313,7 +314,8 @@ class Connector_Users extends Connector {
 	 * @action clear_auth_cookie
 	 */
 	public function callback_clear_auth_cookie() {
-		$user = wp_get_current_user();
+		$user_id = get_current_user_id();
+		$user    = get_user_by( 'ID', $user_id );
 
 		// For some reason, incognito mode calls clear_auth_cookie on failed login attempts.
 		if ( empty( $user ) || ! $user->exists() ) {
@@ -323,9 +325,7 @@ class Connector_Users extends Connector {
 		$this->log(
 			/* translators: %s: a user display name (e.g. "Jane Doe") */
 			__( '%s logged out', 'stream' ),
-			array(
-				'display_name' => $user->display_name,
-			),
+			array( 'display_name' => $user->display_name ),
 			$user->ID,
 			'sessions',
 			'logout',
