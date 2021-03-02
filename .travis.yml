@@ -50,6 +50,7 @@ jobs:
       if: branch IS present AND type = push
       script: npm run release
       before_deploy:
+        - git restore composer.json
         - openssl aes-256-cbc -K $encrypted_49634e5b1863_key -iv $encrypted_49634e5b1863_iv -in ./local/travis/travis_deploy_key.enc -out ~/.ssh/id_rsa -d
         - chmod 600 ~/.ssh/id_rsa
       deploy:
@@ -71,7 +72,25 @@ before_install:
   - composer self-update --1
 
 install:
+  - |
+    composer config repositories."1"  "{
+      \"type\": \"package\",
+      \"package\": {
+        \"name\": \"gravityforms/gravityforms\",
+        \"version\": \"2.4.21.3\",
+        \"type\": \"wordpress-plugin\",
+        \"dist\": {
+          \"type\": \"zip\",
+          \"url\": \"https://www.gravityhelp.com/wp-content/plugins/gravitymanager/api.php?op=get_plugin&slug=gravityforms&key=$GRAVITYFORMS_KEY\"
+        },
+        \"require\": {
+          \"composer/installers\": \"^1.4\",
+          \"gotoandplay/gravityforms-composer-installer\": \"^2.3\"
+        }
+      }
+    }"
   - npm install
+  - composer require --dev gravityforms/gravityforms:2.4.21.3
 
 script:
   - npm run lint

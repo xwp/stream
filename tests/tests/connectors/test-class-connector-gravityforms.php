@@ -26,6 +26,10 @@ class Test_WP_Stream_Connector_GravityForms extends WP_StreamTestCase {
 
 		$this->mock->register();
 
+		if ( ! $this->mock->is_dependency_satisfied() ) {
+			$this->markTestSkipped( 'A GravityForms is needed to run this test.' );
+		}
+
 		// Load needed Gravity Forms files.
 		require_once( \GFCommon::get_base_path() . '/form_settings.php' );
 		require_once( \GFCommon::get_base_path() . '/notification.php' );
