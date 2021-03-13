@@ -25,6 +25,7 @@
     "wpackagist-plugin/advanced-custom-fields": "5.8.12",
     "wpackagist-plugin/easy-digital-downloads": "^2.9.23",
     "wpackagist-plugin/user-switching": "^1.5.5",
+    "wpackagist-plugin/woocommerce": "^4.4",
     "wpsh/local": "^0.2.3"
   },
   "config": {
