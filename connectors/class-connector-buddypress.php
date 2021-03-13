@@ -61,9 +61,11 @@ class Connector_BuddyPress extends Connector {
 		'groups_unban_member',
 		'groups_remove_member',
 
+		'xprofile_field_before_save',
 		'xprofile_field_after_save',
 		'xprofile_fields_deleted_field',
 
+		'xprofile_group_before_save',
 		'xprofile_group_after_save',
 		'xprofile_groups_deleted_group',
 	);
@@ -427,6 +429,8 @@ class Connector_BuddyPress extends Connector {
 		$replacement = str_replace( '-', '_', $option );
 
 		if ( method_exists( $this, 'check_' . $replacement ) ) {
+			$method = "check_{$replacement}";
+			$this->{$method}( $old_value, $new_value );
 			call_user_func(
 				array(
 					$this,
@@ -581,7 +585,7 @@ class Connector_BuddyPress extends Connector {
 	 * @param array $activities_ids  Activity IDs of deleted activities.
 	 */
 	public function callback_bp_activity_deleted_activities( $activities_ids ) {
-		if ( 1 === count( $activities_ids ) && isset( $this->deleted_activity ) ) { // Single activity deletion.
+		if ( 1 === count( $activities_ids ) && ! empty( $this->deleted_activity ) ) { // Single activity deletion.
 			$activity = $this->deleted_activity;
 			$this->log(
 				sprintf(
@@ -747,11 +751,13 @@ class Connector_BuddyPress extends Connector {
 				/* translators: %s: a group name (e.g. "Favourites") */
 				$message = esc_html__( '"%s" group deleted', 'stream' );
 			} elseif ( 'joined' === $action ) {
-				/* translators: %s: a group name (e.g. "Favourites") */
-				$message = esc_html__( 'Joined group "%s"', 'stream' );
+				/* translators: %2$s: a user display name, %1$s: a group name (e.g. "Jane Doe", "Favourites") */
+				$message        = esc_html__( '"%2$s" joined group "%1$s"', 'stream' );
+				$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
 			} elseif ( 'left' === $action ) {
-				/* translators: %s: a group name (e.g. "Favourites") */
-				$message = esc_html__( 'Left group "%s"', 'stream' );
+				/* translators: %2$s: a user display name, %1$s: a group name (e.g. "Jane Doe", "Favourites") */
+				$message        = esc_html__( '"%2$s" left group "%1$s"', 'stream' );
+				$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
 			} elseif ( 'banned' === $action ) {
 				/* translators: %1$s: a user display name, %2$s: a group name (e.g. "Jane Doe", "Favourites") */
 				$message        = esc_html__( 'Banned "%2$s" from "%1$s"', 'stream' );
@@ -1019,14 +1025,33 @@ class Connector_BuddyPress extends Connector {
 	}
 
 	/**
+	 * Capture field status before create/updating field so it can
+	 * be logged in the "after_save" callback.
+	 *
+	 * @action xprofile_field_before_save
+	 *
+	 * @param BP_XProfile_Field $field  Field object.
+	 */
+	public function callback_xprofile_field_before_save( $field ) {
+		$this->incoming_field_action = empty( $field->id ) ? 'created' : 'updated';
+	}
+
+	/**
 	 * Logs field writes
 	 *
 	 * @action xprofile_field_after_save
 	 *
-	 * @param object $field  Field object.
+	 * @param BP_XProfile_Field $field  Field object.
 	 */
 	public function callback_xprofile_field_after_save( $field ) {
-		$action = isset( $field->id ) ? 'updated' : 'created';
+		// Bail if the field's action wasn't captured.
+		if ( is_null( $this->incoming_field_action ) ) {
+			return;
+		}
+
+		$action = $this->incoming_field_action;
+		unset( $this->incomming_field_action );
+
 		$this->field_action( $field, $action );
 	}
 
@@ -1088,6 +1113,19 @@ class Connector_BuddyPress extends Connector {
 	}
 
 	/**
+	 * Capture field group status before create/updating field so it can
+	 * be logged in the "after_save" callback.
+	 *
+	 * @action xprofile_group_before_save
+	 *
+	 * @param BP_XProfile_Group $group Field group object.
+	 */
+	public function callback_xprofile_group_before_save( $group ) {
+		$this->incoming_field_group_action = empty( $group->id ) ? 'created' : 'updated';
+	}
+
+
+	/**
 	 * Logs field group writes
 	 *
 	 * @action xprofile_group_after_save
@@ -1095,12 +1133,14 @@ class Connector_BuddyPress extends Connector {
 	 * @param object $group  Field group.
 	 */
 	public function callback_xprofile_group_after_save( $group ) {
-		global $wpdb;
-		/**
-		 * A bit hacky, due to inconsistency with BP action scheme,
-		 * see callback_xprofile_field_after_save for correct behavior.
-		 */
-		$action = ( $group->id === $wpdb->insert_id ) ? 'created' : 'updated';
+		// Bail if the field group's action wasn't captured.
+		if ( is_null( $this->incoming_field_group_action ) ) {
+			return;
+		}
+
+		$action = $this->incoming_field_group_action;
+		unset( $this->incomming_field_group_action );
+
 		$this->field_group_action( $group, $action );
 	}
 

@@ -23,6 +23,7 @@
     "wp-coding-standards/wpcs": "^2.2",
     "wp-phpunit/wp-phpunit": "^5.4",
     "wpackagist-plugin/advanced-custom-fields": "5.8.12",
+    "wpackagist-plugin/buddypress": "^6.1.0",
     "wpackagist-plugin/easy-digital-downloads": "^2.9.23",
     "wpackagist-plugin/user-switching": "^1.5.5",
     "wpsh/local": "^0.2.3"
