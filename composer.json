@@ -24,6 +24,7 @@
     "wp-phpunit/wp-phpunit": "^5.4",
     "wpackagist-plugin/advanced-custom-fields": "5.8.12",
     "wpackagist-plugin/easy-digital-downloads": "^2.9.23",
+    "wpackagist-plugin/jetpack": "^8.7",
     "wpackagist-plugin/user-switching": "^1.5.5",
     "wpsh/local": "^0.2.3"
   },
