@@ -217,8 +217,10 @@ class Alert_Type_Highlight extends Alert_Type {
 	 * @return array New list of classes.
 	 */
 	public function post_class( $classes, $record ) {
-		if ( ! empty( $record->meta['wp_stream_alerts_triggered']['highlight']['highlight_color'] ) ) {
-			$color = $record->meta['wp_stream_alerts_triggered']['highlight']['highlight_color'];
+		$record           = new Record( $record );
+		$alerts_triggered = $record->get_meta( Alerts::ALERTS_TRIGGERED_META_KEY, true );
+		if ( ! empty( $alerts_triggered[ $this->slug ]['highlight_color'] ) ) {
+			$color = $alerts_triggered[ $this->slug ]['highlight_color'];
 		}
 
 		if ( empty( $color ) || ! is_string( $color ) ) {
