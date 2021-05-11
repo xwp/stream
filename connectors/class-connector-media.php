@@ -151,7 +151,7 @@ class Connector_Media extends Connector {
 		$url             = $post->guid;
 		$parent_id       = $post->post_parent;
 		$parent          = get_post( $parent_id );
-		$parent_title    = $parent_id ? $parent->post_title : null;
+		$parent_title    = $parent instanceof \WP_Post ? $parent->post_title : 'Unidentifiable post';
 		$attachment_type = $this->get_attachment_type( $post->guid );
 
 		$this->log(
@@ -171,18 +171,14 @@ class Connector_Media extends Connector {
 	 * @param int $post_id  Post ID.
 	 */
 	public function callback_edit_attachment( $post_id ) {
-		$post            = get_post( $post_id );
-		$name            = $post->post_title;
-		$attachment_type = $this->get_attachment_type( $post->guid );
-
-		/* translators: %s: an attachment title (e.g. "PIC001") */
-		$message = esc_html__( 'Updated "%s"', 'stream' );
+		$post = get_post( $post_id );
 
 		$this->log(
-			$message,
-			compact( 'name' ),
+			/* translators: %s: an attachment title (e.g. "PIC001") */
+			esc_html__( 'Updated "%s"', 'stream' ),
+			array( 'name' => $post->post_title ),
 			$post_id,
-			$attachment_type,
+			$this->get_attachment_type( $post->guid ),
 			'updated'
 		);
 	}
@@ -195,21 +191,17 @@ class Connector_Media extends Connector {
 	 * @param int $post_id  Post ID.
 	 */
 	public function callback_delete_attachment( $post_id ) {
-		$post            = get_post( $post_id );
-		$parent          = $post->post_parent ? get_post( $post->post_parent ) : null;
-		$parent_id       = $parent ? $parent->ID : null;
-		$name            = $post->post_title;
-		$url             = $post->guid;
-		$attachment_type = $this->get_attachment_type( $post->guid );
-
-		/* translators: %s: an attachment title (e.g. "PIC001") */
-		$message = esc_html__( 'Deleted "%s"', 'stream' );
+		$post      = get_post( $post_id );
+		$parent_id = $post->post_parent ? $post->post_parent : null;
+		$name      = $post->post_title;
+		$url       = $post->guid;
 
 		$this->log(
-			$message,
+			/* translators: %s: an attachment title (e.g. "PIC001") */
+			esc_html__( 'Deleted "%s"', 'stream' ),
 			compact( 'name', 'parent_id', 'url' ),
 			$post_id,
-			$attachment_type,
+			$this->get_attachment_type( $post->guid ),
 			'deleted'
 		);
 	}
@@ -233,14 +225,12 @@ class Connector_Media extends Connector {
 		$name = basename( $filename );
 		$post = get_post( $post_id );
 
-		$attachment_type = $this->get_attachment_type( $post->guid );
-
 		$this->log(
 			/* translators: Placeholder refers to an attachment title (e.g. "PIC001") */
 			__( 'Edited image "%s"', 'stream' ),
 			compact( 'name', 'filename', 'post_id' ),
 			$post_id,
-			$attachment_type,
+			$this->get_attachment_type( $post->guid ),
 			'edited'
 		);
 	}

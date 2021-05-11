@@ -354,7 +354,7 @@ jQuery(
 					function() {
 						var parts = $( this ).val().split( '-' );
 						$( this ).siblings( '.connector' ).val( parts[0] );
-						$( this ).siblings( '.context' ).val( parts[1] );
+						$( this ).siblings( '.context' ).val( parts.slice( 1 ).join( '-' ) );
 						$( this ).removeAttr( 'name' );
 					}
 				);

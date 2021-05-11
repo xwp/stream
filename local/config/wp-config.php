@@ -23,7 +23,8 @@ $base = '/';
 
 $table_prefix = 'wptests_';
 
-define( 'WP_DEBUG', false );
+define( 'WP_DEBUG', true );
+define( 'JETPACK_DEV_DEBUG', true );
 
 define( 'ABSPATH', __DIR__ . '/' );
 

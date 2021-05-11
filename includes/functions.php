@@ -95,7 +95,14 @@ function wp_stream_json_encode( $data, $options = 0, $depth = 512 ) {
  * @return array
  */
 function wp_stream_get_sites( $args = array() ) {
+	if ( empty( $args['limit'] ) ) {
+		$args['limit'] = 0;
+	}
+
 	if ( function_exists( 'get_sites' ) ) {
+		// Account for get_sites() which uses 'number' while wp_get_sites() uses 'limit'.
+		$args['number'] = $args['limit'];
+
 		$sites = get_sites( $args );
 	} else {
 		$sites = array();

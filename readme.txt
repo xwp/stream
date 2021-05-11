@@ -2,8 +2,8 @@
 Contributors: xwp
 Tags: wp stream, stream, activity, logs, track
 Requires at least: 4.5
-Tested up to: 5.6
-Stable tag: 3.6.2
+Tested up to: 5.7
+Stable tag: 3.7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -90,6 +90,15 @@ Past Contributors: fjarrett, shadyvb, chacha, westonruter, johnregan3, jacobschw
 
 
 == Changelog ==
+
+= 3.7.0 - May 11, 2021 =
+
+- Fix: Exclude records when all conditions match instead of just one [#1242](https://github.com/xwp/stream/pull/1242), props [@kidunot89](https://github.com/kidunot89) and [@esausaravia](https://github.com/esausaravia)
+- Fix: Store the correct blog ID on the network admin exclude screen [#1259](https://github.com/xwp/stream/pull/1259), props [@dd32](https://github.com/dd32)
+- Fix: Ensure all blogs on the network are listed instead of just the top 100 [#1258](https://github.com/xwp/stream/pull/1258), props [@dd32](https://github.com/dd32)
+- Fix: Add highlight color in list table [#1246](https://github.com/xwp/stream/pull/1246), props [@ocean90](https://github.com/ocean90)
+- Fix: Settings page defaults repatched [#1236](https://github.com/xwp/stream/pull/1236), props [@kidunot89](https://github.com/kidunot89)
+- Development: Added unit tests for BuddyPress [#1211](https://github.com/xwp/stream/pull/1211), WooCommerce [#1199](https://github.com/xwp/stream/pull/1199), Media [#1154](https://github.com/xwp/stream/pull/1154), Jetpack [#1153](https://github.com/xwp/stream/pull/1153), Gravity Forms [#1139](https://github.com/xwp/stream/pull/1139) abd bbPress connector classes [#1120](https://github.com/xwp/stream/pull/1120), props [@kidunot89](https://github.com/kidunot89)
 
 = 3.6.2 - January 12, 2020 =
 

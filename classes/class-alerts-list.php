@@ -56,7 +56,7 @@ class Alerts_List {
 	 * @return array
 	 */
 	public function parse_request( $query_vars ) {
-		$screen = get_current_screen();
+		$screen = \get_current_screen();
 		if ( 'edit-wp_stream_alerts' === $screen->id && Alerts::POST_TYPE === $query_vars['post_type'] && empty( $query_vars['post_status'] ) ) {
 			$query_vars['post_status'] = array( 'wp_stream_enabled', 'wp_stream_disabled' );
 		}

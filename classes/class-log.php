@@ -242,8 +242,10 @@ class Log {
 	 * @return boolean
 	 */
 	public function record_matches_rules( $record, $exclude_rules ) {
+		$matches_needed = count( $exclude_rules );
+		$matches_found  = 0;
 		foreach ( $exclude_rules as $exclude_key => $exclude_value ) {
-			if ( ! isset( $record[ $exclude_key ] ) ) {
+			if ( ! isset( $record[ $exclude_key ] ) || is_null( $exclude_value ) ) {
 				continue;
 			}
 
@@ -251,14 +253,14 @@ class Log {
 				$ip_addresses = explode( ',', $exclude_value );
 
 				if ( in_array( $record['ip_address'], $ip_addresses, true ) ) {
-					return true;
+					$matches_found++;
 				}
 			} elseif ( $record[ $exclude_key ] === $exclude_value ) {
-				return true;
+				$matches_found++;
 			}
 		}
 
-		return false;
+		return $matches_found === $matches_needed;
 	}
 
 	/**
