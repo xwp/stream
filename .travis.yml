@@ -64,7 +64,7 @@ services:
   - docker
 
 before_install:
-  - docker-compose pull wordpress
+  - docker-compose pull
   - nvm install
   - nvm use
   # Lock to Composer version 1 for now.
