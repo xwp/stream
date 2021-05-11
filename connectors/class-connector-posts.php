@@ -29,11 +29,11 @@ class Connector_Posts extends Connector {
 	);
 
 	/**
-	 * Register connector in the WP Frontend
+	 * Local member used to store captured Post ID of posts updated in Gutenberg.
 	 *
-	 * @var bool
+	 * @var int
 	 */
-	public $register_frontend = false;
+	private $gutenberg_post_captured = null;
 
 	/**
 	 * Return translated connector label
@@ -137,6 +137,26 @@ class Connector_Posts extends Connector {
 		}
 
 		return $links;
+	}
+
+	/**
+	 * Register connection
+	 */
+	public function register() {
+		if ( is_admin() ) {
+			parent::register();
+		} else {
+			$gutenberg_post_types = get_post_types(
+				array(
+					'show_in_rest' => true,
+					'supports'     => array( 'editor' ),
+				)
+			);
+
+			foreach ( $gutenberg_post_types as $post_type ) {
+				add_action( "rest_after_insert_{$post_type}", array( $this, 'callback_rest_insert_post_type' ) );
+			}
+		}
 	}
 
 	/**
@@ -340,6 +360,36 @@ class Connector_Posts extends Connector {
 			$post->post_type,
 			'deleted'
 		);
+	}
+
+	/**
+	 * Setups of log callback for Gutenberg Save/Update/Publish actions
+	 *
+	 * @param WP_Post         $post     Inserted or updated post object.
+	 * @param WP_REST_Request $request  Request object.
+	 * @param bool            $creating True when creating a post, false when updating.
+	 */
+	public function callback_rest_after_insert_post_type( $post, $request, $creating ) {
+		$this->gutenberg_post_captured = $post_id;
+		add_action( 'wp_after_insert_post', array( $this, 'pass_transition_post_status' ) );
+
+	}
+
+	/**
+	 * Passes captured Gutenberg actions to callback_transition_post_status
+	 *
+	 * @param int          $post_id     Post ID.
+	 * @param WP_Post      $post        Post object.
+	 * @param bool         $update      Whether this is an existing post being updated.
+	 * @param null|WP_Post $post_before Null for new posts, the WP_Post object prior
+	 *                                  to the update for updated posts.
+	 * @return void
+	 */
+	public function pass_transition_post_status( $post_id, $post, $update, $post_before ) {
+		if ( $post_id === $this->gutenberg_post_captured ) {
+			$this->callback_transition_post_status( $post->post_status, $post_before->post_status, $post );
+			$this->gutenberg_post_captured = null;
+		}
 	}
 
 	/**
