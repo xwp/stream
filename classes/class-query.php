@@ -127,12 +127,10 @@ class Query {
 
 				$field = str_replace( array( 'record_', '__in' ), '', $key );
 				$field = empty( $field ) ? 'ID' : $field;
-				$type  = is_numeric( array_shift( $value ) ) ? '%d' : '%s';
+				$type  = is_numeric( $value[ 0 ] ) ? '%d' : '%s';
 
-				if ( ! empty( $value ) ) {
-					$format = '(' . join( ',', array_fill( 0, count( $value ), $type ) ) . ')';
-					$where .= $wpdb->prepare( " AND $wpdb->stream.%s IN {$format}", $field, $value ); // @codingStandardsIgnoreLine prepare okay
-				}
+				$format = '(' . join( ',', array_fill( 0, count( $value ), $type ) ) . ')';
+				$where .= $wpdb->prepare( " AND $wpdb->stream.{$field} IN {$format}", $value ); // @codingStandardsIgnoreLine prepare okay
 			}
 		}
 
@@ -155,12 +153,10 @@ class Query {
 
 				$field = str_replace( array( 'record_', '__not_in' ), '', $key );
 				$field = empty( $field ) ? 'ID' : $field;
-				$type  = is_numeric( array_shift( $value ) ) ? '%d' : '%s';
+				$type  = is_numeric( $value[ 0 ] ) ? '%d' : '%s';
 
-				if ( ! empty( $value ) ) {
-					$format = '(' . join( ',', array_fill( 0, count( $value ), $type ) ) . ')';
-					$where .= $wpdb->prepare( " AND $wpdb->stream.%s NOT IN {$format}", $field, $value ); // @codingStandardsIgnoreLine prepare okay
-				}
+				$format = '(' . join( ',', array_fill( 0, count( $value ), $type ) ) . ')';
+				$where .= $wpdb->prepare( " AND $wpdb->stream.{$field} NOT IN {$format}", $value ); // @codingStandardsIgnoreLine prepare okay
 			}
 		}
 
