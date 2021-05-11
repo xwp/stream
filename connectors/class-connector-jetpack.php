@@ -318,11 +318,16 @@ class Connector_Jetpack extends Connector {
 				'label'   => esc_html__( 'Tiled Galleries', 'stream' ),
 				'context' => 'tiled-gallery',
 			),
+			// Monitor.
+			'monitor_receive_notification'     => array(
+				'label'   => esc_html__( 'Monitor notifications', 'stream' ),
+				'context' => 'monitor',
+			),
 		);
 	}
 
 	/**
-	 * Track Jetpack log entries
+	 * Tracks logs add to Jetpack logging.
 	 * Includes:
 	 * - Activation/Deactivation of modules
 	 * - Registration/Disconnection of blogs
@@ -374,11 +379,10 @@ class Connector_Jetpack extends Connector {
 			$action     = $method;
 			$meta       = compact( 'user_id', 'user_email', 'user_login' );
 			$message    = sprintf(
-				/* translators: %1$s: a user display name, %2$s: a status, %3$s: the connection either "from" or "to" (e.g. "Jane Doe", "unlinked", "from") */
-				__( '%1$s\'s account %2$s %3$s Jetpack', 'stream' ),
+				/* translators: %1$s: a user display name, %2$s: a status and the connection either "from" or "to" (e.g. "Jane Doe", "unlinked from") */
+				__( '%1$s\'s account %2$s Jetpack', 'stream' ),
 				$user->display_name,
-				( 'unlink' === $action ) ? esc_html__( 'unlinked', 'stream' ) : esc_html__( 'linked', 'stream' ),
-				( 'unlink' === $action ) ? esc_html__( 'from', 'stream' ) : esc_html__( 'to', 'stream' )
+				( 'unlink' === $action ) ? esc_html__( 'unlinked from', 'stream' ) : esc_html__( 'linked to', 'stream' )
 			);
 		} elseif ( in_array( $method, array( 'register', 'disconnect', 'subsiteregister', 'subsitedisconnect' ), true ) ) {
 			$context      = 'blogs';

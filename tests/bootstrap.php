@@ -51,15 +51,20 @@ tests_add_filter(
 	}
 );
 
+/**
+ * Manually loads Mercator for testing.
+ */
 function xwp_manually_load_mercator() {
 	define( 'MERCATOR_SKIP_CHECKS', true );
 	require WPMU_PLUGIN_DIR . '/mercator/mercator.php';
 }
-
 tests_add_filter( 'muplugins_loaded', 'xwp_manually_load_mercator' );
 
+/**
+ * Manually creates EDD's database tables, users, and settings for testing.
+ */
 function xwp_install_edd() {
-	// Install Easy Digital Downloads
+
 	edd_install();
 
 	global $current_user, $edd_options;
@@ -78,6 +83,9 @@ function xwp_install_edd() {
 		}
 	);
 }
+
+// Run Jetpack in offline mode for testing.
+tests_add_filter( 'jetpack_offline_mode', '__return_true' );
 
 // @see https://core.trac.wordpress.org/browser/trunk/tests/phpunit/includes/bootstrap.php
 require $_tests_dir . '/includes/bootstrap.php';
