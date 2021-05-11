@@ -100,9 +100,9 @@ function wp_stream_get_sites( $args = array() ) {
 	}
 
 	if ( function_exists( 'get_sites' ) ) {
-		// get_sites() uses 'number', wp_get_sites() uses 'limit'.
+		// Account for get_sites() which uses 'number' while wp_get_sites() uses 'limit'.
 		$args['number'] = $args['limit'];
-		
+
 		$sites = get_sites( $args );
 	} else {
 		$sites = array();
