@@ -202,8 +202,8 @@ class Connector_BbPress extends Connector {
 		} elseif ( 'posts' === $data['connector'] && in_array( $data['context'], array( 'forum', 'topic', 'reply' ), true ) ) {
 			if ( 'reply' === $data['context'] ) {
 				if ( 'updated' === $data['action'] ) {
-					/* translators: %s: a post title (e.g. "Hello World") */
-					$data['message']            = esc_html__( 'Replied on "%s"', 'stream' );
+					/* translators: %1$s: a post title (e.g. "Hello World") */
+					$data['message']            = esc_html__( 'Replied on "%1$s"', 'stream' );
 					$data['args']['post_title'] = get_post( wp_get_post_parent_id( $data['object_id'] ) )->post_title;
 				}
 				$data['args']['post_title'] = sprintf(
@@ -222,7 +222,7 @@ class Connector_BbPress extends Connector {
 	}
 
 	/**
-	 * Tracks togging the forum topics
+	 * Tracks toggling the forum topics
 	 *
 	 * @param bool     $success    If action success.
 	 * @param \WP_Post $post_data  Post data.
