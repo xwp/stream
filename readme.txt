@@ -91,15 +91,10 @@ Past Contributors: fjarrett, shadyvb, chacha, westonruter, johnregan3, jacobschw
 
 == Changelog ==
 
-= 3.7.0 - January 12, 2020 =
+= 3.7.0 - May 11, 2021 =
 
-Fix: Settings page defaults repatched [#1236](https://github.com/xwp/stream/pull/1236), props [@kidunot89](https://github.com/kidunot89)
-Development: Unit test added for BuddyPress connector class [#1211](https://github.com/xwp/stream/pull/1211), props [@kidunot89](https://github.com/kidunot89)
-Development: Unit test added for WooCommerce connector class [#1199](https://github.com/xwp/stream/pull/1199), props [@kidunot89](https://github.com/kidunot89)
-Development: Unit test added for Media connector class [#1154](https://github.com/xwp/stream/pull/1154), props [@kidunot89](https://github.com/kidunot89)
-Development: Unit test added for Jetpack connector class [#1153](https://github.com/xwp/stream/pull/1153), props [@kidunot89](https://github.com/kidunot89)
-Development: Unit test added for GravityForms connector class [#1139](https://github.com/xwp/stream/pull/1139), props [@kidunot89](https://github.com/kidunot89)
-Development: Unit test added for bbPress connector class [#1120](https://github.com/xwp/stream/pull/1120), props [@kidunot89](https://github.com/kidunot89)
+- Fix: Settings page defaults repatched [#1236](https://github.com/xwp/stream/pull/1236), props [@kidunot89](https://github.com/kidunot89)
+- Development: Added unit tests for BuddyPress [#1211](https://github.com/xwp/stream/pull/1211), WooCommerce [#1199](https://github.com/xwp/stream/pull/1199), Media [#1154](https://github.com/xwp/stream/pull/1154), Jetpack [#1153](https://github.com/xwp/stream/pull/1153), Gravity Forms [#1139](https://github.com/xwp/stream/pull/1139) abd bbPress connector classes [#1120](https://github.com/xwp/stream/pull/1120), props [@kidunot89](https://github.com/kidunot89)
 
 = 3.6.2 - January 12, 2020 =
 
