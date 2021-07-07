@@ -148,3 +148,14 @@ function wp_stream_min_suffix() {
 
 	return $min;
 }
+
+/**
+ * Check if the current request is being processed by the REST API or XMLRPC.
+ *
+ * Can only be called after priority 10 of the `parse_request` action.
+ *
+ * @return bool
+ */
+function wp_stream_is_api_request() {
+	return ( ( defined( 'XMLRPC_REQUEST' ) && XMLRPC_REQUEST ) || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) );
+}

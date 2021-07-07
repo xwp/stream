@@ -55,6 +55,13 @@ abstract class Connector {
 	public $register_frontend = true;
 
 	/**
+	 * Register connector for API requests
+	 *
+	 * @var bool
+	 */
+	public $register_api = true;
+
+	/**
 	 * Holds connector registration status flag.
 	 *
 	 * @var bool
