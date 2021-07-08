@@ -61,6 +61,9 @@ class Connectors {
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
 		$this->load_connectors();
+
+		// Run this after the REST API has been initialized.
+		add_action( 'parse_request', array( $this, 'check_request_type' ), 11 );
 	}
 
 	/**
@@ -116,16 +119,6 @@ class Connectors {
 
 			// Check if the connector class extends WP_Stream\Connector.
 			if ( ! is_subclass_of( $class, 'WP_Stream\Connector' ) ) {
-				continue;
-			}
-
-			// Check if the connector events are allowed to be registered in the WP Admin.
-			if ( is_admin() && ! $class->register_admin ) {
-				continue;
-			}
-
-			// Check if the connector events are allowed to be registered in the WP Frontend.
-			if ( ! is_admin() && ! $class->register_frontend ) {
 				continue;
 			}
 
@@ -272,6 +265,32 @@ class Connectors {
 	public function reload_connector( $name ) {
 		if ( ! empty( $this->connectors[ $name ] ) ) {
 			$this->connectors[ $name ]->register();
+		}
+	}
+
+	/**
+	 * Determines the request type (admin, api, frontend) and unregisters connectors that don't support it.
+	 */
+	public function check_request_type() {
+		if ( ! did_action( 'parse_request' ) ) {
+			return;
+		}
+
+		$is_admin = is_admin();
+		$is_api   = wp_stream_is_api_request();
+
+		foreach ( $this->connectors as $connector ) {
+			if ( ! $connector->is_registered() ) {
+				continue;
+			}
+
+			if (
+				( $is_admin && ! $connector->register_admin )
+				|| ( $is_api && ! $connector->register_api )
+				|| ( ! $is_admin && ! $is_api && ! $connector->register_frontend )
+			) {
+				$connector->unregister();
+			}
 		}
 	}
 }
