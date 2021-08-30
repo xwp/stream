@@ -78,11 +78,11 @@ abstract class Alert_Trigger {
 	/**
 	 * Returns the trigger's value for the given alert.
 	 *
-	 * @param string $context The location this data will be displayed in.
-	 * @param Alert  $alert Alert being processed.
+	 * @param string     $context The location this data will be displayed in.
+	 * @param Alert|null $alert Alert being processed.
 	 * @return string
 	 */
-	abstract public function get_display_value( $context = 'normal', $alert );
+	abstract public function get_display_value( $context = 'normal', $alert = null );
 
 	/**
 	 * Allow connectors to determine if their dependencies is satisfied or not
