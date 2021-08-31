@@ -68,6 +68,40 @@ class Test_DB extends WP_StreamTestCase {
 		$this->assertTrue( $found_all_keys );
 	}
 
+	/**
+	 * Ensure records always have all the necessary fields
+	 * and all HTML is stripped away.
+	 */
+	public function test_insert_sanitizer() {
+		$this->assertFalse(
+			$this->db->insert( array() ),
+			'Refuse inserting empty or incomplete records'
+		);
+
+		// Attempt to store something with HTML in there.
+		$record = array(
+			'summary' => '<b>This is a <strong>very</strong> bold attempt!</b>'
+		);
+
+		$record_id = $this->db->insert( $record );
+
+		$this->assertNotEmpty(
+			$record_id,
+			'Could insert the record with attempted HTML in the summary'
+		);
+
+		$record_stored = $this->db->query(
+			array(
+				'record' => $record_id,
+			)
+		);
+
+		$this->assertEquals(
+			'This is a very bold attempt!',
+			$record_stored['summary']
+		);
+	}
+
 	public function test_existing_records() {
 		$summaries = $this->db->existing_records( 'summary' );
 		$this->assertNotEmpty( $summaries );
