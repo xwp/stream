@@ -115,9 +115,6 @@ class DB {
 		// Records can have only these fields.
 		$record = array_intersect_key( $record, $record_defaults );
 
-		// Ensure that all of the required fields are present.
-		$record = array_merge( $record_defaults, $record );
-
 		// Sanitize all record values.
 		return array_map(
 			function( $value ) {
