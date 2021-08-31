@@ -91,6 +91,11 @@ Past Contributors: fjarrett, shadyvb, chacha, westonruter, johnregan3, jacobschw
 
 == Changelog ==
 
+= 3.8.0 - August 31, 2021 =
+
+- Fix: PHP 8.0 compatibility [#1272](https://github.com/xwp/stream/issues/1272), props [@cjhaas](https://github.com/cjhaas).
+- Development: Update development dependencies and introduce [PHPCompatibility checker](https://github.com/PHPCompatibility/PHPCompatibility) as part of the automated checks.
+
 = 3.7.0 - May 11, 2021 =
 
 - Fix: Exclude records when all conditions match instead of just one [#1242](https://github.com/xwp/stream/pull/1242), props [@kidunot89](https://github.com/kidunot89) and [@esausaravia](https://github.com/esausaravia)
