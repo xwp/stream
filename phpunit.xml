@@ -10,7 +10,7 @@
 	<php>
 		<const
 			name="WP_TEST_ACTIVATED_PLUGINS"
-			value="advanced-custom-fields/acf.php,easy-digital-downloads/easy-digital-downloads.php,jetpack/jetpack.php,user-switching/user-switching.php"
+			value="advanced-custom-fields/acf.php,bbpress/bbpress.php,easy-digital-downloads/easy-digital-downloads.php,jetpack/jetpack.php,user-switching/user-switching.php"
 		/>
 	</php>
 	<testsuites>
