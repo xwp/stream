@@ -15,9 +15,17 @@ services:
         PHP_VERSION: "5.6"
         XDEBUG_VERSION: "2.5.5"
 
-  wordpress_php7.2:
-    image: xwpco/stream-wordpress:php7.2
+  wordpress_php7.4:
+    image: xwpco/stream-wordpress:php7.4
     build:
       context: ./local/docker/wordpress
       args:
-        PHP_VERSION: "7.2"
+        PHP_VERSION: "7.4"
+
+  wordpress_php8.0:
+    image: xwpco/stream-wordpress:php8.0
+    build:
+      context: ./local/docker/wordpress
+      args:
+        PHP_VERSION: "8.0"
+        XDEBUG_VERSION: "3.0.4"

@@ -153,8 +153,8 @@ class Alert_Trigger_Author extends Alert_Trigger {
 	 *
 	 * @see Alert_Trigger::get_display_value().
 	 *
-	 * @param string      $context The location this data will be displayed in.
-	 * @param Alert|null  $alert Alert being processed.
+	 * @param string     $context The location this data will be displayed in.
+	 * @param Alert|null $alert Alert being processed.
 	 *
 	 * @return string
 	 */

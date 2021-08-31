@@ -135,7 +135,7 @@ class Connector_Settings extends Connector {
 			'show_on_front'                 => esc_html__( 'Front page displays', 'stream' ),
 			'page_on_front'                 => esc_html__( 'Front page displays', 'stream' ),
 			'page_for_posts'                => esc_html__( 'Front page displays', 'stream' ),
-			'posts_per_page'                => esc_html__( 'Blog pages show at most', 'stream' ),
+			'posts_per_page'                => esc_html__( 'Blog pages show at most', 'stream' ), // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page, because this is not a query.
 			'posts_per_rss'                 => esc_html__( 'Syndication feeds show the most recent', 'stream' ),
 			'rss_use_excerpt'               => esc_html__( 'For each article in a feed, show', 'stream' ),
 			'blog_public'                   => esc_html__( 'Search Engine Visibility', 'stream' ),

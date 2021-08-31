@@ -15,7 +15,11 @@ services:
 
   wordpress:
     image: xwpco/stream-wordpress:${WORDPRESS_IMAGE_VERSION:-latest}
-    build: ./local/docker/wordpress
+    build:
+      context: ./local/docker/wordpress
+      args:
+        PHP_VERSION: "${WORDPRESS_IMAGE_VERSION:-latest}"
+        XDEBUG_VERSION: "${WORDPRESS_XDEBUG_VERSION:-2.9.6}"
     depends_on:
       - mysql
       - db_phpunit
