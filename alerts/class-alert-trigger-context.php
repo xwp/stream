@@ -202,12 +202,12 @@ class Alert_Trigger_Context extends Alert_Trigger {
 	 *
 	 * @see Alert_Trigger::get_display_value().
 	 *
-	 * @param string $context The location this data will be displayed in.
-	 * @param Alert  $alert Alert being processed.
+	 * @param string     $context The location this data will be displayed in.
+	 * @param Alert|null $alert Alert being processed.
 	 *
 	 * @return string
 	 */
-	public function get_display_value( $context = 'normal', $alert ) {
+	public function get_display_value( $context = 'normal', $alert = null ) {
 		$context   = ( ! empty( $alert->alert_meta['trigger_context'] ) ) ? $alert->alert_meta['trigger_context'] : null;
 		$connector = ( ! empty( $alert->alert_meta['trigger_connector'] ) ) ? $alert->alert_meta['trigger_connector'] : null;
 		if ( empty( $context ) && empty( $connector ) ) {
