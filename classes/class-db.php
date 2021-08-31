@@ -55,13 +55,15 @@ class DB {
 		 */
 		$record = apply_filters( 'wp_stream_record_array', $record );
 
-		array_walk(
-			$record,
-			function( &$value, &$key ) {
+		$record = array_map(
+			function( $value ) {
 				if ( ! is_array( $value ) ) {
-					$value = wp_strip_all_tags( $value );
+					return wp_strip_all_tags( $value );
 				}
-			}
+
+				return $value;
+			},
+			$record
 		);
 
 		if ( empty( $record ) ) {
