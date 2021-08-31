@@ -2,6 +2,7 @@ ARG PHP_VERSION=7.4
 
 FROM wordpress:php${PHP_VERSION}-apache
 
+# Default version which supports the default PHP 7.4.
 ARG XDEBUG_VERSION=2.9.6
 
 # Include our Composer vendor binrary path into global path.

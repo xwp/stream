@@ -65,8 +65,11 @@ class DB_Driver_WPDB implements DB_Driver {
 			return false;
 		}
 
-		$meta = $data['meta'];
-		unset( $data['meta'] );
+		$meta = array();
+		if ( array_key_exists( 'meta', $data ) ) {
+			$meta = $data['meta'];
+			unset( $data['meta'] );
+		}
 
 		$result = $wpdb->insert( $this->table, $data );
 		if ( ! $result ) {

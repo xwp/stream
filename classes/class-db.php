@@ -55,21 +55,10 @@ class DB {
 		 */
 		$record = apply_filters( 'wp_stream_record_array', $record );
 
-		array_walk(
-			$record,
-			function( &$value, &$key ) {
-				if ( ! is_array( $value ) ) {
-					$value = wp_strip_all_tags( $value );
-				}
-			}
-		);
-
-		if ( empty( $record ) ) {
+		$data = $this->sanitize_record( $record );
+		if ( empty( $data ) ) {
 			return false;
 		}
-
-		$fields = array( 'object_id', 'site_id', 'blog_id', 'user_id', 'user_role', 'created', 'summary', 'ip', 'connector', 'context', 'action', 'meta' );
-		$data   = array_intersect_key( $record, array_flip( $fields ) );
 
 		$record_id = $this->driver->insert_record( $data );
 
@@ -94,6 +83,49 @@ class DB {
 		do_action( 'wp_stream_record_inserted', $record_id, $record );
 
 		return absint( $record_id );
+	}
+
+	/**
+	 * Ensure the record matches our schema.
+	 *
+	 * @param array $record Record to store.
+	 *
+	 * @return array
+	 */
+	protected function sanitize_record( $record ) {
+		if ( ! is_array( $record ) ) {
+			return array();
+		}
+
+		$record_defaults = array(
+			'object_id' => null,
+			'site_id'   => null,
+			'blog_id'   => null,
+			'user_id'   => null,
+			'user_role' => null,
+			'created'   => null,
+			'summary'   => null,
+			'ip'        => null,
+			'connector' => null,
+			'context'   => null,
+			'action'    => null,
+			'meta'      => array(),
+		);
+
+		// Records can have only these fields.
+		$record = array_intersect_key( $record, $record_defaults );
+
+		// Sanitize all record values.
+		return array_map(
+			function( $value ) {
+				if ( ! is_array( $value ) ) {
+					return wp_strip_all_tags( $value );
+				}
+
+				return $value;
+			},
+			$record
+		);
 	}
 
 	/**

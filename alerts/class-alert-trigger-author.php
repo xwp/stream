@@ -153,12 +153,12 @@ class Alert_Trigger_Author extends Alert_Trigger {
 	 *
 	 * @see Alert_Trigger::get_display_value().
 	 *
-	 * @param string $context The location this data will be displayed in.
-	 * @param Alert  $alert Alert being processed.
+	 * @param string     $context The location this data will be displayed in.
+	 * @param Alert|null $alert Alert being processed.
 	 *
 	 * @return string
 	 */
-	public function get_display_value( $context = 'normal', $alert ) {
+	public function get_display_value( $context = 'normal', $alert = null ) {
 		$author = ( ! empty( $alert->alert_meta['trigger_author'] ) ) ? $alert->alert_meta['trigger_author'] : null;
 		if ( empty( $author ) ) {
 			$author = __( 'Any User', 'stream' );

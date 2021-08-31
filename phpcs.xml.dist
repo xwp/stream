@@ -1,11 +1,14 @@
 <?xml version="1.0"?>
 <ruleset name="WordPress Coding Standards for WP Stream">
-	<config name="installed_paths" value="vendor/wp-coding-standards/wpcs" />
+	<config name="installed_paths" value="vendor/wp-coding-standards/wpcs,vendor/phpcompatibility/php-compatibility" />
 	<config name="ignore_warnings_on_exit" value="1" /><!-- FIXME -->
 
 	<arg name="extensions" value="php" />
 	<arg name="colors" />
 	<arg value="sp" /><!-- Show sniff codes in all reports and progress. -->
+
+	<rule ref="PHPCompatibility" />
+	<config name="testVersion" value="5.6-"/><!-- Test for PHP compatability for 5.6 and above. -->
 
 	<rule ref="WordPress-Docs">
 		<type>warning</type><!-- FIXME Report but ignore for now. -->

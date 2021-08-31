@@ -16,16 +16,17 @@
   "require-dev": {
     "automattic/vipwpcs": "^2.0.0",
     "humanmade/mercator": "^1.0",
-    "johnpbloch/wordpress": "^5.4",
+    "johnpbloch/wordpress": "^5.8",
     "php-coveralls/php-coveralls": "^2.1",
+    "phpcompatibility/php-compatibility": "^9.3",
     "phpunit/phpunit": "^5.7",
-    "wp-cli/wp-cli-bundle": "^2.2",
-    "wp-coding-standards/wpcs": "^2.2",
+    "wp-cli/wp-cli-bundle": "^2.5",
+    "wp-coding-standards/wpcs": "^2.3",
     "wp-phpunit/wp-phpunit": "^5.4",
     "wpackagist-plugin/advanced-custom-fields": "5.8.12",
-    "wpackagist-plugin/easy-digital-downloads": "^2.9.23",
-    "wpackagist-plugin/jetpack": "^8.7",
-    "wpackagist-plugin/user-switching": "^1.5.5",
+    "wpackagist-plugin/easy-digital-downloads": "2.9.23",
+    "wpackagist-plugin/jetpack": "10.0",
+    "wpackagist-plugin/user-switching": "1.5.5",
     "wpsh/local": "^0.2.3"
   },
   "config": {
