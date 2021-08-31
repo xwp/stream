@@ -92,13 +92,14 @@ class Test_DB extends WP_StreamTestCase {
 
 		$record_stored = $this->db->query(
 			array(
-				'record' => $record_id,
+				'search' => $record_id,
+				'search_field' => 'ID'
 			)
 		);
 
 		$this->assertEquals(
 			'This is a very bold attempt!',
-			$record_stored['summary']
+			$record_stored[0]->summary
 		);
 	}
 
