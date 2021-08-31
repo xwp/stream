@@ -99,17 +99,17 @@ class DB {
 
 		$record_defaults = array(
 			'object_id' => null,
-			'site_id' => null,
-			'blog_id'=> null,
-			'user_id' => null,
+			'site_id'   => null,
+			'blog_id'   => null,
+			'user_id'   => null,
 			'user_role' => null,
-			'created' => null,
-			'summary' => null,
-			'ip' => null,
+			'created'   => null,
+			'summary'   => null,
+			'ip'        => null,
 			'connector' => null,
-			'context' => null,
-			'action' => null,
-			'meta' => array(),
+			'context'   => null,
+			'action'    => null,
+			'meta'      => array(),
 		);
 
 		// Records can have only these fields.
