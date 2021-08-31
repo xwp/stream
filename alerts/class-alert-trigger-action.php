@@ -164,12 +164,12 @@ class Alert_Trigger_Action extends Alert_Trigger {
 	 *
 	 * @see Alert_Trigger::get_display_value().
 	 *
-	 * @param string $context The location this data will be displayed in.
-	 * @param Alert  $alert Alert being processed.
+	 * @param string     $context The location this data will be displayed in.
+	 * @param Alert|null $alert Alert being processed.
 	 *
 	 * @return string
 	 */
-	public function get_display_value( $context = 'normal', $alert ) {
+	public function get_display_value( $context = 'normal', $alert = null ) {
 		$action = ( ! empty( $alert->alert_meta['trigger_action'] ) ) ? $alert->alert_meta['trigger_action'] : null;
 
 		if ( 'post_title' === $context ) {
