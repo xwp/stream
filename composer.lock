@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8c3d273b5c55f14bc4154db0632914f7",
+    "content-hash": "14aff3b82d522e9ef3e40a193700f1d3",
     "packages": [
         {
             "name": "composer/installers",
@@ -1141,10 +1141,6 @@
             "keywords": [
                 "wordpress"
             ],
-            "support": {
-                "issues": "https://github.com/humanmade/Mercator/issues",
-                "source": "https://github.com/humanmade/Mercator/tree/master"
-            },
             "time": "2018-10-30T18:53:20+00:00"
         },
         {
@@ -6562,15 +6558,15 @@
         },
         {
             "name": "wpackagist-plugin/easy-digital-downloads",
-            "version": "2.11.1",
+            "version": "2.9.23",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/easy-digital-downloads/",
-                "reference": "tags/2.11.1"
+                "reference": "tags/2.9.23"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/easy-digital-downloads.2.11.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/easy-digital-downloads.2.9.23.zip"
             },
             "require": {
                 "composer/installers": "~1.0"
@@ -6580,15 +6576,15 @@
         },
         {
             "name": "wpackagist-plugin/jetpack",
-            "version": "8.9.2",
+            "version": "10.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/jetpack/",
-                "reference": "tags/8.9.2"
+                "reference": "tags/10.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/jetpack.8.9.2.zip"
+                "url": "https://downloads.wordpress.org/plugin/jetpack.10.0.zip"
             },
             "require": {
                 "composer/installers": "~1.0"
@@ -6598,15 +6594,15 @@
         },
         {
             "name": "wpackagist-plugin/user-switching",
-            "version": "1.5.7",
+            "version": "1.5.5",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/user-switching/",
-                "reference": "tags/1.5.7"
+                "reference": "tags/1.5.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/user-switching.1.5.7.zip"
+                "url": "https://downloads.wordpress.org/plugin/user-switching.1.5.5.zip"
             },
             "require": {
                 "composer/installers": "~1.0"
