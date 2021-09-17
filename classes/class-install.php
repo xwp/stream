@@ -71,6 +71,12 @@ class Install {
 		$this->db_version = $this->get_db_version();
 		$this->stream_url = self_admin_url( $this->plugin->admin->admin_parent_page . '&page=' . $this->plugin->admin->settings_page_slug );
 
+		// Ensure the tables are created even when the plugin activation hook does not run,
+		// and run the check in WP Admin or on WP CLI to avoid extra frontend load.
+		if ( is_admin() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+			$this->check();
+		}
+
 		register_activation_hook( $this->plugin->locations['plugin'], array( $this, 'check' ) );
 	}
 

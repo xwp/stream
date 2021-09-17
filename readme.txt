@@ -3,7 +3,7 @@ Contributors: xwp
 Tags: wp stream, stream, activity, logs, track
 Requires at least: 4.5
 Tested up to: 5.8
-Stable tag: 3.8.0
+Stable tag: 3.8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -90,6 +90,10 @@ Past Contributors: fjarrett, shadyvb, chacha, westonruter, johnregan3, jacobschw
 
 
 == Changelog ==
+
+= 3.8.1 - September 17, 2021 =
+
+- Fix: Ensure Stream database tables are present on all WP admin requests to help with installations where the plugin activate hook never runs [#1286](https://github.com/xwp/stream/pull/1286), props [@tomjn](https://github.com/tomjn).
 
 = 3.8.0 - August 31, 2021 =
 
