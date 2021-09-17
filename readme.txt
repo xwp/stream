@@ -91,6 +91,10 @@ Past Contributors: fjarrett, shadyvb, chacha, westonruter, johnregan3, jacobschw
 
 == Changelog ==
 
+= 3.8.1 - September 17, 2021 =
+
+- Fix: Ensure Stream database tables are present on all WP admin requests to help with installations where the plugin activate hook never runs [#1286](https://github.com/xwp/stream/pull/1286), props [@tomjn](https://github.com/tomjn).
+
 = 3.8.0 - August 31, 2021 =
 
 - Fix: PHP 8.0 compatibility [#1272](https://github.com/xwp/stream/issues/1272), props [@cjhaas](https://github.com/cjhaas).
