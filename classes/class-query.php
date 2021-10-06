@@ -198,11 +198,7 @@ class Query {
 			$order = 'ASC';
 		}
 
-		$orderby = sprintf(
-			'ORDER BY %s %s',
-			esc_sql( $orderby ),
-			esc_sql( $order )
-		);
+		$orderby = sprintf( 'ORDER BY %s %s', $orderby, $order );
 
 		/**
 		 * PARSE FIELDS PARAMETER
