@@ -179,21 +179,26 @@ class Query {
 		/**
 		 * PARSE ORDER PARAMS
 		 */
-		$order     = esc_sql( $args['order'] );
-		$orderby   = esc_sql( $args['orderby'] );
 		$orderable = array( 'ID', 'site_id', 'blog_id', 'object_id', 'user_id', 'user_role', 'summary', 'created', 'connector', 'context', 'action' );
 
-		if ( in_array( $orderby, $orderable, true ) ) {
-			$orderby = sprintf( '%s.%s', $wpdb->stream, $orderby );
-		} elseif ( 'meta_value_num' === $orderby && ! empty( $args['meta_key'] ) ) {
+		// Default to sorting by record ID.
+		$orderby = "$wpdb->stream.ID";
+
+		if ( in_array( $args['orderby'], $orderable, true ) ) {
+			$orderby = sprintf( '%s.%s', $wpdb->stream, $args['orderby'] );
+		} elseif ( 'meta_value_num' === $args['orderby'] && ! empty( $args['meta_key'] ) ) {
 			$orderby = "CAST($wpdb->streammeta.meta_value AS SIGNED)";
-		} elseif ( 'meta_value' === $orderby && ! empty( $args['meta_key'] ) ) {
+		} elseif ( 'meta_value' === $args['orderby'] && ! empty( $args['meta_key'] ) ) {
 			$orderby = "$wpdb->streammeta.meta_value";
-		} else {
-			$orderby = "$wpdb->stream.ID";
 		}
 
-		$orderby = "ORDER BY {$orderby} {$order}";
+		// Show the recent records first by default.
+		$order = 'DESC';
+		if ( 'ASC' === strtoupper( $args['order'] ) ) {
+			$order = 'ASC';
+		}
+
+		$orderby = sprintf( 'ORDER BY %s %s', $orderby, $order );
 
 		/**
 		 * PARSE FIELDS PARAMETER
