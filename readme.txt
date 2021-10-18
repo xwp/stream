@@ -3,7 +3,7 @@ Contributors: xwp
 Tags: wp stream, stream, activity, logs, track
 Requires at least: 4.5
 Tested up to: 5.8
-Stable tag: 3.8.1
+Stable tag: 3.8.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -89,7 +89,18 @@ Past Contributors: fjarrett, shadyvb, chacha, westonruter, johnregan3, jacobschw
 3. Create rules for excluding certain kinds of records from appearing in Stream.
 
 
+== Upgrade Notice ==
+
+= 3.8.2 =
+
+Fixes a security vulnerability in the way the `order` query parameter was passed to the database query for authenticated users when viewing the Stream records page in the WordPress admin.
+
+
 == Changelog ==
+
+= 3.8.2 - October 12, 2021 =
+
+- Security fix: Ensure the value of `order` query parameter forwarded to the database query when viewing the Stream records in the WordPress admin (for authenticated users) is only `ASC` or `DESC`. Previously it passed the whole value of the `order` parameter filtered through `esc_sql()`.
 
 = 3.8.1 - September 17, 2021 =
 
