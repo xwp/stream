@@ -91,12 +91,17 @@ Past Contributors: fjarrett, shadyvb, chacha, westonruter, johnregan3, jacobschw
 
 == Upgrade Notice ==
 
-= 3.8.2 =
+= 3.9.0 =
 
-Fixes a security vulnerability in the way the `order` query parameter was passed to the database query for authenticated users when viewing the Stream records page in the WordPress admin.
+Track changes to posts when using the block editor.
 
 
 == Changelog ==
+
+= 3.9.0 - March 8, 2022 =
+
+- Fix: Track changes to posts when using the block editor by making the Posts connector to run on both frontend and backend requests since block editor changes happen over the REST API [#1264](https://github.com/xwp/stream/pull/1264), props [@coreymckrill](https://github.com/coreymckrill).
+- Development: Adjust the local development environment to use MariaDB containers for ARM processor compatabilty.
 
 = 3.8.2 - October 12, 2021 =
 
