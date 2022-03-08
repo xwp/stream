@@ -3,7 +3,7 @@ version: '3'
 services:
 
   mysql:
-    image: mysql:5
+    image: mariadb:10.2
     volumes:
       - db_data:/var/lib/mysql
     restart: always
@@ -44,7 +44,7 @@ services:
       WP_PHPUNIT__TESTS_CONFIG: /var/www/html/wp-tests-config.php
 
   db_phpunit:
-    image: mysql:5.7
+    image: mariadb:10.2
     restart: always
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"

@@ -27,13 +27,19 @@
     "wpackagist-plugin/easy-digital-downloads": "2.9.23",
     "wpackagist-plugin/jetpack": "10.0",
     "wpackagist-plugin/user-switching": "1.5.5",
-    "wpsh/local": "^0.2.3"
+    "wpsh/local": "^0.2.3",
+    "yoast/phpunit-polyfills": "^1.0"
   },
   "config": {
     "process-timeout": 600,
     "sort-packages": true,
     "platform": {
       "php": "5.6.20"
+    },
+    "allow-plugins": {
+      "composer/installers": true,
+      "johnpbloch/wordpress-core-installer": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true
     }
   },
   "extra": {
