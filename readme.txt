@@ -2,8 +2,8 @@
 Contributors: xwp
 Tags: wp stream, stream, activity, logs, track
 Requires at least: 4.5
-Tested up to: 5.8
-Stable tag: 3.8.2
+Tested up to: 5.9
+Stable tag: 3.9.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -91,12 +91,18 @@ Past Contributors: fjarrett, shadyvb, chacha, westonruter, johnregan3, jacobschw
 
 == Upgrade Notice ==
 
-= 3.8.2 =
+= 3.9.0 =
 
-Fixes a security vulnerability in the way the `order` query parameter was passed to the database query for authenticated users when viewing the Stream records page in the WordPress admin.
+Track changes to posts when using the block editor.
 
 
 == Changelog ==
+
+= 3.9.0 - March 8, 2022 =
+
+- Fix: Track changes to posts when using the block editor by making the Posts connector to run on both frontend and backend requests since block editor changes happen over the REST API [#1264](https://github.com/xwp/stream/pull/1264), props [@coreymckrill](https://github.com/coreymckrill).
+- Fix: Don't store empty log event parameters [#1307](https://github.com/xwp/stream/pull/1307), props [@lkraav](https://github.com/lkraav).
+- Development: Adjust the local development environment to use MariaDB containers for ARM processor compatabilty.
 
 = 3.8.2 - October 12, 2021 =
 

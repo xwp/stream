@@ -18,9 +18,6 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 
 		$this->plugin->connectors->unload_connectors();
 
-		$post_connector = new Connector_Posts();
-		$post_connector->register();
-
 		// Make partial of Connector_EDD class, with mocked "log" function.
 		$this->mock = $this->getMockBuilder( Connector_EDD::class )
 			->setMethods( array( 'log' ) )

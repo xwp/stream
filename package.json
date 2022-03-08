@@ -6,7 +6,7 @@
   "author": "XWP",
   "license": "GPLv2+",
   "engines": {
-    "node": ">=v12.22.6"
+    "node": ">=v12"
   },
   "repository": {
     "type": "git",
@@ -25,8 +25,8 @@
     "track"
   ],
   "devDependencies": {
-    "@wordpress/eslint-plugin": "^9.1.2",
-    "eslint": "^7.32.0",
+    "@wordpress/eslint-plugin": "^10.0.2",
+    "eslint": "^8.10.0",
     "grunt": "^1.4.1",
     "grunt-contrib-clean": "^2.0.0",
     "grunt-contrib-compress": "^2.0.0",
