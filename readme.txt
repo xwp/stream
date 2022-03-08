@@ -101,6 +101,7 @@ Track changes to posts when using the block editor.
 = 3.9.0 - March 8, 2022 =
 
 - Fix: Track changes to posts when using the block editor by making the Posts connector to run on both frontend and backend requests since block editor changes happen over the REST API [#1264](https://github.com/xwp/stream/pull/1264), props [@coreymckrill](https://github.com/coreymckrill).
+- Fix: Don't store empty log event parameters [#1307](https://github.com/xwp/stream/pull/1307), props [@lkraav](https://github.com/lkraav).
 - Development: Adjust the local development environment to use MariaDB containers for ARM processor compatabilty.
 
 = 3.8.2 - October 12, 2021 =
