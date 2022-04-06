@@ -778,6 +778,10 @@ class Connector_Woocommerce extends Connector {
 				if ( empty( $sections ) ) {
 					$sections[''] = $page_label;
 				}
+				
+				if( empty( $page_id ) ) {
+				 	continue;
+				}
 
 				$settings_pages[ $page_id ] = $page_label;
 
