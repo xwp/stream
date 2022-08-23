@@ -98,6 +98,12 @@ Track changes to posts when using the block editor.
 
 == Changelog ==
 
+= 3.9.1 - August 23, 2022 =
+
+- Fix: PHP 8 compatibility for widget connector [#1294](https://github.com/xwp/stream/pull/1355), props [@ParhamG](https://github.com/ParhamG)
+- Development: Mark as tested with the latest version 6.0 of WordPress.
+- Development: Update development dependencies.
+
 = 3.9.0 - March 8, 2022 =
 
 - Fix: Track changes to posts when using the block editor by making the Posts connector to run on both frontend and backend requests since block editor changes happen over the REST API [#1264](https://github.com/xwp/stream/pull/1264), props [@coreymckrill](https://github.com/coreymckrill).
