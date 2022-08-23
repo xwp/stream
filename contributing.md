@@ -16,7 +16,7 @@ Included is a local development environment built with [Docker](https://www.dock
 
 We suggest using the [Homebrew package manager](https://brew.sh) on macOS to install the dependencies:
 
-	brew install node composer
+	brew install node@16 composer
 	brew cask install virtualbox vagrant
 
 For setups with local Docker environment you don't need Vagrant and VirtualBox.
