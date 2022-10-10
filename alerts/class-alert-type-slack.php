@@ -145,7 +145,7 @@ class Alert_Type_Slack extends Alert_Type {
 			'fallback'    => html_entity_decode( $recordarr['summary'] ),
 			'fields'      => $fields,
 			'footer'      => get_bloginfo( 'name' ),
-			'footer_icon' => get_site_icon_url( 16, $logo[0], $recordarr['blog_id'] ),
+			'footer_icon' => get_site_icon_url( 16, $logo[0] ?? '', $recordarr['blog_id'] ),
 			'title'       => html_entity_decode( $recordarr['summary'] ),
 			'ts'          => strtotime( $recordarr['created'] ),
 		);
