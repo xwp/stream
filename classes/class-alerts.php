@@ -509,6 +509,7 @@ class Alerts {
 	 * @return void
 	 */
 	public function display_notification_box( $post = array() ) {
+		$alert      = null;
 		$alert_type = 'none';
 		if ( is_object( $post ) ) {
 			$alert      = $this->get_alert( $post->ID );
@@ -732,6 +733,13 @@ class Alerts {
 	 */
 	public function save_new_alert() {
 		check_ajax_referer( 'save_alert', 'wp_stream_alerts_nonce' );
+
+		if ( ! current_user_can( $this->plugin->admin->settings_cap ) ) {
+			wp_die(
+				esc_html__( "You don't have sufficient privileges to do this action.", 'stream' )
+			);
+		}
+
 		$trigger_author                = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_author' );
 		$trigger_connector_and_context = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_context' );
 		if ( false !== strpos( $trigger_connector_and_context, '-' ) ) {
@@ -799,6 +807,12 @@ class Alerts {
 	 * Return HTML string of the Alert page controls.
 	 */
 	public function get_new_alert_triggers_notifications() {
+		if ( ! current_user_can( $this->plugin->admin->settings_cap ) ) {
+			wp_die(
+				esc_html__( "You don't have sufficient privileges to do this action.", 'stream' )
+			);
+		}
+
 		ob_start();
 		?>
 		<fieldset class="inline-edit-col inline-edit-wp_stream_alerts inline-edit-add-new-triggers">
