@@ -1,9 +1,11 @@
-Delete the section that is not applicable:
+---
+name: "\U0001F41B Bug Report"
+about: "Something isn't working as expected"
+title: ''
+labels: 'i: bug'
+assignees: ''
 
-# Feature Request
-
-Describe the suggested feature and how it's beneficial to Stream users.
-
+---
 
 # Bug Report
 
@@ -18,9 +20,7 @@ Describe what actually happens.
 ## Steps to Reproduce the Problem
 
 1.
-
 2.
-
 3.
 
 ## Screenshots
