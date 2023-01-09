@@ -329,6 +329,10 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->assertNotEmpty( $response->data );
 	}
 	function test_save_new_alert_with_parent_context() {
+		// Switch current user to an administrator.
+		$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
 		$alerts = new Alerts( $this->plugin );
 		try {
 			$_POST['wp_stream_trigger_author'] = 'me';
@@ -347,28 +351,36 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->assertTrue( $response->success );
 	}
 	function test_save_new_alert_with_child_context() {
-	$alerts = new Alerts( $this->plugin );
-	try {
-		$_POST['wp_stream_trigger_author'] = 'me';
-		$_POST['wp_stream_trigger_context'] = 'posts-post';
-		$_POST['wp_stream_trigger_action'] = 'edit';
-		$_POST['wp_stream_alert_type'] = 'highlight';
-		$_POST['wp_stream_alerts_nonce'] = wp_create_nonce( 'save_alert' );
-		$this->_handleAjax( 'save_new_alert' );
-	} catch ( \WPAjaxDieContinueException $e ) {
-		$exception = $e;
-	}
+		// Switch current user to an administrator.
+		$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
 
-	$response = json_decode( $this->_last_response );
-	$this->assertInternalType( 'object', $response );
-	$this->assertObjectHasAttribute( 'success', $response );
-	$this->assertTrue( $response->success );
-}
+		$alerts = new Alerts( $this->plugin );
+		try {
+			$_POST['wp_stream_trigger_author'] = 'me';
+			$_POST['wp_stream_trigger_context'] = 'posts-post';
+			$_POST['wp_stream_trigger_action'] = 'edit';
+			$_POST['wp_stream_alert_type'] = 'highlight';
+			$_POST['wp_stream_alerts_nonce'] = wp_create_nonce( 'save_alert' );
+			$this->_handleAjax( 'save_new_alert' );
+		} catch ( \WPAjaxDieContinueException $e ) {
+			$exception = $e;
+		}
+
+		$response = json_decode( $this->_last_response );
+		$this->assertInternalType( 'object', $response );
+		$this->assertObjectHasAttribute( 'success', $response );
+		$this->assertTrue( $response->success );
+	}
 
 	/**
 	 * @requires PHPUnit 5.7
 	 */
 	function test_save_new_alert_no_nonce() {
+		// Switch current user to an administrator.
+		$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
 		$alerts = new Alerts( $this->plugin );
 		try {
 			$_POST['wp_stream_trigger_author'] = 'me';
@@ -386,9 +398,140 @@ class Test_Alerts extends WP_StreamTestCase {
 			// The output should be a -1 for failure.
 			$this->assertEquals( '-1', $exception->getMessage() );
 		}
-
-
 	}
+
+	/**
+	 * @requires PHPUnit 5.7
+	 */
+	function test_save_new_alert_invalid_nonce() {
+		// Switch current user to an administrator.
+		$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$alerts = new Alerts( $this->plugin );
+		try {
+			$_POST['wp_stream_trigger_author'] = 'me';
+			$_POST['wp_stream_trigger_context'] = 'posts-post';
+			$_POST['wp_stream_trigger_action'] = 'edit';
+			$_POST['wp_stream_alert_type'] = 'highlight';
+			$_POST['wp_stream_alerts_nonce'] = 'invalid';
+
+			$this->expectException( 'WPAjaxDieStopException' );
+			$this->_handleAjax( 'save_new_alert' );
+		} catch ( \WPAjaxDieContinueException $e ) {
+			$exception = $e;
+			// Check that the exception was thrown.
+			$this->assertTrue( isset( $exception ) );
+
+			// The output should be a -1 for failure.
+			$this->assertEquals( '-1', $exception->getMessage() );
+		}
+	}
+
+	/**
+	 * @requires PHPUnit 5.7
+	 */
+	function test_save_new_alert_mismatched_nonce() {
+		// Switch current user to an administrator.
+		$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$alerts = new Alerts( $this->plugin );
+		try {
+			$_POST['wp_stream_trigger_author'] = 'me';
+			$_POST['wp_stream_trigger_context'] = 'posts-post';
+			$_POST['wp_stream_trigger_action'] = 'edit';
+			$_POST['wp_stream_alert_type'] = 'highlight';
+			$_POST['wp_stream_alerts_nonce'] = wp_create_nonce( 'some_nonce' );
+
+			$this->expectException( 'WPAjaxDieStopException' );
+			$this->_handleAjax( 'save_new_alert' );
+		} catch ( \WPAjaxDieContinueException $e ) {
+			$exception = $e;
+			// Check that the exception was thrown.
+			$this->assertTrue( isset( $exception ) );
+
+			// The output should be a -1 for failure.
+			$this->assertEquals( '-1', $exception->getMessage() );
+		}
+	}
+
+	/**
+	 * @requires PHPUnit 5.7
+	 */
+	function test_save_new_alert_missing_caps() {
+		// Switch current user to a subscriber.
+		$user_id = $this->factory->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $user_id );
+
+		$alerts = new Alerts( $this->plugin );
+		try {
+			$_POST['wp_stream_trigger_author'] = 'me';
+			$_POST['wp_stream_trigger_context'] = 'posts-post';
+			$_POST['wp_stream_trigger_action'] = 'edit';
+			$_POST['wp_stream_alert_type'] = 'highlight';
+			$_POST['wp_stream_alerts_nonce'] = wp_create_nonce( 'save_alert' );
+
+			$this->expectException( 'WPAjaxDieStopException' );
+			$this->_handleAjax( 'save_new_alert' );
+		} catch ( \WPAjaxDieContinueException $e ) {
+			$exception = $e;
+			// Check that the exception was thrown.
+			$this->assertTrue( isset( $exception ) );
+
+			// The output should be a -1 for failure.
+			$this->assertEquals( '-1', $exception->getMessage() );
+		}
+	}
+
+	function test_get_new_alert_triggers_notifications() {
+		// Switch current user to an administrator.
+		$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$alerts = new Alerts( $this->plugin );
+		try {
+			$_POST['wp_stream_trigger_author'] = 'me';
+			$_POST['wp_stream_trigger_context'] = 'posts-post';
+			$_POST['wp_stream_trigger_action'] = 'edit';
+			$_POST['wp_stream_alert_type'] = 'highlight';
+			$_POST['wp_stream_alerts_nonce'] = wp_create_nonce( 'save_alert' );
+			$this->_handleAjax( 'get_new_alert_triggers_notifications' );
+		} catch ( \WPAjaxDieContinueException $e ) {
+			$exception = $e;
+		}
+
+		$response = json_decode( $this->_last_response );
+		$this->assertInternalType( 'object', $response );
+		$this->assertObjectHasAttribute( 'success', $response );
+		$this->assertTrue( $response->success );
+	}
+
+	function test_get_new_alert_triggers_notifications_missing_caps() {
+		// Switch current user to a subscriber.
+		$user_id = $this->factory->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $user_id );
+
+		$alerts = new Alerts( $this->plugin );
+		try {
+			$_POST['wp_stream_trigger_author'] = 'me';
+			$_POST['wp_stream_trigger_context'] = 'posts-post';
+			$_POST['wp_stream_trigger_action'] = 'edit';
+			$_POST['wp_stream_alert_type'] = 'highlight';
+			$_POST['wp_stream_alerts_nonce'] = wp_create_nonce( 'save_alert' );
+
+			$this->expectException( 'WPAjaxDieStopException' );
+			$this->_handleAjax( 'get_new_alert_triggers_notifications' );
+		} catch ( \WPAjaxDieContinueException $e ) {
+			$exception = $e;
+			// Check that the exception was thrown.
+			$this->assertTrue( isset( $exception ) );
+
+			// The output should be a -1 for failure.
+			$this->assertEquals( '-1', $exception->getMessage() );
+		}
+	}
+
 	private function dummy_alert_data() {
 		return (object) array(
 			'ID'         => 1,
