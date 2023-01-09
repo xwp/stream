@@ -1,5 +1,5 @@
 ---
-name: "\U0001F527 Patch Release Checklist"
+name: "\U0001F527 Regular pull request"
 about: "Merge a fix or a new feature into the development version"
 title: ''
 labels: ''

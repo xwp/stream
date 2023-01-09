@@ -1,5 +1,5 @@
 ---
-name: "\U0001F680 Release Pull Request"
+name: "\U0001F680 Release pull request"
 about: "\U0001F512 Maintainers only: fixes/features in development get released"
 title: 'Release x.x.x'
 labels: ''
