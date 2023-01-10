@@ -2,8 +2,8 @@
 Contributors: xwp
 Tags: wp stream, stream, activity, logs, track
 Requires at least: 4.5
-Tested up to: 6.0
-Stable tag: 3.9.1
+Tested up to: 6.1
+Stable tag: 3.9.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -97,6 +97,12 @@ Track changes to posts when using the block editor.
 
 
 == Changelog ==
+
+= 3.9.2 - January 10, 2023 =
+
+- Fix: [Security] Check authorization on 'save_new_alert' AJAX action [#1391](https://github.com/xwp/stream/pull/1391), props [marcS0H](https://github.com/marcS0H) (WPScan)
+- Development: Mark as tested with the latest version 6.1 of WordPress.
+- Development: Update development dependencies.
 
 = 3.9.1 - August 23, 2022 =
 
