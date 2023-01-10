@@ -98,6 +98,12 @@ Track changes to posts when using the block editor.
 
 == Changelog ==
 
+= 3.9.2 - January 10, 2023 =
+
+- Fix: Check authorization on 'save_new_alert' AJAX action [#1391](https://github.com/xwp/stream/pull/1391), props [marcS0H](https://github.com/marcS0H)
+- Development: Mark as tested with the latest version 6.1 of WordPress.
+- Development: Update development dependencies.
+
 = 3.9.1 - August 23, 2022 =
 
 - Fix: PHP 8 compatibility for widget connector [#1294](https://github.com/xwp/stream/pull/1355), props [@ParhamG](https://github.com/ParhamG)
