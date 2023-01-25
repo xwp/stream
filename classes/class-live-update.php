@@ -55,13 +55,7 @@ class Live_Update {
 	public function enable_live_update() {
 		check_ajax_referer( $this->user_meta_key . '_nonce', 'nonce' );
 
-		$input = array(
-			'checked'   => FILTER_SANITIZE_STRING,
-			'user'      => FILTER_SANITIZE_STRING,
-			'heartbeat' => FILTER_SANITIZE_STRING,
-		);
-
-		$input = filter_input_array( INPUT_POST, $input );
+		$input = array_map( 'htmlspecialchars', $input );
 
 		if ( false === $input ) {
 			wp_send_json_error( 'Error in live update checkbox' );

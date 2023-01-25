@@ -204,12 +204,12 @@ class Log {
 
 		foreach ( $this->exclude_rules_by_rows( $exclude_settings ) as $exclude_rule ) {
 			$exclude = array(
-				'connector'  => ! empty( $exclude_rule['connector'] ) ? $exclude_rule['connector'] : null,
-				'context'    => ! empty( $exclude_rule['context'] ) ? $exclude_rule['context'] : null,
-				'action'     => ! empty( $exclude_rule['action'] ) ? $exclude_rule['action'] : null,
-				'ip_address' => ! empty( $exclude_rule['ip_address'] ) ? $exclude_rule['ip_address'] : null,
-				'author'     => is_numeric( $exclude_rule['author_or_role'] ) ? absint( $exclude_rule['author_or_role'] ) : null,
-				'role'       => ( ! empty( $exclude_rule['author_or_role'] ) && ! is_numeric( $exclude_rule['author_or_role'] ) ) ? $exclude_rule['author_or_role'] : null,
+				'connector'  => ! empty( $exclude_rule['connector'] ) ? $exclude_rule['connector'] : '',
+				'context'    => ! empty( $exclude_rule['context'] ) ? $exclude_rule['context'] : '',
+				'action'     => ! empty( $exclude_rule['action'] ) ? $exclude_rule['action'] : '',
+				'ip_address' => ! empty( $exclude_rule['ip_address'] ) ? $exclude_rule['ip_address'] : '',
+				'author'     => is_numeric( $exclude_rule['author_or_role'] ) ? absint( $exclude_rule['author_or_role'] ) : '',
+				'role'       => ( ! empty( $exclude_rule['author_or_role'] ) && ! is_numeric( $exclude_rule['author_or_role'] ) ) ? $exclude_rule['author_or_role'] : '',
 			);
 
 			$exclude_rules = array_filter( $exclude, 'strlen' );
