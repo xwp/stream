@@ -187,7 +187,7 @@ class Carbon extends DateTime
         }
 
         if ($tz !== null) {
-            parent::__construct($time, static::safeCreateDateTimeZone($tz));
+            parent::__construct($time ?? '', static::safeCreateDateTimeZone($tz));
         } else {
             parent::__construct($time);
         }
@@ -369,6 +369,7 @@ class Carbon extends DateTime
      *
      * @throws InvalidArgumentException
      */
+    #[\ReturnTypeWillChange]
     public static function createFromFormat($format, $time, $tz = null)
     {
         if ($tz !== null) {
@@ -620,6 +621,7 @@ class Carbon extends DateTime
      *
      * @return static
      */
+    #[\ReturnTypeWillChange]
     public function setDate($year, $month, $day)
     {
         parent::setDate($year, $month, $day);
@@ -679,6 +681,7 @@ class Carbon extends DateTime
      *
      * @return static
      */
+    #[\ReturnTypeWillChange]
     public function setTime($hour, $minute, $second = 0, $microseconds = 0 )
     {
         parent::setTime($hour, $minute, $second, $microseconds );
@@ -748,6 +751,7 @@ class Carbon extends DateTime
      *
      * @return static
      */
+    #[\ReturnTypeWillChange]
     public function setTimezone($value)
     {
         parent::setTimezone(static::safeCreateDateTimeZone($value));
