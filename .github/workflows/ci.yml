@@ -7,6 +7,9 @@ jobs:
   lint:
     name: Lint and Test
     runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      packages: read
     steps:
 
       - name: Checkout
@@ -24,6 +27,24 @@ jobs:
           php-version: '8.1'
           tools: composer:v2
 
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache Composer packages
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-php-${{ hashFiles( 'composer.lock' ) }}
+          restore-keys: ${{ runner.os }}-php-
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Install NPM dependencies
         run: npm install
 
@@ -33,7 +54,7 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Pull Docker Images
+      - name: Pull custom Docker images
         run: docker-compose pull wordpress
 
       - name: Test
