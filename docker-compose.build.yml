@@ -29,3 +29,11 @@ services:
       args:
         PHP_VERSION: "8.0"
         XDEBUG_VERSION: "3.0.4"
+
+  wordpress_php8.1:
+    image: xwpco/stream-wordpress:php8.1
+    build:
+      context: ./local/docker/wordpress
+      args:
+        PHP_VERSION: "8.1"
+        XDEBUG_VERSION: "3.0.4"
