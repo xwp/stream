@@ -21,7 +21,7 @@
     "php-coveralls/php-coveralls": "^2.5",
     "phpcompatibility/php-compatibility": "dev-develop as 9.99.99",
     "phpcompatibility/phpcompatibility-wp": "^2.1",
-    "phpunit/phpunit": "^5.7",
+    "phpunit/phpunit": "^9.6",
     "roots/wordpress": "^6.2",
     "wp-cli/wp-cli-bundle": "^2.6",
     "wp-coding-standards/wpcs": "^2.3",

@@ -11,6 +11,7 @@
 /stream-*.zip
 npm-debug.log
 package.lock
+.phpunit.result.cache
 
 # Compiled files
 ui/js/*.min.js
