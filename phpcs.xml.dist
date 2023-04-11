@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <ruleset name="WordPress Coding Standards for WP Stream">
-	<config name="installed_paths" value="vendor/wp-coding-standards/wpcs,vendor/phpcompatibility/php-compatibility" />
 	<config name="ignore_warnings_on_exit" value="1" /><!-- FIXME -->
 
 	<arg name="extensions" value="php" />

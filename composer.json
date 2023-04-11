@@ -15,6 +15,7 @@
   },
   "require-dev": {
     "automattic/vipwpcs": "^2.3",
+    "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
     "humanmade/mercator": "^1.0",
     "johnpbloch/wordpress": "^6.2",
     "php-coveralls/php-coveralls": "^2.5",
