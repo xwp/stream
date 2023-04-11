@@ -829,25 +829,6 @@ class Carbon extends DateTime
     ///////////////////////////////////////////////////////////////////
 
     /**
-     * Format the instance with the current locale.  You can set the current
-     * locale using setlocale() http://php.net/setlocale.
-     *
-     * @param string $format
-     *
-     * @return string
-     */
-    public function formatLocalized($format)
-    {
-        // Check for Windows to find and replace the %e
-        // modifier correctly
-        if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
-             $format = preg_replace('#(?<!%)((?:%%)*)%e#', '\1%#d', $format);
-        }
-
-        return strftime($format, $this->timestamp);
-    }
-
-    /**
      * Reset the format used to the default when type juggling a Carbon instance to a string
      *
      */
