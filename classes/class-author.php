@@ -180,7 +180,7 @@ class Author {
 		}
 
 		if ( 1 === preg_match( '/src=([\'"])(.*?)\1/', $img, $matches ) ) {
-			$src = html_entity_decode( $matches[2] );
+			$src = html_entity_decode( $matches[2], ENT_COMPAT );
 		} else {
 			return false;
 		}

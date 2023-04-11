@@ -21,6 +21,7 @@ services:
       context: ./local/docker/wordpress
       args:
         PHP_VERSION: "7.4"
+        XDEBUG_VERSION: "2.9.6"
 
   wordpress_php8.0:
     image: xwpco/stream-wordpress:php8.0
@@ -28,4 +29,20 @@ services:
       context: ./local/docker/wordpress
       args:
         PHP_VERSION: "8.0"
-        XDEBUG_VERSION: "3.0.4"
+        XDEBUG_VERSION: "3.2.1"
+
+  wordpress_php8.1:
+    image: xwpco/stream-wordpress:php8.1
+    build:
+      context: ./local/docker/wordpress
+      args:
+        PHP_VERSION: "8.1"
+        XDEBUG_VERSION: "3.2.1"
+
+  wordpress_php8.2:
+    image: xwpco/stream-wordpress:php8.2
+    build:
+      context: ./local/docker/wordpress
+      args:
+        PHP_VERSION: "8.2"
+        XDEBUG_VERSION: "3.2.1"

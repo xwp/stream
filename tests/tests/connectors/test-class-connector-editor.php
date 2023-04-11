@@ -19,7 +19,7 @@ class Test_WP_Stream_Connector_Editor extends WP_StreamTestCase {
 	}
 
 	public function test_log_changes() {
-		$theme  = wp_get_theme( 'twentytwenty' );
+		$theme  = wp_get_theme( 'twentytwentythree' );
 		$plugin = get_plugins()['hello.php'];
 
 		$this->mock->expects( $this->exactly( 2 ) )
@@ -37,7 +37,7 @@ class Test_WP_Stream_Connector_Editor extends WP_StreamTestCase {
 						array(
 							'file'       => 'style.css',
 							'theme_name' => $theme->get( 'Name' ),
-							'theme_slug' => 'twentytwenty',
+							'theme_slug' => 'twentytwentythree',
 							'file_path'  => $theme->get_files( 'css' )['style.css'],
 						)
 					),
@@ -70,7 +70,7 @@ class Test_WP_Stream_Connector_Editor extends WP_StreamTestCase {
 		// Update theme file.
 		$_SERVER['REQUEST_METHOD'] = 'POST';
 		$_POST['action']           = 'update';
-		$_POST['theme']            = 'twentytwenty';
+		$_POST['theme']            = 'twentytwentythree';
 		do_action( 'load-theme-editor.php' );
 
 		\file_put_contents( $theme->get_files( 'css' )['style.css'], "\r\n", FILE_APPEND );
