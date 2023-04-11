@@ -45,7 +45,7 @@ We use npm as the canonical task runner for the project. The following commands 
 
 - `npm run cli -- wp info` where `wp info` is the CLI command to run inside the WordPress container. For example, use `npm run cli -- ls -lah` to list all files in the root of the WordPress installation.
 
-- `npm run phpunit` to run PHPunit tests inside the WordPress container.
+- `npm run test` to run PHPunit tests inside the WordPress container.
 
 
 ## Issues Tracker

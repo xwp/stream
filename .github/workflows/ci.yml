@@ -36,8 +36,8 @@ jobs:
       - name: Pull Docker Images
         run: docker-compose pull wordpress
 
-      - name: Test PHP
-        run: npm run phpunit
+      - name: Test
+        run: npm run test
 
       - name: Build
         run: npm run build

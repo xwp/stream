@@ -83,8 +83,7 @@ install:
 
 script:
   - npm run lint
-  - npm run phpunit
-  - npm run phpunit-multisite
+  - npm run test
 
 notifications:
   email: false

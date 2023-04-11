@@ -43,15 +43,16 @@
     "lint": "npm-run-all lint:*",
     "lint:js": "eslint .",
     "lint:php": "composer lint",
+    "test": "npm-run-all test:*",
+    "test:php": "npm run cli -- composer test --working-dir=wp-content/plugins/stream-src",
+    "test:php-multisite": "npm run cli -- composer test-multisite --working-dir=wp-content/plugins/stream-src",
+    "test-report": "npm run cli -- composer test-report --working-dir=wp-content/plugins/stream-src",
     "build-containers": "docker-compose --file docker-compose.build.yml build",
     "push-containers": "docker-compose --file docker-compose.build.yml push",
     "start": "docker-compose up --remove-orphans --detach",
     "stop": "docker-compose down",
     "stop-all": "docker stop $(docker ps -a -q)",
     "logs": "docker-compose logs --follow",
-    "cli": "docker-compose run --rm --user $(id -u) wordpress xwp_wait db_phpunit:3306 -s -t 300 --",
-    "phpunit": "npm run cli -- composer test --working-dir=wp-content/plugins/stream-src",
-    "phpunit-multisite": "npm run cli -- composer test-multisite --working-dir=wp-content/plugins/stream-src",
-    "phpunit-report": "npm run cli -- composer test-report --working-dir=wp-content/plugins/stream-src"
+    "cli": "docker-compose run --rm --user $(id -u) wordpress xwp_wait db_phpunit:3306 -s -t 300 --"
   }
 }
