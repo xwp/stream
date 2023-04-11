@@ -26,4 +26,7 @@ define( 'WP_PHP_BINARY', 'php' );
 
 define( 'WPLANG', '' );
 
+// Keep the wp-contents outside of WP core directory.
+define( 'WP_CONTENT_DIR', __DIR__ . '/wp-content' );
+
 define( 'ABSPATH', __DIR__ . '/wp/' );

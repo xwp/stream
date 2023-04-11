@@ -27,6 +27,9 @@ $table_prefix = 'wp_';
 define( 'WP_DEBUG', true );
 define( 'JETPACK_DEV_DEBUG', true );
 
+// Keep the wp-contents outside of WP core directory.
+define( 'WP_CONTENT_DIR', __DIR__ . '/wp-content' );
+
 define( 'ABSPATH', __DIR__ . '/wp/' );
 
 // For mercator.
