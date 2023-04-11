@@ -56,9 +56,9 @@ class Live_Update {
 		check_ajax_referer( $this->user_meta_key . '_nonce', 'nonce' );
 
 		$input = array(
-			'checked'   => FILTER_SANITIZE_STRING,
-			'user'      => FILTER_SANITIZE_STRING,
-			'heartbeat' => FILTER_SANITIZE_STRING,
+			'checked'   => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+			'user'      => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+			'heartbeat' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
 		);
 
 		$input = filter_input_array( INPUT_POST, $input );
