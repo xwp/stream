@@ -3,12 +3,12 @@ version: '3'
 services:
 
   wordpress_latest:
-    image: xwpco/stream-wordpress:latest
+    image: ghcr.io/xwp/stream-wordpress:latest
     build:
       context: ./local/docker/wordpress
 
   wordpress_php5.6:
-    image: xwpco/stream-wordpress:php5.6
+    image: ghcr.io/xwp/stream-wordpress:php5.6
     build:
       context: ./local/docker/wordpress
       args:
@@ -16,7 +16,7 @@ services:
         XDEBUG_VERSION: "2.5.5"
 
   wordpress_php7.4:
-    image: xwpco/stream-wordpress:php7.4
+    image: ghcr.io/xwp/stream-wordpress:php7.4
     build:
       context: ./local/docker/wordpress
       args:
@@ -24,7 +24,7 @@ services:
         XDEBUG_VERSION: "2.9.6"
 
   wordpress_php8.0:
-    image: xwpco/stream-wordpress:php8.0
+    image: ghcr.io/xwp/stream-wordpress:php8.0
     build:
       context: ./local/docker/wordpress
       args:
@@ -32,7 +32,7 @@ services:
         XDEBUG_VERSION: "3.2.1"
 
   wordpress_php8.1:
-    image: xwpco/stream-wordpress:php8.1
+    image: ghcr.io/xwp/stream-wordpress:php8.1
     build:
       context: ./local/docker/wordpress
       args:
@@ -40,7 +40,7 @@ services:
         XDEBUG_VERSION: "3.2.1"
 
   wordpress_php8.2:
-    image: xwpco/stream-wordpress:php8.2
+    image: ghcr.io/xwp/stream-wordpress:php8.2
     build:
       context: ./local/docker/wordpress
       args:

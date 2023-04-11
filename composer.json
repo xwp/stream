@@ -44,10 +44,11 @@
     }
   },
   "extra": {
-    "wordpress-install-dir": "local/public",
+    "wordpress-install-dir": "local/public/wp",
     "installer-paths": {
-      "local/public/wp-content/plugins/{$name}/": ["type:wordpress-plugin"],
-      "local/public/wp-content/mu-plugins/{$name}/": ["type:wordpress-muplugin"]
+      "local/public/wp-content/themes/{$name}": ["type:wordpress-theme"],
+      "local/public/wp-content/plugins/{$name}": ["type:wordpress-plugin"],
+      "local/public/wp-content/mu-plugins/{$name}": ["type:wordpress-muplugin"]
     }
   },
   "scripts": {

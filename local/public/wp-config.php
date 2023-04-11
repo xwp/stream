@@ -21,7 +21,7 @@ define( 'SITE_ID_CURRENT_SITE', 1 );
 define( 'BLOG_ID_CURRENT_SITE', 1 );
 $base = '/';
 
-$table_prefix = 'wptests_';
+$table_prefix = 'wp_';
 
 define( 'WP_DEBUG', true );
 define( 'JETPACK_DEV_DEBUG', true );
