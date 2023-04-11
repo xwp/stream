@@ -22,7 +22,7 @@ We suggest using the [Homebrew package manager](https://brew.sh) on macOS to ins
 1. See the [Git Flow](#git-flow) section below for how to fork the repository.
 2. Run `npm install` and `composer install` to setup all project dependencies.
 3. Run `npm start` to start the development environment.
-4. Visit [stream.local](http://stream.local) and login using `admin` / `password`.
+4. Visit [stream.wpenv.net](http://stream.wpenv.net) and login using `admin` / `password`.
 5. Activate the Stream plugin.
 
 ### PHP Xdebug
@@ -31,7 +31,7 @@ The WordPress container includes the [Xdebug PHP extension](https://xdebug.org).
 
 ### Mail Catcher
 
-We use a [MailHog](https://github.com/mailhog/MailHog) container to capture all emails sent by the WordPress container, available at [stream.local:8025](https://stream.local:8025).
+We use a [MailHog](https://github.com/mailhog/MailHog) container to capture all emails sent by the WordPress container, available at [stream.wpenv.net:8025](https://stream.wpenv.net:8025).
 
 ### Scripts and Commands
 
