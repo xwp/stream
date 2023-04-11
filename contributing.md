@@ -9,7 +9,6 @@ Included is a local development environment built with [Docker](https://www.dock
 
 ### Requirements
 
-- [Vagrant](https://www.vagrantup.com)
 - [Node.js](https://nodejs.org)
 - [Composer](https://getcomposer.org)
 
@@ -49,8 +48,6 @@ We use npm as the canonical task runner for the project. The following commands 
 - `npm run compose -- up -d` where `up -d` is the `docker-compose` command for the WordPress container. For example, use `npm run compose -- down` and `npm run compose -- up -d` to restart the WordPres container.
 
 - `npm run phpunit` to run PHPunit tests inside the WordPress container.
-
-All `npm` commands running inside Vagrant are prefixed with `v`, for example, `npm run vcli` and `npm run vcompose`.
 
 
 ## Issues Tracker

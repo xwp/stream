@@ -5,7 +5,6 @@
 /vendor/
 /build/
 /dist/
-/.vagrant/
 /console.log
 /phpcs.xml
 /stream.zip
