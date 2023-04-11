@@ -53,6 +53,6 @@
     "stop": "docker-compose down",
     "stop-all": "docker stop $(docker ps -a -q)",
     "logs": "docker-compose logs --follow",
-    "cli": "docker-compose run --rm --user $(id -u) wordpress xwp_wait db_phpunit:3306 -s -t 300 --"
+    "cli": "docker-compose run --rm --user $(id -u) wordpress --"
   }
 }
