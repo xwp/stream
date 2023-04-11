@@ -66,7 +66,7 @@ class Test_Author extends WP_StreamTestCase {
 	public function test_get_avatar_src() {
 		$img = get_avatar( get_current_user_id(), 42 );
 		preg_match( '/src=([\'"])(.*?)\1/', $img, $matches );
-		$avatar = html_entity_decode( $matches[2] );
+		$avatar = html_entity_decode( $matches[2], ENT_COMPAT );
 		$this->assertEquals( $avatar, $this->author->get_avatar_src( 42 ) );
 	}
 
