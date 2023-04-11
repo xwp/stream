@@ -5,11 +5,10 @@
 
 Stream uses [npm](https://npmjs.com) for javascript dependencies, [Composer](https://getcomposer.org) for PHP dependencies and the [Grunt](https://gruntjs.com) task runner to minimize and compile scripts and styles and to deploy to the WordPress.org plugin repository.
 
-Included is a local development environment built with [Docker](https://www.docker.com) which can be optionally run inside [Vagrant](https://www.vagrantup.com) for network isolation and better performance.
+Included is a local development environment built with [Docker](https://www.docker.com).
 
 ### Requirements
 
-- [VirtualBox](https://www.virtualbox.org)
 - [Vagrant](https://www.vagrantup.com)
 - [Node.js](https://nodejs.org)
 - [Composer](https://getcomposer.org)
@@ -17,15 +16,13 @@ Included is a local development environment built with [Docker](https://www.dock
 We suggest using the [Homebrew package manager](https://brew.sh) on macOS to install the dependencies:
 
 	brew install node@16 composer
-	brew cask install virtualbox vagrant
-
-For setups with local Docker environment you don't need Vagrant and VirtualBox.
+	brew install --cask docker
 
 ### Environment Setup
 
 1. See the [Git Flow](#git-flow) section below for how to fork the repository.
-2. Run `npm install` to install all project dependencies.
-3. Run `vagrant up` to start the development environment.
+2. Run `npm install` and `composer install` to setup all project dependencies.
+3. Run `npm start` to start the development environment.
 4. Visit [stream.local](http://stream.local) and login using `admin` / `password`.
 5. Activate the Stream plugin.
 
