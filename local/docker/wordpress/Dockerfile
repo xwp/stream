@@ -8,6 +8,7 @@ ARG XDEBUG_VERSION=2.9.6
 
 # Include our Composer vendor binrary path into global path.
 ENV PATH="/var/www/html/wp-content/plugins/stream-src/vendor/bin:${PATH}"
+ENV COMPOSER_HOME=/tmp/.composer
 
 RUN apt-get update; \
 	apt-get install -y --no-install-recommends \
