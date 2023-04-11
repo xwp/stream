@@ -11,7 +11,7 @@ class Test_WP_Stream_Connector_Users extends WP_StreamTestCase {
 	/**
 	 * Runs before each test
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		// Make partial of Connector_Users class, with mocked "log" function.

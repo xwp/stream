@@ -24,7 +24,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 	/**
 	 * Runs before each test.
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->plugin->connectors->unload_connectors();

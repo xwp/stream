@@ -9,7 +9,7 @@ class Test_Author extends WP_StreamTestCase {
 	 */
 	protected $author;
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		//Add admin user to test caps

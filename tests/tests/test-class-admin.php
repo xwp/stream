@@ -9,7 +9,7 @@ class Test_Admin extends WP_StreamTestCase {
 	 */
 	protected $admin;
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->admin = $this->plugin->admin;

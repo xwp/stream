@@ -7,7 +7,7 @@ namespace WP_Stream;
  */
 class Test_Alerts extends WP_StreamTestCase {
 
-	function tearDown() {
+	function tearDown(): void {
 		// See test_load_bad_alert_type() and test_load_bad_alert_trigger.
 		remove_filter( 'wp_stream_alert_types', array( $this, 'callback_load_bad_alert_register' ), 10, 1 );
 		remove_filter( 'wp_stream_alert_triggers', array( $this, 'callback_load_bad_alert_register' ), 10, 1 );
