@@ -5,6 +5,7 @@
  * phpcs:disable WordPress.WP.GlobalVariablesOverride.Prohibited
  */
 
+# Configured in docker-compose.yml.
 define( 'DB_NAME', 'wordpress' );
 define( 'DB_USER', 'wordpress' );
 define( 'DB_PASSWORD', 'password' );
@@ -26,7 +27,7 @@ $table_prefix = 'wp_';
 define( 'WP_DEBUG', true );
 define( 'JETPACK_DEV_DEBUG', true );
 
-define( 'ABSPATH', __DIR__ . '/' );
+define( 'ABSPATH', __DIR__ . '/wp/' );
 
 // For mercator.
 define( 'SUNRISE', true );

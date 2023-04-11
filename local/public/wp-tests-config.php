@@ -8,6 +8,7 @@
 
 define( 'WP_DEBUG', true );
 
+# Configured in docker-compose.yml.
 define( 'DB_NAME', 'wordpress_test' );
 define( 'DB_USER', 'root' );
 define( 'DB_PASSWORD', '' );
@@ -25,4 +26,4 @@ define( 'WP_PHP_BINARY', 'php' );
 
 define( 'WPLANG', '' );
 
-define( 'ABSPATH', __DIR__ . '/' );
+define( 'ABSPATH', __DIR__ . '/wp/' );
