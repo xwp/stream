@@ -45,8 +45,6 @@ We use npm as the canonical task runner for the project. The following commands 
 
 - `npm run cli -- wp info` where `wp info` is the CLI command to run inside the WordPress container. For example, use `npm run cli -- ls -lah` to list all files in the root of the WordPress installation.
 
-- `npm run compose -- up -d` where `up -d` is the `docker-compose` command for the WordPress container. For example, use `npm run compose -- down` and `npm run compose -- up -d` to restart the WordPres container.
-
 - `npm run phpunit` to run PHPunit tests inside the WordPress container.
 
 
