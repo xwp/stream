@@ -22,5 +22,3 @@ COPY php.ini /usr/local/etc/php/php.ini
 # Setup xdebug. The latest version supported by PHP 5.6 is 2.5.5.
 RUN	pecl install "xdebug-${XDEBUG_VERSION}"; \
 	docker-php-ext-enable xdebug
-
-COPY wait.sh /usr/local/bin/xwp_wait

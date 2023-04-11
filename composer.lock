@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7a03bad2f0a08cb48a59969d8a901ecd",
+    "content-hash": "2d6234c13da1c909f57717c8aec9175a",
     "packages": [
         {
             "name": "composer/installers",
@@ -7917,6 +7917,32 @@
             },
             "type": "wordpress-theme",
             "homepage": "https://wordpress.org/themes/twentytwentythree/"
+        },
+        {
+            "name": "xwp/wait-for",
+            "version": "0.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/xwp/io-php-wait-for.git",
+                "reference": "b254328a33cfd6791637e53df8658d7b3f46af37"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/xwp/io-php-wait-for/zipball/b254328a33cfd6791637e53df8658d7b3f46af37",
+                "reference": "b254328a33cfd6791637e53df8658d7b3f46af37",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "support": {
+                "source": "https://github.com/xwp/io-php-wait-for/tree/0.0.1"
+            },
+            "time": "2022-05-17T18:05:32+00:00"
         },
         {
             "name": "yoast/phpunit-polyfills",

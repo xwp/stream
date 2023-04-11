@@ -6,6 +6,9 @@
  * phpcs:disable Squiz.Commenting.FileComment.MissingPackageTag
  */
 
+// Rely on Composer autoload to pull in tooling helpers.
+require_once __DIR__ . '/wp-content/plugins/stream-src/vendor/autoload.php';
+
 define( 'WP_DEBUG', true );
 
 # Configured in docker-compose.yml.
@@ -30,3 +33,12 @@ define( 'WPLANG', '' );
 define( 'WP_CONTENT_DIR', __DIR__ . '/wp-content' );
 
 define( 'ABSPATH', __DIR__ . '/wp/' );
+
+// Ensure the DB host is ready to accept connections.
+$connection = new XWP\Wait_For\Tcp_Connection( DB_HOST, 3306 );
+
+try {
+	$connection->connect( 10 );
+} catch ( Exception $e ) {
+	trigger_error( $e->getMessage(), E_USER_ERROR ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error, WordPress.Security.EscapeOutput.OutputNotEscaped
+}

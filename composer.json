@@ -31,6 +31,7 @@
     "wpackagist-plugin/jetpack": "10.0",
     "wpackagist-plugin/user-switching": "1.5.5",
     "wpackagist-theme/twentytwentythree": "^1.0",
+    "xwp/wait-for": "^0.0.1",
     "yoast/phpunit-polyfills": "^1.0"
   },
   "config": {
