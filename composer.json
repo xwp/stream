@@ -29,7 +29,6 @@
     "wpackagist-plugin/easy-digital-downloads": "2.9.23",
     "wpackagist-plugin/jetpack": "10.0",
     "wpackagist-plugin/user-switching": "1.5.5",
-    "wpsh/local": "^0.2.3",
     "yoast/phpunit-polyfills": "^1.0"
   },
   "config": {
