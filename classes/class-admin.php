@@ -1086,10 +1086,6 @@ class Admin {
 	 * @return mixed
 	 */
 	public function get_user_meta( $user_id, $meta_key, $single = true ) {
-		if ( wp_stream_is_vip() && function_exists( 'get_user_attribute' ) ) {
-			return get_user_attribute( $user_id, $meta_key );
-		}
-
 		return get_user_meta( $user_id, $meta_key, $single );
 	}
 
