@@ -1100,10 +1100,6 @@ class Admin {
 	 * @return int|bool
 	 */
 	public function update_user_meta( $user_id, $meta_key, $meta_value, $prev_value = '' ) {
-		if ( wp_stream_is_vip() && function_exists( 'update_user_attribute' ) ) {
-			return update_user_attribute( $user_id, $meta_key, $meta_value );
-		}
-
 		return update_user_meta( $user_id, $meta_key, $meta_value, $prev_value );
 	}
 
@@ -1117,10 +1113,6 @@ class Admin {
 	 * @return bool
 	 */
 	public function delete_user_meta( $user_id, $meta_key, $meta_value = '' ) {
-		if ( wp_stream_is_vip() && function_exists( 'delete_user_attribute' ) ) {
-			return delete_user_attribute( $user_id, $meta_key, $meta_value );
-		}
-
 		return delete_user_meta( $user_id, $meta_key, $meta_value );
 	}
 }
