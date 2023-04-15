@@ -141,8 +141,6 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 	/**
 	 * Get a list of all current alert messages for current user.
 	 *
-	 * @todo update this for VIP. (get_user_meta)
-	 *
 	 * @return array List of alert messages
 	 */
 	public function get_messages() {

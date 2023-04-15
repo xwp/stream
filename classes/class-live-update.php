@@ -183,7 +183,7 @@ class Live_Update {
 			return $response;
 		}
 
-		$enable_stream_update = ( 'off' !== $this->plugin->admin->get_user_meta( get_current_user_id(), $this->user_meta_key ) );
+		$enable_stream_update = ( 'off' !== get_user_meta( get_current_user_id(), $this->user_meta_key ) );
 
 		// Register list table.
 		$this->list_table = new List_Table(
