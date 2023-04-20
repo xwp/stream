@@ -220,7 +220,7 @@ class Uninstall {
 		// Specific user meta.
 		foreach ( $this->user_meta as $meta_key ) {
 			$wpdb->query(
-				$wpdb->prepare( "DELETE FROM {$wpdb->usermeta} WHERE meta_key = {$wpdb->prefix}%s;", $meta_key )
+				$wpdb->prepare( "DELETE FROM {$wpdb->usermeta} WHERE meta_key = %s;", $wpdb->prefix . $meta_key )
 			);
 		}
 	}
