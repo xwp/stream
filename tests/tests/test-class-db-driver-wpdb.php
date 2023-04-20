@@ -115,6 +115,10 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 	public function test_purge_storage() {
 		global $wpdb;
 
+		if ( is_multisite() ) {
+			$this->markTestSkipped( 'This test requires single site.' );
+		}
+
 		// Test cases override table dropping queries to prevent them
 		// from being executed, but we need actual dropping here.
 		foreach ( $GLOBALS['wp_filter']['query'] as $priority => $filters ) {
@@ -154,6 +158,64 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 		$this->assertEmpty( $stream_meta_result );
 	}
 
+	// Test that the purge_storage() function removes database records as expected.
+	public function test_purge_storage_multisite() {
+		global $wpdb;
+
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'This test requires multisite.' );
+		}
+
+		// Test cases override table dropping queries to prevent them
+		// from being executed, but we need actual dropping here.
+		foreach ( $GLOBALS['wp_filter']['query'] as $priority => $filters ) {
+			foreach ( $filters as $filter => $data ) {
+				if ( false !== strpos( $filter, '_drop_temporary_table' ) ) {
+					unset( $filters[$filter] );
+					$GLOBALS['wp_filter']['query'][$priority] = $filters;
+				}
+			}
+		}
+
+		$this->assertNotEmpty( $this->driver->table );
+		$stream_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table}'", ARRAY_A );
+		$this->assertNotEmpty( $stream_result );
+		$this->assertNotEmpty( $this->driver->table_meta );
+		$stream_meta_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table_meta}'", ARRAY_A );
+		$this->assertNotEmpty( $stream_meta_result );
+
+		// Ensure the tables for the current site are not empty.
+		$blog_id = get_current_blog_id();
+		$stream_ids = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$this->driver->table} WHERE site_id = %d", $blog_id ) );
+		$this->assertGreaterThan( 0, count( $stream_ids ) );
+		foreach ( $stream_ids as $stream_id ) {
+			$stream_meta_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$this->driver->table_meta} WHERE record_id = %d", $stream_id ) );
+			$this->assertGreaterThan( 0, $stream_meta_count );
+		}
+
+		// Admin user access is needed to uninstall the plugin.
+		$admin_user = $this->factory->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_user );
+
+		// Trigger purge operation directly.
+		$uninstall = $this->driver->purge_storage( wp_stream_get_instance() );
+		$_REQUEST['nonce'] = wp_create_nonce( 'stream_uninstall_nonce' );
+
+		$uninstall->uninstall();
+
+		// On multisite, the tables are not deleted, but the records are.
+		$stream_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table}'", ARRAY_A );
+		$this->assertNotEmpty( $stream_result );
+		$stream_meta_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table_meta}'", ARRAY_A );
+		$this->assertNotEmpty( $stream_meta_result );
+
+		$stream_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$this->driver->table} WHERE site_id = %d", $blog_id ) );
+		$this->assertEquals( 0, $stream_count );
+		$stream_id_placeholders = implode( ', ', array_fill( 0, count( $stream_ids ), '%d' ) );
+		$stream_meta_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$this->driver->table_meta} WHERE record_id IN ( $stream_id_placeholders )", $stream_ids ) );
+		$this->assertEquals( 0, $stream_meta_count );
+	}
+
 	// Test that the purge_storage() function can only be called with admin capabilities.
 	// TODO: This throws a notice: "Test code or tested code did not (only) close its own output buffers".
 	public function test_purge_storage_requires_admin_caps() {
@@ -168,6 +230,10 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 	// Test that the purge_storage() function removes database records as expected when triggered via AJAX.
 	public function test_purge_storage_ajax() {
 		global $wpdb;
+
+		if ( is_multisite() ) {
+			$this->markTestSkipped( 'This test requires single site.' );
+		}
 
 		// Test cases override table dropping queries to prevent them
 		// from being executed, but we need actual dropping here.
