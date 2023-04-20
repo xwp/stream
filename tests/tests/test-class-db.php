@@ -104,6 +104,11 @@ class Test_DB extends WP_StreamTestCase {
 	}
 
 	public function test_existing_records() {
+		$dummy_data         = $this->dummy_stream_data();
+		$dummy_data['meta'] = $this->dummy_meta_data();
+
+		$stream_id = $this->db->insert( $dummy_data );
+
 		$summaries = $this->db->existing_records( 'summary' );
 		$this->assertNotEmpty( $summaries );
 

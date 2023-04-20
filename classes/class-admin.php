@@ -820,8 +820,8 @@ class Admin {
 		if ( ! defined( 'DISALLOW_FILE_MODS' ) || false === DISALLOW_FILE_MODS ) {
 			$url = add_query_arg(
 				array(
-					'action'          => 'wp_stream_uninstall',
-					'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
+					'action' => 'wp_stream_uninstall',
+					'nonce'  => wp_create_nonce( 'stream_uninstall_nonce' ),
 				),
 				admin_url( 'admin-ajax.php' )
 			);

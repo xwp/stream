@@ -392,7 +392,7 @@ class Test_Admin extends WP_StreamTestCase {
 
 		try {
 			$this->_handleAjax( 'wp_stream_filters' );
-		} catch ( WPAjaxDieStopException $e ) {}
+		} catch ( \WPAjaxDieStopException $e ) {}
 
 		// Check that the exception was thrown.
 		$this->assertTrue( isset( $e ) );

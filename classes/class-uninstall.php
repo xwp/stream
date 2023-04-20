@@ -52,6 +52,8 @@ class Uninstall {
 	 * Uninstall Stream by deleting its data
 	 */
 	public function uninstall() {
+		check_ajax_referer( 'stream_uninstall_nonce', 'nonce' );
+
 		$this->options = array(
 			$this->plugin->install->option_key,
 			$this->plugin->settings->option_key,
@@ -235,6 +237,10 @@ class Uninstall {
 	 */
 	private function deactivate() {
 		deactivate_plugins( $this->plugin->locations['plugin'] );
+
+		if ( defined( 'WP_STREAM_TESTS' ) && WP_STREAM_TESTS ) {
+			return true;
+		}
 
 		wp_safe_redirect(
 			add_query_arg(

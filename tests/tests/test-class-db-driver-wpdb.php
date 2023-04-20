@@ -12,10 +12,23 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 	public function setUp() {
 		parent::setUp();
 
-		$this->driver = new DB_Driver_WPDB();
+		$plugin = wp_stream_get_instance();
+		$plugin->install->install( $plugin->get_version() );
+
+		$this->driver = $plugin->db->driver;
+	}
+
+	public function tear_down()
+	{
+		parent::tear_down();
+
+		$plugin = wp_stream_get_instance();
+		$plugin->install->install( $plugin->get_version() );
 	}
 
 	public function test_construct() {
+		$this->assertInstanceOf( __NAMESPACE__ . '\DB_Driver_WPDB', $this->driver );
+
 		$this->assertNotEmpty( $this->driver->table );
 		$this->assertNotEmpty( $this->driver->table_meta );
 
@@ -96,6 +109,124 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 		$this->assertNotEmpty( $table_names );
 		$this->assertInternalType( 'array', $table_names );
 		$this->assertEquals( array( $this->driver->table, $this->driver->table_meta ), $table_names );
+	}
+
+	// Test that the purge_storage() function removes database records as expected.
+	public function test_purge_storage() {
+		global $wpdb;
+
+		// Test cases override table dropping queries to prevent them
+		// from being executed, but we need actual dropping here.
+		foreach ( $GLOBALS['wp_filter']['query'] as $priority => $filters ) {
+			foreach ( $filters as $filter => $data ) {
+				if ( false !== strpos( $filter, '_drop_temporary_table' ) ) {
+					unset( $filters[$filter] );
+					$GLOBALS['wp_filter']['query'][$priority] = $filters;
+				}
+			}
+		}
+
+		// Ensure that both the stream as well as the stream_meta tables currently exist.
+		$this->assertNotEmpty( $this->driver->table );
+		$stream_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table}'", ARRAY_A );
+		$this->assertNotEmpty( $stream_result );
+
+		$this->assertNotEmpty( $this->driver->table_meta );
+		$stream_meta_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table_meta}'", ARRAY_A );
+		$this->assertNotEmpty( $stream_meta_result );
+
+		// Admin user access is needed to uninstall the plugin.
+		$admin_user = $this->factory->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_user );
+
+		// Trigger purge operation directly.
+		$uninstall = $this->driver->purge_storage( wp_stream_get_instance() );
+		$_REQUEST['nonce'] = wp_create_nonce( 'stream_uninstall_nonce' );
+
+		$uninstall->uninstall();
+
+		// Check that the stream table was deleted.
+		$stream_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table}'", ARRAY_A );
+		$this->assertEmpty( $stream_result );
+
+		// Check that the stream_meta table was deleted.
+		$stream_meta_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table_meta}'", ARRAY_A );
+		$this->assertEmpty( $stream_meta_result );
+	}
+
+	// Test that the purge_storage() function can only be called with admin capabilities.
+	// TODO: This throws a notice: "Test code or tested code did not (only) close its own output buffers".
+	public function test_purge_storage_requires_admin_caps() {
+		$uninstall = $this->driver->purge_storage( wp_stream_get_instance() );
+		$_REQUEST['nonce'] = wp_create_nonce( 'stream_uninstall_nonce' );
+
+		$this->expectException( 'WPAjaxDieStopException' );
+		$this->expectExceptionMessage( 'You don&#039;t have sufficient privileges to do this action.' );
+		$uninstall->uninstall();
+	}
+
+	// Test that the purge_storage() function removes database records as expected when triggered via AJAX.
+	public function test_purge_storage_ajax() {
+		global $wpdb;
+
+		// Test cases override table dropping queries to prevent them
+		// from being executed, but we need actual dropping here.
+		foreach ( $GLOBALS['wp_filter']['query'] as $priority => $filters ) {
+			foreach ( $filters as $filter => $data ) {
+				if ( false !== strpos( $filter, '_drop_temporary_table' ) ) {
+					unset( $filters[$filter] );
+					$GLOBALS['wp_filter']['query'][$priority] = $filters;
+				}
+			}
+		}
+
+		// Ensure that both the stream as well as the stream_meta tables currently exist.
+		$this->assertNotEmpty( $this->driver->table );
+		$stream_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table}'", ARRAY_A );
+		$this->assertNotEmpty( $stream_result );
+
+		$this->assertNotEmpty( $this->driver->table_meta );
+		$stream_meta_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table_meta}'", ARRAY_A );
+		$this->assertNotEmpty( $stream_meta_result );
+
+		// Admin user access is needed to uninstall the plugin.
+		$admin_user = $this->factory->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_user );
+
+		// Trigger purge operation via AJAX.
+		$this->driver->purge_storage( wp_stream_get_instance() );
+		$_REQUEST['nonce'] = wp_create_nonce( 'stream_uninstall_nonce' );
+
+		do_action( 'wp_ajax_wp_stream_uninstall' );
+
+		// Check that the stream table was deleted.
+		$stream_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table}'", ARRAY_A );
+		$this->assertEmpty( $stream_result );
+
+		// Check that the stream_meta table was deleted.
+		$stream_meta_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table_meta}'", ARRAY_A );
+		$this->assertEmpty( $stream_meta_result );
+	}
+
+	// Test that the purge_storage() function requires a nonce when triggered via AJAX.
+	// TODO: This throws a notice: "Test code or tested code did not (only) close its own output buffers".
+	public function test_purge_storage_ajax_without_nonce() {
+		$this->driver->purge_storage( wp_stream_get_instance() );
+
+		$this->expectException( 'WPAjaxDieStopException' );
+		$this->expectExceptionMessage( '-1' );
+		do_action( 'wp_ajax_wp_stream_uninstall' );
+	}
+
+	// Test that the purge_storage() function requires the correct nonce when triggered via AJAX.
+	// TODO: This throws a notice: "Test code or tested code did not (only) close its own output buffers".
+	public function test_purge_storage_ajax_with_mismatched_nonce() {
+		$this->driver->purge_storage( wp_stream_get_instance() );
+		$_REQUEST['nonce'] = wp_create_nonce( 'save_nonce' );
+
+		$this->expectException( 'WPAjaxDieStopException' );
+		$this->expectExceptionMessage( '-1' );
+		do_action( 'wp_ajax_wp_stream_uninstall' );
 	}
 
 	private function dummy_stream_data() {

@@ -382,22 +382,15 @@ class Test_Alerts extends WP_StreamTestCase {
 		wp_set_current_user( $user_id );
 
 		$alerts = new Alerts( $this->plugin );
-		try {
-			$_POST['wp_stream_trigger_author'] = 'me';
-			$_POST['wp_stream_trigger_context'] = 'posts-post';
-			$_POST['wp_stream_trigger_action'] = 'edit';
-			$_POST['wp_stream_alert_type'] = 'highlight';
 
-			$this->expectException( 'WPAjaxDieStopException' );
-			$this->_handleAjax( 'save_new_alert' );
-		} catch ( \WPAjaxDieContinueException $e ) {
-			$exception = $e;
-			// Check that the exception was thrown.
-			$this->assertTrue( isset( $exception ) );
+		$_POST['wp_stream_trigger_author'] = 'me';
+		$_POST['wp_stream_trigger_context'] = 'posts-post';
+		$_POST['wp_stream_trigger_action'] = 'edit';
+		$_POST['wp_stream_alert_type'] = 'highlight';
 
-			// The output should be a -1 for failure.
-			$this->assertEquals( '-1', $exception->getMessage() );
-		}
+		$this->expectException( 'WPAjaxDieStopException' );
+		$this->expectExceptionMessage( '-1' );
+		$this->_handleAjax( 'save_new_alert' );
 	}
 
 	/**
@@ -409,23 +402,16 @@ class Test_Alerts extends WP_StreamTestCase {
 		wp_set_current_user( $user_id );
 
 		$alerts = new Alerts( $this->plugin );
-		try {
-			$_POST['wp_stream_trigger_author'] = 'me';
-			$_POST['wp_stream_trigger_context'] = 'posts-post';
-			$_POST['wp_stream_trigger_action'] = 'edit';
-			$_POST['wp_stream_alert_type'] = 'highlight';
-			$_POST['wp_stream_alerts_nonce'] = 'invalid';
 
-			$this->expectException( 'WPAjaxDieStopException' );
-			$this->_handleAjax( 'save_new_alert' );
-		} catch ( \WPAjaxDieContinueException $e ) {
-			$exception = $e;
-			// Check that the exception was thrown.
-			$this->assertTrue( isset( $exception ) );
+		$_POST['wp_stream_trigger_author'] = 'me';
+		$_POST['wp_stream_trigger_context'] = 'posts-post';
+		$_POST['wp_stream_trigger_action'] = 'edit';
+		$_POST['wp_stream_alert_type'] = 'highlight';
+		$_POST['wp_stream_alerts_nonce'] = 'invalid';
 
-			// The output should be a -1 for failure.
-			$this->assertEquals( '-1', $exception->getMessage() );
-		}
+		$this->expectException( 'WPAjaxDieStopException' );
+		$this->expectExceptionMessage( '-1' );
+		$this->_handleAjax( 'save_new_alert' );
 	}
 
 	/**
@@ -437,23 +423,16 @@ class Test_Alerts extends WP_StreamTestCase {
 		wp_set_current_user( $user_id );
 
 		$alerts = new Alerts( $this->plugin );
-		try {
-			$_POST['wp_stream_trigger_author'] = 'me';
-			$_POST['wp_stream_trigger_context'] = 'posts-post';
-			$_POST['wp_stream_trigger_action'] = 'edit';
-			$_POST['wp_stream_alert_type'] = 'highlight';
-			$_POST['wp_stream_alerts_nonce'] = wp_create_nonce( 'some_nonce' );
 
-			$this->expectException( 'WPAjaxDieStopException' );
-			$this->_handleAjax( 'save_new_alert' );
-		} catch ( \WPAjaxDieContinueException $e ) {
-			$exception = $e;
-			// Check that the exception was thrown.
-			$this->assertTrue( isset( $exception ) );
+		$_POST['wp_stream_trigger_author'] = 'me';
+		$_POST['wp_stream_trigger_context'] = 'posts-post';
+		$_POST['wp_stream_trigger_action'] = 'edit';
+		$_POST['wp_stream_alert_type'] = 'highlight';
+		$_POST['wp_stream_alerts_nonce'] = wp_create_nonce( 'some_nonce' );
 
-			// The output should be a -1 for failure.
-			$this->assertEquals( '-1', $exception->getMessage() );
-		}
+		$this->expectException( 'WPAjaxDieStopException' );
+		$this->expectExceptionMessage( '-1' );
+		$this->_handleAjax( 'save_new_alert' );
 	}
 
 	/**
@@ -465,23 +444,16 @@ class Test_Alerts extends WP_StreamTestCase {
 		wp_set_current_user( $user_id );
 
 		$alerts = new Alerts( $this->plugin );
-		try {
-			$_POST['wp_stream_trigger_author'] = 'me';
-			$_POST['wp_stream_trigger_context'] = 'posts-post';
-			$_POST['wp_stream_trigger_action'] = 'edit';
-			$_POST['wp_stream_alert_type'] = 'highlight';
-			$_POST['wp_stream_alerts_nonce'] = wp_create_nonce( 'save_alert' );
 
-			$this->expectException( 'WPAjaxDieStopException' );
-			$this->_handleAjax( 'save_new_alert' );
-		} catch ( \WPAjaxDieContinueException $e ) {
-			$exception = $e;
-			// Check that the exception was thrown.
-			$this->assertTrue( isset( $exception ) );
+		$_POST['wp_stream_trigger_author'] = 'me';
+		$_POST['wp_stream_trigger_context'] = 'posts-post';
+		$_POST['wp_stream_trigger_action'] = 'edit';
+		$_POST['wp_stream_alert_type'] = 'highlight';
+		$_POST['wp_stream_alerts_nonce'] = wp_create_nonce( 'save_alert' );
 
-			// The output should be a -1 for failure.
-			$this->assertEquals( '-1', $exception->getMessage() );
-		}
+		$this->expectException( 'WPAjaxDieStopException' );
+		$this->expectExceptionMessage( 'You don&#039;t have sufficient privileges to do this action.' );
+		$this->_handleAjax( 'save_new_alert' );
 	}
 
 	function test_get_new_alert_triggers_notifications() {
@@ -513,23 +485,16 @@ class Test_Alerts extends WP_StreamTestCase {
 		wp_set_current_user( $user_id );
 
 		$alerts = new Alerts( $this->plugin );
-		try {
-			$_POST['wp_stream_trigger_author'] = 'me';
-			$_POST['wp_stream_trigger_context'] = 'posts-post';
-			$_POST['wp_stream_trigger_action'] = 'edit';
-			$_POST['wp_stream_alert_type'] = 'highlight';
-			$_POST['wp_stream_alerts_nonce'] = wp_create_nonce( 'save_alert' );
 
-			$this->expectException( 'WPAjaxDieStopException' );
-			$this->_handleAjax( 'get_new_alert_triggers_notifications' );
-		} catch ( \WPAjaxDieContinueException $e ) {
-			$exception = $e;
-			// Check that the exception was thrown.
-			$this->assertTrue( isset( $exception ) );
+		$_POST['wp_stream_trigger_author'] = 'me';
+		$_POST['wp_stream_trigger_context'] = 'posts-post';
+		$_POST['wp_stream_trigger_action'] = 'edit';
+		$_POST['wp_stream_alert_type'] = 'highlight';
+		$_POST['wp_stream_alerts_nonce'] = wp_create_nonce( 'save_alert' );
 
-			// The output should be a -1 for failure.
-			$this->assertEquals( '-1', $exception->getMessage() );
-		}
+		$this->expectException( 'WPAjaxDieStopException' );
+		$this->expectExceptionMessage( 'You don&#039;t have sufficient privileges to do this action.' );
+		$this->_handleAjax( 'get_new_alert_triggers_notifications' );
 	}
 
 	private function dummy_alert_data() {
