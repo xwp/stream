@@ -223,10 +223,6 @@ class Uninstall {
 	private function deactivate() {
 		deactivate_plugins( $this->plugin->locations['plugin'] );
 
-		if ( defined( 'WP_STREAM_TESTS' ) && WP_STREAM_TESTS ) {
-			return true;
-		}
-
 		wp_safe_redirect(
 			add_query_arg(
 				array(
