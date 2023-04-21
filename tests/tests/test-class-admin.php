@@ -448,6 +448,22 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->assertTrue( has_action( 'wp_ajax_wp_stream_uninstall' ), 'Uninstall action registered' );
 	}
 
+	public function test_action_wp_stream_uninstall_success() {
+		$this->login_with_role( 'administrator' );
+		$_GET['nonce'] = wp_create_nonce( 'stream_uninstall_nonce' );
+
+		$db_driver_copy = $this->plugin->db->driver; // Save the original driver instance.
+
+		// Expect the purge_storage() call just once.
+		$db_driver_mock = $this->createMock( get_class( $this->plugin->db->driver ) );
+		$db_driver_mock->expects( $this->once() )->method( 'purge_storage' );
+		$this->plugin->db->driver = $db_driver_mock;
+
+		$this->_handleAjax( 'wp_stream_uninstall' );
+
+		$this->plugin->db->driver = $db_driver_copy; // Restore the original.
+	}
+
 	// Test that the action_wp_stream_uninstall() function requires a nonce when triggered via AJAX.
 	public function test_action_wp_stream_uninstall_without_nonce() {
 		$this->login_with_role( 'administrator' );
