@@ -133,8 +133,7 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 		$this->assertNotEmpty( $stream_meta_result );
 
 		// Trigger purge operation directly.
-		$uninstall = $this->driver->purge_storage( wp_stream_get_instance() );
-		$uninstall->uninstall();
+		$this->driver->purge_storage( wp_stream_get_instance() );
 
 		// Check that the stream table was deleted.
 		$stream_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table}'", ARRAY_A );
@@ -174,8 +173,7 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 		}
 
 		// Trigger purge operation directly.
-		$uninstall = $this->driver->purge_storage( wp_stream_get_instance() );
-		$uninstall->uninstall();
+		$this->driver->purge_storage( wp_stream_get_instance() );
 
 		// On multisite, the tables are not deleted, but the records are.
 		$stream_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table}'", ARRAY_A );
