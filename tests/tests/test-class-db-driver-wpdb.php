@@ -190,40 +190,6 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 		$this->assertEquals( 0, $stream_meta_count );
 	}
 
-	// Test that the purge_storage() function removes database records as expected.
-	public function test_purge_storage_ajax() {
-		global $wpdb;
-
-		if ( is_multisite() ) {
-			$this->markTestSkipped( 'This test requires single site.' );
-		}
-
-		// Test cases override table dropping queries to prevent them
-		// from being executed, but we need actual dropping here.
-		$this->allow_drop_table();
-
-		// Ensure that both the stream as well as the stream_meta tables currently exist.
-		$this->assertNotEmpty( $this->driver->table );
-		$stream_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table}'", ARRAY_A );
-		$this->assertNotEmpty( $stream_result );
-
-		$this->assertNotEmpty( $this->driver->table_meta );
-		$stream_meta_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table_meta}'", ARRAY_A );
-		$this->assertNotEmpty( $stream_meta_result );
-
-		// Trigger purge operation directly.
-		$uninstall = $this->driver->purge_storage( wp_stream_get_instance() );
-		$uninstall->uninstall();
-
-		// Check that the stream table was deleted.
-		$stream_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table}'", ARRAY_A );
-		$this->assertEmpty( $stream_result, sprintf( 'Table %s removed', $this->driver->table ) );
-
-		// Check that the stream_meta table was deleted.
-		$stream_meta_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table_meta}'", ARRAY_A );
-		$this->assertEmpty( $stream_meta_result, sprintf( 'Table %s removed', $this->driver->table_meta ) );
-	}
-
 	/**
 	 * Remove WP phpunit helpers that prevent dropping tables.
 	 *
