@@ -139,14 +139,8 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 		$stream_meta_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table_meta}'", ARRAY_A );
 		$this->assertNotEmpty( $stream_meta_result );
 
-		// Admin user access is needed to uninstall the plugin.
-		$admin_user = $this->factory->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $admin_user );
-
 		// Trigger purge operation directly.
 		$uninstall = $this->driver->purge_storage( wp_stream_get_instance() );
-		$_REQUEST['nonce'] = wp_create_nonce( 'stream_uninstall_nonce' );
-
 		$uninstall->uninstall();
 
 		// Check that the stream table was deleted.
@@ -193,14 +187,8 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 			$this->assertGreaterThan( 0, $stream_meta_count );
 		}
 
-		// Admin user access is needed to uninstall the plugin.
-		$admin_user = $this->factory->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $admin_user );
-
 		// Trigger purge operation directly.
 		$uninstall = $this->driver->purge_storage( wp_stream_get_instance() );
-		$_REQUEST['nonce'] = wp_create_nonce( 'stream_uninstall_nonce' );
-
 		$uninstall->uninstall();
 
 		// On multisite, the tables are not deleted, but the records are.
