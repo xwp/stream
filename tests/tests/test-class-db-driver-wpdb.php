@@ -260,9 +260,7 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 		wp_set_current_user( $admin_user );
 
 		// Trigger purge operation via AJAX.
-		$this->driver->purge_storage( wp_stream_get_instance() );
 		$_REQUEST['nonce'] = wp_create_nonce( 'stream_uninstall_nonce' );
-
 		do_action( 'wp_ajax_wp_stream_uninstall' );
 
 		// Check that the stream table was deleted.
