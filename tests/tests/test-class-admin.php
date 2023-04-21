@@ -448,6 +448,10 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->assertEmpty( get_user_meta( $user_id, $key, true ) );
 	}
 
+	public function test_action_wp_stream_uninstall_registered() {
+		$this->assertTrue( has_action( 'wp_ajax_wp_stream_uninstall' ), 'Uninstall action registered' );
+	}
+
 	private function dummy_stream_data() {
 		return array(
 			'object_id' => null,
