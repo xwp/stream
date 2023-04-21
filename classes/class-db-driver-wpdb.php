@@ -173,22 +173,7 @@ class DB_Driver_WPDB implements DB_Driver {
 	 * @return \WP_Stream\Uninstall
 	 */
 	public function purge_storage( $plugin ) {
-		// Avoid duplicate uninstall action.
-		// TODO: This is nasty code right now due to the fact the object instance is only known to the action.
-		// The architecture around how the uninstall action is registered should be rethought.
-		if ( has_action( 'wp_ajax_wp_stream_uninstall' ) ) {
-			// Get a list of all callbacks registered to the default priority 10 for the uninstall action.
-			$callbacks = array_values( $GLOBALS['wp_filter']['wp_ajax_wp_stream_uninstall']->callbacks[10] );
-			// From that list, retrieve function of the first (and only) callback.
-			$callback_function = $callbacks[0]['function'];
-			// The callback's first element should be the object instance of the Uninstall class.
-			$uninstall = $callback_function[0];
-
-			return $uninstall;
-		}
-
 		$uninstall = new Uninstall( $plugin );
-		add_action( 'wp_ajax_wp_stream_uninstall', array( $uninstall, 'uninstall' ) );
 
 		return $uninstall;
 	}
