@@ -377,26 +377,18 @@ class Test_Admin extends WP_StreamTestCase {
 	 * @requires PHPUnit 5.7
 	 */
 	public function test_ajax_filters() {
-		$user = new \WP_User( get_current_user_id() );
-
 		$this->_setRole( 'subscriber' );
+
+		$user = new \WP_User( get_current_user_id() );
 
 		$_POST['filter'] = 'user_id';
 		$_POST['q'] = $user->display_name;
 		$_POST['nonce'] = wp_create_nonce( 'stream_filters_user_search_nonce' );
 
 		$this->expectException( 'WPAjaxDieStopException' );
+		$this->expectExceptionMessage( '-1' );
 
-		try {
-			$this->_handleAjax( 'wp_stream_filters' );
-		} catch ( \WPAjaxDieStopException $e ) {}
-
-		// Check that the exception was thrown.
-		$this->assertTrue( isset( $e ) );
-
-		// The output should be a -1 for failure.
-		$this->assertEquals( '-1', $e->getMessage() );
-		unset( $e );
+		$this->_handleAjax( 'wp_stream_filters' );
 
 		$this->_setRole( 'administrator' );
 
