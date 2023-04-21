@@ -14,10 +14,6 @@ class Test_WP_Stream_Connector_Editor extends WP_StreamTestCase {
 		$this->mock->register();
 	}
 
-	public function tearDown() {
-		parent::tearDown();
-	}
-
 	public function test_log_changes() {
 		$theme  = wp_get_theme( 'twentytwenty' );
 		$plugin = get_plugins()['hello.php'];

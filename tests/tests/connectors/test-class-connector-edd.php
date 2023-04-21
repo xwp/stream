@@ -27,13 +27,6 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 	}
 
 	/**
-	 * Runs after each test
-	 */
-	public function tearDown() {
-		parent::tearDown();
-	}
-
-	/**
 	 * Create a download
 	 *
 	 * @return int
