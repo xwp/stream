@@ -121,14 +121,7 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 
 		// Test cases override table dropping queries to prevent them
 		// from being executed, but we need actual dropping here.
-		foreach ( $GLOBALS['wp_filter']['query'] as $priority => $filters ) {
-			foreach ( $filters as $filter => $data ) {
-				if ( false !== strpos( $filter, '_drop_temporary_table' ) ) {
-					unset( $filters[$filter] );
-					$GLOBALS['wp_filter']['query'][$priority] = $filters;
-				}
-			}
-		}
+		$this->allow_drop_table();
 
 		// Ensure that both the stream as well as the stream_meta tables currently exist.
 		$this->assertNotEmpty( $this->driver->table );
