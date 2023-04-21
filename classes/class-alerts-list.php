@@ -112,7 +112,7 @@ class Alerts_List {
 	public function column_data( $column_name, $post_id ) {
 
 		$alert = $this->plugin->alerts->get_alert( $post_id );
-		if ( ! $alert ) {
+		if ( false === $alert ) {
 			return;
 		}
 
