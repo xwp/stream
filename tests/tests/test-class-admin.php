@@ -15,6 +15,10 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->admin = $this->plugin->admin;
 	}
 
+	public function test_logged_out_by_default() {
+		$this->assertFalse( is_user_logged_in(), 'Run tests as logged-out user by default' );
+	}
+
 	public function test_construct() {
 		$this->assertNotEmpty( $this->admin->plugin );
 		$this->assertInstanceOf( '\WP_Stream\Plugin', $this->admin->plugin );
@@ -450,6 +454,48 @@ class Test_Admin extends WP_StreamTestCase {
 
 	public function test_action_wp_stream_uninstall_registered() {
 		$this->assertTrue( has_action( 'wp_ajax_wp_stream_uninstall' ), 'Uninstall action registered' );
+	}
+
+	// Test that the action_wp_stream_uninstall() function requires a nonce when triggered via AJAX.
+	public function test_action_wp_stream_uninstall_without_nonce() {
+		$this->login_with_role( 'administrator' );
+
+		$this->expectException( 'WPAjaxDieStopException' );
+		$this->expectExceptionMessage( '-1' );
+
+		$this->_handleAjax( 'wp_stream_uninstall' );
+	}
+
+	// Test that the action_wp_stream_uninstall() function can only be called with admin capabilities.
+	public function test_action_wp_stream_uninstall_requires_admin_caps() {
+		$_GET['nonce'] = wp_create_nonce( 'stream_uninstall_nonce' );
+
+		$this->expectException( 'WPAjaxDieStopException' );
+		$this->expectExceptionMessage( 'You don&#039;t have sufficient privileges to do this action.' );
+
+		$this->_handleAjax( 'wp_stream_uninstall' );
+	}
+
+	public function test_action_wp_stream_uninstall_not_available_to_non_admins() {
+		$this->login_with_role( 'editor' );
+
+		$_GET['nonce'] = wp_create_nonce( 'stream_uninstall_nonce' );
+
+		$this->expectException( 'WPAjaxDieStopException' );
+		$this->expectExceptionMessage( 'You don&#039;t have sufficient privileges to do this action.' );
+
+		$this->_handleAjax( 'wp_stream_uninstall' );
+	}
+
+	public function test_action_wp_stream_uninstall_with_mismatched_nonce() {
+		$this->login_with_role( 'administrator' );
+
+		$_GET['nonce'] = wp_create_nonce( 'random_test_nonce' );
+
+		$this->expectException( 'WPAjaxDieStopException' );
+		$this->expectExceptionMessage( '-1' );
+
+		$this->_handleAjax( 'wp_stream_uninstall' );
 	}
 
 	private function dummy_stream_data() {
