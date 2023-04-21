@@ -67,12 +67,12 @@ function xwp_install_edd() {
 
 	edd_install();
 
-	global $current_user, $edd_options;
+	global $edd_options;
 
 	$edd_options = get_option( 'edd_settings' );
 
-	$current_user = new WP_User(1);
-	$current_user->set_role('administrator');
+	$user = new WP_User(1);
+	$user->set_role('administrator');
 	wp_update_user( array( 'ID' => 1, 'first_name' => 'Admin', 'last_name' => 'User' ) );
 	add_filter( 'edd_log_email_errors', '__return_false' );
 
