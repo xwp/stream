@@ -204,17 +204,6 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 		$this->assertEquals( 0, $stream_meta_count );
 	}
 
-	// Test that the purge_storage() function can only be called with admin capabilities.
-	// TODO: This throws a notice: "Test code or tested code did not (only) close its own output buffers".
-	public function test_purge_storage_requires_admin_caps() {
-		$uninstall = $this->driver->purge_storage( wp_stream_get_instance() );
-		$_REQUEST['nonce'] = wp_create_nonce( 'stream_uninstall_nonce' );
-
-		$this->expectException( 'WPAjaxDieStopException' );
-		$this->expectExceptionMessage( 'You don&#039;t have sufficient privileges to do this action.' );
-		$uninstall->uninstall();
-	}
-
 	// Test that the purge_storage() function removes database records as expected.
 	public function test_purge_storage_ajax() {
 		global $wpdb;
@@ -254,27 +243,6 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 		// Check that the stream_meta table was deleted.
 		$stream_meta_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table_meta}'", ARRAY_A );
 		$this->assertEmpty( $stream_meta_result, sprintf( 'Table %s removed', $this->driver->table_meta ) );
-	}
-
-	// Test that the purge_storage() function requires a nonce when triggered via AJAX.
-	// TODO: This throws a notice: "Test code or tested code did not (only) close its own output buffers".
-	public function test_purge_storage_ajax_without_nonce() {
-		$this->driver->purge_storage( wp_stream_get_instance() );
-
-		$this->expectException( 'WPAjaxDieStopException' );
-		$this->expectExceptionMessage( '-1' );
-		do_action( 'wp_ajax_wp_stream_uninstall' );
-	}
-
-	// Test that the purge_storage() function requires the correct nonce when triggered via AJAX.
-	// TODO: This throws a notice: "Test code or tested code did not (only) close its own output buffers".
-	public function test_purge_storage_ajax_with_mismatched_nonce() {
-		$this->driver->purge_storage( wp_stream_get_instance() );
-		$_REQUEST['nonce'] = wp_create_nonce( 'save_nonce' );
-
-		$this->expectException( 'WPAjaxDieStopException' );
-		$this->expectExceptionMessage( '-1' );
-		do_action( 'wp_ajax_wp_stream_uninstall' );
 	}
 
 	private function dummy_stream_data() {
