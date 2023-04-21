@@ -219,6 +219,10 @@ class Test_Alerts extends WP_StreamTestCase {
 	function test_load_alerts_settings() {
 		$alerts = new Alerts( $this->plugin );
 
+		// Create administrator user to test with.
+		$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
 		$data = $this->dummy_alert_data();
 		$data->ID = 0;
 		$alert = new Alert( $data, $this->plugin );
@@ -230,7 +234,6 @@ class Test_Alerts extends WP_StreamTestCase {
 			$this->_handleAjax( 'load_alerts_settings' );
 		} catch ( \WPAjaxDieContinueException $e ) {
 			// We expected this, do nothing.
-			$exception = $e;
 		}
 
 		$response = json_decode( $this->_last_response );
@@ -238,11 +241,16 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->assertObjectHasAttribute( 'success', $response );
 		$this->assertTrue( $response->success );
 		$this->assertObjectHasAttribute( 'data', $response );
-
+		$this->assertObjectHasAttribute( 'html', $response->data );
+		$this->assertStringContainsString( 'Highlight this alert on the Stream records page.', $response->data->html );
 	}
 
 	function test_load_alerts_settings_bad_alert_type() {
 		$alerts = new Alerts( $this->plugin );
+
+		// Create administrator user to test with.
+		$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
 
 		$data = $this->dummy_alert_data();
 		$data->ID = 0;
@@ -254,9 +262,45 @@ class Test_Alerts extends WP_StreamTestCase {
 			$this->_handleAjax( 'load_alerts_settings' );
 		} catch ( \WPAjaxDieContinueException $e ) {
 			// We expected this, do nothing.
-			$exception = $e;
 		}
 
+		// TODO: This returns an empty 'success => true' response. It should probably return a failure response instead - 400 Bad Request?
+		$response = json_decode( $this->_last_response );
+		$this->assertInternalType( 'object', $response );
+		$this->assertObjectHasAttribute( 'success', $response );
+		$this->assertTrue( $response->success );
+		$this->assertObjectHasAttribute( 'data', $response );
+		$this->assertObjectHasAttribute( 'html', $response->data );
+		$this->assertEmpty( $response->data->html );
+	}
+
+	function test_load_alerts_settings_missing_caps() {
+		$alerts = new Alerts( $this->plugin );
+
+		// Create a regular user for testing.
+		$user_id = $this->factory->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $user_id );
+
+		$data = $this->dummy_alert_data();
+		$data->ID = 0;
+		$alert = new Alert( $data, $this->plugin );
+		$post_id = $alert->save();
+
+		try {
+			$_POST['post_id']    = $post_id;
+			$_POST['alert_type'] = 'highlight';
+			$this->_handleAjax( 'load_alerts_settings' );
+		} catch ( \WPAjaxDieContinueException $e ) {
+			// We expected this, do nothing.
+		}
+
+		$response = json_decode( $this->_last_response );
+		$this->assertInternalType( 'object', $response );
+		$this->assertObjectHasAttribute( 'success', $response );
+		$this->assertFalse( $response->success );
+		$this->assertObjectHasAttribute( 'data', $response );
+		$this->assertObjectHasAttribute( 'message', $response->data );
+		$this->assertEquals( 'You do not have permission to do this.', $response->data->message );
 	}
 
 	function test_display_triggers_box() {
