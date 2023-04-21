@@ -265,11 +265,11 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 
 		// Check that the stream table was deleted.
 		$stream_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table}'", ARRAY_A );
-		$this->assertEmpty( $stream_result );
+		$this->assertEmpty( $stream_result, sprintf( 'Table %s removed', $this->driver->table ) );
 
 		// Check that the stream_meta table was deleted.
 		$stream_meta_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table_meta}'", ARRAY_A );
-		$this->assertEmpty( $stream_meta_result );
+		$this->assertEmpty( $stream_meta_result, sprintf( 'Table %s removed', $this->driver->table_meta ) );
 	}
 
 	// Test that the purge_storage() function requires a nonce when triggered via AJAX.
