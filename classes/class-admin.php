@@ -1136,7 +1136,7 @@ class Admin {
 		check_ajax_referer( 'stream_uninstall_nonce', 'nonce' );
 
 		// Verify current user's permissions before proceeding.
-		if ( ! current_user_can( $this->plugin->admin->settings_cap ) ) {
+		if ( ! current_user_can( $this->settings_cap ) ) {
 			wp_die(
 				esc_html__( "You don't have sufficient privileges to do this action.", 'stream' )
 			);
