@@ -13,18 +13,6 @@ class Test_Admin extends WP_StreamTestCase {
 		parent::setUp();
 
 		$this->admin = $this->plugin->admin;
-		$this->assertNotEmpty( $this->admin );
-
-		//Add admin user to test caps
-		// We need to change user to verify editing option as admin or editor
-		$administrator_id = $this->factory->user->create(
-			array(
-				'role'       => 'administrator',
-				'user_login' => 'test_admin',
-				'email'      => 'test@land.com',
-			)
-		);
-		wp_set_current_user( $administrator_id );
 	}
 
 	public function test_construct() {
@@ -135,6 +123,8 @@ class Test_Admin extends WP_StreamTestCase {
 		global $menu;
 		$menu = array(); //phpcs override okay
 
+		$this->login_with_role( 'administrator' );
+
 		do_action( 'admin_menu' );
 
 		$this->assertNotEmpty( $this->admin->screen_id );
@@ -222,6 +212,8 @@ class Test_Admin extends WP_StreamTestCase {
 	 * Also tests private method erase_stream_records
 	 */
 	public function test_wp_ajax_reset() {
+		$this->login_with_role( 'administrator' );
+
 		$_REQUEST['wp_stream_nonce']       = wp_create_nonce( 'stream_nonce' );
 		$_REQUEST['wp_stream_nonce_reset'] = wp_create_nonce( 'stream_nonce_reset' );
 
@@ -351,7 +343,8 @@ class Test_Admin extends WP_StreamTestCase {
 	 * Also tests private method role_can_view
 	 */
 	public function test_filter_user_caps() {
-		$user = new \WP_User( get_current_user_id() );
+		$user_id = $this->login_with_role( 'administrator' );
+		$user = new \WP_User( $user_id );
 
 		$this->plugin->settings->options['general_role_access'] = array( 'administrator' );
 		$this->assertTrue( $user->has_cap( $this->admin->view_cap ) );
@@ -414,7 +407,7 @@ class Test_Admin extends WP_StreamTestCase {
 	}
 
 	public function test_get_users_record_meta() {
-		$user_id = get_current_user_id();
+		$user_id = $this->login_with_role( 'administrator' );
 		$authors = array(
 			$user_id => wp_get_current_user(),
 		);
@@ -427,29 +420,32 @@ class Test_Admin extends WP_StreamTestCase {
 	}
 
 	public function test_get_user_meta() {
-		$key   = 'message_1';
-		$value = 'It is dangerous to remain here. You must leave within two days.';
-		update_user_meta( get_current_user_id(), $key, $value );
-		$this->assertEquals( $this->admin->get_user_meta( get_current_user_id(), $key, true ), $value );
+		$user_id = $this->login_with_role( 'administrator' );
+		$key     = 'message_1';
+		$value   = 'It is dangerous to remain here. You must leave within two days.';
+		update_user_meta( $user_id, $key, $value );
+		$this->assertEquals( $this->admin->get_user_meta( $user_id, $key, true ), $value );
 	}
 
 	public function test_update_user_meta() {
-		$key   = 'message_2';
-		$value = 'I understand. It is important that you believe me. Look behind you.';
-		$this->admin->update_user_meta( get_current_user_id(), $key, $value );
-		$this->assertEquals( get_user_meta( get_current_user_id(), $key, true ), $value );
+		$user_id = $this->login_with_role( 'administrator' );
+		$key     = 'message_2';
+		$value   = 'I understand. It is important that you believe me. Look behind you.';
+		$this->admin->update_user_meta( $user_id, $key, $value );
+		$this->assertEquals( get_user_meta( $user_id, $key, true ), $value );
 	}
 
 	public function test_delete_user_meta() {
-		$key   = 'message_3';
-		$value = 'I was David Bowman.';
+		$user_id = $this->login_with_role( 'administrator' );
+		$key     = 'message_3';
+		$value   = 'I was David Bowman.';
 
-		update_user_meta( get_current_user_id(), $key, $value );
-		$this->assertEquals( get_user_meta( get_current_user_id(), $key, true ), $value );
+		update_user_meta( $user_id, $key, $value );
+		$this->assertEquals( get_user_meta( $user_id, $key, true ), $value );
 
-		$this->admin->delete_user_meta( get_current_user_id(), $key );
+		$this->admin->delete_user_meta( $user_id, $key );
 
-		$this->assertEmpty( get_user_meta( get_current_user_id(), $key, true ) );
+		$this->assertEmpty( get_user_meta( $user_id, $key, true ) );
 	}
 
 	private function dummy_stream_data() {
@@ -474,5 +470,25 @@ class Test_Admin extends WP_StreamTestCase {
 			'meta_key'   => 'space_helmet',
 			'meta_value' => 'false',
 		);
+	}
+
+	/**
+	 * Login with a specific role.
+	 *
+	 * @param  string $role Use role.
+	 * @return int User ID.
+	 */
+	private function login_with_role( $role ) {
+		$user_id = $this->factory->user->create(
+			array(
+				'role'       => $role,
+				'user_login' => 'test_admin',
+				'email'      => 'test@land.com',
+			)
+		);
+
+		wp_set_current_user( $user_id );
+
+		return $user_id;
 	}
 }
