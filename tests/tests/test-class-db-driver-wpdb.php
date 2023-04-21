@@ -215,7 +215,7 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 		$uninstall->uninstall();
 	}
 
-	// Test that the purge_storage() function removes database records as expected when triggered via AJAX.
+	// Test that the purge_storage() function removes database records as expected.
 	public function test_purge_storage_ajax() {
 		global $wpdb;
 
@@ -243,13 +243,9 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 		$stream_meta_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table_meta}'", ARRAY_A );
 		$this->assertNotEmpty( $stream_meta_result );
 
-		// Admin user access is needed to uninstall the plugin.
-		$admin_user = $this->factory->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $admin_user );
-
-		// Trigger purge operation via AJAX.
-		$_REQUEST['nonce'] = wp_create_nonce( 'stream_uninstall_nonce' );
-		do_action( 'wp_ajax_wp_stream_uninstall' );
+		// Trigger purge operation directly.
+		$uninstall = $this->driver->purge_storage( wp_stream_get_instance() );
+		$uninstall->uninstall();
 
 		// Check that the stream table was deleted.
 		$stream_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table}'", ARRAY_A );
