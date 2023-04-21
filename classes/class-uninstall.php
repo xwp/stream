@@ -68,9 +68,10 @@ class Uninstall {
 
 		/**
 		 * Drop everything on single site installs or when network activated
-		 * Otherwise only delete data relative to the current blog.
+		 * AND being uninstalled from the main blog. Otherwise only delete
+		 * data relative to the current blog.
 		 */
-		if ( ! is_multisite() || $this->plugin->is_network_activated() ) {
+		if ( ! is_multisite() || ( $this->plugin->is_network_activated() && is_main_site() ) ) {
 			$this->delete_all_records();
 			$this->delete_all_options();
 			$this->delete_all_user_meta();
