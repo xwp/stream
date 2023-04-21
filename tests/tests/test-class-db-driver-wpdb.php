@@ -162,14 +162,7 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 
 		// Test cases override table dropping queries to prevent them
 		// from being executed, but we need actual dropping here.
-		foreach ( $GLOBALS['wp_filter']['query'] as $priority => $filters ) {
-			foreach ( $filters as $filter => $data ) {
-				if ( false !== strpos( $filter, '_drop_temporary_table' ) ) {
-					unset( $filters[$filter] );
-					$GLOBALS['wp_filter']['query'][$priority] = $filters;
-				}
-			}
-		}
+		$this->allow_drop_table();
 
 		$this->assertNotEmpty( $this->driver->table );
 		$stream_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table}'", ARRAY_A );
@@ -214,14 +207,7 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 
 		// Test cases override table dropping queries to prevent them
 		// from being executed, but we need actual dropping here.
-		foreach ( $GLOBALS['wp_filter']['query'] as $priority => $filters ) {
-			foreach ( $filters as $filter => $data ) {
-				if ( false !== strpos( $filter, '_drop_temporary_table' ) ) {
-					unset( $filters[$filter] );
-					$GLOBALS['wp_filter']['query'][$priority] = $filters;
-				}
-			}
-		}
+		$this->allow_drop_table();
 
 		// Ensure that both the stream as well as the stream_meta tables currently exist.
 		$this->assertNotEmpty( $this->driver->table );
@@ -243,6 +229,22 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 		// Check that the stream_meta table was deleted.
 		$stream_meta_result = $wpdb->get_results( "SHOW TABLES LIKE '{$this->driver->table_meta}'", ARRAY_A );
 		$this->assertEmpty( $stream_meta_result, sprintf( 'Table %s removed', $this->driver->table_meta ) );
+	}
+
+	/**
+	 * Remove WP phpunit helpers that prevent dropping tables.
+	 *
+	 * @return void
+	 */
+	private function allow_drop_table() {
+		foreach ( $GLOBALS['wp_filter']['query'] as $priority => $filters ) {
+			foreach ( $filters as $filter => $data ) {
+				if ( false !== strpos( $filter, '_drop_temporary_table' ) ) {
+					unset( $filters[$filter] );
+					$GLOBALS['wp_filter']['query'][$priority] = $filters;
+				}
+			}
+		}
 	}
 
 	private function dummy_stream_data() {
