@@ -9,7 +9,7 @@ class Test_DB extends WP_StreamTestCase {
 	 */
 	protected $db;
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->db = $this->plugin->db;

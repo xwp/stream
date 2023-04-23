@@ -8,6 +8,7 @@ ARG XDEBUG_VERSION=2.9.6
 
 # Include our Composer vendor binrary path into global path.
 ENV PATH="/var/www/html/wp-content/plugins/stream-src/vendor/bin:${PATH}"
+ENV COMPOSER_HOME=/tmp/.composer
 
 RUN apt-get update; \
 	apt-get install -y --no-install-recommends \
@@ -21,5 +22,3 @@ COPY php.ini /usr/local/etc/php/php.ini
 # Setup xdebug. The latest version supported by PHP 5.6 is 2.5.5.
 RUN	pecl install "xdebug-${XDEBUG_VERSION}"; \
 	docker-php-ext-enable xdebug
-
-COPY wait.sh /usr/local/bin/xwp_wait

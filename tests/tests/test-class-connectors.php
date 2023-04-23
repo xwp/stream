@@ -9,7 +9,7 @@ class Test_Connectors extends WP_StreamTestCase {
 	 */
 	protected $connectors;
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->connectors = $this->plugin->connectors;

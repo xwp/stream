@@ -18,7 +18,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 	/**
 	 * Run before each test.
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		if ( ! is_multisite() ) {

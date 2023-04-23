@@ -9,7 +9,7 @@ class Test_Date_Interval extends WP_StreamTestCase {
 	 */
 	protected $date_interval;
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->date_interval = new Date_Interval();

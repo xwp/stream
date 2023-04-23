@@ -4,7 +4,7 @@ namespace WP_Stream;
 
 class Test_Log extends WP_StreamTestCase {
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$admin_role = get_role( 'administrator' );

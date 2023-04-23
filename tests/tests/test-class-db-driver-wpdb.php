@@ -9,7 +9,7 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 	 */
 	protected $driver;
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->driver = new DB_Driver_WPDB();

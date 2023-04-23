@@ -13,7 +13,7 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 	/**
 	 * Runs before each test
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->plugin->connectors->unload_connectors();
@@ -29,7 +29,7 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 	/**
 	 * Runs after each test
 	 */
-	public function tearDown() {
+	public function tearDown(): void {
 		parent::tearDown();
 	}
 

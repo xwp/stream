@@ -1,4 +1,5 @@
-url: stream.local
+url: stream.wpenv.net
+path: wp
 
 # Define the default multisite install config.
 core multisite-install:

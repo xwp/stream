@@ -17,7 +17,7 @@ class Test_WP_Stream_Connector_Jetpack extends WP_StreamTestCase {
 	/**
 	 * Runs before each test
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		global $wp_rest_server;
