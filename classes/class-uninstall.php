@@ -59,7 +59,7 @@ class Uninstall {
 		);
 
 		// Prevent this action from firing.
-		remove_action( 'deactivate_plugin', array( 'WP_Stream\Connector_Installer', 'callback' ), null );
+		remove_action( 'deactivate_plugin', array( WP_Stream\Connector_Installer::class, 'callback' ), null );
 
 		// Just in case.
 		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
