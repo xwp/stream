@@ -65,6 +65,11 @@ With Stream’s powerful logging, you’ll have the valuable information you nee
  * WP-CLI command for querying records
 
 
+= Known Issues
+
+ * We have temporarily disabled the data removal feature through plugin uninstallation, starting with version 3.9.3. We identified a few edge cases that did not behave as expected and we decided that a temporary removal is preferable at this time for such an impactful and irreversible operation. Our team is actively working on refining this feature to ensure it performs optimally and securely. We plan to reintroduce it in a future update with enhanced safeguards.
+
+
 = Contribute =
 
 There are several ways you can get involved to help make Stream better:
