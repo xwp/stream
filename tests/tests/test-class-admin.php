@@ -540,8 +540,8 @@ class Test_Admin extends WP_StreamTestCase {
 		$user_id = $this->factory->user->create(
 			array(
 				'role'       => $role,
-				'user_login' => 'test_admin',
-				'email'      => 'test@land.com',
+				'user_login' => "test_{$role}}",
+				'email'      => "test_{$role}@land.com",
 			)
 		);
 
