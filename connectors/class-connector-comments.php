@@ -591,7 +591,7 @@ class Connector_Comments extends Connector {
 		$comment_type = get_comment_type( $comment->comment_ID );
 
 		$this->log(
-			/* translators: %1$s: a comment author, %2$s: a post title, %3$s: a comment type */
+			/* translators: %1$s: comment author, %2$s: comment status, %3$s: comment type, %4$s: old comment status, %5$s: post title */
 			_x(
 				'%1$s\'s %3$s on "%5$s" %2$s',
 				'Comment status transition. 1: Comment author, 2: New status, 3: Comment type, 4. Old status, 5. Post title',
