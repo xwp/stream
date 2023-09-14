@@ -144,7 +144,7 @@ class Test_WP_Stream_Connector_Installer extends WP_StreamTestCase {
 			->method( 'log' )
 			->with(
 				$this->equalTo( __( '"%s" theme activated', 'stream' ) ),
-				$this->equalTo( array( 'name' => 'twentytwenty' ) ),
+				$this->equalTo( array( 'name' => 'Twenty Twenty' ) ),
 				$this->equalTo( null ),
 				$this->equalTo( 'themes' ),
 				$this->equalTo( 'activated' )
