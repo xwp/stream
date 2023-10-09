@@ -220,6 +220,12 @@ class Admin {
 		$this->network     = new Network( $this->plugin );
 		$this->live_update = new Live_Update( $this->plugin );
 		$this->export      = new Export( $this->plugin );
+
+		// Check if the host has configured the `REMOTE_ADDR` correctly.
+		$client_ip = $this->plugin->get_client_ip_address();
+		if ( empty( $client_ip ) ) {
+			$this->notice( esc_html__( 'Stream can\'t determine a reliable client IP address! Please update the hosting environment to set the REMOTE_ADDR in $_SERVER variable or use the `wp_stream_client_ip_address` filter to specify the verified client IP address!', 'stream' ) );
+		}
 	}
 
 	/**
