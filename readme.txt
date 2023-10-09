@@ -136,7 +136,7 @@ Track changes to posts when using the block editor.
 
 - Fix: Track changes to posts when using the block editor by making the Posts connector to run on both frontend and backend requests since block editor changes happen over the REST API [#1264](https://github.com/xwp/stream/pull/1264), props [@coreymckrill](https://github.com/coreymckrill).
 - Fix: Don't store empty log event parameters [#1307](https://github.com/xwp/stream/pull/1307), props [@lkraav](https://github.com/lkraav).
-- Development: Adjust the local development environment to use MariaDB containers for ARM processor compatabilty.
+- Development: Adjust the local development environment to use MariaDB containers for ARM processor compatibility.
 
 = 3.8.2 - October 12, 2021 =
 
@@ -341,7 +341,7 @@ Props [@lukecarbis](https://github.com/lukecarbis)
 * Tweak: Minor security improvements
 * Fix: New and improved Gravity Forms connector, works much better ([#780](https://github.com/xwp/stream/pull/780)) (thanks [Rob](https://github.com/rob)!)
 * Fix: Stream no longer explodes on < PHP 5.3, when trying to tell you that it explodes on < PHP 5.3 ([#781](https://github.com/xwp/stream/pull/781))
-* Fix: Fixed a smal typo ([62455c5](https://github.com/xwp/stream/commit/62455c518b95ddaf5e6c6c0733e7d03e5aa1311c))
+* Fix: Fixed a small typo ([62455c5](https://github.com/xwp/stream/commit/62455c518b95ddaf5e6c6c0733e7d03e5aa1311c))
 * Fix: Multiple Multisite Mistakes Mended ([#788](https://github.com/xwp/stream/pull/788))
 * Fix: Internet Explorer 8 fix!! IE8!? Come on, people, it's 2015. ([#789](https://github.com/xwp/stream/pull/789))
 * Fix: EDD connector bug ([#790](https://github.com/xwp/stream/pull/790))
@@ -571,7 +571,7 @@ Props [@westonruter](https://github.com/westonruter), [@fjarrett](https://github
 * Fix: Non-Administrator users seeing errors in Settings records ([#406](https://github.com/x-team/wp-stream/issues/406))
 * Fix: Uninstall confirmation message doesn't display ([#411](https://github.com/x-team/wp-stream/issues/411))
 * Fix: TTL purge schedule is never setup ([#412](https://github.com/x-team/wp-stream/issues/412))
-* Fix: NextGen compability issue ([#416](https://github.com/x-team/wp-stream/issues/416))
+* Fix: NextGen compatibility issue ([#416](https://github.com/x-team/wp-stream/issues/416))
 * Fix: Stream Feeds Key not being automatically generated ([#420](https://github.com/x-team/wp-stream/issues/420))
 
 Props [@fjarrett](https://github.com/fjarrett), [@lukecarbis](https://github.com/lukecarbis), [@c3mdigital](https://github.com/c3mdigital), [@westonruter](https://github.com/westonruter), [@shadyvb](https://github.com/shadyvb), [@powelski](https://github.com/powelski), [@johnregan3](https://github.com/johnregan3), [@jonathanbardo](https://github.com/jonathanbardo), [@desaiuditd](https://github.com/desaiuditd)
