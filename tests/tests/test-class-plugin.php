@@ -84,4 +84,18 @@ class Test_Plugin extends WP_StreamTestCase {
 		$version = $this->plugin->get_version();
 		$this->assertNotEmpty( $version );
 	}
+
+	public function test_get_client_ip_address() {
+		$this->assertEquals( $_SERVER['REMOTE_ADDR'], $this->plugin->get_client_ip_address() );
+	}
+
+	public function test_get_unsafe_client_ip_address() {
+		$_SERVER['HTTP_X_FORWARDED_FOR'] = '123.123.123.123,321.123.123.123';
+
+		$this->assertEquals(
+			'123.123.123.123',
+			$this->plugin->get_unsafe_client_ip_address(),
+			'Use the first IP from the list'
+		);
+	}
 }
