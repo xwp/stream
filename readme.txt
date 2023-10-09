@@ -2,8 +2,8 @@
 Contributors: xwp
 Tags: wp stream, stream, activity, logs, track
 Requires at least: 4.5
-Tested up to: 6.1
-Stable tag: 3.9.2
+Tested up to: 6.2
+Stable tag: 3.9.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -65,6 +65,11 @@ With Stream’s powerful logging, you’ll have the valuable information you nee
  * WP-CLI command for querying records
 
 
+= Known Issues
+
+ * We have temporarily disabled the data removal feature through plugin uninstallation, starting with version 3.9.3. We identified a few edge cases that did not behave as expected and we decided that a temporary removal is preferable at this time for such an impactful and irreversible operation. Our team is actively working on refining this feature to ensure it performs optimally and securely. We plan to reintroduce it in a future update with enhanced safeguards.
+
+
 = Contribute =
 
 There are several ways you can get involved to help make Stream better:
@@ -79,7 +84,7 @@ There are several ways you can get involved to help make Stream better:
 
 Thank you for wanting to make Stream better for everyone!
 
-Past Contributors: fjarrett, shadyvb, chacha, westonruter, johnregan3, jacobschweitzer, lukecarbis, kasparsd, bordoni, dero, faishal, rob, desaiuditd, DavidCramer, renovate-bot, marcin-lawrowski, JeffMatson, Powdered-Toast-Man, johnolek, johnbillion, greguly, pascal-klaeres, szepeviktor, rheinardkorf, frozzare, khromov, dkotter, bhubbard, stipsan, stephenharris, omniwired, kopepasah, joehoyle, eugenekireev, barryceelen, valendesigns, tlovett1, tareiking, stayallive, sayedtaqui, robbiet480, oscarssanchez, kidunot89, johnwatkins0, javorszky, jamesgol, desrosj, davelozier, davefx, cfoellmann, JustinSainton, JJJ, postphotos
+Past Contributors: fjarrett, shadyvb, chacha, westonruter, johnregan3, jacobschweitzer, lukecarbis, kasparsd, bordoni, dero, faishal, rob, desaiuditd, DavidCramer, renovate-bot, marcin-lawrowski, JeffMatson, Powdered-Toast-Man, johnolek, johnbillion, greguly, pascal-klaeres, szepeviktor, rheinardkorf, frozzare, khromov, dkotter, bhubbard, stipsan, stephenharris, omniwired, kopepasah, joehoyle, eugenekireev, barryceelen, valendesigns, tlovett1, tareiking, stayallive, sayedtaqui, robbiet480, oscarssanchez, kidunot89, johnwatkins0, javorszky, jamesgol, desrosj, davelozier, davefx, cfoellmann, JustinSainton, JJJ, postphotos, schlessera
 
 
 == Screenshots ==
@@ -97,6 +102,12 @@ Track changes to posts when using the block editor.
 
 
 == Changelog ==
+
+= 3.9.3 - April 25, 2023 =
+
+- Fix: [Security] CVE-2022-43490: Temporarily remove uninstall flow to avoid inadvertent uninstallation of the plugin, props [@Lucisu](https://github.com/Lucisu) via [Patchstack](https://patchstack.com/).
+- Fix: [Security] CVE-2022-43450: Check for capabilities in 'wp_ajax_load_alerts_settings' AJAX action before loading alert settings, props [@Lucisu](https://github.com/Lucisu) via [Patchstack](https://patchstack.com/).
+- Development: Mark as tested with the latest version 6.2 of WordPress.
 
 = 3.9.2 - January 10, 2023 =
 

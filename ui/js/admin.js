@@ -165,14 +165,6 @@ jQuery(
 			}
 		);
 
-		$( 'body' ).on(
-			'click', '#wp_stream_uninstall', function( e ) {
-				if ( ! window.confirm( wp_stream.i18n.confirm_uninstall ) ) {
-					e.preventDefault();
-				}
-			}
-		);
-
 		// Admin page tabs
 		var $tabs = $( '.wp_stream_screen .nav-tab-wrapper' ),
 			$panels = $( '.wp_stream_screen .nav-tab-content table.form-table' ),
