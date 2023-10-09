@@ -36,7 +36,7 @@
     "grunt-wp-deploy": "^2.1.2"
   },
   "scripts": {
-    "build": "grunt build",
+    "build": "grunt build && composer build",
     "release": "grunt release",
     "deploy": "grunt deploy",
     "lint-js": "eslint .",

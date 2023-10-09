@@ -52,6 +52,9 @@
     }
   },
   "scripts": {
+    "build": [
+      "wp i18n make-pot . --exclude=local --debug"
+    ],
     "release": [
       "composer install --no-dev --prefer-dist --optimize-autoloader"
     ],

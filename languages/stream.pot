@@ -1,0 +1,4830 @@
+# Copyright (C) 2023 XWP
+# This file is distributed under the GPLv2+.
+msgid ""
+msgstr ""
+"Project-Id-Version: Stream 3.9.2\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/stream\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2023-09-14T07:11:53+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.6.0\n"
+"X-Domain: stream\n"
+
+#. Plugin Name of the plugin
+#: classes/class-admin.php:319
+#: classes/class-network.php:149
+#: connectors/class-connector-settings.php:265
+msgid "Stream"
+msgstr ""
+
+#. Plugin URI of the plugin
+msgid "https://xwp.co/work/stream/"
+msgstr ""
+
+#. Description of the plugin
+msgid "Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action."
+msgstr ""
+
+#. Author of the plugin
+msgid "XWP"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://xwp.co"
+msgstr ""
+
+#: alerts/class-alert-trigger-action.php:80
+#: alerts/class-alert-trigger-action.php:181
+#: classes/class-settings.php:999
+msgid "Any Action"
+msgstr ""
+
+#: alerts/class-alert-trigger-action.php:177
+msgid "performed any action on"
+msgstr ""
+
+#: alerts/class-alert-trigger-author.php:73
+msgid "Any Author"
+msgstr ""
+
+#: alerts/class-alert-trigger-author.php:164
+msgid "Any User"
+msgstr ""
+
+#: alerts/class-alert-trigger-author.php:170
+msgid "Unknown User"
+msgstr ""
+
+#: alerts/class-alert-trigger-context.php:85
+#: alerts/class-alert-trigger-context.php:214
+#: classes/class-alerts.php:323
+#: classes/class-settings.php:958
+msgid "Any Context"
+msgstr ""
+
+#. translators: Placeholder refers to the title of a site (e.g. "FooBar Website").
+#: alerts/class-alert-type-email.php:81
+msgid "A Stream Alert was triggered on %s."
+msgstr ""
+
+#. translators: Placeholder refers to a username  (e.g. "administrator").
+#: alerts/class-alert-type-email.php:87
+msgid "User:\t%s"
+msgstr ""
+
+#. translators: Placeholder refers to the context of the record (e.g. "Plugins").
+#: alerts/class-alert-type-email.php:93
+msgid "Context:\t%s"
+msgstr ""
+
+#. translators: Placeholder refers to the action of the record (e.g. "Installed").
+#: alerts/class-alert-type-email.php:99
+msgid "Action:\t%s"
+msgstr ""
+
+#. translators: Placeholder refers to the post type singular name (e.g. "Post").
+#. translators: %s: a post type (e.g. "Post")
+#. translators: %s a taxonomy (e.g. "Category")
+#: alerts/class-alert-type-email.php:115
+#: connectors/class-connector-edd.php:168
+#: connectors/class-connector-edd.php:205
+msgid "Edit %s"
+msgstr ""
+
+#: alerts/class-alert-type-email.php:121
+#: classes/class-alerts.php:347
+msgid "Edit Alert"
+msgstr ""
+
+#: alerts/class-alert-type-email.php:146
+msgid "Send a notification email to the recipient."
+msgstr ""
+
+#: alerts/class-alert-type-email.php:147
+msgid "Recipient"
+msgstr ""
+
+#: alerts/class-alert-type-email.php:153
+msgid "Email Recipient"
+msgstr ""
+
+#: alerts/class-alert-type-email.php:159
+msgid "Subject"
+msgstr ""
+
+#: alerts/class-alert-type-email.php:165
+msgid "Email Subject"
+msgstr ""
+
+#: alerts/class-alert-type-highlight.php:162
+msgid "Highlight this alert on the Stream records page."
+msgstr ""
+
+#: alerts/class-alert-type-highlight.php:163
+msgid "Color"
+msgstr ""
+
+#: alerts/class-alert-type-highlight.php:169
+msgid "Highlight Color"
+msgstr ""
+
+#: alerts/class-alert-type-highlight.php:184
+msgid "Yellow"
+msgstr ""
+
+#: alerts/class-alert-type-highlight.php:185
+msgid "Red"
+msgstr ""
+
+#: alerts/class-alert-type-highlight.php:186
+msgid "Green"
+msgstr ""
+
+#: alerts/class-alert-type-highlight.php:187
+msgid "Blue"
+msgstr ""
+
+#: alerts/class-alert-type-highlight.php:254
+msgid "Remove Highlight"
+msgstr ""
+
+#: alerts/class-alert-type-highlight.php:283
+msgid "Removing Highlight Failed"
+msgstr ""
+
+#: alerts/class-alert-type-ifttt.php:127
+msgid "Trigger an IFTTT Maker recipe."
+msgstr ""
+
+#: alerts/class-alert-type-ifttt.php:128
+msgid "Tutorial"
+msgstr ""
+
+#: alerts/class-alert-type-ifttt.php:130
+#: alerts/class-alert-type-ifttt.php:136
+msgid "Maker Key"
+msgstr ""
+
+#: alerts/class-alert-type-ifttt.php:144
+msgid "Open IFTTT Maker Channel"
+msgstr ""
+
+#: alerts/class-alert-type-ifttt.php:149
+#: alerts/class-alert-type-ifttt.php:155
+msgid "Event Name"
+msgstr ""
+
+#: alerts/class-alert-type-ifttt.php:163
+msgid "Open IFTTT Recipes"
+msgstr ""
+
+#: alerts/class-alert-type-menu-alert.php:77
+msgid "Clear alerts after seen."
+msgstr ""
+
+#: alerts/class-alert-type-menu-alert.php:79
+msgid "Menu Bar"
+msgstr ""
+
+#: alerts/class-alert-type-menu-alert.php:114
+msgid "New Stream Alert"
+msgstr ""
+
+#: alerts/class-alert-type-slack.php:203
+msgid "Send a rich message notification to Slack."
+msgstr ""
+
+#: alerts/class-alert-type-slack.php:204
+#: alerts/class-alert-type-slack.php:210
+msgid "Webhook URL"
+msgstr ""
+
+#: alerts/class-alert-type-slack.php:215
+msgid "The webhook URL"
+msgstr ""
+
+#: alerts/class-alert-type-slack.php:217
+#: alerts/class-alert-type-slack.php:223
+msgid "Channel"
+msgstr ""
+
+#: alerts/class-alert-type-slack.php:228
+msgid "The channel to send to (optional)"
+msgstr ""
+
+#: alerts/class-alert-type-slack.php:230
+#: alerts/class-alert-type-slack.php:236
+msgid "Username"
+msgstr ""
+
+#: alerts/class-alert-type-slack.php:241
+msgid "The username to send as (optional)"
+msgstr ""
+
+#: alerts/class-alert-type-slack.php:243
+#: alerts/class-alert-type-slack.php:249
+msgid "Icon"
+msgstr ""
+
+#: alerts/class-alert-type-slack.php:254
+msgid "The URL or emoji (with colons!) to use as the icon (optional)"
+msgstr ""
+
+#: classes/class-admin.php:244
+msgid "All site settings have been successfully reset."
+msgstr ""
+
+#: classes/class-admin.php:335
+msgid "Stream Records"
+msgstr ""
+
+#: classes/class-admin.php:360
+msgid "Stream Settings"
+msgstr ""
+
+#: classes/class-admin.php:365
+#: connectors/class-connector-settings.php:236
+#: connectors/class-connector-settings.php:257
+#: connectors/class-connector-woocommerce.php:815
+msgid "Settings"
+msgstr ""
+
+#: classes/class-admin.php:473
+msgid "Are you sure you want to delete all Stream activity records from the database? This cannot be undone."
+msgstr ""
+
+#: classes/class-admin.php:474
+msgid "Are you sure you want to reset all site settings to default? This cannot be undone."
+msgstr ""
+
+#: classes/class-admin.php:475
+msgid "Are you sure you want to uninstall and deactivate Stream? This will delete all Stream tables from the database and cannot be undone."
+msgstr ""
+
+#. translators: %s: a number of items (e.g. "1,742")
+#: classes/class-admin.php:528
+msgid "Are you sure you want to perform bulk actions on over %s items? This process could take a while to complete."
+msgstr ""
+
+#: classes/class-admin.php:678
+#: classes/class-alerts.php:739
+#: classes/class-alerts.php:812
+#: classes/class-uninstall.php:64
+msgid "You don't have sufficient privileges to do this action."
+msgstr ""
+
+#: classes/class-admin.php:834
+msgid "Uninstall"
+msgstr ""
+
+#: classes/class-alerts-list.php:96
+msgid "Trigger"
+msgstr ""
+
+#: classes/class-alerts-list.php:97
+msgid "Type"
+msgstr ""
+
+#: classes/class-alerts-list.php:98
+#: classes/class-alerts.php:631
+msgid "Status"
+msgstr ""
+
+#: classes/class-alerts-list.php:130
+msgid "Show more details"
+msgstr ""
+
+#: classes/class-alerts-list.php:289
+msgid "Trash"
+msgstr ""
+
+#: classes/class-alerts-list.php:316
+#: connectors/class-connector-bbpress.php:146
+#: connectors/class-connector-buddypress.php:180
+#: connectors/class-connector-buddypress.php:248
+#: connectors/class-connector-buddypress.php:258
+#: connectors/class-connector-buddypress.php:279
+#: connectors/class-connector-comments.php:143
+#: connectors/class-connector-gravityforms.php:149
+#: connectors/class-connector-wordpress-seo.php:127
+#: connectors/class-connector-wordpress-seo.php:134
+msgid "Edit"
+msgstr ""
+
+#: classes/class-alerts.php:322
+msgid "Any"
+msgstr ""
+
+#: classes/class-alerts.php:340
+msgctxt "post type general name"
+msgid "Alerts"
+msgstr ""
+
+#: classes/class-alerts.php:341
+msgctxt "post type singular name"
+msgid "Alert"
+msgstr ""
+
+#: classes/class-alerts.php:342
+msgctxt "admin menu"
+msgid "Alerts"
+msgstr ""
+
+#: classes/class-alerts.php:343
+msgctxt "add new on admin bar"
+msgid "Alert"
+msgstr ""
+
+#: classes/class-alerts.php:344
+msgctxt "book"
+msgid "Add New"
+msgstr ""
+
+#: classes/class-alerts.php:345
+msgid "Add New Alert"
+msgstr ""
+
+#: classes/class-alerts.php:346
+msgid "New Alert"
+msgstr ""
+
+#: classes/class-alerts.php:348
+msgid "View Alert"
+msgstr ""
+
+#: classes/class-alerts.php:349
+#: classes/class-alerts.php:445
+#: classes/class-alerts.php:446
+msgid "Alerts"
+msgstr ""
+
+#: classes/class-alerts.php:350
+msgid "Search Alerts"
+msgstr ""
+
+#: classes/class-alerts.php:351
+msgid "Parent Alerts:"
+msgstr ""
+
+#: classes/class-alerts.php:352
+msgid "No alerts found."
+msgstr ""
+
+#: classes/class-alerts.php:353
+msgid "No alerts found in Trash."
+msgstr ""
+
+#: classes/class-alerts.php:358
+msgid "Alerts for Stream."
+msgstr ""
+
+#: classes/class-alerts.php:380
+msgctxt "alert"
+msgid "Enabled"
+msgstr ""
+
+#. translators: %s: a number of items (e.g. "42")
+#: classes/class-alerts.php:385
+msgid "Enabled <span class=\"count\">(%s)</span>"
+msgid_plural "Enabled <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: classes/class-alerts.php:391
+msgctxt "alert"
+msgid "Disabled"
+msgstr ""
+
+#. translators: %s: a number of items (e.g. "42")
+#: classes/class-alerts.php:397
+msgid "Disabled <span class=\"count\">(%s)</span>"
+msgid_plural "Disabled <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: classes/class-alerts.php:527
+msgid "No Alert"
+msgstr ""
+
+#: classes/class-alerts.php:532
+msgid "Alert me by"
+msgstr ""
+
+#: classes/class-alerts.php:605
+msgid "Alert me when"
+msgstr ""
+
+#: classes/class-alerts.php:634
+#: classes/class-alerts.php:684
+#: classes/class-list-table.php:1161
+#: classes/class-network.php:306
+#: classes/class-settings.php:329
+#: classes/class-settings.php:355
+#: classes/class-settings.php:385
+#: classes/class-settings.php:397
+msgid "Enabled"
+msgstr ""
+
+#: classes/class-alerts.php:636
+#: classes/class-alerts.php:685
+msgid "Disabled"
+msgstr ""
+
+#: classes/class-alerts.php:648
+msgid "Delete Permanently"
+msgstr ""
+
+#: classes/class-alerts.php:650
+msgid "Move to Trash"
+msgstr ""
+
+#: classes/class-alerts.php:681
+msgid "Status:"
+msgstr ""
+
+#. translators: %s: the post type singular name (e.g. "Post")
+#. translators: %s a post type singular name (e.g. "Post")
+#. translators: %s: a post type singular name (e.g. "Post")
+#: classes/class-alerts.php:857
+#: connectors/class-connector-posts.php:116
+#: connectors/class-connector-woocommerce.php:265
+#: connectors/class-connector-wordpress-seo.php:176
+msgctxt "Post type singular name"
+msgid "Edit %s"
+msgstr ""
+
+#: classes/class-alerts.php:858
+#: connectors/class-connector-buddypress.php:198
+#: connectors/class-connector-gravityforms.php:157
+#: connectors/class-connector-gravityforms.php:167
+#: connectors/class-connector-media.php:122
+#: connectors/class-connector-posts.php:120
+#: connectors/class-connector-taxonomies.php:119
+#: connectors/class-connector-woocommerce.php:270
+#: connectors/class-connector-wordpress-seo.php:180
+msgid "View"
+msgstr ""
+
+#: classes/class-author.php:103
+#: classes/class-author.php:111
+#: classes/class-settings.php:896
+#: connectors/class-connector-users.php:226
+msgid "N/A"
+msgstr ""
+
+#: classes/class-author.php:294
+msgid "via WP-CLI"
+msgstr ""
+
+#: classes/class-author.php:296
+msgid "during WP Cron"
+msgstr ""
+
+#: classes/class-cli.php:236
+msgid "SITE IS DISCONNECTED"
+msgstr ""
+
+#. translators: %s: connector class name, intended to provide help to developers (e.g. "Connector_BuddyPress")
+#: classes/class-connectors.php:164
+msgid "%s class wasn't loaded because it doesn't implement the get_label method."
+msgstr ""
+
+#. translators: %s: connector class name, intended to provide help to developers (e.g. "Connector_BuddyPress")
+#: classes/class-connectors.php:169
+msgid "%s class wasn't loaded because it doesn't implement the register method."
+msgstr ""
+
+#. translators: %s: connector class name, intended to provide help to developers (e.g. "Connector_BuddyPress")
+#: classes/class-connectors.php:174
+msgid "%s class wasn't loaded because it doesn't implement the get_context_labels method."
+msgstr ""
+
+#. translators: %s: connector class name, intended to provide help to developers (e.g. "Connector_BuddyPress")
+#: classes/class-connectors.php:179
+msgid "%s class wasn't loaded because it doesn't implement the get_action_labels method."
+msgstr ""
+
+#. translators: %s: connector class name, intended to provide help to developers (e.g. "Connector_BuddyPress")
+#: classes/class-connectors.php:186
+msgid "%1$s class wasn't loaded because it doesn't extends the %2$s class."
+msgstr ""
+
+#: classes/class-date-interval.php:59
+msgid "Today"
+msgstr ""
+
+#: classes/class-date-interval.php:64
+msgid "Yesterday"
+msgstr ""
+
+#. translators: %d: number of days (e.g. "7")
+#: classes/class-date-interval.php:70
+#: classes/class-date-interval.php:76
+#: classes/class-date-interval.php:82
+msgid "Last %d Days"
+msgstr ""
+
+#: classes/class-date-interval.php:87
+msgid "This Month"
+msgstr ""
+
+#: classes/class-date-interval.php:92
+msgid "Last Month"
+msgstr ""
+
+#. translators: %d: number of months (e.g. "3")
+#: classes/class-date-interval.php:98
+#: classes/class-date-interval.php:104
+#: classes/class-date-interval.php:110
+msgid "Last %d Months"
+msgstr ""
+
+#: classes/class-date-interval.php:115
+msgid "This Year"
+msgstr ""
+
+#: classes/class-date-interval.php:120
+msgid "Last Year"
+msgstr ""
+
+#. translators: %s: an export format (e.g. "CSV")
+#: classes/class-export.php:93
+msgid "Export as %s"
+msgstr ""
+
+#: classes/class-export.php:172
+msgid "Connector"
+msgstr ""
+
+#: classes/class-export.php:179
+msgid "Blog ID"
+msgstr ""
+
+#: classes/class-filter-input.php:76
+msgid "Invalid use, type must be one of INPUT_* family."
+msgstr ""
+
+#: classes/class-filter-input.php:101
+msgid "Filter not supported."
+msgstr ""
+
+#: classes/class-install.php:202
+msgid "There was an error updating the Stream database. Please try again."
+msgstr ""
+
+#: classes/class-install.php:203
+msgid "Database Update Error"
+msgstr ""
+
+#: classes/class-install.php:253
+msgid "Stream Database Update Required"
+msgstr ""
+
+#: classes/class-install.php:254
+msgid "Stream has updated! Before we send you on your way, we need to update your database to the newest version."
+msgstr ""
+
+#: classes/class-install.php:255
+msgid "This process could take a little while, so please be patient."
+msgstr ""
+
+#: classes/class-install.php:256
+msgid "Update Database"
+msgstr ""
+
+#: classes/class-install.php:275
+msgid "Update Complete"
+msgstr ""
+
+#. translators: %1$s: old version, %2$s: new version (e.g. "4.2")
+#: classes/class-install.php:280
+msgid "Your Stream database has been successfully updated from %1$s to %2$s!"
+msgstr ""
+
+#: classes/class-install.php:286
+msgid "Continue"
+msgstr ""
+
+#: classes/class-list-table.php:52
+msgid "Records per page"
+msgstr ""
+
+#: classes/class-list-table.php:102
+msgid "No activity records were found."
+msgstr ""
+
+#: classes/class-list-table.php:121
+msgid "Date"
+msgstr ""
+
+#: classes/class-list-table.php:122
+msgid "Summary"
+msgstr ""
+
+#: classes/class-list-table.php:123
+msgid "User"
+msgstr ""
+
+#: classes/class-list-table.php:124
+#: classes/class-settings.php:846
+msgid "Context"
+msgstr ""
+
+#: classes/class-list-table.php:125
+#: classes/class-settings.php:847
+msgid "Action"
+msgstr ""
+
+#: classes/class-list-table.php:126
+#: classes/class-settings.php:848
+msgid "IP Address"
+msgstr ""
+
+#. translators: %s: the title of any object, like a Post (e.g. "Hello World")
+#: classes/class-list-table.php:321
+msgid "View all activity for \"%s\""
+msgstr ""
+
+#. translators: %s: the title of any object, like a Post (e.g. "Hello World")
+#: classes/class-list-table.php:321
+msgid "View all activity for this object"
+msgstr ""
+
+#: classes/class-list-table.php:353
+msgid "Deleted User"
+msgstr ""
+
+#: classes/class-list-table.php:667
+msgid "dates"
+msgstr ""
+
+#: classes/class-list-table.php:676
+msgid "users"
+msgstr ""
+
+#: classes/class-list-table.php:682
+msgid "contexts"
+msgstr ""
+
+#: classes/class-list-table.php:687
+msgid "actions"
+msgstr ""
+
+#: classes/class-list-table.php:710
+msgid "Show filter controls via the screen options tab above."
+msgstr ""
+
+#: classes/class-list-table.php:772
+msgid "Filter"
+msgstr ""
+
+#: classes/class-list-table.php:797
+msgid "Reset filters"
+msgstr ""
+
+#. translators: %s: the title of the dropdown menu (e.g. "users")
+#: classes/class-list-table.php:850
+msgid "Show all %s"
+msgstr ""
+
+#: classes/class-list-table.php:905
+msgid "Search Records"
+msgstr ""
+
+#: classes/class-list-table.php:931
+msgid "All Time"
+msgstr ""
+
+#: classes/class-list-table.php:933
+msgid "Custom"
+msgstr ""
+
+#: classes/class-list-table.php:953
+msgid "Start Date"
+msgstr ""
+
+#: classes/class-list-table.php:959
+msgid "End Date"
+msgstr ""
+
+#: classes/class-list-table.php:988
+msgid "Record Actions"
+msgstr ""
+
+#: classes/class-list-table.php:1009
+msgid "Apply"
+msgstr ""
+
+#: classes/class-list-table.php:1150
+msgid "Live updates"
+msgstr ""
+
+#: classes/class-live-update.php:77
+msgid ""
+"Live updates could not be enabled because Heartbeat is not loaded.\n"
+"\n"
+"Your hosting provider or another plugin may have disabled it for performance reasons."
+msgstr ""
+
+#: classes/class-network.php:109
+msgid "Network Admin"
+msgstr ""
+
+#: classes/class-network.php:170
+msgid "Stream Network Settings"
+msgstr ""
+
+#: classes/class-network.php:171
+msgid "Network Settings"
+msgstr ""
+
+#: classes/class-network.php:230
+msgid "These settings apply to all sites on the network."
+msgstr ""
+
+#: classes/class-network.php:233
+msgid "These default settings will apply to new sites created on the network. These settings do not alter existing sites."
+msgstr ""
+
+#: classes/class-network.php:305
+msgid "Site Access"
+msgstr ""
+
+#: classes/class-network.php:308
+msgid "Allow sites on this network to view their Stream activity. Leave unchecked to only allow Stream to be viewed in the Network Admin."
+msgstr ""
+
+#: classes/class-network.php:397
+msgid "Settings saved."
+msgstr ""
+
+#: classes/class-network.php:444
+msgid "sites"
+msgstr ""
+
+#: classes/class-network.php:460
+#: classes/class-network.php:541
+msgid "Site"
+msgstr ""
+
+#. translators: %d: number of sites on the network (e.g. "42")
+#: classes/class-network.php:522
+msgid "%d site"
+msgid_plural "%d sites"
+msgstr[0] ""
+msgstr[1] ""
+
+#: classes/class-plugin.php:123
+msgid "Stream: Could not load chosen DB driver."
+msgstr ""
+
+#: classes/class-plugin.php:125
+msgid "Stream: DB driver must implement DB Driver interface."
+msgstr ""
+
+#: classes/class-plugin.php:131
+msgid "Stream DB Error"
+msgstr ""
+
+#: classes/class-record.php:145
+msgid "Could not validate record data."
+msgstr ""
+
+#: classes/class-settings.php:109
+msgid "There was an error in the request"
+msgstr ""
+
+#. translators: %1$d: user ID, %2$s: username, %3$s: email, %4$s: user role (e.g. "42", "administrator", "foo@bar.com", "subscriber")
+#: classes/class-settings.php:193
+msgid "ID: %1$d\\nUser: %2$s\\nEmail: %3$s\\nRole: %4$s"
+msgstr ""
+
+#: classes/class-settings.php:219
+msgid "Actions performed by the system when a user is not logged in (e.g. auto site upgrader, or invoking WP-CLI without --user)"
+msgstr ""
+
+#: classes/class-settings.php:302
+#: connectors/class-connector-settings.php:258
+msgid "General"
+msgstr ""
+
+#: classes/class-settings.php:306
+msgid "Role Access"
+msgstr ""
+
+#: classes/class-settings.php:308
+msgid "Users from the selected roles above will have permission to view Stream Records. However, only site Administrators can access Stream Settings."
+msgstr ""
+
+#: classes/class-settings.php:314
+msgid "Keep Records for"
+msgstr ""
+
+#: classes/class-settings.php:317
+msgid "Maximum number of days to keep activity records."
+msgstr ""
+
+#: classes/class-settings.php:322
+msgid "days"
+msgstr ""
+
+#: classes/class-settings.php:326
+msgid "Keep Records Indefinitely"
+msgstr ""
+
+#: classes/class-settings.php:328
+msgid "Not recommended."
+msgstr ""
+
+#: classes/class-settings.php:328
+msgid "Purging old records helps to keep your WordPress installation running optimally."
+msgstr ""
+
+#: classes/class-settings.php:335
+msgid "Exclude"
+msgstr ""
+
+#: classes/class-settings.php:339
+msgid "Exclude Rules"
+msgstr ""
+
+#: classes/class-settings.php:341
+msgid "Create rules to exclude certain kinds of activity from being recorded by Stream."
+msgstr ""
+
+#: classes/class-settings.php:348
+msgid "Advanced"
+msgstr ""
+
+#: classes/class-settings.php:352
+msgid "Comment Flood Tracking"
+msgstr ""
+
+#: classes/class-settings.php:354
+msgid "WordPress will automatically prevent duplicate comments from flooding the database. By default, Stream does not track these attempts unless you opt-in here. Enabling this is not necessary or recommended for most sites."
+msgstr ""
+
+#: classes/class-settings.php:360
+msgid "Reset Stream Database"
+msgstr ""
+
+#: classes/class-settings.php:370
+msgid "Warning: This will delete all activity records from the database."
+msgstr ""
+
+#: classes/class-settings.php:382
+msgid "Akismet Tracking"
+msgstr ""
+
+#: classes/class-settings.php:384
+msgid "Akismet already keeps statistics for comment attempts that it blocks as SPAM. By default, Stream does not track these attempts unless you opt-in here. Enabling this is not necessary or recommended for most sites."
+msgstr ""
+
+#: classes/class-settings.php:394
+msgid "WP Cron Tracking"
+msgstr ""
+
+#: classes/class-settings.php:396
+msgid "By default, Stream does not track activity performed by WordPress cron events unless you opt-in here. Enabling this is not necessary or recommended for most sites."
+msgstr ""
+
+#. translators: %s: the title of the dropdown menu (e.g. "users")
+#: classes/class-settings.php:810
+msgid "Any %s"
+msgstr ""
+
+#: classes/class-settings.php:827
+msgid "Add New Rule"
+msgstr ""
+
+#: classes/class-settings.php:828
+msgid "Delete Selected Rules"
+msgstr ""
+
+#: classes/class-settings.php:845
+msgid "Author or Role"
+msgstr ""
+
+#: classes/class-settings.php:849
+msgid "Filters"
+msgstr ""
+
+#. translators: %d: a number of users (e.g. "42")
+#: classes/class-settings.php:883
+msgid "%d user"
+msgid_plural "%d users"
+msgstr[0] ""
+msgstr[1] ""
+
+#: classes/class-settings.php:911
+msgid "Any Author or Role"
+msgstr ""
+
+#: classes/class-settings.php:1012
+msgid "Any IP Address"
+msgstr ""
+
+#: classes/class-settings.php:1053
+msgid "No rules found."
+msgstr ""
+
+#: classes/class-uninstall.php:70
+msgid "You don't have sufficient file permissions to do this action."
+msgstr ""
+
+#: connectors/class-connector-acf.php:85
+msgctxt "acf"
+msgid "ACF"
+msgstr ""
+
+#: connectors/class-connector-acf.php:95
+msgctxt "acf"
+msgid "Created"
+msgstr ""
+
+#: connectors/class-connector-acf.php:96
+msgctxt "acf"
+msgid "Updated"
+msgstr ""
+
+#: connectors/class-connector-acf.php:97
+msgctxt "acf"
+msgid "Added"
+msgstr ""
+
+#: connectors/class-connector-acf.php:98
+msgctxt "acf"
+msgid "Deleted"
+msgstr ""
+
+#: connectors/class-connector-acf.php:109
+msgctxt "acf"
+msgid "Field Groups"
+msgstr ""
+
+#: connectors/class-connector-acf.php:110
+msgctxt "acf"
+msgid "Fields"
+msgstr ""
+
+#: connectors/class-connector-acf.php:111
+msgctxt "acf"
+msgid "Rules"
+msgstr ""
+
+#: connectors/class-connector-acf.php:112
+msgctxt "acf"
+msgid "Options"
+msgstr ""
+
+#: connectors/class-connector-acf.php:113
+msgctxt "acf"
+msgid "Values"
+msgstr ""
+
+#. translators: %1$s: field label, %2$s: form title, %3$s: action (e.g. "Message", "Contact", "Created")
+#: connectors/class-connector-acf.php:244
+#: connectors/class-connector-acf.php:436
+msgctxt "acf"
+msgid "\"%1$s\" field in \"%2$s\" %3$s"
+msgstr ""
+
+#: connectors/class-connector-acf.php:262
+#: connectors/class-connector-acf.php:460
+#: tests/tests/connectors/test-class-connector-acf.php:175
+msgctxt "acf"
+msgid "High (after title)"
+msgstr ""
+
+#: connectors/class-connector-acf.php:263
+#: connectors/class-connector-acf.php:461
+#: tests/tests/connectors/test-class-connector-acf.php:124
+msgctxt "acf"
+msgid "Normal (after content)"
+msgstr ""
+
+#: connectors/class-connector-acf.php:264
+#: connectors/class-connector-acf.php:462
+msgctxt "acf"
+msgid "Side"
+msgstr ""
+
+#. translators: %1$s: form title, %2$s a position (e.g. "Contact", "Side")
+#: connectors/class-connector-acf.php:269
+#: connectors/class-connector-acf.php:467
+#: tests/tests/connectors/test-class-connector-acf.php:120
+#: tests/tests/connectors/test-class-connector-acf.php:171
+msgctxt "acf"
+msgid "Position of \"%1$s\" updated to \"%2$s\""
+msgstr ""
+
+#: connectors/class-connector-acf.php:286
+#: connectors/class-connector-acf.php:484
+msgctxt "acf"
+msgid "Seamless (no metabox)"
+msgstr ""
+
+#: connectors/class-connector-acf.php:287
+#: connectors/class-connector-acf.php:485
+msgctxt "acf"
+msgid "Standard (WP metabox)"
+msgstr ""
+
+#. translators: %1$s: form title, %2$s a layout (e.g. "Contact", "Seamless")
+#: connectors/class-connector-acf.php:292
+#: connectors/class-connector-acf.php:490
+msgctxt "acf"
+msgid "Style of \"%1$s\" updated to \"%2$s\""
+msgstr ""
+
+#: connectors/class-connector-acf.php:309
+#: connectors/class-connector-acf.php:507
+msgctxt "acf"
+msgid "Permalink"
+msgstr ""
+
+#: connectors/class-connector-acf.php:310
+#: connectors/class-connector-acf.php:508
+msgctxt "acf"
+msgid "Content Editor"
+msgstr ""
+
+#: connectors/class-connector-acf.php:311
+#: connectors/class-connector-acf.php:509
+msgctxt "acf"
+msgid "Excerpt"
+msgstr ""
+
+#: connectors/class-connector-acf.php:312
+#: connectors/class-connector-acf.php:510
+msgctxt "acf"
+msgid "Custom Fields"
+msgstr ""
+
+#: connectors/class-connector-acf.php:313
+#: connectors/class-connector-acf.php:511
+msgctxt "acf"
+msgid "Discussion"
+msgstr ""
+
+#: connectors/class-connector-acf.php:314
+#: connectors/class-connector-acf.php:512
+msgctxt "acf"
+msgid "Comments"
+msgstr ""
+
+#: connectors/class-connector-acf.php:315
+#: connectors/class-connector-acf.php:513
+msgctxt "acf"
+msgid "Revisions"
+msgstr ""
+
+#: connectors/class-connector-acf.php:316
+#: connectors/class-connector-acf.php:514
+msgctxt "acf"
+msgid "Slug"
+msgstr ""
+
+#: connectors/class-connector-acf.php:317
+#: connectors/class-connector-acf.php:515
+msgctxt "acf"
+msgid "Author"
+msgstr ""
+
+#: connectors/class-connector-acf.php:318
+#: connectors/class-connector-acf.php:516
+msgctxt "acf"
+msgid "Format"
+msgstr ""
+
+#: connectors/class-connector-acf.php:319
+#: connectors/class-connector-acf.php:517
+msgctxt "acf"
+msgid "Featured Image"
+msgstr ""
+
+#: connectors/class-connector-acf.php:320
+#: connectors/class-connector-acf.php:518
+msgctxt "acf"
+msgid "Categories"
+msgstr ""
+
+#: connectors/class-connector-acf.php:321
+#: connectors/class-connector-acf.php:519
+msgctxt "acf"
+msgid "Tags"
+msgstr ""
+
+#: connectors/class-connector-acf.php:322
+#: connectors/class-connector-acf.php:520
+msgctxt "acf"
+msgid "Send Trackbacks"
+msgstr ""
+
+#: connectors/class-connector-acf.php:326
+#: connectors/class-connector-acf.php:524
+msgctxt "acf"
+msgid "All screens"
+msgstr ""
+
+#: connectors/class-connector-acf.php:328
+#: connectors/class-connector-acf.php:526
+#: tests/tests/connectors/test-class-connector-acf.php:138
+msgctxt "acf"
+msgid "No screens"
+msgstr ""
+
+#. translators: %1$s: a form title, %2$s: a display option (e.g. "Contact", "All screens")
+#: connectors/class-connector-acf.php:335
+#: connectors/class-connector-acf.php:533
+#: tests/tests/connectors/test-class-connector-acf.php:134
+msgctxt "acf"
+msgid "\"%1$s\" set to display on \"%2$s\""
+msgstr ""
+
+#: connectors/class-connector-acf.php:598
+msgid "user"
+msgstr ""
+
+#. translators: %1$s: a field label, %2$s: an object title, %3$s: an object type (e.g. "Message", "Hello World", "post")
+#: connectors/class-connector-acf.php:615
+#: tests/tests/connectors/test-class-connector-acf.php:237
+#: tests/tests/connectors/test-class-connector-acf.php:253
+#: tests/tests/connectors/test-class-connector-acf.php:269
+msgctxt "acf"
+msgid "\"%1$s\" of \"%2$s\" %3$s updated"
+msgstr ""
+
+#. translators: %1$s: a form title, %2$d: the number of rules added, %3$d: the number of rules deleted (e.g. "Contact", "42", "7")
+#: connectors/class-connector-acf.php:654
+msgctxt "acf"
+msgid "Updated rules of \"%1$s\" (%2$d added, %3$d deleted)"
+msgstr ""
+
+#: connectors/class-connector-acf.php:688
+msgid "field group"
+msgstr ""
+
+#. translators: %s: field group name
+#: connectors/class-connector-acf.php:699
+msgid "field in the \"%s\" field group"
+msgstr ""
+
+#: connectors/class-connector-acf.php:702
+msgid "field"
+msgstr ""
+
+#. translators: %1$s: a form title, %2$d: a numeric position, %3$d: numeric position (e.g. "Contact", "42", "7")
+#: connectors/class-connector-acf.php:741
+msgctxt "acf"
+msgid "\"%1$s\" reordered from %2$d to %3$d"
+msgstr ""
+
+#: connectors/class-connector-bbpress.php:93
+msgctxt "bbpress"
+msgid "bbPress"
+msgstr ""
+
+#: connectors/class-connector-bbpress.php:103
+msgctxt "bbpress"
+msgid "Created"
+msgstr ""
+
+#: connectors/class-connector-bbpress.php:104
+msgctxt "bbpress"
+msgid "Updated"
+msgstr ""
+
+#: connectors/class-connector-bbpress.php:105
+msgctxt "bbpress"
+msgid "Activated"
+msgstr ""
+
+#: connectors/class-connector-bbpress.php:106
+msgctxt "bbpress"
+msgid "Deactivated"
+msgstr ""
+
+#: connectors/class-connector-bbpress.php:107
+msgctxt "bbpress"
+msgid "Deleted"
+msgstr ""
+
+#: connectors/class-connector-bbpress.php:108
+msgctxt "bbpress"
+msgid "Trashed"
+msgstr ""
+
+#: connectors/class-connector-bbpress.php:109
+msgctxt "bbpress"
+msgid "Restored"
+msgstr ""
+
+#: connectors/class-connector-bbpress.php:110
+msgctxt "bbpress"
+msgid "Generated"
+msgstr ""
+
+#: connectors/class-connector-bbpress.php:111
+msgctxt "bbpress"
+msgid "Imported"
+msgstr ""
+
+#: connectors/class-connector-bbpress.php:112
+msgctxt "bbpress"
+msgid "Exported"
+msgstr ""
+
+#: connectors/class-connector-bbpress.php:113
+msgctxt "bbpress"
+msgid "Closed"
+msgstr ""
+
+#: connectors/class-connector-bbpress.php:114
+msgctxt "bbpress"
+msgid "Opened"
+msgstr ""
+
+#: connectors/class-connector-bbpress.php:115
+msgctxt "bbpress"
+msgid "Sticked"
+msgstr ""
+
+#: connectors/class-connector-bbpress.php:116
+msgctxt "bbpress"
+msgid "Unsticked"
+msgstr ""
+
+#: connectors/class-connector-bbpress.php:117
+msgctxt "bbpress"
+msgid "Marked as spam"
+msgstr ""
+
+#: connectors/class-connector-bbpress.php:118
+msgctxt "bbpress"
+msgid "Unmarked as spam"
+msgstr ""
+
+#: connectors/class-connector-bbpress.php:129
+msgctxt "bbpress"
+msgid "Settings"
+msgstr ""
+
+#: connectors/class-connector-bbpress.php:183
+msgid "Reply Threading"
+msgstr ""
+
+#. translators: %s: a post title (e.g. "Hello World")
+#: connectors/class-connector-bbpress.php:206
+msgid "Replied on \"%s\""
+msgstr ""
+
+#. translators: %s a post title (e.g. "Hello World")
+#: connectors/class-connector-bbpress.php:211
+msgid "Reply to: %s"
+msgstr ""
+
+#. translators: %1$s: an action, %2$s: a topic title (e.g. "Created", "Read this first")
+#: connectors/class-connector-bbpress.php:254
+msgctxt "1: Action, 2: Topic title"
+msgid "%1$s \"%2$s\" topic"
+msgstr ""
+
+#: connectors/class-connector-blogs.php:67
+msgid "Archived"
+msgstr ""
+
+#: connectors/class-connector-blogs.php:68
+#: connectors/class-connector-comments.php:64
+#: connectors/class-connector-menus.php:55
+#: connectors/class-connector-mercator.php:57
+#: connectors/class-connector-posts.php:48
+#: connectors/class-connector-taxonomies.php:70
+#: connectors/class-connector-users.php:64
+#: connectors/class-connector-widgets.php:68
+msgid "Created"
+msgstr ""
+
+#: connectors/class-connector-blogs.php:69
+#: connectors/class-connector-comments.php:73
+#: connectors/class-connector-gravityforms.php:939
+#: connectors/class-connector-installer.php:64
+#: connectors/class-connector-media.php:53
+#: connectors/class-connector-menus.php:57
+#: connectors/class-connector-mercator.php:58
+#: connectors/class-connector-posts.php:51
+#: connectors/class-connector-taxonomies.php:72
+#: connectors/class-connector-users.php:65
+#: connectors/class-connector-widgets.php:69
+msgid "Deleted"
+msgstr ""
+
+#: connectors/class-connector-blogs.php:70
+#: connectors/class-connector-editor.php:70
+#: connectors/class-connector-installer.php:65
+#: connectors/class-connector-media.php:52
+#: connectors/class-connector-menus.php:56
+#: connectors/class-connector-mercator.php:59
+#: connectors/class-connector-posts.php:47
+#: connectors/class-connector-settings.php:246
+#: connectors/class-connector-taxonomies.php:71
+#: connectors/class-connector-users.php:63
+#: connectors/class-connector-widgets.php:72
+msgid "Updated"
+msgstr ""
+
+#: connectors/class-connector-blogs.php:123
+msgid "Site Settings"
+msgstr ""
+
+#. translators: %s: site name (e.g. "FooBar Blog")
+#: connectors/class-connector-blogs.php:144
+#: tests/tests/connectors/test-class-connector-blogs.php:73
+msgctxt "1. Site name"
+msgid "\"%s\" site was created"
+msgstr ""
+
+#. translators: %s: site name (e.g. "FooBar Blog")
+#: connectors/class-connector-blogs.php:170
+#: tests/tests/connectors/test-class-connector-blogs.php:115
+msgctxt "1. Site name"
+msgid "\"%s\" site was deleted"
+msgstr ""
+
+#. translators: %s: site name (e.g. "FooBar Blog")
+#: connectors/class-connector-blogs.php:199
+#: tests/tests/connectors/test-class-connector-blogs.php:154
+msgctxt "1. Site name"
+msgid "\"%s\" site was registered"
+msgstr ""
+
+#. translators: %1$s: a user's display name, %2$s: a site name, %3$s: a user role (e.g. "Jane Doe", "FooBar Blog", "subscriber")
+#: connectors/class-connector-blogs.php:235
+#: tests/tests/connectors/test-class-connector-blogs.php:190
+msgctxt "1. User's name, 2. Site name, 3. Role"
+msgid "%1$s was added to the \"%2$s\" site with %3$s capabilities"
+msgstr ""
+
+#. translators: %1$s: a user's display name, %2$s: a site name (e.g. "Jane Doe", "FooBar Blog")
+#: connectors/class-connector-blogs.php:271
+#: tests/tests/connectors/test-class-connector-blogs.php:228
+msgctxt "1. User's name, 2. Site name"
+msgid "%1$s was removed from the \"%2$s\" site"
+msgstr ""
+
+#: connectors/class-connector-blogs.php:296
+#: connectors/class-connector-gravityforms.php:744
+#: tests/tests/connectors/test-class-connector-blogs.php:281
+msgid "marked as spam"
+msgstr ""
+
+#: connectors/class-connector-blogs.php:307
+#: tests/tests/connectors/test-class-connector-blogs.php:301
+msgid "marked as not spam"
+msgstr ""
+
+#: connectors/class-connector-blogs.php:318
+#: tests/tests/connectors/test-class-connector-blogs.php:321
+msgid "marked as mature"
+msgstr ""
+
+#: connectors/class-connector-blogs.php:329
+#: tests/tests/connectors/test-class-connector-blogs.php:341
+msgid "marked as not mature"
+msgstr ""
+
+#: connectors/class-connector-blogs.php:340
+#: tests/tests/connectors/test-class-connector-blogs.php:361
+msgid "archived"
+msgstr ""
+
+#: connectors/class-connector-blogs.php:351
+#: tests/tests/connectors/test-class-connector-blogs.php:381
+msgid "restored from archive"
+msgstr ""
+
+#: connectors/class-connector-blogs.php:362
+#: connectors/class-connector-gravityforms.php:745
+#: tests/tests/connectors/test-class-connector-blogs.php:401
+msgid "trashed"
+msgstr ""
+
+#: connectors/class-connector-blogs.php:373
+#: connectors/class-connector-gravityforms.php:746
+#: tests/tests/connectors/test-class-connector-blogs.php:421
+msgid "restored"
+msgstr ""
+
+#: connectors/class-connector-blogs.php:386
+#: tests/tests/connectors/test-class-connector-blogs.php:441
+msgid "marked as public"
+msgstr ""
+
+#: connectors/class-connector-blogs.php:388
+#: tests/tests/connectors/test-class-connector-blogs.php:461
+msgid "marked as private"
+msgstr ""
+
+#. translators: %1$s: a site name, %2$s: a blog status (e.g. "FooBar Blog", "archived")
+#: connectors/class-connector-blogs.php:407
+#: tests/tests/connectors/test-class-connector-blogs.php:270
+#: tests/tests/connectors/test-class-connector-blogs.php:290
+#: tests/tests/connectors/test-class-connector-blogs.php:310
+#: tests/tests/connectors/test-class-connector-blogs.php:330
+#: tests/tests/connectors/test-class-connector-blogs.php:350
+#: tests/tests/connectors/test-class-connector-blogs.php:370
+#: tests/tests/connectors/test-class-connector-blogs.php:390
+#: tests/tests/connectors/test-class-connector-blogs.php:410
+#: tests/tests/connectors/test-class-connector-blogs.php:430
+#: tests/tests/connectors/test-class-connector-blogs.php:450
+msgctxt "1. Site name, 2. Status"
+msgid "\"%1$s\" site was %2$s"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:129
+msgctxt "buddypress"
+msgid "BuddyPress"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:139
+msgctxt "buddypress"
+msgid "Created"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:140
+msgctxt "buddypress"
+msgid "Updated"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:141
+msgctxt "buddypress"
+msgid "Activated"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:142
+msgctxt "buddypress"
+msgid "Deactivated"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:143
+msgctxt "buddypress"
+msgid "Deleted"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:144
+msgctxt "buddypress"
+msgid "Marked as spam"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:145
+msgctxt "buddypress"
+msgid "Unmarked as spam"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:146
+msgctxt "buddypress"
+msgid "Promoted"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:147
+msgctxt "buddypress"
+msgid "Demoted"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:158
+msgctxt "buddypress"
+msgid "Components"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:159
+msgctxt "buddypress"
+msgid "Groups"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:160
+msgctxt "buddypress"
+msgid "Activity"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:161
+msgctxt "buddypress"
+msgid "Profile fields"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:189
+#: connectors/class-connector-buddypress.php:202
+msgid "Edit setting"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:197
+msgid "Edit Page"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:223
+msgid "Edit group"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:224
+msgid "View group"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:225
+msgid "Delete group"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:246
+msgid "Ham"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:249
+msgid "Spam"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:251
+#: connectors/class-connector-buddypress.php:266
+#: connectors/class-connector-buddypress.php:288
+msgid "Delete"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:312
+#: connectors/class-connector-buddypress.php:316
+msgctxt "buddypress"
+msgid "Toolbar"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:320
+msgctxt "buddypress"
+msgid "Account Deletion"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:324
+msgctxt "buddypress"
+msgid "Profile Syncing"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:328
+msgctxt "buddypress"
+msgid "Group Creation"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:332
+msgctxt "buddypress"
+msgid "bbPress Configuration"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:336
+msgctxt "buddypress"
+msgid "Blog &amp; Forum Comments"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:340
+msgctxt "buddypress"
+msgid "Activity auto-refresh"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:344
+msgctxt "buddypress"
+msgid "Akismet"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:348
+msgctxt "buddypress"
+msgid "Avatar Uploads"
+msgstr ""
+
+#. translators: %s: setting name (e.g. "Group Creation")
+#. translators: %s: a setting title (e.g. "Language")
+#. translators: %s: a setting name (e.g. "Language")
+#: connectors/class-connector-buddypress.php:446
+#: connectors/class-connector-edd.php:342
+#: connectors/class-connector-edd.php:398
+#: connectors/class-connector-gravityforms.php:493
+#: connectors/class-connector-jetpack.php:583
+#: connectors/class-connector-jetpack.php:796
+#: tests/tests/connectors/test-class-connector-edd.php:113
+#: tests/tests/connectors/test-class-connector-edd.php:128
+#: tests/tests/connectors/test-class-connector-edd.php:143
+#: tests/tests/connectors/test-class-connector-jetpack.php:161
+#: tests/tests/connectors/test-class-connector-jetpack.php:183
+msgid "\"%s\" setting updated"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:475
+#: connectors/class-connector-edd.php:481
+#: connectors/class-connector-gravityforms.php:371
+#: connectors/class-connector-gravityforms.php:398
+#: connectors/class-connector-gravityforms.php:743
+#: connectors/class-connector-jetpack.php:366
+#: connectors/class-connector-jetpack.php:494
+#: tests/tests/connectors/test-class-connector-jetpack.php:132
+msgid "activated"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:476
+#: connectors/class-connector-edd.php:481
+#: connectors/class-connector-gravityforms.php:371
+#: connectors/class-connector-gravityforms.php:398
+#: connectors/class-connector-jetpack.php:366
+#: connectors/class-connector-jetpack.php:494
+#: tests/tests/connectors/test-class-connector-edd.php:205
+msgid "deactivated"
+msgstr ""
+
+#. translators: %1$s: component title, %2$s: component action (e.g. "Members component deactivated")
+#: connectors/class-connector-buddypress.php:487
+msgid "\"%1$s\" component %2$s"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:524
+msgctxt "buddypress"
+msgid "Register"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:525
+msgctxt "buddypress"
+msgid "Activate"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:534
+msgid "No page"
+msgstr ""
+
+#. translators: %1$s: a directory page, %2$s: a page title (e.g. "Register", "Registration" )
+#: connectors/class-connector-buddypress.php:539
+msgid "\"%1$s\" page set to \"%2$s\""
+msgstr ""
+
+#. translators: %s: an activity title (e.g. "Update")
+#: connectors/class-connector-buddypress.php:589
+msgid "\"%s\" activity deleted"
+msgstr ""
+
+#. translators: %s: an activity title (e.g. "Update")
+#: connectors/class-connector-buddypress.php:616
+msgid "\"%s\" activities were deleted"
+msgstr ""
+
+#. translators: %s an activity title (e.g. "Update")
+#: connectors/class-connector-buddypress.php:645
+msgid "Marked activity \"%s\" as spam"
+msgstr ""
+
+#. translators: %s: an activity title (e.g. "Update")
+#: connectors/class-connector-buddypress.php:674
+msgid "Unmarked activity \"%s\" as spam"
+msgstr ""
+
+#. translators: %s: an activity title (e.g. "Update")
+#: connectors/class-connector-buddypress.php:703
+msgid "\"%s\" activity updated"
+msgstr ""
+
+#. translators: %s: a group name (e.g. "Favourites")
+#: connectors/class-connector-buddypress.php:742
+msgid "\"%s\" group created"
+msgstr ""
+
+#. translators: %s: a group name (e.g. "Favourites")
+#: connectors/class-connector-buddypress.php:745
+msgid "\"%s\" group updated"
+msgstr ""
+
+#. translators: %s: a group name (e.g. "Favourites")
+#: connectors/class-connector-buddypress.php:748
+msgid "\"%s\" group deleted"
+msgstr ""
+
+#. translators: %s: a group name (e.g. "Favourites")
+#: connectors/class-connector-buddypress.php:751
+msgid "Joined group \"%s\""
+msgstr ""
+
+#. translators: %s: a group name (e.g. "Favourites")
+#: connectors/class-connector-buddypress.php:754
+msgid "Left group \"%s\""
+msgstr ""
+
+#. translators: %1$s: a user display name, %2$s: a group name (e.g. "Jane Doe", "Favourites")
+#: connectors/class-connector-buddypress.php:757
+msgid "Banned \"%2$s\" from \"%1$s\""
+msgstr ""
+
+#. translators: %1$s: a user display name, %2$s: a group name (e.g. "Jane Doe", "Favourites")
+#: connectors/class-connector-buddypress.php:761
+msgid "Unbanned \"%2$s\" from \"%1$s\""
+msgstr ""
+
+#. translators: %1$s: a user display name, %2$s: a group name (e.g. "Jane Doe", "Favourites")
+#: connectors/class-connector-buddypress.php:765
+msgid "Removed \"%2$s\" from \"%1$s\""
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:900
+msgctxt "buddypress"
+msgid "Administrator"
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:901
+msgctxt "buddypress"
+msgid "Moderator"
+msgstr ""
+
+#. translators: %1$s: a user's display name, %2$s: a user role, %3$s: a group name (e.g. "Jane Doe", "subscriber", "Favourites")
+#: connectors/class-connector-buddypress.php:905
+msgid "Promoted \"%1$s\" to \"%2$s\" in \"%3$s\""
+msgstr ""
+
+#. translators: %1$s: a user's display name, %2$s: a user role, %3$s: a group name (e.g. "Jane Doe", "Member", "Favourites")
+#: connectors/class-connector-buddypress.php:930
+msgid "Demoted \"%1$s\" to \"%2$s\" in \"%3$s\""
+msgstr ""
+
+#: connectors/class-connector-buddypress.php:932
+msgctxt "buddypress"
+msgid "Member"
+msgstr ""
+
+#. translators: %s: a user profile field (e.g. "Job Title")
+#: connectors/class-connector-buddypress.php:990
+msgid "Created profile field \"%s\""
+msgstr ""
+
+#. translators: %s: a user profile field (e.g. "Job Title")
+#: connectors/class-connector-buddypress.php:993
+msgid "Updated profile field \"%s\""
+msgstr ""
+
+#. translators: %s: a user profile field (e.g. "Job Title")
+#: connectors/class-connector-buddypress.php:996
+msgid "Deleted profile field \"%s\""
+msgstr ""
+
+#. translators: %s: a user profile field group (e.g. "Appearance")
+#: connectors/class-connector-buddypress.php:1060
+msgid "Created profile field group \"%s\""
+msgstr ""
+
+#. translators: %s: a user profile field group (e.g. "Appearance")
+#: connectors/class-connector-buddypress.php:1063
+msgid "Updated profile field group \"%s\""
+msgstr ""
+
+#. translators: %s: a user profile field group (e.g. "Appearance")
+#: connectors/class-connector-buddypress.php:1066
+msgid "Deleted profile field group \"%s\""
+msgstr ""
+
+#: connectors/class-connector-comments.php:54
+#: connectors/class-connector-comments.php:86
+msgid "Comments"
+msgstr ""
+
+#: connectors/class-connector-comments.php:65
+msgid "Edited"
+msgstr ""
+
+#: connectors/class-connector-comments.php:66
+msgid "Replied"
+msgstr ""
+
+#: connectors/class-connector-comments.php:67
+msgid "Approved"
+msgstr ""
+
+#: connectors/class-connector-comments.php:68
+msgid "Unapproved"
+msgstr ""
+
+#: connectors/class-connector-comments.php:69
+#: connectors/class-connector-gravityforms.php:936
+#: connectors/class-connector-posts.php:49
+msgid "Trashed"
+msgstr ""
+
+#: connectors/class-connector-comments.php:70
+#: connectors/class-connector-gravityforms.php:937
+#: connectors/class-connector-posts.php:50
+msgid "Restored"
+msgstr ""
+
+#: connectors/class-connector-comments.php:71
+msgid "Marked as Spam"
+msgstr ""
+
+#: connectors/class-connector-comments.php:72
+msgid "Unmarked as Spam"
+msgstr ""
+
+#: connectors/class-connector-comments.php:74
+msgid "Duplicate"
+msgstr ""
+
+#: connectors/class-connector-comments.php:75
+msgid "Throttled"
+msgstr ""
+
+#: connectors/class-connector-comments.php:99
+msgid "Comment"
+msgstr ""
+
+#: connectors/class-connector-comments.php:100
+msgid "Trackback"
+msgstr ""
+
+#: connectors/class-connector-comments.php:101
+msgid "Pingback"
+msgstr ""
+
+#: connectors/class-connector-comments.php:146
+msgid "Unapprove"
+msgstr ""
+
+#: connectors/class-connector-comments.php:154
+msgid "Approve"
+msgstr ""
+
+#: connectors/class-connector-comments.php:187
+msgid "Guest"
+msgstr ""
+
+#: connectors/class-connector-comments.php:235
+msgid "a logged out user"
+msgstr ""
+
+#. translators: %s: a username (e.g. "administrator")
+#: connectors/class-connector-comments.php:240
+msgid "Comment flooding by %s detected and prevented"
+msgstr ""
+
+#: connectors/class-connector-comments.php:266
+#: connectors/class-connector-comments.php:336
+#: connectors/class-connector-comments.php:402
+#: connectors/class-connector-comments.php:442
+#: connectors/class-connector-comments.php:478
+#: connectors/class-connector-comments.php:514
+#: connectors/class-connector-comments.php:550
+#: connectors/class-connector-comments.php:590
+#: connectors/class-connector-comments.php:632
+msgid "a post"
+msgstr ""
+
+#: connectors/class-connector-comments.php:267
+msgid "approved automatically"
+msgstr ""
+
+#: connectors/class-connector-comments.php:267
+msgid "pending approval"
+msgstr ""
+
+#: connectors/class-connector-comments.php:278
+msgid "automatically marked as spam by Akismet"
+msgstr ""
+
+#. translators: %1$s: a parent comment's author, %2$s: a comment author, %3$s: a post title, %4$s: a comment status, %5$s: a comment type
+#: connectors/class-connector-comments.php:289
+#: tests/tests/connectors/test-class-connector-comments.php:55
+msgctxt "1: Parent comment's author, 2: Comment author, 3: Post title, 4: Comment status, 5: Comment type"
+msgid "Reply to %1$s's %5$s by %2$s on %3$s %4$s"
+msgstr ""
+
+#. translators: %1$s: a comment author, %2$s: a post title, %3$s: a comment status, %4$s: and a comment type
+#: connectors/class-connector-comments.php:303
+#: tests/tests/connectors/test-class-connector-comments.php:32
+msgctxt "1: Comment author, 2: Post title 3: Comment status, 4: Comment type"
+msgid "New %4$s by %1$s on %2$s %3$s"
+msgstr ""
+
+#. translators: %1$s: a comment author, %2$s: a post title, %3$s: a comment type
+#: connectors/class-connector-comments.php:341
+#: tests/tests/connectors/test-class-connector-comments.php:124
+msgctxt "1: Comment author, 2: Post title, 3: Comment type"
+msgid "%1$s's %3$s on %2$s edited"
+msgstr ""
+
+#. translators: %1$s: a comment author, %2$s: a post title, %3$s: a comment type
+#: connectors/class-connector-comments.php:411
+#: tests/tests/connectors/test-class-connector-comments.php:177
+msgctxt "1: Comment author, 2: Post title, 3: Comment type"
+msgid "%1$s's %3$s on %2$s deleted permanently"
+msgstr ""
+
+#. translators: %1$s: a comment author, %2$s a post title, %3$s a comment type
+#: connectors/class-connector-comments.php:447
+#: tests/tests/connectors/test-class-connector-comments.php:225
+msgctxt "1: Comment author, 2: Post title, 3: Comment type"
+msgid "%1$s's %3$s on %2$s trashed"
+msgstr ""
+
+#. translators: %1$s: a comment author, %2$s: a post title, %3$s: a comment type
+#: connectors/class-connector-comments.php:483
+#: tests/tests/connectors/test-class-connector-comments.php:274
+msgctxt "1: Comment author, 2: Post title, 3: Comment type"
+msgid "%1$s's %3$s on %2$s restored"
+msgstr ""
+
+#. translators: %1$s: a comment author, %2$s: a post title, %3$s: a comment type
+#: connectors/class-connector-comments.php:519
+#: tests/tests/connectors/test-class-connector-comments.php:322
+msgctxt "1: Comment author, 2: Post title, 3: Comment type"
+msgid "%1$s's %3$s on %2$s marked as spam"
+msgstr ""
+
+#. translators: %1$s: a comment author, %2$s: a post title, %3$s: a comment type
+#: connectors/class-connector-comments.php:555
+#: tests/tests/connectors/test-class-connector-comments.php:371
+msgctxt "1: Comment author, 2: Post title, 3: Comment type"
+msgid "%1$s's %3$s on %2$s unmarked as spam"
+msgstr ""
+
+#. translators: %1$s: comment author, %2$s: comment status, %3$s: comment type, %4$s: old comment status, %5$s: post title
+#: connectors/class-connector-comments.php:595
+msgctxt "Comment status transition. 1: Comment author, 2: New status, 3: Comment type, 4. Old status, 5. Post title"
+msgid "%1$s's %3$s on \"%5$s\" %2$s"
+msgstr ""
+
+#. translators: %1$s: a comment author, %2$s: a post title, %3$s: a comment type
+#: connectors/class-connector-comments.php:637
+msgctxt "1: Comment author, 2: Post title, 3: Comment type"
+msgid "Duplicate %3$s by %1$s prevented on %2$s"
+msgstr ""
+
+#: connectors/class-connector-edd.php:110
+msgctxt "edd"
+msgid "Easy Digital Downloads"
+msgstr ""
+
+#: connectors/class-connector-edd.php:120
+msgctxt "edd"
+msgid "Created"
+msgstr ""
+
+#: connectors/class-connector-edd.php:121
+msgctxt "edd"
+msgid "Updated"
+msgstr ""
+
+#: connectors/class-connector-edd.php:122
+msgctxt "edd"
+msgid "Added"
+msgstr ""
+
+#: connectors/class-connector-edd.php:123
+msgctxt "edd"
+msgid "Deleted"
+msgstr ""
+
+#: connectors/class-connector-edd.php:124
+msgctxt "edd"
+msgid "Trashed"
+msgstr ""
+
+#: connectors/class-connector-edd.php:125
+msgctxt "edd"
+msgid "Restored"
+msgstr ""
+
+#: connectors/class-connector-edd.php:126
+msgctxt "edd"
+msgid "Generated"
+msgstr ""
+
+#: connectors/class-connector-edd.php:127
+msgctxt "edd"
+msgid "Imported"
+msgstr ""
+
+#: connectors/class-connector-edd.php:128
+msgctxt "edd"
+msgid "Exported"
+msgstr ""
+
+#: connectors/class-connector-edd.php:129
+msgctxt "edd"
+msgid "Revoked"
+msgstr ""
+
+#: connectors/class-connector-edd.php:140
+msgctxt "edd"
+msgid "Downloads"
+msgstr ""
+
+#: connectors/class-connector-edd.php:141
+msgctxt "edd"
+msgid "Categories"
+msgstr ""
+
+#: connectors/class-connector-edd.php:142
+msgctxt "edd"
+msgid "Tags"
+msgstr ""
+
+#: connectors/class-connector-edd.php:143
+msgctxt "edd"
+msgid "Discounts"
+msgstr ""
+
+#: connectors/class-connector-edd.php:144
+msgctxt "edd"
+msgid "Reports"
+msgstr ""
+
+#: connectors/class-connector-edd.php:145
+msgctxt "edd"
+msgid "API Keys"
+msgstr ""
+
+#. translators: %s: a post type (e.g. "Post")
+#: connectors/class-connector-edd.php:178
+msgid "Deactivate %s"
+msgstr ""
+
+#. translators: %s a post type (e.g. "Post")
+#: connectors/class-connector-edd.php:187
+msgid "Activate %s"
+msgstr ""
+
+#: connectors/class-connector-edd.php:210
+msgid "View API Log"
+msgstr ""
+
+#: connectors/class-connector-edd.php:222
+msgid "Revoke"
+msgstr ""
+
+#: connectors/class-connector-edd.php:231
+msgid "Reissue"
+msgstr ""
+
+#: connectors/class-connector-edd.php:377
+msgctxt "edd"
+msgid "Banned emails"
+msgstr ""
+
+#. translators: %s: a discount title (e.g. "Mother's Day")
+#: connectors/class-connector-edd.php:437
+msgid "\"%s\" discount deleted"
+msgstr ""
+
+#. translators: %1$s: a discount title, %2$s: a status (e.g. "Mother's Day", "activated")
+#: connectors/class-connector-edd.php:479
+#: tests/tests/connectors/test-class-connector-edd.php:203
+msgid "\"%1$s\" discount %2$s"
+msgstr ""
+
+#: connectors/class-connector-edd.php:546
+msgid "Sales and Earnings"
+msgstr ""
+
+#: connectors/class-connector-edd.php:548
+msgid "Earnings"
+msgstr ""
+
+#: connectors/class-connector-edd.php:550
+msgid "Payments"
+msgstr ""
+
+#: connectors/class-connector-edd.php:552
+msgid "Emails"
+msgstr ""
+
+#: connectors/class-connector-edd.php:554
+msgid "Download History"
+msgstr ""
+
+#. translators: %s: a report title (e.g. "Sales and Earnings")
+#: connectors/class-connector-edd.php:560
+msgid "Generated %s report"
+msgstr ""
+
+#: connectors/class-connector-edd.php:579
+#: tests/tests/connectors/test-class-connector-edd.php:239
+msgid "Exported Settings"
+msgstr ""
+
+#: connectors/class-connector-edd.php:594
+#: tests/tests/connectors/test-class-connector-edd.php:232
+msgid "Imported Settings"
+msgstr ""
+
+#: connectors/class-connector-edd.php:683
+msgid "revoked"
+msgstr ""
+
+#: connectors/class-connector-edd.php:686
+#: connectors/class-connector-gravityforms.php:232
+#: connectors/class-connector-gravityforms.php:262
+#: connectors/class-connector-gravityforms.php:295
+msgid "created"
+msgstr ""
+
+#: connectors/class-connector-edd.php:689
+#: connectors/class-connector-gravityforms.php:232
+#: connectors/class-connector-gravityforms.php:262
+#: connectors/class-connector-gravityforms.php:295
+#: connectors/class-connector-gravityforms.php:517
+msgid "updated"
+msgstr ""
+
+#. translators: %s: a status (e.g. "revoked")
+#: connectors/class-connector-edd.php:695
+msgid "User API Key %s"
+msgstr ""
+
+#: connectors/class-connector-editor.php:60
+msgid "Editor"
+msgstr ""
+
+#: connectors/class-connector-editor.php:88
+#: connectors/class-connector-installer.php:77
+msgid "Themes"
+msgstr ""
+
+#: connectors/class-connector-editor.php:89
+#: connectors/class-connector-installer.php:76
+msgid "Plugins"
+msgstr ""
+
+#. translators: %1$s: a file name, %2$s: a theme / plugin name (e.g. "index.php", "Stream")
+#: connectors/class-connector-editor.php:129
+#: tests/tests/connectors/test-class-connector-editor.php:30
+#: tests/tests/connectors/test-class-connector-editor.php:50
+msgctxt "1: File name, 2: Theme/plugin name"
+msgid "\"%1$s\" in \"%2$s\" updated"
+msgstr ""
+
+#: connectors/class-connector-editor.php:158
+#: connectors/class-connector-editor.php:175
+msgid "Edit File"
+msgstr ""
+
+#: connectors/class-connector-editor.php:166
+msgid "Theme Details"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:95
+msgctxt "gravityforms"
+msgid "Gravity Forms"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:105
+msgctxt "gravityforms"
+msgid "Created"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:106
+msgctxt "gravityforms"
+msgid "Updated"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:107
+msgctxt "gravityforms"
+msgid "Exported"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:108
+msgctxt "gravityforms"
+msgid "Imported"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:109
+msgctxt "gravityforms"
+msgid "Added"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:110
+msgctxt "gravityforms"
+msgid "Deleted"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:111
+msgctxt "gravityforms"
+msgid "Trashed"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:112
+msgctxt "gravityforms"
+msgid "Restored"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:113
+msgctxt "gravityforms"
+msgid "Duplicated"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:114
+msgctxt "gravityforms"
+msgid "Activated"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:115
+msgctxt "gravityforms"
+msgid "Deactivated"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:116
+msgctxt "gravityforms"
+msgid "Views Reset"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:117
+msgctxt "gravityforms"
+msgid "Starred"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:118
+msgctxt "gravityforms"
+msgid "Unstarred"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:129
+msgctxt "gravityforms"
+msgid "Forms"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:130
+msgctxt "gravityforms"
+msgid "Settings"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:131
+msgctxt "gravityforms"
+msgid "Import/Export"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:132
+msgctxt "gravityforms"
+msgid "Entries"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:133
+msgctxt "gravityforms"
+msgid "Notes"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:177
+msgid "Edit Settings"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:196
+msgctxt "gravityforms"
+msgid "Output CSS"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:199
+msgctxt "gravityforms"
+msgid "Output HTML5"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:202
+msgctxt "gravityforms"
+msgid "No-Conflict Mode"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:205
+msgctxt "gravityforms"
+msgid "Currency"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:208
+msgctxt "gravityforms"
+msgid "reCAPTCHA Public Key"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:211
+msgctxt "gravityforms"
+msgid "reCAPTCHA Private Key"
+msgstr ""
+
+#. translators: %1$s a form title, %2$s a status (e.g. "Contact Form", "created")
+#: connectors/class-connector-gravityforms.php:230
+msgid "\"%1$s\" form %2$s"
+msgstr ""
+
+#. translators: %1$s: a confirmation name, %2$s: a status, %3$s: a form title (e.g. "Email", "created", "Contact Form")
+#: connectors/class-connector-gravityforms.php:260
+msgid "\"%1$s\" confirmation %2$s for \"%3$s\""
+msgstr ""
+
+#. translators: %1$s: a notification name, %2$s: a status, %3$s: a form title (e.g. "Email", "created", "Contact Form")
+#: connectors/class-connector-gravityforms.php:293
+msgid "\"%1$s\" notification %2$s for \"%3$s\""
+msgstr ""
+
+#. translators: %1$s: a notification name, %2$s: a form title (e.g. "Email", "Contact Form")
+#: connectors/class-connector-gravityforms.php:320
+msgid "\"%1$s\" notification deleted from \"%2$s\""
+msgstr ""
+
+#. translators: %1$s: a confirmation name, %2$s: a form title (e.g. "Email", "Contact Form")
+#: connectors/class-connector-gravityforms.php:344
+msgid "\"%1$s\" confirmation deleted from \"%2$s\""
+msgstr ""
+
+#. translators: %1$s: a confirmation name, %2$s: a status, %3$s: a form title (e.g. "Email", "activated", "Contact Form")
+#: connectors/class-connector-gravityforms.php:369
+msgid "\"%1$s\" confirmation %2$s from \"%3$s\""
+msgstr ""
+
+#. translators: %1$s: a notification name, %2$s: a status, %3$s: a form title (e.g. "Email", "activated", "Contact Form")
+#: connectors/class-connector-gravityforms.php:396
+msgid "\"%1$s\" notification %2$s from \"%3$s\""
+msgstr ""
+
+#. translators: %s: a status (e.g. "updated")
+#: connectors/class-connector-gravityforms.php:516
+msgid "Gravity Forms license key %s"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:517
+msgid "deleted"
+msgstr ""
+
+#. translators: %s: a form title (e.g. "Contact Form")
+#: connectors/class-connector-gravityforms.php:540
+msgid "\"%s\" form entries exported"
+msgstr ""
+
+#. translators: %d: a number of forms (e.g. "42")
+#: connectors/class-connector-gravityforms.php:567
+msgid "%d form imported"
+msgid_plural "%d forms imported"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: a form title (e.g. "Contact Form")
+#: connectors/class-connector-gravityforms.php:592
+msgid "\"%s\" form exported"
+msgstr ""
+
+#. translators: %d: a number of forms (e.g. "42")
+#: connectors/class-connector-gravityforms.php:617
+msgid "Export process started for %d form"
+msgid_plural "Export process started for %d forms"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %1$d: to an ID, %2$s: a form title (e.g. "42", "Contact Form")
+#: connectors/class-connector-gravityforms.php:645
+msgid "Lead #%1$d from \"%2$s\" deleted"
+msgstr ""
+
+#. translators: %1$d: an ID, %2$d: another ID, %3$s: a form title (e.g. "42", "7", "Contact Form")
+#: connectors/class-connector-gravityforms.php:685
+msgid "Note #%1$d added to lead #%2$d on \"%3$s\" form"
+msgstr ""
+
+#. translators: %2$d an ID, another ID, and a form title (e.g. "42", "7", "Contact Form")
+#: connectors/class-connector-gravityforms.php:712
+msgid "Note #%1$d deleted from lead #%2$d on \"%3$s\" form"
+msgstr ""
+
+#. translators: %1$d: an ID, %2$s: a status, %3$s: a form title (e.g. "42", "activated", "Contact Form")
+#: connectors/class-connector-gravityforms.php:756
+msgid "Lead #%1$d %2$s on \"%3$s\" form"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:785
+msgid "read"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:785
+msgid "unread"
+msgstr ""
+
+#. translators: %1$d: a lead ID, %2$s: a status, %3$s: a form ID, %4$s: a form title (e.g. "42", "unread", "Contact Form")
+#: connectors/class-connector-gravityforms.php:790
+msgid "Entry #%1$d marked as %2$s on form #%3$d (\"%4$s\")"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:819
+msgid "starred"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:819
+msgid "unstarred"
+msgstr ""
+
+#. translators: %1$d: an ID, %2$s: a status, %3$d: a form title (e.g. "42", "starred", "Contact Form")
+#: connectors/class-connector-gravityforms.php:825
+msgid "Entry #%1$d %2$s on form #%3$d (\"%4$s\")"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:934
+#: connectors/class-connector-installer.php:62
+msgid "Activated"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:935
+#: connectors/class-connector-installer.php:63
+#: connectors/class-connector-widgets.php:70
+msgid "Deactivated"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:938
+msgid "Duplicated"
+msgstr ""
+
+#: connectors/class-connector-gravityforms.php:940
+msgid "Views Reset"
+msgstr ""
+
+#. translators: %1$d: an ID, %2$s: a form title, %3$s: a status (e.g. "42", "Contact Form", "Activated")
+#: connectors/class-connector-gravityforms.php:946
+msgid "Form #%1$d (\"%2$s\") %3$s"
+msgstr ""
+
+#: connectors/class-connector-installer.php:51
+msgid "Installer"
+msgstr ""
+
+#: connectors/class-connector-installer.php:61
+msgid "Installed"
+msgstr ""
+
+#: connectors/class-connector-installer.php:78
+msgid "WordPress"
+msgstr ""
+
+#: connectors/class-connector-installer.php:99
+msgid "About"
+msgstr ""
+
+#: connectors/class-connector-installer.php:102
+msgid "View Release Notes"
+msgstr ""
+
+#. translators: %1$s: a plugin/theme type, %2$s: a plugin/theme name, %3$s: a plugin/theme version (e.g. "plugin", "Stream", "4.2")
+#: connectors/class-connector-installer.php:182
+#: tests/tests/connectors/test-class-connector-installer.php:33
+msgctxt "Plugin/theme installation. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version"
+msgid "Installed %1$s: %2$s %3$s"
+msgstr ""
+
+#. translators: %1$s: a plugin/theme type, %2$s: a plugin/theme name, %3$s: a plugin/theme version (e.g. "plugin", "Stream", "4.2")
+#: connectors/class-connector-installer.php:192
+#: tests/tests/connectors/test-class-connector-installer.php:52
+msgctxt "Plugin/theme update. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version"
+msgid "Updated %1$s: %2$s %3$s"
+msgstr ""
+
+#: connectors/class-connector-installer.php:275
+#: connectors/class-connector-installer.php:302
+#: connectors/class-connector-installer.php:428
+msgid "network wide"
+msgstr ""
+
+#. translators: %1$s: a plugin name, %2$s: whether it is on a single site or network wide (e.g. "Stream", "network wide") (a single site results in a blank string)
+#: connectors/class-connector-installer.php:279
+#: tests/tests/connectors/test-class-connector-installer.php:84
+msgctxt "1: Plugin name, 2: Single site or network wide"
+msgid "\"%1$s\" plugin activated %2$s"
+msgstr ""
+
+#. translators: %1$s: a plugin name, %2$s: whether it is on a single site or network wide (e.g. "Stream", "network wide") (a single site results in a blank string)
+#: connectors/class-connector-installer.php:306
+#: tests/tests/connectors/test-class-connector-installer.php:117
+msgctxt "1: Plugin name, 2: Single site or network wide"
+msgid "\"%1$s\" plugin deactivated %2$s"
+msgstr ""
+
+#. translators: %s: a theme name (e.g. "Twenty Seventeen")
+#: connectors/class-connector-installer.php:328
+#: tests/tests/connectors/test-class-connector-installer.php:146
+msgid "\"%s\" theme activated"
+msgstr ""
+
+#. translators: Placeholder refers to a theme name (e.g. "Twenty Seventeen")
+#: connectors/class-connector-installer.php:366
+#: tests/tests/connectors/test-class-connector-installer.php:165
+msgid "\"%s\" theme deleted"
+msgstr ""
+
+#. translators: %s a plugin name (e.g. "Stream")
+#: connectors/class-connector-installer.php:432
+#: tests/tests/connectors/test-class-connector-installer.php:187
+msgid "\"%s\" plugin deleted"
+msgstr ""
+
+#. translators: %s: a version number (e.g. "4.2")
+#: connectors/class-connector-installer.php:461
+#: tests/tests/connectors/test-class-connector-installer.php:216
+msgid "WordPress auto-updated to %s"
+msgstr ""
+
+#. translators: %s: a version number (e.g. "4.2")
+#: connectors/class-connector-installer.php:464
+#: tests/tests/connectors/test-class-connector-installer.php:229
+msgid "WordPress updated to %s"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:85
+msgctxt "jetpack"
+msgid "Jetpack"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:95
+msgctxt "jetpack"
+msgid "Activated"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:96
+msgctxt "jetpack"
+msgid "Deactivated"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:97
+msgctxt "jetpack"
+msgid "Connected"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:98
+msgctxt "jetpack"
+msgid "Disconnected"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:99
+msgctxt "jetpack"
+msgid "Link"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:100
+msgctxt "jetpack"
+msgid "Unlink"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:101
+msgctxt "jetpack"
+msgid "Updated"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:102
+msgctxt "jetpack"
+msgid "Added"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:103
+msgctxt "jetpack"
+msgid "Removed"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:114
+msgctxt "jetpack"
+msgid "Blogs"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:115
+msgctxt "jetpack"
+msgid "Carousel"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:116
+msgctxt "jetpack"
+msgid "Custom CSS"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:117
+msgctxt "jetpack"
+msgid "Google+ Profile"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:118
+msgctxt "jetpack"
+msgid "Infinite Scroll"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:119
+msgctxt "jetpack"
+msgid "Comments"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:120
+msgctxt "jetpack"
+msgid "Likes"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:121
+msgctxt "jetpack"
+msgid "Mobile"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:122
+msgctxt "jetpack"
+msgid "Modules"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:123
+msgctxt "jetpack"
+msgid "Monitor"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:124
+msgctxt "jetpack"
+msgid "Options"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:125
+msgctxt "jetpack"
+msgid "Post by Email"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:126
+msgctxt "jetpack"
+msgid "Protect"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:127
+msgctxt "jetpack"
+msgid "Publicize"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:128
+msgctxt "jetpack"
+msgid "Related Posts"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:129
+msgctxt "jetpack"
+msgid "Sharing"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:130
+msgctxt "jetpack"
+msgid "Subscriptions"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:131
+msgctxt "jetpack"
+msgid "SSO"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:132
+msgctxt "jetpack"
+msgid "WordPress.com Stats"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:133
+msgctxt "jetpack"
+msgid "Tiled Galleries"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:134
+msgctxt "jetpack"
+msgid "Users"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:135
+msgctxt "jetpack"
+msgid "Site Verification"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:136
+msgctxt "jetpack"
+msgid "VideoPress"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:162
+msgid "Configure"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:165
+msgid "Deactivate"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:176
+msgid "Activate"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:191
+msgid "Configure module"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:213
+#: tests/tests/connectors/test-class-connector-jetpack.php:164
+#: tests/tests/connectors/test-class-connector-jetpack.php:186
+msgid "Sharing options"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:218
+msgid "Twitter site tag"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:223
+msgid "WordPress.com Stats"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:228
+#: connectors/class-connector-settings.php:451
+msgid "Color Scheme"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:233
+msgid "WP.com Site-wide Likes"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:238
+msgid "Excerpts appearance"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:242
+msgid "App promos"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:250
+msgid "Background color"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:254
+msgid "Metadata"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:259
+msgid "Follow blog comment form button"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:263
+msgid "Follow comments form button"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:268
+msgid "Greeting Text"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:273
+msgid "Infinite Scroll Google Analytics"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:278
+msgid "Blocked Attempts"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:283
+msgid "Require Two-Step Authentication"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:287
+msgid "Match by Email"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:293
+msgid "Show Related Posts Headline"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:297
+msgid "Show Related Posts Thumbnails"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:304
+msgid "Google Webmaster Tools Token"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:308
+msgid "Bing Webmaster Center Token"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:312
+msgid "Pinterest Site Verification Token"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:318
+msgid "Tiled Galleries"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:323
+msgid "Monitor notifications"
+msgstr ""
+
+#. translators: %1$s: a module name, %2$s a status (e.g. "Photon", "activated")
+#: connectors/class-connector-jetpack.php:364
+msgid "%1$s module %2$s"
+msgstr ""
+
+#. translators: %1$s: a user display name, %2$s: a status and the connection either "from" or "to" (e.g. "Jane Doe", "unlinked from")
+#: connectors/class-connector-jetpack.php:383
+msgid "%1$s's account %2$s Jetpack"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:385
+msgid "unlinked from"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:385
+msgid "linked to"
+msgstr ""
+
+#. translators: %s: a connection status. Either "connected to" or "disconnected from".
+#: connectors/class-connector-jetpack.php:401
+msgid "Site %s Jetpack"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:402
+#: connectors/class-connector-jetpack.php:417
+msgid "connected to"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:402
+#: connectors/class-connector-jetpack.php:417
+msgid "disconnected from"
+msgstr ""
+
+#. translators: %1$s: Blog name, %2$s: a connection status. Either "connected to" or "disconnected from".
+#: connectors/class-connector-jetpack.php:415
+msgid "\"%1$s\" blog %2$s Jetpack"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:442
+#: tests/tests/connectors/test-class-connector-jetpack.php:96
+msgid "Sharing services updated"
+msgstr ""
+
+#. translators: %s: a status (e.g. "activated")
+#: connectors/class-connector-jetpack.php:492
+#: tests/tests/connectors/test-class-connector-jetpack.php:129
+msgid "Monitor notifications %s"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:540
+#: connectors/class-connector-jetpack.php:654
+#: tests/tests/connectors/test-class-connector-jetpack.php:255
+msgid "enabled"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:542
+#: connectors/class-connector-jetpack.php:654
+#: tests/tests/connectors/test-class-connector-jetpack.php:268
+msgid "disabled"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:544
+#: tests/tests/connectors/test-class-connector-jetpack.php:281
+msgid "regenerated"
+msgstr ""
+
+#. translators: %1$s: a user display name, %2$s: a status (e.g. "Jane Doe", "enabled")
+#: connectors/class-connector-jetpack.php:551
+#: tests/tests/connectors/test-class-connector-jetpack.php:251
+#: tests/tests/connectors/test-class-connector-jetpack.php:264
+#: tests/tests/connectors/test-class-connector-jetpack.php:277
+msgid "%1$s %2$s Post by Email"
+msgstr ""
+
+#. translators: Placeholder refers to a status (e.g. "enabled")
+#: connectors/class-connector-jetpack.php:652
+msgid "G+ profile display %s"
+msgstr ""
+
+#. translators: %1$s: a user display name, %2$s: a status (e.g. "Jane Doe", "connected")
+#: connectors/class-connector-jetpack.php:677
+msgid "%1$s's Google+ account %2$s"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:680
+msgid "connected"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:680
+msgid "disconnected"
+msgstr ""
+
+#. translators: %s: a status (e.g. "enabled")
+#: connectors/class-connector-jetpack.php:705
+msgid "Sharing CSS/JS %s"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:744
+msgid "Custom CSS updated"
+msgstr ""
+
+#. translators: %1$s: a service, %2$s: a status (e.g. "Facebook", "added")
+#: connectors/class-connector-jetpack.php:771
+msgid "%1$s connection %2$s"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:774
+msgid "added"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:774
+msgid "removed"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:784
+msgid "Video Library Access"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:785
+msgid "Allow users to upload videos"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:786
+msgid "Free formats"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:787
+msgid "Default quality"
+msgstr ""
+
+#: connectors/class-connector-media.php:40
+#: connectors/class-connector-settings.php:262
+msgid "Media"
+msgstr ""
+
+#: connectors/class-connector-media.php:50
+msgid "Attached"
+msgstr ""
+
+#: connectors/class-connector-media.php:51
+msgid "Uploaded"
+msgstr ""
+
+#: connectors/class-connector-media.php:54
+#: connectors/class-connector-menus.php:58
+msgid "Assigned"
+msgstr ""
+
+#: connectors/class-connector-media.php:55
+#: connectors/class-connector-menus.php:59
+msgid "Unassigned"
+msgstr ""
+
+#: connectors/class-connector-media.php:68
+msgid "Image"
+msgstr ""
+
+#: connectors/class-connector-media.php:69
+msgid "Audio"
+msgstr ""
+
+#: connectors/class-connector-media.php:70
+msgid "Video"
+msgstr ""
+
+#: connectors/class-connector-media.php:71
+msgid "Document"
+msgstr ""
+
+#: connectors/class-connector-media.php:72
+msgid "Spreadsheet"
+msgstr ""
+
+#: connectors/class-connector-media.php:73
+msgid "Interactive"
+msgstr ""
+
+#: connectors/class-connector-media.php:74
+msgid "Text"
+msgstr ""
+
+#: connectors/class-connector-media.php:75
+msgid "Archive"
+msgstr ""
+
+#: connectors/class-connector-media.php:76
+msgid "Code"
+msgstr ""
+
+#: connectors/class-connector-media.php:118
+msgid "Edit Media"
+msgstr ""
+
+#. translators: %1$s: an attachment title, %2$s: a post title (e.g. "PIC001", "Hello World")
+#: connectors/class-connector-media.php:140
+#: tests/tests/connectors/test-class-connector-media.php:56
+#: tests/tests/connectors/test-class-connector-media.php:78
+msgctxt "1: Attachment title, 2: Parent post title"
+msgid "Attached \"%1$s\" to \"%2$s\""
+msgstr ""
+
+#. translators: %s: an attachment title (e.g. "PIC001")
+#: connectors/class-connector-media.php:147
+#: tests/tests/connectors/test-class-connector-media.php:39
+msgid "Added \"%s\" to Media library"
+msgstr ""
+
+#. translators: %s: an attachment title (e.g. "PIC001")
+#: connectors/class-connector-media.php:178
+#: tests/tests/connectors/test-class-connector-media.php:144
+msgid "Updated \"%s\""
+msgstr ""
+
+#. translators: %s: an attachment title (e.g. "PIC001")
+#: connectors/class-connector-media.php:201
+#: tests/tests/connectors/test-class-connector-media.php:175
+msgid "Deleted \"%s\""
+msgstr ""
+
+#. translators: Placeholder refers to an attachment title (e.g. "PIC001")
+#: connectors/class-connector-media.php:230
+#: tests/tests/connectors/test-class-connector-media.php:210
+msgid "Edited image \"%s\""
+msgstr ""
+
+#: connectors/class-connector-menus.php:45
+msgid "Menus"
+msgstr ""
+
+#: connectors/class-connector-menus.php:119
+msgid "Edit Menu"
+msgstr ""
+
+#. translators: %s: a menu name (e.g. "Primary Menu")
+#: connectors/class-connector-menus.php:139
+#: tests/tests/connectors/test-class-connector-menus.php:30
+msgid "Created new menu \"%s\""
+msgstr ""
+
+#. translators: %s: a menu name (e.g. "Primary Menu")
+#: connectors/class-connector-menus.php:164
+#: tests/tests/connectors/test-class-connector-menus.php:57
+msgctxt "Menu name"
+msgid "Updated menu \"%s\""
+msgstr ""
+
+#. translators: %s: a menu name (e.g. "Primary Menu")
+#: connectors/class-connector-menus.php:189
+#: tests/tests/connectors/test-class-connector-menus.php:97
+msgctxt "Menu name"
+msgid "Deleted \"%s\""
+msgstr ""
+
+#. translators: %1$s: a menu name, %2$s: a theme location (e.g. "Primary Menu", "primary_nav")
+#: connectors/class-connector-menus.php:237
+#: tests/tests/connectors/test-class-connector-menus.php:152
+msgctxt "1: Menu name, 2: Theme location"
+msgid "\"%1$s\" has been unassigned from \"%2$s\""
+msgstr ""
+
+#. translators: %1$s: a menu name, %2$s a theme location (e.g. "Primary Menu", "primary_nav")
+#: connectors/class-connector-menus.php:246
+#: tests/tests/connectors/test-class-connector-menus.php:132
+msgctxt "1: Menu name, 2: Theme location"
+msgid "\"%1$s\" has been assigned to \"%2$s\""
+msgstr ""
+
+#: connectors/class-connector-mercator.php:56
+msgid "Make primary domain"
+msgstr ""
+
+#: connectors/class-connector-mercator.php:113
+msgid "Domain mapping Settings"
+msgstr ""
+
+#. translators: %1$s: domain alias, %2$s: site name (e.g. "FooBar Blog")
+#: connectors/class-connector-mercator.php:131
+#: tests/tests/connectors/test-class-connector-mercator.php:111
+msgctxt "1. Domain alias 2. Site name"
+msgid "\"%1$s\" domain alias was make primary for \"%2$s\""
+msgstr ""
+
+#. translators: %1$s: domain alias, %2$s: site name (e.g. "FooBar Blog")
+#: connectors/class-connector-mercator.php:159
+#: tests/tests/connectors/test-class-connector-mercator.php:147
+msgctxt "1. Old Domain alias 2. Domain alias 2. Site name"
+msgid "The domain alias \"%1$s\" was updated to \"%2$s\" for site \"%3$s\""
+msgstr ""
+
+#. translators: %1$s: domain alias, %2$s: site name (e.g. "FooBar Blog")
+#: connectors/class-connector-mercator.php:188
+#: tests/tests/connectors/test-class-connector-mercator.php:93
+#: tests/tests/connectors/test-class-connector-mercator.php:182
+msgctxt "1. Domain alias 2. Site name"
+msgid "\"%1$s\" domain alias was deleted for \"%2$s\""
+msgstr ""
+
+#. translators: %1$s: domain alias, %2$s: site name (e.g. "FooBar Blog")
+#: connectors/class-connector-mercator.php:215
+#: tests/tests/connectors/test-class-connector-mercator.php:75
+#: tests/tests/connectors/test-class-connector-mercator.php:216
+msgctxt "1. Domain alias 2. Site name"
+msgid "\"%1$s\" domain alias was created for \"%2$s\""
+msgstr ""
+
+#: connectors/class-connector-posts.php:37
+msgid "Posts"
+msgstr ""
+
+#. translators: %s: a post type singular name (e.g. "Post")
+#: connectors/class-connector-posts.php:111
+#: connectors/class-connector-wordpress-seo.php:171
+msgctxt "Post type singular name"
+msgid "Restore %s"
+msgstr ""
+
+#. translators: %s: a post type singular name (e.g. "Post")
+#: connectors/class-connector-posts.php:113
+#: connectors/class-connector-wordpress-seo.php:173
+msgctxt "Post type singular name"
+msgid "Delete %s Permenantly"
+msgstr ""
+
+#: connectors/class-connector-posts.php:127
+#: connectors/class-connector-wordpress-seo.php:185
+msgid "Revision"
+msgstr ""
+
+#. translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post")
+#: connectors/class-connector-posts.php:173
+#: tests/tests/connectors/test-class-connector-posts.php:110
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" %2$s unpublished"
+msgstr ""
+
+#. translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post")
+#: connectors/class-connector-posts.php:180
+#: tests/tests/connectors/test-class-connector-posts.php:271
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" %2$s restored from trash"
+msgstr ""
+
+#. translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post")
+#: connectors/class-connector-posts.php:188
+#: tests/tests/connectors/test-class-connector-posts.php:133
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" %2$s draft saved"
+msgstr ""
+
+#. translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post")
+#: connectors/class-connector-posts.php:195
+#: tests/tests/connectors/test-class-connector-posts.php:87
+#: tests/tests/connectors/test-class-connector-posts.php:317
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" %2$s published"
+msgstr ""
+
+#. translators: %1$s: a post title, %2$s a post type singular name (e.g. "Hello World", "Post")
+#: connectors/class-connector-posts.php:202
+#: tests/tests/connectors/test-class-connector-posts.php:64
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" %2$s drafted"
+msgstr ""
+
+#. translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post")
+#: connectors/class-connector-posts.php:209
+#: tests/tests/connectors/test-class-connector-posts.php:156
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" %2$s pending review"
+msgstr ""
+
+#. translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post")
+#: connectors/class-connector-posts.php:216
+#: tests/tests/connectors/test-class-connector-posts.php:179
+msgctxt "1: Post title, 2: Post type singular name, 3: Scheduled post date"
+msgid "\"%1$s\" %2$s scheduled for %3$s"
+msgstr ""
+
+#. translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post")
+#: connectors/class-connector-posts.php:223
+#: tests/tests/connectors/test-class-connector-posts.php:202
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" scheduled %2$s published"
+msgstr ""
+
+#. translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post")
+#: connectors/class-connector-posts.php:230
+#: tests/tests/connectors/test-class-connector-posts.php:225
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" %2$s privately published"
+msgstr ""
+
+#. translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post")
+#: connectors/class-connector-posts.php:237
+#: tests/tests/connectors/test-class-connector-posts.php:248
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" %2$s trashed"
+msgstr ""
+
+#. translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post")
+#: connectors/class-connector-posts.php:245
+#: tests/tests/connectors/test-class-connector-posts.php:294
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" %2$s updated"
+msgstr ""
+
+#. translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post")
+#: connectors/class-connector-posts.php:323
+#: tests/tests/connectors/test-class-connector-posts.php:470
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" %2$s deleted from trash"
+msgstr ""
+
+#: connectors/class-connector-posts.php:362
+msgid "Post"
+msgstr ""
+
+#: connectors/class-connector-settings.php:110
+msgid "Site Title"
+msgstr ""
+
+#: connectors/class-connector-settings.php:111
+msgid "Tagline"
+msgstr ""
+
+#: connectors/class-connector-settings.php:112
+#: connectors/class-connector-settings.php:119
+msgid "Timezone"
+msgstr ""
+
+#: connectors/class-connector-settings.php:113
+#: connectors/class-connector-settings.php:114
+msgid "E-mail Address"
+msgstr ""
+
+#: connectors/class-connector-settings.php:115
+msgid "WordPress Address (URL)"
+msgstr ""
+
+#: connectors/class-connector-settings.php:116
+msgid "Site Address (URL)"
+msgstr ""
+
+#: connectors/class-connector-settings.php:117
+msgid "Membership"
+msgstr ""
+
+#: connectors/class-connector-settings.php:118
+msgid "New User Default Role"
+msgstr ""
+
+#: connectors/class-connector-settings.php:120
+msgid "Date Format"
+msgstr ""
+
+#: connectors/class-connector-settings.php:121
+msgid "Time Format"
+msgstr ""
+
+#: connectors/class-connector-settings.php:122
+msgid "Week Starts On"
+msgstr ""
+
+#: connectors/class-connector-settings.php:124
+#: connectors/class-connector-settings.php:125
+msgid "Formatting"
+msgstr ""
+
+#: connectors/class-connector-settings.php:126
+msgid "Default Post Category"
+msgstr ""
+
+#: connectors/class-connector-settings.php:127
+msgid "Default Post Format"
+msgstr ""
+
+#: connectors/class-connector-settings.php:128
+msgid "Mail Server"
+msgstr ""
+
+#: connectors/class-connector-settings.php:129
+msgid "Login Name"
+msgstr ""
+
+#: connectors/class-connector-settings.php:130
+msgid "Password"
+msgstr ""
+
+#: connectors/class-connector-settings.php:131
+msgid "Default Mail Category"
+msgstr ""
+
+#: connectors/class-connector-settings.php:132
+msgid "Default Link Category"
+msgstr ""
+
+#: connectors/class-connector-settings.php:133
+msgid "Update Services"
+msgstr ""
+
+#: connectors/class-connector-settings.php:135
+#: connectors/class-connector-settings.php:136
+#: connectors/class-connector-settings.php:137
+msgid "Front page displays"
+msgstr ""
+
+#: connectors/class-connector-settings.php:138
+msgid "Blog pages show at most"
+msgstr ""
+
+#: connectors/class-connector-settings.php:139
+msgid "Syndication feeds show the most recent"
+msgstr ""
+
+#: connectors/class-connector-settings.php:140
+msgid "For each article in a feed, show"
+msgstr ""
+
+#: connectors/class-connector-settings.php:141
+msgid "Search Engine Visibility"
+msgstr ""
+
+#: connectors/class-connector-settings.php:143
+#: connectors/class-connector-settings.php:144
+#: connectors/class-connector-settings.php:145
+msgid "Default article settings"
+msgstr ""
+
+#: connectors/class-connector-settings.php:146
+#: connectors/class-connector-settings.php:147
+#: connectors/class-connector-settings.php:148
+#: connectors/class-connector-settings.php:149
+#: connectors/class-connector-settings.php:150
+#: connectors/class-connector-settings.php:151
+#: connectors/class-connector-settings.php:152
+#: connectors/class-connector-settings.php:153
+#: connectors/class-connector-settings.php:154
+#: connectors/class-connector-settings.php:155
+msgid "Other comment settings"
+msgstr ""
+
+#: connectors/class-connector-settings.php:156
+#: connectors/class-connector-settings.php:157
+msgid "E-mail me whenever"
+msgstr ""
+
+#: connectors/class-connector-settings.php:158
+#: connectors/class-connector-settings.php:159
+msgid "Before a comment appears"
+msgstr ""
+
+#: connectors/class-connector-settings.php:160
+#: connectors/class-connector-settings.php:161
+msgid "Comment Moderation"
+msgstr ""
+
+#: connectors/class-connector-settings.php:162
+msgid "Comment Blacklist"
+msgstr ""
+
+#: connectors/class-connector-settings.php:163
+msgid "Show Avatars"
+msgstr ""
+
+#: connectors/class-connector-settings.php:164
+msgid "Maximum Rating"
+msgstr ""
+
+#: connectors/class-connector-settings.php:165
+msgid "Default Avatar"
+msgstr ""
+
+#: connectors/class-connector-settings.php:167
+#: connectors/class-connector-settings.php:168
+#: connectors/class-connector-settings.php:169
+msgid "Thumbnail size"
+msgstr ""
+
+#: connectors/class-connector-settings.php:170
+#: connectors/class-connector-settings.php:171
+msgid "Medium size"
+msgstr ""
+
+#: connectors/class-connector-settings.php:172
+#: connectors/class-connector-settings.php:173
+msgid "Large size"
+msgstr ""
+
+#: connectors/class-connector-settings.php:174
+msgid "Uploading Files"
+msgstr ""
+
+#: connectors/class-connector-settings.php:176
+msgid "Permalink Settings"
+msgstr ""
+
+#: connectors/class-connector-settings.php:177
+msgid "Category base"
+msgstr ""
+
+#: connectors/class-connector-settings.php:178
+msgid "Tag base"
+msgstr ""
+
+#: connectors/class-connector-settings.php:180
+msgid "Registration notification"
+msgstr ""
+
+#: connectors/class-connector-settings.php:181
+msgid "Allow new registrations"
+msgstr ""
+
+#: connectors/class-connector-settings.php:182
+msgid "Add New Users"
+msgstr ""
+
+#: connectors/class-connector-settings.php:183
+msgid "Enable administration menus"
+msgstr ""
+
+#: connectors/class-connector-settings.php:184
+msgid "Site upload space check"
+msgstr ""
+
+#: connectors/class-connector-settings.php:185
+msgid "Site upload space"
+msgstr ""
+
+#: connectors/class-connector-settings.php:186
+msgid "Upload file types"
+msgstr ""
+
+#: connectors/class-connector-settings.php:187
+msgid "Network Title"
+msgstr ""
+
+#: connectors/class-connector-settings.php:188
+msgid "First Post"
+msgstr ""
+
+#: connectors/class-connector-settings.php:189
+msgid "First Page"
+msgstr ""
+
+#: connectors/class-connector-settings.php:190
+msgid "First Comment"
+msgstr ""
+
+#: connectors/class-connector-settings.php:191
+msgid "First Comment URL"
+msgstr ""
+
+#: connectors/class-connector-settings.php:192
+msgid "First Comment Author"
+msgstr ""
+
+#: connectors/class-connector-settings.php:193
+msgid "Welcome Email"
+msgstr ""
+
+#: connectors/class-connector-settings.php:194
+msgid "Welcome User Email"
+msgstr ""
+
+#: connectors/class-connector-settings.php:195
+msgid "Max upload file size"
+msgstr ""
+
+#: connectors/class-connector-settings.php:196
+msgid "Terms Enabled"
+msgstr ""
+
+#: connectors/class-connector-settings.php:197
+msgid "Banned Names"
+msgstr ""
+
+#: connectors/class-connector-settings.php:198
+msgid "Limited Email Registrations"
+msgstr ""
+
+#: connectors/class-connector-settings.php:199
+msgid "Banned Email Domains"
+msgstr ""
+
+#: connectors/class-connector-settings.php:200
+msgid "Network Language"
+msgstr ""
+
+#: connectors/class-connector-settings.php:201
+msgid "Blog Count"
+msgstr ""
+
+#: connectors/class-connector-settings.php:202
+msgid "User Count"
+msgstr ""
+
+#: connectors/class-connector-settings.php:204
+msgid "Stream Database Version"
+msgstr ""
+
+#: connectors/class-connector-settings.php:209
+#: connectors/class-connector-settings.php:210
+msgid "Network Admin Email"
+msgstr ""
+
+#: connectors/class-connector-settings.php:259
+msgid "Writing"
+msgstr ""
+
+#: connectors/class-connector-settings.php:260
+msgid "Reading"
+msgstr ""
+
+#: connectors/class-connector-settings.php:261
+msgid "Discussion"
+msgstr ""
+
+#: connectors/class-connector-settings.php:263
+msgid "Permalinks"
+msgstr ""
+
+#: connectors/class-connector-settings.php:264
+msgid "Network"
+msgstr ""
+
+#: connectors/class-connector-settings.php:266
+msgid "Custom Background"
+msgstr ""
+
+#: connectors/class-connector-settings.php:267
+msgid "Custom Header"
+msgstr ""
+
+#: connectors/class-connector-settings.php:274
+msgid "Stream Network"
+msgstr ""
+
+#: connectors/class-connector-settings.php:275
+msgid "Stream Defaults"
+msgstr ""
+
+#: connectors/class-connector-settings.php:437
+msgid "Background Image"
+msgstr ""
+
+#: connectors/class-connector-settings.php:438
+msgid "Background Position"
+msgstr ""
+
+#: connectors/class-connector-settings.php:439
+msgid "Background Repeat"
+msgstr ""
+
+#: connectors/class-connector-settings.php:440
+msgid "Background Attachment"
+msgstr ""
+
+#: connectors/class-connector-settings.php:441
+msgid "Background Color"
+msgstr ""
+
+#: connectors/class-connector-settings.php:443
+msgid "Header Image"
+msgstr ""
+
+#: connectors/class-connector-settings.php:444
+msgid "Text Color"
+msgstr ""
+
+#: connectors/class-connector-settings.php:445
+msgid "Header and Sidebar Background Color"
+msgstr ""
+
+#: connectors/class-connector-settings.php:447
+msgid "Layout"
+msgstr ""
+
+#: connectors/class-connector-settings.php:449
+msgid "Header and Sidebar Text Color"
+msgstr ""
+
+#: connectors/class-connector-settings.php:452
+msgid "Main Text Color"
+msgstr ""
+
+#: connectors/class-connector-settings.php:453
+msgid "Secondary Text Color"
+msgstr ""
+
+#: connectors/class-connector-settings.php:454
+msgid "Link Color"
+msgstr ""
+
+#: connectors/class-connector-settings.php:455
+msgid "Page Background Color"
+msgstr ""
+
+#. translators: %s: a context (e.g. "Editor")
+#: connectors/class-connector-settings.php:596
+msgid "Edit %s Settings"
+msgstr ""
+
+#. translators: %s: a setting name (e.g. "Language")
+#: connectors/class-connector-settings.php:761
+#: tests/tests/connectors/test-class-connector-settings.php:65
+#: tests/tests/connectors/test-class-connector-settings.php:80
+#: tests/tests/connectors/test-class-connector-settings.php:95
+#: tests/tests/connectors/test-class-connector-settings.php:110
+msgid "\"%s\" setting was updated"
+msgstr ""
+
+#: connectors/class-connector-taxonomies.php:60
+msgid "Taxonomies"
+msgstr ""
+
+#. translators: %s a term singular name (e.g. "Tag")
+#: connectors/class-connector-taxonomies.php:118
+msgctxt "Term singular name"
+msgid "Edit %s"
+msgstr ""
+
+#. translators: %1$s: a term name, %2$s: a taxonomy singular label (e.g. "Tags", "Genre")
+#: connectors/class-connector-taxonomies.php:167
+#: tests/tests/connectors/test-class-connector-taxonomies.php:34
+msgctxt "1: Term name, 2: Taxonomy singular label"
+msgid "\"%1$s\" %2$s created"
+msgstr ""
+
+#. translators: %1$s: a term name, %2$s: a taxonomy singular label (e.g. "Tags", "Genre")
+#: connectors/class-connector-taxonomies.php:200
+#: tests/tests/connectors/test-class-connector-taxonomies.php:72
+msgctxt "1: Term name, 2: Taxonomy singular label"
+msgid "\"%1$s\" %2$s deleted"
+msgstr ""
+
+#. translators: %1$s: a term name, %2$s: a taxonomy singular label (e.g. "Tags", "Genre")
+#: connectors/class-connector-taxonomies.php:252
+#: tests/tests/connectors/test-class-connector-taxonomies.php:108
+msgctxt "1: Term name, 2: Taxonomy singular label"
+msgid "\"%1$s\" %2$s updated"
+msgstr ""
+
+#: connectors/class-connector-user-switching.php:53
+msgctxt "user-switching"
+msgid "User Switching"
+msgstr ""
+
+#. translators: %1$s: a user display name, %2$s: a username (e.g. "Jane Doe", "administrator")
+#: connectors/class-connector-user-switching.php:157
+#: tests/tests/connectors/test-class-connector-user-switching.php:61
+msgctxt "1: User display name, 2: User login"
+msgid "Switched user to %1$s (%2$s)"
+msgstr ""
+
+#. translators: Placeholders refer to a user display name, and a username (e.g. "Jane Doe", "administrator")
+#: connectors/class-connector-user-switching.php:188
+#: tests/tests/connectors/test-class-connector-user-switching.php:111
+msgctxt "1: User display name, 2: User login"
+msgid "Switched back to %1$s (%2$s)"
+msgstr ""
+
+#: connectors/class-connector-user-switching.php:224
+#: tests/tests/connectors/test-class-connector-user-switching.php:150
+msgid "Switched off"
+msgstr ""
+
+#: connectors/class-connector-users.php:53
+#: connectors/class-connector-users.php:83
+msgid "Users"
+msgstr ""
+
+#: connectors/class-connector-users.php:66
+msgid "Password Reset"
+msgstr ""
+
+#: connectors/class-connector-users.php:67
+msgid "Lost Password"
+msgstr ""
+
+#: connectors/class-connector-users.php:68
+msgid "Log In"
+msgstr ""
+
+#: connectors/class-connector-users.php:69
+msgid "Log Out"
+msgstr ""
+
+#: connectors/class-connector-users.php:70
+msgid "Switched To"
+msgstr ""
+
+#: connectors/class-connector-users.php:71
+msgid "Switched Back"
+msgstr ""
+
+#: connectors/class-connector-users.php:72
+msgid "Switched Off"
+msgstr ""
+
+#: connectors/class-connector-users.php:84
+msgid "Sessions"
+msgstr ""
+
+#: connectors/class-connector-users.php:85
+msgid "Profiles"
+msgstr ""
+
+#: connectors/class-connector-users.php:103
+msgid "Edit User"
+msgstr ""
+
+#: connectors/class-connector-users.php:152
+#: tests/tests/connectors/test-class-connector-users.php:31
+msgid "New user registration"
+msgstr ""
+
+#. translators: %1$s: a user display name, %2$s: a user role (e.g. "Jane Doe", "subscriber")
+#: connectors/class-connector-users.php:156
+#: tests/tests/connectors/test-class-connector-users.php:45
+msgctxt "1: User display name, 2: User role"
+msgid "New user account created for %1$s (%2$s)"
+msgstr ""
+
+#. translators: %s: a user display name (e.g. "Jane Doe")
+#: connectors/class-connector-users.php:190
+#: tests/tests/connectors/test-class-connector-users.php:119
+msgid "%s's profile was updated"
+msgstr ""
+
+#. translators: %1$s: a user display name, %2$s: a user role, %3$s: another user role (e.g. "Jane Doe", "editor", "subscriber")
+#: connectors/class-connector-users.php:218
+#: tests/tests/connectors/test-class-connector-users.php:234
+msgctxt "1: User display name, 2: Old role, 3: New role"
+msgid "%1$s's role was changed from %2$s to %3$s"
+msgstr ""
+
+#. translators: %s: a user display name (e.g. "Jane Doe")
+#: connectors/class-connector-users.php:244
+#: tests/tests/connectors/test-class-connector-users.php:84
+msgid "%s's password was reset"
+msgstr ""
+
+#. translators: %s: a user display name (e.g. "Jane Doe")
+#: connectors/class-connector-users.php:271
+#: tests/tests/connectors/test-class-connector-users.php:111
+msgid "%s's password was requested to be reset"
+msgstr ""
+
+#. translators: %s: a user display name (e.g. "Jane Doe")
+#: connectors/class-connector-users.php:300
+#: tests/tests/connectors/test-class-connector-users.php:143
+msgid "%s logged in"
+msgstr ""
+
+#. translators: %s: a user display name (e.g. "Jane Doe")
+#: connectors/class-connector-users.php:327
+msgid "%s logged out"
+msgstr ""
+
+#. translators: %1$s: a user display name, %2$s: a user role (e.g. "Jane Doe", "subscriber")
+#: connectors/class-connector-users.php:363
+#: tests/tests/connectors/test-class-connector-users.php:183
+msgctxt "1: User display name, 2: User roles"
+msgid "%1$s's account was deleted (%2$s)"
+msgstr ""
+
+#. translators: %d: a user display name, and a user role (e.g. "Jane Doe", "subscriber")
+#: connectors/class-connector-users.php:373
+#: tests/tests/connectors/test-class-connector-users.php:201
+msgid "User account #%d was deleted"
+msgstr ""
+
+#: connectors/class-connector-widgets.php:55
+msgid "Widgets"
+msgstr ""
+
+#: connectors/class-connector-widgets.php:65
+msgid "Added"
+msgstr ""
+
+#: connectors/class-connector-widgets.php:66
+msgid "Removed"
+msgstr ""
+
+#: connectors/class-connector-widgets.php:67
+msgid "Moved"
+msgstr ""
+
+#: connectors/class-connector-widgets.php:71
+msgid "Reactivated"
+msgstr ""
+
+#: connectors/class-connector-widgets.php:73
+msgid "Sorted"
+msgstr ""
+
+#: connectors/class-connector-widgets.php:91
+msgid "Inactive Widgets"
+msgstr ""
+
+#: connectors/class-connector-widgets.php:92
+msgid "Orphaned Widgets"
+msgstr ""
+
+#: connectors/class-connector-widgets.php:113
+msgid "Edit Widget Area"
+msgstr ""
+
+#. translators: %1$s: a widget name, %2$s: a widget title, %3$s: a sidebar name (e.g. "Archives", "Browse", "Footer Area 1")
+#: connectors/class-connector-widgets.php:212
+msgctxt "1: Name, 2: Title, 3: Sidebar Name"
+msgid "%1$s widget named \"%2$s\" from \"%3$s\" deactivated"
+msgstr ""
+
+#. translators: %1$s: a widget name, %3$s: a sidebar name (e.g. "Archives", "Footer Area 1")
+#: connectors/class-connector-widgets.php:216
+msgctxt "1: Name, 3: Sidebar Name"
+msgid "%1$s widget from \"%3$s\" deactivated"
+msgstr ""
+
+#. translators: %1$s: a widget title, %2$s: a sidebar name (e.g. "Browse", "Footer Area 1")
+#: connectors/class-connector-widgets.php:220
+msgctxt "2: Title, 3: Sidebar Name"
+msgid "Unknown widget type named \"%2$s\" from \"%3$s\" deactivated"
+msgstr ""
+
+#. translators: %4$s: a widget ID, %3$s: a sidebar name (e.g. "42", "Footer Area 1")
+#: connectors/class-connector-widgets.php:224
+msgctxt "4: Widget ID, 3: Sidebar Name"
+msgid "%4$s widget from \"%3$s\" deactivated"
+msgstr ""
+
+#. translators: %1$s: a widget name, %2$s: a widget title (e.g. "Archives", "Browse")
+#: connectors/class-connector-widgets.php:265
+msgctxt "1: Name, 2: Title"
+msgid "%1$s widget named \"%2$s\" reactivated"
+msgstr ""
+
+#. translators: %1$s: a widget name (e.g. "Archives")
+#: connectors/class-connector-widgets.php:269
+msgctxt "1: Name"
+msgid "%1$s widget reactivated"
+msgstr ""
+
+#. translators: %2$s: a widget title (e.g. "Browse")
+#: connectors/class-connector-widgets.php:273
+msgctxt "2: Title"
+msgid "Unknown widget type named \"%2$s\" reactivated"
+msgstr ""
+
+#. translators: %3$s: a widget ID (e.g. "42")
+#: connectors/class-connector-widgets.php:277
+msgctxt "3: Widget ID"
+msgid "%3$s widget reactivated"
+msgstr ""
+
+#. translators: %1$s: a widget name, %2$s: a widget title, %3$s: a sidebar name (e.g. "Archives", "Browse", "Footer Area 1")
+#: connectors/class-connector-widgets.php:325
+msgctxt "1: Name, 2: Title, 3: Sidebar Name"
+msgid "%1$s widget named \"%2$s\" removed from \"%3$s\""
+msgstr ""
+
+#. translators: %1$s: a widget name, %3$s: a sidebar name (e.g. "Archives", "Footer Area 1")
+#: connectors/class-connector-widgets.php:329
+msgctxt "1: Name, 3: Sidebar Name"
+msgid "%1$s widget removed from \"%3$s\""
+msgstr ""
+
+#. translators: %2$s: a widget title, %3$s: a sidebar name (e.g. "Browse", "Footer Area 1")
+#: connectors/class-connector-widgets.php:333
+msgctxt "2: Title, 3: Sidebar Name"
+msgid "Unknown widget type named \"%2$s\" removed from \"%3$s\""
+msgstr ""
+
+#. translators: %4$s: a widget ID, %3$s: a sidebar name (e.g. "42", "Footer Area 1")
+#: connectors/class-connector-widgets.php:337
+msgctxt "4: Widget ID, 3: Sidebar Name"
+msgid "%4$s widget removed from \"%3$s\""
+msgstr ""
+
+#. translators: %1$s: a widget name, %2$s: a widget title, %3$s: a sidebar name (e.g. "Archives", "Browse", "Footer Area 1")
+#: connectors/class-connector-widgets.php:382
+msgctxt "1: Name, 2: Title, 3: Sidebar Name"
+msgid "%1$s widget named \"%2$s\" added to \"%3$s\""
+msgstr ""
+
+#. translators: %1$s: a widget name, %3$s: a sidebar name (e.g. "Archives", "Footer Area 1")
+#: connectors/class-connector-widgets.php:386
+msgctxt "1: Name, 3: Sidebar Name"
+msgid "%1$s widget added to \"%3$s\""
+msgstr ""
+
+#. translators: %2$s: a widget title, %3$s: a sidebar name (e.g. "Browse", "Footer Area 1")
+#: connectors/class-connector-widgets.php:390
+msgctxt "2: Title, 3: Sidebar Name"
+msgid "Unknown widget type named \"%2$s\" added to \"%3$s\""
+msgstr ""
+
+#. translators: %4$s: a widget ID, %3$s: a sidebar name (e.g. "42", "Footer Area 1")
+#: connectors/class-connector-widgets.php:394
+msgctxt "4: Widget ID, 3: Sidebar Name"
+msgid "%4$s widget added to \"%3$s\""
+msgstr ""
+
+#. translators: %s: a sidebar name (e.g. "Footer Area 1")
+#: connectors/class-connector-widgets.php:438
+msgctxt "Sidebar name"
+msgid "Widgets reordered in \"%s\""
+msgstr ""
+
+#. translators: %1$s: a widget name, %2$s: a widget title, %4$s: a sidebar name, %5$s: another sidebar name (e.g. "Archives", "Browse", "Footer Area 1", "Footer Area 2")
+#: connectors/class-connector-widgets.php:494
+msgctxt "1: Name, 2: Title, 4: Old Sidebar Name, 5: New Sidebar Name"
+msgid "%1$s widget named \"%2$s\" moved from \"%4$s\" to \"%5$s\""
+msgstr ""
+
+#. translators: %1$s: a widget name, %4$s: a sidebar name, %5$s: another sidebar name (e.g. "Archives", "Footer Area 1", "Footer Area 2")
+#: connectors/class-connector-widgets.php:498
+msgctxt "1: Name, 4: Old Sidebar Name, 5: New Sidebar Name"
+msgid "%1$s widget moved from \"%4$s\" to \"%5$s\""
+msgstr ""
+
+#. translators: %2$s: a widget title, %4$s: a sidebar name, %5$s: another sidebar name (e.g. "Browse", "Footer Area 1", "Footer Area 2")
+#: connectors/class-connector-widgets.php:502
+msgctxt "2: Title, 4: Old Sidebar Name, 5: New Sidebar Name"
+msgid "Unknown widget type named \"%2$s\" moved from \"%4$s\" to \"%5$s\""
+msgstr ""
+
+#. translators: %3$s: a widget ID, %4$s: a sidebar name, %5$s: another sidebar name (e.g. "42", "Footer Area 1", "Footer Area 2")
+#: connectors/class-connector-widgets.php:506
+msgctxt "3: Widget ID, 4: Old Sidebar Name, 5: New Sidebar Name"
+msgid "%3$s widget moved from \"%4$s\" to \"%5$s\""
+msgstr ""
+
+#. translators: %1$s: a widget name, %2$s: a widget title, %3$s: a sidebar name (e.g. "Archives", "Browse", "Footer Area 1")
+#: connectors/class-connector-widgets.php:620
+msgctxt "1: Name, 2: Title, 3: Sidebar Name"
+msgid "%1$s widget named \"%2$s\" in \"%3$s\" updated"
+msgstr ""
+
+#. translators: %1$s: a widget name, %3$s: a sidebar name (e.g. "Archives", "Footer Area 1")
+#: connectors/class-connector-widgets.php:624
+msgctxt "1: Name, 3: Sidebar Name"
+msgid "%1$s widget in \"%3$s\" updated"
+msgstr ""
+
+#. translators: %2$s: a widget title, %3$s: a sidebar name (e.g. "Browse", "Footer Area 1")
+#: connectors/class-connector-widgets.php:628
+msgctxt "2: Title, 3: Sidebar Name"
+msgid "Unknown widget type named \"%2$s\" in \"%3$s\" updated"
+msgstr ""
+
+#. translators: %4$s: a widget ID, %3$s: a sidebar name (e.g. "42", "Footer Area 1")
+#: connectors/class-connector-widgets.php:632
+msgctxt "4: Widget ID, 3: Sidebar Name"
+msgid "%4$s widget in \"%3$s\" updated"
+msgstr ""
+
+#. translators: %1$s: a widget name, %2$s: a widget title (e.g. "Archives", "Browse")
+#: connectors/class-connector-widgets.php:664
+msgctxt "1: Name, 2: Title"
+msgid "%1$s widget named \"%2$s\" created"
+msgstr ""
+
+#. translators: %1$s: a widget name (e.g. "Archives")
+#: connectors/class-connector-widgets.php:668
+msgctxt "1: Name"
+msgid "%1$s widget created"
+msgstr ""
+
+#. translators: %2$s: a widget title (e.g. "Browse")
+#: connectors/class-connector-widgets.php:672
+msgctxt "2: Title"
+msgid "Unknown widget type named \"%2$s\" created"
+msgstr ""
+
+#. translators: %3$s: a widget ID (e.g. "42")
+#: connectors/class-connector-widgets.php:676
+msgctxt "3: Widget ID"
+msgid "%3$s widget created"
+msgstr ""
+
+#. translators: %1$s: a widget name, %2$s: a widget title (e.g. "Archives", "Browse")
+#: connectors/class-connector-widgets.php:698
+msgctxt "1: Name, 2: Title"
+msgid "%1$s widget named \"%2$s\" deleted"
+msgstr ""
+
+#. translators: %1$s: a widget name (e.g. "Archives")
+#: connectors/class-connector-widgets.php:702
+msgctxt "1: Name"
+msgid "%1$s widget deleted"
+msgstr ""
+
+#. translators: %2$s: a widget title (e.g. "Browse")
+#: connectors/class-connector-widgets.php:706
+msgctxt "2: Title"
+msgid "Unknown widget type named \"%2$s\" deleted"
+msgstr ""
+
+#. translators: %3$s: a widget ID (e.g. "42")
+#: connectors/class-connector-widgets.php:710
+msgctxt "3: Widget ID"
+msgid "%3$s widget deleted"
+msgstr ""
+
+#: connectors/class-connector-woocommerce.php:134
+msgctxt "woocommerce"
+msgid "WooCommerce"
+msgstr ""
+
+#: connectors/class-connector-woocommerce.php:144
+msgctxt "woocommerce"
+msgid "Updated"
+msgstr ""
+
+#: connectors/class-connector-woocommerce.php:145
+msgctxt "woocommerce"
+msgid "Created"
+msgstr ""
+
+#: connectors/class-connector-woocommerce.php:146
+msgctxt "woocommerce"
+msgid "Trashed"
+msgstr ""
+
+#: connectors/class-connector-woocommerce.php:147
+msgctxt "woocommerce"
+msgid "Deleted"
+msgstr ""
+
+#: connectors/class-connector-woocommerce.php:168
+msgctxt "woocommerce"
+msgid "Attributes"
+msgstr ""
+
+#: connectors/class-connector-woocommerce.php:188
+msgid "Frontend Styles"
+msgstr ""
+
+#: connectors/class-connector-woocommerce.php:192
+#: connectors/class-connector-woocommerce.php:199
+#: connectors/class-connector-woocommerce.php:206
+#: connectors/class-connector-woocommerce.php:213
+#: connectors/class-connector-woocommerce.php:220
+#: connectors/class-connector-woocommerce.php:802
+msgid "setting"
+msgstr ""
+
+#: connectors/class-connector-woocommerce.php:195
+msgid "Gateway Display Default"
+msgstr ""
+
+#: connectors/class-connector-woocommerce.php:202
+msgid "Gateway Display Order"
+msgstr ""
+
+#: connectors/class-connector-woocommerce.php:209
+msgid "Shipping Methods Default"
+msgstr ""
+
+#: connectors/class-connector-woocommerce.php:216
+msgid "Shipping Methods Order"
+msgstr ""
+
+#: connectors/class-connector-woocommerce.php:223
+msgid "Shipping Debug Mode"
+msgstr ""
+
+#: connectors/class-connector-woocommerce.php:227
+#: connectors/class-connector-woocommerce.php:234
+#: connectors/class-connector-woocommerce.php:241
+msgid "tool"
+msgstr ""
+
+#: connectors/class-connector-woocommerce.php:230
+msgid "Template Debug Mode"
+msgstr ""
+
+#: connectors/class-connector-woocommerce.php:237
+msgid "Remove post types on uninstall"
+msgstr ""
+
+#. translators: %s a context (e.g. "Attribute")
+#: connectors/class-connector-woocommerce.php:282
+msgid "Edit WooCommerce %s"
+msgstr ""
+
+#. translators: %s: an order title (e.g. "Order #42")
+#: connectors/class-connector-woocommerce.php:364
+msgctxt "Order title"
+msgid "%s created"
+msgstr ""
+
+#. translators: %s: an order title (e.g. "Order #42")
+#: connectors/class-connector-woocommerce.php:372
+msgctxt "Order title"
+msgid "%s trashed"
+msgstr ""
+
+#. translators: %s: an order title (e.g. "Order #42")
+#: connectors/class-connector-woocommerce.php:380
+msgctxt "Order title"
+msgid "%s restored from the trash"
+msgstr ""
+
+#. translators: %s: an order title (e.g. "Order #42")
+#: connectors/class-connector-woocommerce.php:388
+msgctxt "Order title"
+msgid "%s updated"
+msgstr ""
+
+#: connectors/class-connector-woocommerce.php:400
+#: connectors/class-connector-woocommerce.php:441
+#: connectors/class-connector-woocommerce.php:499
+msgid "Order number"
+msgstr ""
+
+#: connectors/class-connector-woocommerce.php:401
+#: connectors/class-connector-woocommerce.php:442
+#: connectors/class-connector-woocommerce.php:500
+msgid "order"
+msgstr ""
+
+#. translators: %s: an order title (e.g. "Order #42")
+#: connectors/class-connector-woocommerce.php:446
+msgctxt "Order title"
+msgid "\"%s\" deleted from trash"
+msgstr ""
+
+#. translators: %1$s: an order title, %2$s: order status, %3$s: another order status (e.g. "Order #42", "processing", "complete")
+#: connectors/class-connector-woocommerce.php:492
+msgctxt "1. Order title, 2. Old status, 3. New status"
+msgid "%1$s status changed from %2$s to %3$s"
+msgstr ""
+
+#. translators: %s: a term name (e.g. "color")
+#: connectors/class-connector-woocommerce.php:530
+msgctxt "Term name"
+msgid "\"%s\" product attribute created"
+msgstr ""
+
+#. translators: %s a term name (e.g. "color")
+#: connectors/class-connector-woocommerce.php:553
+msgctxt "Term name"
+msgid "\"%s\" product attribute updated"
+msgstr ""
+
+#. translators: %s: a term name (e.g. "color")
+#: connectors/class-connector-woocommerce.php:576
+msgctxt "Term name"
+msgid "\"%s\" product attribute deleted"
+msgstr ""
+
+#. translators: %4$s: a tax rate name (e.g. "GST")
+#: connectors/class-connector-woocommerce.php:601
+msgctxt "Tax rate name"
+msgid "\"%4$s\" tax rate created"
+msgstr ""
+
+#. translators: %4$s: a tax rate name (e.g. "GST")
+#: connectors/class-connector-woocommerce.php:624
+msgctxt "Tax rate name"
+msgid "\"%4$s\" tax rate updated"
+msgstr ""
+
+#. translators: %4$s: a tax rate name (e.g. "GST")
+#: connectors/class-connector-woocommerce.php:657
+msgctxt "Tax rate name"
+msgid "\"%s\" tax rate deleted"
+msgstr ""
+
+#. translators: %1$s: a setting name, %2$s: a setting type (e.g. "Direct Deposit", "Payment Method")
+#: connectors/class-connector-woocommerce.php:726
+msgid "\"%1$s\" %2$s updated"
+msgstr ""
+
+#: connectors/class-connector-woocommerce.php:832
+msgid "payment gateway"
+msgstr ""
+
+#: connectors/class-connector-woocommerce.php:851
+msgid "shipping method"
+msgstr ""
+
+#: connectors/class-connector-woocommerce.php:870
+msgid "email"
+msgstr ""
+
+#: connectors/class-connector-woocommerce.php:878
+msgid "Tools"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:69
+msgctxt "wordpress-seo"
+msgid "WordPress SEO"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:79
+msgctxt "wordpress-seo"
+msgid "Created"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:80
+msgctxt "wordpress-seo"
+msgid "Updated"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:81
+msgctxt "wordpress-seo"
+msgid "Added"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:82
+msgctxt "wordpress-seo"
+msgid "Deleted"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:83
+msgctxt "wordpress-seo"
+msgid "Exported"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:84
+msgctxt "wordpress-seo"
+msgid "Imported"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:95
+msgctxt "wordpress-seo"
+msgid "Dashboard"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:96
+msgctxt "wordpress-seo"
+msgid "Titles &amp; Metas"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:97
+msgctxt "wordpress-seo"
+msgid "Social"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:98
+msgctxt "wordpress-seo"
+msgid "XML Sitemaps"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:99
+msgctxt "wordpress-seo"
+msgid "Permalinks"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:100
+msgctxt "wordpress-seo"
+msgid "Internal Links"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:101
+msgctxt "wordpress-seo"
+msgid "Advanced"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:102
+msgctxt "wordpress-seo"
+msgid "RSS"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:103
+msgctxt "wordpress-seo"
+msgid "Import & Export"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:104
+msgctxt "wordpress-seo"
+msgid "Bulk Title Editor"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:105
+msgctxt "wordpress-seo"
+msgid "Bulk Description Editor"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:106
+msgctxt "wordpress-seo"
+msgid "Files"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:107
+msgctxt "wordpress-seo"
+msgid "Content"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:245
+msgid "HeadSpace2"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:246
+msgid "All-in-One SEO"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:247
+msgid "OLD All-in-One SEO"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:248
+msgid "WooThemes SEO framework"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:249
+msgid "Robots Meta (by Yoast)"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:250
+msgid "RSS Footer (by Yoast)"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:251
+msgid "Yoast Breadcrumbs"
+msgstr ""
+
+#. translators: %1$s: an import method, %2$s: an extra string (sometimes blank) (e.g. "HeadSpace2", ", and deleted old data")
+#: connectors/class-connector-wordpress-seo.php:261
+msgid "Imported settings from %1$s%2$s"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:263
+msgid ", and deleted old data"
+msgstr ""
+
+#. translators: %s: an extra string (sometimes blank) (e.g. ", including taxonomy meta")
+#: connectors/class-connector-wordpress-seo.php:289
+msgid "Exported settings%s"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:290
+msgid ", including taxonomy meta"
+msgstr ""
+
+#. translators: %s: a filename (e.g. "test.xml")
+#: connectors/class-connector-wordpress-seo.php:303
+msgid "Tried importing settings from \"%s\""
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:323
+msgid "Tried creating robots.txt file"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:325
+msgid "Tried updating robots.txt file"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:327
+msgid "Tried updating htaccess file"
+msgstr ""
+
+#. translators: %1$s: a meta field title, %2$s: a post title, %3$s: a post type (e.g. "Description", "Hello World", "Post")
+#: connectors/class-connector-wordpress-seo.php:421
+msgid "Updated \"%1$s\" of \"%2$s\" %3$s"
+msgstr ""
+
+#. translators: %s: a context (e.g. "Dashboard")
+#: connectors/class-connector-wordpress-seo.php:466
+msgid "%s settings updated"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:489
+msgctxt "wordpress-seo"
+msgid "Allow tracking of this WordPress install's anonymous data."
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:490
+msgctxt "wordpress-seo"
+msgid "Disable the Advanced part of the WordPress SEO meta box"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:491
+msgctxt "wordpress-seo"
+msgid "Alexa Verification ID"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:492
+msgctxt "wordpress-seo"
+msgid "Bing Webmaster Tools"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:493
+msgctxt "wordpress-seo"
+msgid "Google Webmaster Tools"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:494
+msgctxt "wordpress-seo"
+msgid "Pinterest"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:495
+msgctxt "wordpress-seo"
+msgid "Yandex Webmaster Tools"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:498
+msgctxt "wordpress-seo"
+msgid "Enable Breadcrumbs"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:499
+msgctxt "wordpress-seo"
+msgid "Separator between breadcrumbs"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:500
+msgctxt "wordpress-seo"
+msgid "Anchor text for the Homepage"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:501
+msgctxt "wordpress-seo"
+msgid "Prefix for the breadcrumb path"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:502
+msgctxt "wordpress-seo"
+msgid "Prefix for Archive breadcrumbs"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:503
+msgctxt "wordpress-seo"
+msgid "Prefix for Search Page breadcrumbs"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:504
+msgctxt "wordpress-seo"
+msgid "Breadcrumb for 404 Page"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:505
+msgctxt "wordpress-seo"
+msgid "Remove Blog page from Breadcrumbs"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:506
+msgctxt "wordpress-seo"
+msgid "Bold the last page in the breadcrumb"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:507
+msgctxt "wordpress-seo"
+msgid "Taxonomy to show in breadcrumbs for post types"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:510
+msgctxt "wordpress-seo"
+msgid "Force rewrite titles"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:511
+msgctxt "wordpress-seo"
+msgid "Noindex subpages of archives"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:512
+msgctxt "wordpress-seo"
+msgid "Use <code>meta</code> keywords tag?"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:513
+msgctxt "wordpress-seo"
+msgid "Add <code>noodp</code> meta robots tag sitewide"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:514
+msgctxt "wordpress-seo"
+msgid "Add <code>noydir</code> meta robots tag sitewide"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:515
+msgctxt "wordpress-seo"
+msgid "Hide RSD Links"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:516
+msgctxt "wordpress-seo"
+msgid "Hide WLW Manifest Links"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:517
+msgctxt "wordpress-seo"
+msgid "Hide Shortlink for posts"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:518
+msgctxt "wordpress-seo"
+msgid "Hide RSS Links"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:519
+msgctxt "wordpress-seo"
+msgid "Disable the author archives"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:520
+msgctxt "wordpress-seo"
+msgid "Disable the date-based archives"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:523
+msgctxt "wordpress-seo"
+msgid "Who should have access to the WordPress SEO settings"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:524
+msgctxt "wordpress-seo"
+msgid "New blogs get the SEO settings from this blog"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:525
+msgctxt "wordpress-seo"
+msgid "Blog ID"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:528
+msgctxt "wordpress-seo"
+msgid "Strip the category base (usually <code>/category/</code>) from the category URL."
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:529
+msgctxt "wordpress-seo"
+msgid "Enforce a trailing slash on all category and tag URL's"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:530
+msgctxt "wordpress-seo"
+msgid "Remove stop words from slugs."
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:531
+msgctxt "wordpress-seo"
+msgid "Redirect attachment URL's to parent post URL."
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:532
+msgctxt "wordpress-seo"
+msgid "Remove the <code>?replytocom</code> variables."
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:533
+msgctxt "wordpress-seo"
+msgid "Redirect ugly URL's to clean permalinks. (Not recommended in many cases!)"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:534
+msgctxt "wordpress-seo"
+msgid "Force Transport"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:535
+msgctxt "wordpress-seo"
+msgid "Prevent cleaning out Google Site Search URL's."
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:536
+msgctxt "wordpress-seo"
+msgid "Prevent cleaning out Google Analytics Campaign & Google AdWords Parameters."
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:537
+msgctxt "wordpress-seo"
+msgid "Other variables not to clean"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:540
+msgctxt "wordpress-seo"
+msgid "Add Open Graph meta data"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:541
+msgctxt "wordpress-seo"
+msgid "Facebook Page URL"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:542
+msgctxt "wordpress-seo"
+msgid "Instagram URL"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:543
+msgctxt "wordpress-seo"
+msgid "LinkedIn URL"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:544
+msgctxt "wordpress-seo"
+msgid "MySpace URL"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:545
+msgctxt "wordpress-seo"
+msgid "Pinterest URL"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:546
+msgctxt "wordpress-seo"
+msgid "YouTube URL"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:547
+msgctxt "wordpress-seo"
+msgid "Google+ URL"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:548
+#: connectors/class-connector-wordpress-seo.php:551
+msgctxt "wordpress-seo"
+msgid "Image URL"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:549
+msgctxt "wordpress-seo"
+msgid "Description"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:550
+msgctxt "wordpress-seo"
+msgid "Title"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:552
+msgctxt "wordpress-seo"
+msgid "Add Twitter card meta data"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:553
+msgctxt "wordpress-seo"
+msgid "Site Twitter Username"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:554
+msgctxt "wordpress-seo"
+msgid "The default card type to use"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:555
+msgctxt "wordpress-seo"
+msgid "Add Google+ specific post meta data (excluding author metadata)"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:556
+msgctxt "wordpress-seo"
+msgid "Google Publisher Page"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:557
+msgctxt "wordpress-seo"
+msgid "Facebook App ID"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:560
+msgctxt "wordpress-seo"
+msgid "Check this box to enable XML sitemap functionality."
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:561
+msgctxt "wordpress-seo"
+msgid "Disable author/user sitemap"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:562
+msgctxt "wordpress-seo"
+msgid "Users with zero posts"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:563
+msgctxt "wordpress-seo"
+msgid "Filter specific user roles - Administrator"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:564
+msgctxt "wordpress-seo"
+msgid "Filter specific user roles - Editor"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:565
+msgctxt "wordpress-seo"
+msgid "Filter specific user roles - Author"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:566
+msgctxt "wordpress-seo"
+msgid "Filter specific user roles - Contributor"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:567
+msgctxt "wordpress-seo"
+msgid "Filter specific user roles - Subscriber"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:568
+msgctxt "wordpress-seo"
+msgid "Ping Yahoo!"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:569
+msgctxt "wordpress-seo"
+msgid "Ping Ask.com"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:570
+msgctxt "wordpress-seo"
+msgid "Max entries per sitemap page"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:571
+msgctxt "wordpress-seo"
+msgid "Posts to exclude"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:572
+msgctxt "wordpress-seo"
+msgid "Post Types Posts (<code>post</code>)"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:573
+msgctxt "wordpress-seo"
+msgid "Post Types Pages (<code>page</code>)"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:574
+msgctxt "wordpress-seo"
+msgid "Post Types Media (<code>attachment</code>)"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:575
+msgctxt "wordpress-seo"
+msgid "Taxonomies Categories (<code>category</code>)"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:576
+msgctxt "wordpress-seo"
+msgid "Taxonomies Tags (<code>post_tag</code>)"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:579
+msgctxt "wordpress-seo"
+msgid "Content to put before each post in the feed"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:580
+msgctxt "wordpress-seo"
+msgid "Content to put after each post"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:584
+msgctxt "wordpress-seo"
+msgid "Title template"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:585
+msgctxt "wordpress-seo"
+msgid "Meta description template"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:586
+msgctxt "wordpress-seo"
+msgid "Meta keywords template"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:587
+msgctxt "wordpress-seo"
+msgid "Meta Robots"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:588
+msgctxt "wordpress-seo"
+msgid "Authorship"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:589
+msgctxt "wordpress-seo"
+msgid "Show date in snippet preview?"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:590
+msgctxt "wordpress-seo"
+msgid "WordPress SEO Meta Box"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:591
+msgctxt "wordpress-seo"
+msgid "Breadcrumbs Title"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:592
+msgctxt "wordpress-seo"
+msgid "Post types"
+msgstr ""
+
+#: connectors/class-connector-wordpress-seo.php:593
+msgctxt "wordpress-seo"
+msgid "Taxonomies"
+msgstr ""
+
+#: includes/feeds/atom.php:13
+#: includes/feeds/rss-2.0.php:27
+msgid "Stream Feed"
+msgstr ""
+
+#: stream.php:52
+msgid "Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE."
+msgstr ""
+
+#: tests/tests/connectors/test-class-connector-comments.php:419
+msgctxt "Comment status transition. 1: Comment author, 2: Post title, 3: Comment type"
+msgid "%1$s's %3$s on \"%5$s\" %2$s"
+msgstr ""
+
+#: tests/tests/connectors/test-class-connector-edd.php:265
+msgid "User API Key created"
+msgstr ""
+
+#: tests/tests/test-class-connector.php:205
+msgid "Maintenance"
+msgstr ""
+
+#: tests/tests/test-class-connector.php:215
+msgid "Fault"
+msgstr ""
+
+#: tests/tests/test-class-connector.php:226
+msgid "AE35 Unit"
+msgstr ""
