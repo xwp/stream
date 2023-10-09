@@ -105,7 +105,7 @@ Track changes to posts when using the block editor.
 
 = 3.10.0 - October 9, 2023 =
 
-- Fix: Imporove PHP 8.1 compatibility by updating relevant `filter_input()`, `filter_input_array()` and `html_entity_decode()` calls (issue [#1422](https://github.com/xwp/stream/pull/1422)).
+- Fix: Improve PHP 8.1 compatibility by updating `filter_*()` calls referencing `FILTER_SANITIZE_STRING` (issue [#1422](https://github.com/xwp/stream/pull/1422)).
 - Development: Document the process for reporting security vulnerabilities (issue [#1433](https://github.com/xwp/stream/pull/1433)).
 - Fix: prevent PHP deprecation warning when checking for the Stream settings page requests (issue [#1440](https://github.com/xwp/stream/pull/1440)).
 - Fix: Add the associated post title to comment events (issue [#1430](https://github.com/xwp/stream/pull/1430)).
