@@ -67,7 +67,8 @@ With Stream’s powerful logging, you’ll have the valuable information you nee
 
 ## Configuration
 
-Most of the plugin configuration is available under the "Stream" → "Settings" in the WordPress dashboard.
+Most of the plugin configuration is available under the "Stream" → "Settings" page in the WordPress dashboard.
+
 
 ### Request IP Address
 
