@@ -97,5 +97,13 @@ class Test_Plugin extends WP_StreamTestCase {
 			$this->plugin->get_unsafe_client_ip_address(),
 			'Use the first IP from the list'
 		);
+
+		$_SERVER['HTTP_X_FORWARDED_FOR'] = '827.invalid-ip';
+
+		$this->assertEquals(
+			false,
+			$this->plugin->get_unsafe_client_ip_address(),
+			'Invalid IP format should fail the validation'
+		);
 	}
 }
