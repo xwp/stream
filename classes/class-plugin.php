@@ -342,7 +342,7 @@ class Plugin {
 	 *
 	 * @return string|null
 	 */
-	protected function get_unsafe_client_ip_address() {
+	public function get_unsafe_client_ip_address() {
 		// List of $_SERVER keys that could contain the client IP address.
 		$address_headers = array(
 			'HTTP_X_FORWARDED_FOR',
