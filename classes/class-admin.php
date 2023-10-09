@@ -547,9 +547,10 @@ class Admin {
 			return true;
 		}
 
-		$screen = get_current_screen();
-		if ( Alerts::POST_TYPE === $screen->post_type ) {
-			return true;
+		if ( is_admin() && function_exists( 'get_current_screen' ) ) {
+			$screen = get_current_screen();
+
+			return ( Alerts::POST_TYPE === $screen->post_type );
 		}
 
 		return false;
