@@ -223,8 +223,8 @@ class Admin {
 
 		// Check if the host has configured the `REMOTE_ADDR` correctly.
 		$client_ip = $this->plugin->get_client_ip_address();
-		if ( empty( $client_ip ) ) {
-			$this->notice( esc_html__( 'Stream can\'t determine a reliable client IP address! Please update the hosting environment to set the REMOTE_ADDR in $_SERVER variable or use the `wp_stream_client_ip_address` filter to specify the verified client IP address!', 'stream' ) );
+		if ( ! empty( $client_ip ) && $this->is_stream_screen() ) {
+			$this->notice( __( 'Stream plugin can\'t determine a reliable client IP address! Please update the hosting environment to set the <code>$_SERVER[\'REMOTE_ADDR\']</code> variable or use the <code>wp_stream_client_ip_address</code> filter to specify the verified client IP address!', 'stream' ) );
 		}
 	}
 
