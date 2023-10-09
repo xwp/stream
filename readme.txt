@@ -75,7 +75,19 @@ The plugin expects the `$_SERVER['REMOTE_ADDR']` variable to contain the verifie
 
 If `$_SERVER['REMOTE_ADDR']` is not configured, the plugin will attempt to extract the client IP from `$_SERVER['HTTP_X_FORWARDED_FOR']` and `$_SERVER['HTTP_FORWARDED_FOR']` *which are considered unsafe as they can contain arbitraty user input passed with the HTTP request*. This fallback behaviour will be disabled by default in the future versions of this plugin!
 
-Update your server configuration to set the `$_SERVER['REMOTE_ADDR']` variable to the verified client IP address or use the `wp_stream_client_ip_address` filter to do that.
+Update your server configuration to set the `$_SERVER['REMOTE_ADDR']` variable to the verified client IP address or use the `wp_stream_client_ip_address` filter to do that:
+
+`add_filter(
+    'wp_stream_client_ip_address',
+    function( $client_ip ) {
+        // Trust the X-Forwarded-For header.
+        if ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+            return $_SERVER['HTTP_X_FORWARDED_FOR'];
+        }
+
+        return $client_ip;
+    }
+);`
 
 
 ## Known Issues
