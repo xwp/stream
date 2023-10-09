@@ -359,7 +359,7 @@ class Plugin {
 					$header_client_ip  = $header_client_ips[0];
 				}
 
-				$client_ip = filter_var( trim( $header_client_ip ), FILTER_VALIDATE_IP );
+				$client_ip = wp_stream_filter_var( trim( $header_client_ip ), FILTER_VALIDATE_IP );
 
 				if ( ! empty( $client_ip ) ) {
 					return $client_ip;
