@@ -65,12 +65,25 @@ With Stream’s powerful logging, you’ll have the valuable information you nee
  * WP-CLI command for querying records
 
 
-= Known Issues
+## Configuration
+
+Most of the plugin configuration is available under the "Stream" → "Settings" in the WordPress dashboard.
+
+### Request IP Address
+
+The plugin expects the `$_SERVER['REMOTE_ADDR']` variable to contain the verified IP address of the current request. On hosting environments with PHP processing behind reverse proxies or CDNs the actual client IP is passed to PHP through request HTTP headers such as `X-Forwarded-For` and `True-Client-IP` which can't be trusted without an additional layer of validation.
+
+If `$_SERVER['REMOTE_ADDR']` is not configured, the plugin will attempt to extract the client IP from `$_SERVER['HTTP_X_FORWARDED_FOR']` and `$_SERVER['HTTP_FORWARDED_FOR']` *which are considered unsafe as they can contain arbitraty user input passed with the HTTP request*. This fallback behaviour will be disabled by default in the future versions of this plugin!
+
+Update your server configuration to set the `$_SERVER['REMOTE_ADDR']` variable to the verified client IP address or use the `wp_stream_client_ip_address` filter to do that.
+
+
+## Known Issues
 
  * We have temporarily disabled the data removal feature through plugin uninstallation, starting with version 3.9.3. We identified a few edge cases that did not behave as expected and we decided that a temporary removal is preferable at this time for such an impactful and irreversible operation. Our team is actively working on refining this feature to ensure it performs optimally and securely. We plan to reintroduce it in a future update with enhanced safeguards.
 
 
-= Contribute =
+## Contribute
 
 There are several ways you can get involved to help make Stream better:
 
