@@ -91,6 +91,13 @@ class Plugin {
 	public $locations = array();
 
 	/**
+	 * IP address for the current request to be associated with the log entry.
+	 *
+	 * @var null|false|string
+	 */
+	protected $client_ip_address;
+
+	/**
 	 * Class constructor
 	 */
 	public function __construct() {
@@ -137,6 +144,9 @@ class Plugin {
 
 		// Load logger class.
 		$this->log = apply_filters( 'wp_stream_log_handler', new Log( $this ) );
+
+		// Set the IP address for the current request.
+		$this->client_ip_address = wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP );
 
 		// Load settings and connectors after widgets_init and before the default init priority.
 		add_action( 'init', array( $this, 'init' ), 9 );
@@ -314,5 +324,49 @@ class Plugin {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get the IP address for the current request.
+	 *
+	 * @return false|null|string
+	 */
+	public function get_client_ip_address() {
+		return apply_filters( 'wp_stream_client_ip_address', $this->client_ip_address );
+	}
+
+	/**
+	 * Get the client IP address from the HTTP request headers.
+	 *
+	 * There is no guarantee that this is the real IP address of the client.
+	 *
+	 * @return string|null
+	 */
+	protected function get_unsafe_client_ip_address() {
+		// List of $_SERVER keys that could contain the client IP address.
+		$address_headers = array(
+			'HTTP_X_FORWARDED_FOR',
+			'HTTP_FORWARDED_FOR',
+		);
+
+		foreach ( $address_headers as $header ) {
+			if ( ! empty( $_SERVER[ $header ] ) ) {
+				$header_client_ip = $_SERVER[ $header ];
+
+				// Account for multiple IPs in case of multiple proxies.
+				if ( false !== strpos( $header_client_ip, ',' ) ) {
+					$header_client_ips = explode( ',', $header_client_ip );
+					$header_client_ip  = $header_client_ips[0];
+				}
+
+				$client_ip = filter_var( trim( $header_client_ip ), FILTER_VALIDATE_IP );
+
+				if ( ! empty( $client_ip ) ) {
+					return $client_ip;
+				}
+			}
+		}
+
+		return null;
 	}
 }
