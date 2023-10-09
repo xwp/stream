@@ -79,6 +79,7 @@ before_install:
 
 install:
   - npm install
+  - composer install
 
 script:
   - npm run lint

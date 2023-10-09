@@ -2,8 +2,8 @@
 Contributors: xwp
 Tags: wp stream, stream, activity, logs, track
 Requires at least: 4.5
-Tested up to: 6.2
-Stable tag: 3.9.3
+Tested up to: 6.3
+Stable tag: 3.10.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -102,6 +102,17 @@ Track changes to posts when using the block editor.
 
 
 == Changelog ==
+
+= 3.10.0 - October 9, 2023 =
+
+- Fix: Improve PHP 8.1 compatibility by updating `filter_*()` calls referencing `FILTER_SANITIZE_STRING` (issue [#1422](https://github.com/xwp/stream/pull/1422)).
+- Fix: prevent PHP deprecation warning when checking for the Stream settings page requests (issue [#1440](https://github.com/xwp/stream/pull/1440)).
+- Fix: Add the associated post title to comment events (issue [#1430](https://github.com/xwp/stream/pull/1430)).
+- Fix: Use the user associated with a comment instead of the current logged-in user when logging comments (issue [#1429](https://github.com/xwp/stream/pull/1429)).
+- Fix: Prevent PHP warnings when no Lead ID present for a Gravity Forms submission (issue [#1447](https://github.com/xwp/stream/pull/1447)).
+- Fix: Remove support for legacy WordPress VIP user attribute helpers `get_user_attributes()`, `delete_user_attributes()` and `update_user_attributes()` (issue [#1425](https://github.com/xwp/stream/pull/1425)).
+- Development: Document the process for reporting security vulnerabilities (issue [#1433](https://github.com/xwp/stream/pull/1433)).
+- Development: Mark as tested with WordPress version 6.3.
 
 = 3.9.3 - April 25, 2023 =
 

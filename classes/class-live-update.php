@@ -56,9 +56,9 @@ class Live_Update {
 		check_ajax_referer( $this->user_meta_key . '_nonce', 'nonce' );
 
 		$input = array(
-			'checked'   => FILTER_SANITIZE_STRING,
-			'user'      => FILTER_SANITIZE_STRING,
-			'heartbeat' => FILTER_SANITIZE_STRING,
+			'checked'   => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+			'user'      => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+			'heartbeat' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
 		);
 
 		$input = filter_input_array( INPUT_POST, $input );
@@ -72,14 +72,14 @@ class Live_Update {
 		$user = (int) $input['user'];
 
 		if ( 'false' === $input['heartbeat'] ) {
-			$this->plugin->admin->update_user_meta( $user, $this->user_meta_key, 'off' );
+			update_user_meta( $user, $this->user_meta_key, 'off' );
 
 			wp_send_json_error( esc_html__( "Live updates could not be enabled because Heartbeat is not loaded.\n\nYour hosting provider or another plugin may have disabled it for performance reasons.", 'stream' ) );
 
 			return;
 		}
 
-		$success = $this->plugin->admin->update_user_meta( $user, $this->user_meta_key, $checked );
+		$success = update_user_meta( $user, $this->user_meta_key, $checked );
 
 		if ( $success ) {
 			wp_send_json_success( ( 'on' === $checked ) ? 'Live Updates enabled' : 'Live Updates disabled' );
@@ -183,7 +183,7 @@ class Live_Update {
 			return $response;
 		}
 
-		$enable_stream_update = ( 'off' !== $this->plugin->admin->get_user_meta( get_current_user_id(), $this->user_meta_key ) );
+		$enable_stream_update = ( 'off' !== get_user_meta( get_current_user_id(), $this->user_meta_key ) );
 
 		// Register list table.
 		$this->list_table = new List_Table(

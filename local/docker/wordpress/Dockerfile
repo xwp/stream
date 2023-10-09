@@ -1,3 +1,4 @@
+# Keep in sync with the default value of XDEBUG_VERSION below!
 ARG PHP_VERSION=7.4
 
 FROM wordpress:php${PHP_VERSION}-apache

@@ -417,8 +417,8 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 			->with(
 				$this->equalTo(
 					_x(
-						'%1$s\'s %3$s %2$s',
-						'Comment status transition. 1: Comment author, 2: Post title, 3: Comment type',
+						'%1$s\'s %3$s on "%5$s" %2$s',
+						'Comment status transition. 1: Comment author, 2: New status, 3: Comment type, 4. Old status, 5. Post title',
 						'stream'
 					)
 				),

@@ -1,0 +1,43 @@
+name: Lint and Test
+
+on: push
+
+jobs:
+
+  lint:
+    name: Lint and Test
+    runs-on: ubuntu-22.04
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer:v2
+
+      - name: Install NPM dependencies
+        run: npm install
+
+      - name: Install Composer dependencies
+        run: composer install
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Pull Docker Images
+        run: docker-compose pull wordpress
+
+      - name: Test PHP
+        run: npm run phpunit
+
+      - name: Build
+        run: npm run build

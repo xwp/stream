@@ -532,12 +532,17 @@ class Admin {
 	 * @return bool
 	 */
 	public function is_stream_screen() {
-		if ( is_admin() && false !== strpos( wp_stream_filter_input( INPUT_GET, 'page' ), $this->records_page_slug ) ) {
+		if ( ! is_admin() ) {
+			return false;
+		}
+
+		$page = wp_stream_filter_input( INPUT_GET, 'page' );
+		if ( is_string( $page ) && false !== strpos( $page, $this->records_page_slug ) ) {
 			return true;
 		}
 
 		$screen = get_current_screen();
-		if ( is_admin() && Alerts::POST_TYPE === $screen->post_type ) {
+		if ( Alerts::POST_TYPE === $screen->post_type ) {
 			return true;
 		}
 
@@ -1066,10 +1071,6 @@ class Admin {
 	 * @return mixed
 	 */
 	public function get_user_meta( $user_id, $meta_key, $single = true ) {
-		if ( wp_stream_is_vip() && function_exists( 'get_user_attribute' ) ) {
-			return get_user_attribute( $user_id, $meta_key );
-		}
-
 		return get_user_meta( $user_id, $meta_key, $single );
 	}
 
@@ -1084,10 +1085,6 @@ class Admin {
 	 * @return int|bool
 	 */
 	public function update_user_meta( $user_id, $meta_key, $meta_value, $prev_value = '' ) {
-		if ( wp_stream_is_vip() && function_exists( 'update_user_attribute' ) ) {
-			return update_user_attribute( $user_id, $meta_key, $meta_value );
-		}
-
 		return update_user_meta( $user_id, $meta_key, $meta_value, $prev_value );
 	}
 
@@ -1101,10 +1098,6 @@ class Admin {
 	 * @return bool
 	 */
 	public function delete_user_meta( $user_id, $meta_key, $meta_value = '' ) {
-		if ( wp_stream_is_vip() && function_exists( 'delete_user_attribute' ) ) {
-			return delete_user_attribute( $user_id, $meta_key, $meta_value );
-		}
-
 		return delete_user_meta( $user_id, $meta_key, $meta_value );
 	}
 }
