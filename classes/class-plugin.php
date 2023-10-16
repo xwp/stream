@@ -93,7 +93,7 @@ class Plugin {
 	/**
 	 * IP address for the current request to be associated with the log entry.
 	 *
-	 * @var null|false|string
+	 * @var null|false|string Valid IP address, null if not set, false if invalid.
 	 */
 	protected $client_ip_address;
 
@@ -329,7 +329,7 @@ class Plugin {
 	/**
 	 * Get the IP address for the current request.
 	 *
-	 * @return false|null|string
+	 * @return false|null|string Valid IP address, null if not set, false if invalid.
 	 */
 	public function get_client_ip_address() {
 		return apply_filters( 'wp_stream_client_ip_address', $this->client_ip_address );
