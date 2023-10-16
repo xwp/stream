@@ -75,11 +75,6 @@ class Log {
 
 		$ip_address = $this->plugin->get_client_ip_address();
 
-		// Fallback to unsafe IP extracted from the request HTTP headers.
-		if ( empty( $ip_address ) ) {
-			$ip_address = $this->plugin->get_unsafe_client_ip_address();
-		}
-
 		$user = new \WP_User( $user_id );
 
 		if ( $this->is_record_excluded( $connector, $context, $action, $user, $ip_address ) ) {

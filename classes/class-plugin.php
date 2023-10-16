@@ -334,39 +334,4 @@ class Plugin {
 	public function get_client_ip_address() {
 		return apply_filters( 'wp_stream_client_ip_address', $this->client_ip_address );
 	}
-
-	/**
-	 * Get the client IP address from the HTTP request headers.
-	 *
-	 * There is no guarantee that this is the real IP address of the client.
-	 *
-	 * @return string|null
-	 */
-	public function get_unsafe_client_ip_address() {
-		// List of $_SERVER keys that could contain the client IP address.
-		$address_headers = array(
-			'HTTP_X_FORWARDED_FOR',
-			'HTTP_FORWARDED_FOR',
-		);
-
-		foreach ( $address_headers as $header ) {
-			if ( ! empty( $_SERVER[ $header ] ) ) {
-				$header_client_ip = $_SERVER[ $header ];
-
-				// Account for multiple IPs in case of multiple proxies.
-				if ( false !== strpos( $header_client_ip, ',' ) ) {
-					$header_client_ips = explode( ',', $header_client_ip );
-					$header_client_ip  = $header_client_ips[0];
-				}
-
-				$client_ip = wp_stream_filter_var( trim( $header_client_ip ), FILTER_VALIDATE_IP );
-
-				if ( ! empty( $client_ip ) ) {
-					return $client_ip;
-				}
-			}
-		}
-
-		return null;
-	}
 }
