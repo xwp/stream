@@ -90,7 +90,7 @@ class Test_Plugin extends WP_StreamTestCase {
 	}
 
 	public function test_get_unsafe_client_ip_address() {
-		$_SERVER['HTTP_X_FORWARDED_FOR'] = '123.123.123.123,321.123.123.123';
+		$_SERVER['HTTP_X_FORWARDED_FOR'] = ' 123.123.123.123 , 321.123.123.123, 456.123.123.123 ';
 
 		$this->assertEquals(
 			'123.123.123.123',
