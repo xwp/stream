@@ -72,12 +72,7 @@ Most of the plugin configuration is available under the "Stream" → "Settings" 
 
 ### Request IP Address
 
-The plugin expects the `$_SERVER['REMOTE_ADDR']` variable to contain the verified IP address of the current request. On hosting environments with PHP processing behind reverse proxies or CDNs the actual client IP is passed to PHP through request HTTP headers such as `X-Forwarded-For` and `True-Client-IP` which can't be trusted without an additional layer of validation.
-
-If `$_SERVER['REMOTE_ADDR']` is not configured, the plugin will attempt to extract the client IP from `$_SERVER['HTTP_X_FORWARDED_FOR']` or `$_SERVER['HTTP_FORWARDED_FOR']` *which are considered unsafe as they can contain arbitrary user input passed with the HTTP request*. This fallback behaviour will be disabled by default in future versions of this plugin!
-
-
-Update your server configuration to set the `$_SERVER['REMOTE_ADDR']` variable to the verified client IP address or use the `wp_stream_client_ip_address` filter to do that:
+The plugin expects the `$_SERVER['REMOTE_ADDR']` variable to contain the verified IP address of the current request. On hosting environments with PHP processing behind reverse proxies or CDNs the actual client IP is passed to PHP through request HTTP headers such as `X-Forwarded-For` and `True-Client-IP` which can't be trusted without an additional layer of validation. Update your server configuration to set the `$_SERVER['REMOTE_ADDR']` variable to the verified client IP address or use the `wp_stream_client_ip_address` filter to do that:
 
 `add_filter(
 	'wp_stream_client_ip_address',
