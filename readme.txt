@@ -80,15 +80,19 @@ If `$_SERVER['REMOTE_ADDR']` is not configured, the plugin will attempt to extra
 Update your server configuration to set the `$_SERVER['REMOTE_ADDR']` variable to the verified client IP address or use the `wp_stream_client_ip_address` filter to do that:
 
 `add_filter(
-    'wp_stream_client_ip_address',
-    function( $client_ip ) {
-        // Trust the X-Forwarded-For header.
-        if ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
-            return $_SERVER['HTTP_X_FORWARDED_FOR'];
-        }
+	'wp_stream_client_ip_address',
+	function( $client_ip ) {
+		// Trust the first IP in the X-Forwarded-For header.
+		if ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+			$forwarded_ips = explode( ',' $_SERVER['HTTP_X_FORWARDED_FOR'] );
 
-        return $client_ip;
-    }
+			if ( filter_var( $forwarded_ips[0], FILTER_VALIDATE_IP ) ) {
+				return $forwarded_ips[0];
+			}
+		}
+
+		return $client_ip;
+	}
 );`
 
 
