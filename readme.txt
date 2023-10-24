@@ -65,12 +65,43 @@ With Stream’s powerful logging, you’ll have the valuable information you nee
  * WP-CLI command for querying records
 
 
-= Known Issues
+== Configuration ==
+
+Most of the plugin configuration is available under the "Stream" → "Settings" page in the WordPress dashboard.
+
+
+= Request IP Address =
+
+The plugin expects the `$_SERVER['REMOTE_ADDR']` variable to contain the verified IP address of the current request. On hosting environments with PHP processing behind reverse proxies or CDNs the actual client IP is passed to PHP through request HTTP headers such as `X-Forwarded-For` and `True-Client-IP` which can't be trusted without an additional layer of validation. Update your server configuration to set the `$_SERVER['REMOTE_ADDR']` variable to the verified client IP address.
+
+As a workaround, you can use the `wp_stream_client_ip_address` filter to adapt the IP address:
+
+`add_filter(
+	'wp_stream_client_ip_address',
+	function( $client_ip ) {
+		// Trust the first IP in the X-Forwarded-For header.
+		// ⚠️ Note: This is inherently insecure and can easily be spoofed!
+		if ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+			$forwarded_ips = explode( ',' $_SERVER['HTTP_X_FORWARDED_FOR'] );
+
+			if ( filter_var( $forwarded_ips[0], FILTER_VALIDATE_IP ) ) {
+				return $forwarded_ips[0];
+			}
+		}
+
+		return $client_ip;
+	}
+);`
+
+⚠️ **WARNING:** The above is an insecure workaround that you should only use when you fully understand what this implies. Relying on any variable with the `HTTP_*` prefix is prone to spoofing and cannot be trusted!
+
+
+== Known Issues ==
 
  * We have temporarily disabled the data removal feature through plugin uninstallation, starting with version 3.9.3. We identified a few edge cases that did not behave as expected and we decided that a temporary removal is preferable at this time for such an impactful and irreversible operation. Our team is actively working on refining this feature to ensure it performs optimally and securely. We plan to reintroduce it in a future update with enhanced safeguards.
 
 
-= Contribute =
+== Contribute ==
 
 There are several ways you can get involved to help make Stream better:
 
@@ -102,6 +133,10 @@ Track changes to posts when using the block editor.
 
 
 == Changelog ==
+
+= NEXT =
+
+- Breaking: Use only `$_SERVER['REMOTE_ADDR']` as the reliable client IP address for event logs. This might cause incorrectly reported event log IP addresses on environments where PHP is behind a proxy server or CDN. Use the `wp_stream_client_ip_address` filter to set the correct client IP address (see `readme.txt` for instructions) or configure the hosting environment to report the correct IP address in `$_SERVER['REMOTE_ADDR']`.
 
 = 3.10.0 - October 9, 2023 =
 
