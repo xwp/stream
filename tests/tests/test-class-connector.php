@@ -53,6 +53,17 @@ class Test_Connector extends WP_StreamTestCase {
 		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'child_callback_' . $action ) );
 	}
 
+	public function test_callback_hyphenated() {
+		global $wp_current_filter;
+		$action = $this->connector->actions[1];
+		$wp_current_filter[] = $action;
+
+		$this->connector->callback();
+
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_hyphenated_action' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'child_callback_hyphenated_action' ) );
+	}
+
 	public function test_action_links() {
 		$current_links = array(
 			'IMDB' => '',
@@ -194,6 +205,7 @@ class Connector_Maintenance extends Connector {
 	 */
 	public $actions = array(
 		'simulate_fault',
+		'hyphenated-action'
 	);
 
 	/**
@@ -235,5 +247,16 @@ class Connector_Maintenance extends Connector {
 	public function callback_simulate_fault() {
 		// This is used to check if this callback method actually ran
 		do_action( 'wp_stream_test_child_callback_simulate_fault' );
+	}
+
+	/**
+	 * Log the hyphenated action callback.
+	 *
+	 * @action hyphenated-action
+	 *
+	 * @return void
+	 */
+	public function callback_hyphenated_action() {
+		do_action( 'wp_stream_test_child_callback_hyphenated_action' );
 	}
 }
