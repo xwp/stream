@@ -18,7 +18,7 @@ class Plugin {
 	 *
 	 * @const string
 	 */
-	const VERSION = '3.10.0';
+	const VERSION = '4.0.0';
 
 	/**
 	 * WP-CLI command
