@@ -127,16 +127,18 @@ Past Contributors: fjarrett, shadyvb, chacha, westonruter, johnregan3, jacobschw
 
 == Upgrade Notice ==
 
-= 3.9.0 =
+= 4.0.0 =
 
-Track changes to posts when using the block editor.
+Use only `$_SERVER['REMOTE_ADDR']` as the client IP address for event logs without additional support for `X-Forwarded-For` HTTP request header value which could be spoofed. See the changelog for additional details.
 
 
 == Changelog ==
 
-= NEXT =
+= 4.0.0 - January 9, 2024 =
 
-- Breaking: Use only `$_SERVER['REMOTE_ADDR']` as the reliable client IP address for event logs. This might cause incorrectly reported event log IP addresses on environments where PHP is behind a proxy server or CDN. Use the `wp_stream_client_ip_address` filter to set the correct client IP address (see `readme.txt` for instructions) or configure the hosting environment to report the correct IP address in `$_SERVER['REMOTE_ADDR']`.
+- Breaking: Use only `$_SERVER['REMOTE_ADDR']` as the reliable client IP address for event logs. This might cause incorrectly reported event log IP addresses on environments where PHP is behind a proxy server or CDN. Use the `wp_stream_client_ip_address` filter to set the correct client IP address (see `readme.txt` for instructions) or configure the hosting environment to report the correct IP address in `$_SERVER['REMOTE_ADDR']` (issue [#1456](https://github.com/xwp/stream/issues/1456), props [@calvinalkan](https://github.com/calvinalkan)).
+- Fix: types in message strings and code comments (fixed in [#1461](https://github.com/xwp/stream/pull/1461) by [@szepeviktor](https://github.com/szepeviktor)).
+- Development: use Composer v2 during CI runs (fixed in [#1465](https://github.com/xwp/stream/pull/1465) by [@szepeviktor](https://github.com/szepeviktor)).
 
 = 3.10.0 - October 9, 2023 =
 
