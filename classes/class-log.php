@@ -194,7 +194,12 @@ class Log {
 				'role'       => ( ! empty( $exclude_rule['author_or_role'] ) && ! is_numeric( $exclude_rule['author_or_role'] ) ) ? $exclude_rule['author_or_role'] : null,
 			);
 
-			$exclude_rules = array_filter( $exclude, 'strlen' );
+			$exclude_rules = array_filter(
+				$exclude,
+				static function ( $value ) {
+					return null === $value || strlen( (string) $value ) > 0;
+				}
+			);
 
 			if ( $this->record_matches_rules( $record, $exclude_rules ) ) {
 				$exclude_record = true;
