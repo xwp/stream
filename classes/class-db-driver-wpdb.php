@@ -81,9 +81,7 @@ class DB_Driver_WPDB implements DB_Driver {
 		// Insert record meta.
 		foreach ( (array) $meta as $key => $vals ) {
 			foreach ( (array) $vals as $val ) {
-				if ( is_scalar( $val ) && '' !== $val ) {
-					$this->insert_meta( $record_id, $key, $val );
-				}
+				$this->insert_meta( $record_id, $key, $val );
 			}
 		}
 
