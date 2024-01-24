@@ -143,9 +143,7 @@ class Admin {
 		add_filter( 'role_has_cap', array( $this, 'filter_role_caps' ), 10, 3 );
 
 		if ( is_multisite() && $plugin->is_network_activated() && ! is_network_admin() ) {
-			$options = (array) get_site_option( 'wp_stream_network', array() );
-			$option  = isset( $options['general_site_access'] ) ? absint( $options['general_site_access'] ) : 1;
-
+			$option  = isset( $this->plugin->settings->options['general_site_access'] ) ? absint( $this->plugin->settings->options['general_site_access'] ) : 1;
 			$this->disable_access = ( $option ) ? false : true;
 		}
 
@@ -750,18 +748,12 @@ class Admin {
 			return;
 		}
 
-		$defaults = $this->plugin->settings->get_defaults();
-		if ( is_multisite() && $this->plugin->is_network_activated() ) {
-			$options = (array) get_site_option( 'wp_stream_network', $defaults );
-		} else {
-			$options = (array) get_option( 'wp_stream', $defaults );
-		}
 
-		if ( ! empty( $options['general_keep_records_indefinitely'] ) || ! isset( $options['general_records_ttl'] ) ) {
+		if ( ! empty( $this->plugin->settings->options['general_keep_records_indefinitely'] ) || ! isset( $this->plugin->settings->options['general_records_ttl'] ) ) {
 			return;
 		}
 
-		$days     = $options['general_records_ttl'];
+		$days     = $this->plugin->settings->options['general_records_ttl'];
 		$timezone = new DateTimeZone( 'UTC' );
 		$date     = new DateTime( 'now', $timezone );
 
