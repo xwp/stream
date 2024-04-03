@@ -6,7 +6,7 @@
   "author": "XWP",
   "license": "GPLv2+",
   "engines": {
-    "node": ">=v16"
+    "node": "^16.20.2"
   },
   "repository": {
     "type": "git",
@@ -25,18 +25,17 @@
     "track"
   ],
   "devDependencies": {
-    "@wordpress/eslint-plugin": "^13.8.0",
-    "eslint": "^8.31.0",
-    "grunt": "^1.5.3",
+    "@wordpress/eslint-plugin": "^15.1.0",
+    "eslint": "^8.55.0",
+    "grunt": "^1.6.1",
     "grunt-contrib-clean": "^2.0.1",
     "grunt-contrib-compress": "^2.0.0",
     "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-cssmin": "^4.0.0",
+    "grunt-contrib-cssmin": "^5.0.0",
     "grunt-contrib-uglify": "^5.2.2",
     "grunt-wp-deploy": "^2.1.2"
   },
   "scripts": {
-    "postinstall": "composer install --no-autoloader && composer dumpautoload -o && composer install && npm run build",
     "build": "grunt build",
     "release": "grunt release",
     "deploy": "grunt deploy",

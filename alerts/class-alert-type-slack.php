@@ -142,11 +142,11 @@ class Alert_Type_Slack extends Alert_Type {
 			'author_icon' => get_avatar_url( $user_id, 16 ),
 			'author_link' => admin_url( "admin.php?page=wp_stream&user_id=$user_id" ),
 			'author_name' => trim( "$user->first_name $user->last_name" ),
-			'fallback'    => html_entity_decode( $recordarr['summary'] ),
+			'fallback'    => html_entity_decode( $recordarr['summary'], ENT_COMPAT ),
 			'fields'      => $fields,
 			'footer'      => get_bloginfo( 'name' ),
 			'footer_icon' => get_site_icon_url( 16, $logo[0], $recordarr['blog_id'] ),
-			'title'       => html_entity_decode( $recordarr['summary'] ),
+			'title'       => html_entity_decode( $recordarr['summary'], ENT_COMPAT ),
 			'ts'          => strtotime( $recordarr['created'] ),
 		);
 		if ( array_key_exists( 'object_id', $recordarr ) ) {

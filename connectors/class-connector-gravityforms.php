@@ -672,6 +672,11 @@ class Connector_GravityForms extends Connector {
 		unset( $note );
 		unset( $note_type );
 
+		// Skip if no entry/lead id (e.g. Save and Continue notifications)
+		if ( empty( $lead_id ) ) {
+			return;
+		}
+
 		$lead = \GFFormsModel::get_lead( $lead_id );
 		$form = $this->get_form( $lead['form_id'] );
 

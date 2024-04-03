@@ -15,14 +15,16 @@
   },
   "require-dev": {
     "automattic/vipwpcs": "^2.3",
+    "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
     "humanmade/mercator": "^1.0",
-    "johnpbloch/wordpress": "^6.0",
+    "johnpbloch/wordpress": "^6.3",
     "php-coveralls/php-coveralls": "^2.5",
-    "phpcompatibility/php-compatibility": "^9.3",
+    "phpcompatibility/php-compatibility": "dev-develop as 9.99.99",
+    "phpcompatibility/phpcompatibility-wp": "^2.1",
     "phpunit/phpunit": "^5.7",
     "wp-cli/wp-cli-bundle": "^2.6",
     "wp-coding-standards/wpcs": "^2.3",
-    "wp-phpunit/wp-phpunit": "^6.0",
+    "wp-phpunit/wp-phpunit": "^6.3",
     "wpackagist-plugin/advanced-custom-fields": "5.8.12",
     "wpackagist-plugin/easy-digital-downloads": "2.9.23",
     "wpackagist-plugin/jetpack": "10.0",
@@ -34,7 +36,7 @@
     "process-timeout": 600,
     "sort-packages": true,
     "platform": {
-      "php": "5.6.20"
+      "php": "7.4"
     },
     "allow-plugins": {
       "composer/installers": true,

@@ -151,12 +151,12 @@ class List_Table extends \WP_List_Table {
 		}
 
 		// Directly checking the user meta; to check whether user has changed screen option or not.
-		$hidden = $this->plugin->admin->get_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', true );
+		$hidden = get_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', true );
 
 		// If user meta is not found; add the default hidden column 'id'.
 		if ( ! $hidden ) {
 			$hidden = array( 'id' );
-			$this->plugin->admin->update_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', $hidden );
+			update_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', $hidden );
 		}
 
 		return $hidden;
@@ -1139,7 +1139,7 @@ class List_Table extends \WP_List_Table {
 		if ( 'on' === $option && 'false' === $heartbeat ) {
 			$option = 'off';
 
-			$this->plugin->admin->update_user_meta( $user_id, $this->plugin->admin->live_update->user_meta_key, 'off' );
+			update_user_meta( $user_id, $this->plugin->admin->live_update->user_meta_key, 'off' );
 		}
 
 		$nonce = wp_create_nonce( $this->plugin->admin->live_update->user_meta_key . '_nonce' );
