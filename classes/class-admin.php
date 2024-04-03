@@ -538,7 +538,7 @@ class Admin {
 	 * @return bool
 	 */
 	public function is_stream_screen() {
-		if (! is_admin() ) {
+		if ( ! is_admin() ) {
 			return false;
 		}
 
