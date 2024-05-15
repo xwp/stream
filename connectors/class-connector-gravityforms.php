@@ -221,7 +221,7 @@ class Connector_GravityForms extends Connector {
 	 * @param bool  $is_new  Is this a new form?.
 	 */
 	public function callback_gform_after_save_form( $form, $is_new ) {
-		$title = $form['title'];
+		$title = str_replace( '%', '%%', $form['title'] );
 		$id    = $form['id'];
 
 		$this->log(
@@ -260,7 +260,7 @@ class Connector_GravityForms extends Connector {
 				__( '"%1$s" confirmation %2$s for "%3$s"', 'stream' ),
 				$confirmation['name'],
 				$is_new ? esc_html__( 'created', 'stream' ) : esc_html__( 'updated', 'stream' ),
-				$form['title']
+				str_replace( '%', '%%', $form['title'] )
 			),
 			array(
 				'is_new'  => $is_new,
@@ -293,7 +293,7 @@ class Connector_GravityForms extends Connector {
 				__( '"%1$s" notification %2$s for "%3$s"', 'stream' ),
 				$notification['name'],
 				$is_new ? esc_html__( 'created', 'stream' ) : esc_html__( 'updated', 'stream' ),
-				$form['title']
+				str_replace( '%', '%%', $form['title'] )
 			),
 			array(
 				'is_update' => $is_new,
@@ -319,7 +319,7 @@ class Connector_GravityForms extends Connector {
 				/* translators: %1$s: a notification name, %2$s: a form title (e.g. "Email", "Contact Form") */
 				__( '"%1$s" notification deleted from "%2$s"', 'stream' ),
 				$notification['name'],
-				$form['title']
+				str_replace( '%', '%%', $form['title'] )
 			),
 			array(
 				'form_id'      => $form['id'],
@@ -343,7 +343,7 @@ class Connector_GravityForms extends Connector {
 				/* translators: %1$s: a confirmation name, %2$s: a form title (e.g. "Email", "Contact Form") */
 				__( '"%1$s" confirmation deleted from "%2$s"', 'stream' ),
 				$confirmation['name'],
-				$form['title']
+				str_replace( '%', '%%', $form['title'] )
 			),
 			array(
 				'form_id'      => $form['id'],
@@ -369,7 +369,7 @@ class Connector_GravityForms extends Connector {
 				__( '"%1$s" confirmation %2$s from "%3$s"', 'stream' ),
 				$confirmation['name'],
 				$is_active ? esc_html__( 'activated', 'stream' ) : esc_html__( 'deactivated', 'stream' ),
-				$form['title']
+				str_replace( '%', '%%', $form['title'] )
 			),
 			array(
 				'form_id'      => $form['id'],
@@ -396,7 +396,7 @@ class Connector_GravityForms extends Connector {
 				__( '"%1$s" notification %2$s from "%3$s"', 'stream' ),
 				$notification['name'],
 				$is_active ? esc_html__( 'activated', 'stream' ) : esc_html__( 'deactivated', 'stream' ),
-				$form['title']
+				str_replace( '%', '%%', $form['title'] )
 			),
 			array(
 				'form_id'      => $form['id'],
@@ -756,7 +756,7 @@ class Connector_GravityForms extends Connector {
 				__( 'Lead #%1$d %2$s on "%3$s" form', 'stream' ),
 				$lead_id,
 				$actions[ $status ],
-				$form['title']
+				str_replace( '%', '%%', $form['title'] )
 			),
 			array(
 				'lead_id'    => $lead_id,
@@ -791,7 +791,7 @@ class Connector_GravityForms extends Connector {
 				$lead_id,
 				$status,
 				$form['id'],
-				$form['title']
+				str_replace( '%', '%%', $form['title'] )
 			),
 			array(
 				'lead_id'     => $lead_id,
@@ -826,7 +826,7 @@ class Connector_GravityForms extends Connector {
 				$lead_id,
 				$status,
 				$form['id'],
-				$form['title']
+				str_replace( '%', '%%', $form['title'] )
 			),
 			array(
 				'lead_id'     => $lead_id,
@@ -945,7 +945,7 @@ class Connector_GravityForms extends Connector {
 				/* translators: %1$d: an ID, %2$s: a form title, %3$s: a status (e.g. "42", "Contact Form", "Activated") */
 				__( 'Form #%1$d ("%2$s") %3$s', 'stream' ),
 				$form_id,
-				$form['title'],
+				str_replace( '%', '%%', $form['title'] ),
 				strtolower( $actions[ $action ] )
 			),
 			array(
