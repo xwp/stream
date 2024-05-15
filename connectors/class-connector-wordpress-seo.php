@@ -420,7 +420,7 @@ class Connector_WordPress_SEO extends Connector {
 				/* translators: %1$s: a meta field title, %2$s: a post title, %3$s: a post type (e.g. "Description", "Hello World", "Post") */
 				__( 'Updated "%1$s" of "%2$s" %3$s', 'stream' ),
 				$field['title'],
-				$post->post_title,
+				str_replace( '%', '%%', $post->post_title ),
 				$post_type_label
 			),
 			array(
