@@ -258,7 +258,7 @@ class Connector_GravityForms extends Connector {
 			sprintf(
 				/* translators: %1$s: a confirmation name, %2$s: a status, %3$s: a form title (e.g. "Email", "created", "Contact Form") */
 				__( '"%1$s" confirmation %2$s for "%3$s"', 'stream' ),
-				$confirmation['name'],
+				str_replace( '%', '%%', $confirmation['name'] ),
 				$is_new ? esc_html__( 'created', 'stream' ) : esc_html__( 'updated', 'stream' ),
 				str_replace( '%', '%%', $form['title'] )
 			),
@@ -291,7 +291,7 @@ class Connector_GravityForms extends Connector {
 			sprintf(
 				/* translators: %1$s: a notification name, %2$s: a status, %3$s: a form title (e.g. "Email", "created", "Contact Form") */
 				__( '"%1$s" notification %2$s for "%3$s"', 'stream' ),
-				$notification['name'],
+				str_replace( '%', '%%', $notification['name'] ),
 				$is_new ? esc_html__( 'created', 'stream' ) : esc_html__( 'updated', 'stream' ),
 				str_replace( '%', '%%', $form['title'] )
 			),
@@ -318,7 +318,7 @@ class Connector_GravityForms extends Connector {
 			sprintf(
 				/* translators: %1$s: a notification name, %2$s: a form title (e.g. "Email", "Contact Form") */
 				__( '"%1$s" notification deleted from "%2$s"', 'stream' ),
-				$notification['name'],
+				str_replace( '%', '%%', $notification['name'] ),
 				str_replace( '%', '%%', $form['title'] )
 			),
 			array(
@@ -342,7 +342,7 @@ class Connector_GravityForms extends Connector {
 			sprintf(
 				/* translators: %1$s: a confirmation name, %2$s: a form title (e.g. "Email", "Contact Form") */
 				__( '"%1$s" confirmation deleted from "%2$s"', 'stream' ),
-				$confirmation['name'],
+				str_replace( '%', '%%', $confirmation['name'] ),
 				str_replace( '%', '%%', $form['title'] )
 			),
 			array(
@@ -367,7 +367,7 @@ class Connector_GravityForms extends Connector {
 			sprintf(
 				/* translators: %1$s: a confirmation name, %2$s: a status, %3$s: a form title (e.g. "Email", "activated", "Contact Form") */
 				__( '"%1$s" confirmation %2$s from "%3$s"', 'stream' ),
-				$confirmation['name'],
+				str_replace( '%', '%%', $confirmation['name'] ),
 				$is_active ? esc_html__( 'activated', 'stream' ) : esc_html__( 'deactivated', 'stream' ),
 				str_replace( '%', '%%', $form['title'] )
 			),
@@ -394,7 +394,7 @@ class Connector_GravityForms extends Connector {
 			sprintf(
 				/* translators: %1$s: a notification name, %2$s: a status, %3$s: a form title (e.g. "Email", "activated", "Contact Form") */
 				__( '"%1$s" notification %2$s from "%3$s"', 'stream' ),
-				$notification['name'],
+				str_replace( '%', '%%', $notification['name'] ),
 				$is_active ? esc_html__( 'activated', 'stream' ) : esc_html__( 'deactivated', 'stream' ),
 				str_replace( '%', '%%', $form['title'] )
 			),
