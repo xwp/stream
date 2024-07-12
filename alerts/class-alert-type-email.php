@@ -84,7 +84,7 @@ class Alert_Type_Email extends Alert_Type {
 		$user    = get_user_by( 'id', $user_id );
 
 		// translators: Placeholder refers to a username  (e.g. "administrator").
-		$message .= sprintf( __( "User:\t%s", 'stream' ), $user->user_login ) . "\n";
+		$message .= sprintf( __( "User:\t%s", 'stream' ), ! empty( $user->user_login ) ? $user->user_login : '' ) . "\n";
 
 		if ( ! empty( $alert->alert_meta['trigger_context'] ) ) {
 			$context = $this->plugin->alerts->alert_triggers['context']->get_display_value( 'list_table', $alert );

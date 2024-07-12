@@ -229,7 +229,12 @@ class Alert_Type_IFTTT extends Alert_Type {
 		 * @return string
 		 */
 		$user_field = apply_filters( 'wp_stream_alert_ifttt_user_data_value', 'user_login', $alert, $recordarr );
-		$user_value = ! empty( $user->$user_field ) ? $user->$user_field : $user->user_login;
+		$user_value = '';
+		if ( ! empty( $user->$user_field ) ) {
+			$user_value = $user->$user_field;
+		} elseif ( ! empty( $user->user_login ) ) {
+			$user_value = $user->user_login;
+		}
 
 		$created = $recordarr['created'];
 		/**
