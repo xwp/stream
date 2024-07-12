@@ -7,12 +7,6 @@
 
 namespace WP_Stream;
 
-// Load Carbon to Handle dates much easier.
-if ( ! class_exists( 'Carbon\Carbon' ) ) {
-	require_once wp_stream_get_instance()->locations['inc_dir'] . 'lib/Carbon.php';
-}
-use Carbon\Carbon;
-
 /**
  * Class - Date_Interval
  */
@@ -52,77 +46,80 @@ class Date_Interval {
 			}
 		}
 
-		return apply_filters(
-			'wp_stream_predefined_date_intervals',
-			array(
+		try {
+			$today          = new \DateTimeImmutable( 'today', new \DateTimeZone( $timezone ) );
+			$date_intervals = array(
 				'today'          => array(
 					'label' => esc_html__( 'Today', 'stream' ),
-					'start' => Carbon::today( $timezone )->startOfDay(),
-					'end'   => Carbon::today( $timezone )->endOfDay(),
+					'start' => $today,
+					'end'   => $today->modify( '+1 day -1 microsecond' ),
 				),
 				'yesterday'      => array(
 					'label' => esc_html__( 'Yesterday', 'stream' ),
-					'start' => Carbon::today( $timezone )->startOfDay()->subDay(),
-					'end'   => Carbon::today( $timezone )->startOfDay()->subSecond(),
+					'start' => $today->modify( '-1 day' ),
+					'end'   => $today->modify( '-1 microsecond' ),
 				),
 				'last-7-days'    => array(
 					/* translators: %d: number of days (e.g. "7") */
 					'label' => sprintf( esc_html__( 'Last %d Days', 'stream' ), 7 ),
-					'start' => Carbon::today( $timezone )->subDays( 7 ),
-					'end'   => Carbon::today( $timezone ),
+					'start' => $today->modify( '-7 days' ),
+					'end'   => $today,
 				),
 				'last-14-days'   => array(
 					/* translators: %d: number of days (e.g. "7") */
 					'label' => sprintf( esc_html__( 'Last %d Days', 'stream' ), 14 ),
-					'start' => Carbon::today( $timezone )->subDays( 14 ),
-					'end'   => Carbon::today( $timezone ),
+					'start' => $today->modify( '-14 days' ),
+					'end'   => $today,
 				),
 				'last-30-days'   => array(
 					/* translators: %d: number of days (e.g. "7") */
 					'label' => sprintf( esc_html__( 'Last %d Days', 'stream' ), 30 ),
-					'start' => Carbon::today( $timezone )->subDays( 30 ),
-					'end'   => Carbon::today( $timezone ),
+					'start' => $today->modify( '-30 days' ),
+					'end'   => $today,
 				),
 				'this-month'     => array(
 					'label' => esc_html__( 'This Month', 'stream' ),
-					'start' => Carbon::today( $timezone )->startOfMonth(),
-					'end'   => Carbon::today( $timezone )->endOfMonth(),
+					'start' => $today->modify( 'first day of this month' ),
+					'end'   => $today->modify( 'last day of this month')->modify( '+1 day -1 microsecond' ),
 				),
 				'last-month'     => array(
 					'label' => esc_html__( 'Last Month', 'stream' ),
-					'start' => Carbon::today( $timezone )->startOfMonth()->subMonth(),
-					'end'   => Carbon::today( $timezone )->startOfMonth()->subSecond(),
+					'start' => $today->modify( 'first day of last month' ),
+					'end'   => $today->modify( 'last day of last month')->modify( '+1 day -1 microsecond' ),
 				),
 				'last-3-months'  => array(
 					/* translators: %d: number of months (e.g. "3") */
 					'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 3 ),
-					'start' => Carbon::today( $timezone )->subMonths( 3 ),
-					'end'   => Carbon::today( $timezone ),
+					'start' => $today->modify( '-3 months' ),
+					'end'   => $today,
 				),
 				'last-6-months'  => array(
 					/* translators: %d: number of months (e.g. "3") */
 					'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 6 ),
-					'start' => Carbon::today( $timezone )->subMonths( 6 ),
-					'end'   => Carbon::today( $timezone ),
+					'start' => $today->modify( '-6 months' ),
+					'end'   => $today,
 				),
 				'last-12-months' => array(
 					/* translators: %d: number of months (e.g. "3") */
 					'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 12 ),
-					'start' => Carbon::today( $timezone )->subMonths( 12 ),
-					'end'   => Carbon::today( $timezone ),
+					'start' => $today->modify( '-12 months' ),
+					'end'   => $today,
 				),
 				'this-year'      => array(
 					'label' => esc_html__( 'This Year', 'stream' ),
-					'start' => Carbon::today( $timezone )->startOfYear(),
-					'end'   => Carbon::today( $timezone )->endOfYear(),
+					'start' => $today->modify( 'first day of January' ),
+					'end'   => $today->modify( 'last day of December' )->modify( '+1 day -1 microsecond' ),
 				),
 				'last-year'      => array(
 					'label' => esc_html__( 'Last Year', 'stream' ),
-					'start' => Carbon::today( $timezone )->startOfYear()->subYear(),
-					'end'   => Carbon::today( $timezone )->startOfYear()->subSecond(),
+					'start' => $today->modify( 'first day of January' )->modify( '-1 year' ),
+					'end'   => $today->modify( 'first day of January' )->modify( '-1 microsecond' ),
 				),
-			),
-			$timezone
-		);
+			);
+		} catch ( \Exception $e ) {
+			$date_intervals = array();
+		}
+
+		return apply_filters( 'wp_stream_predefined_date_intervals', $date_intervals, $timezone );
 	}
 }
