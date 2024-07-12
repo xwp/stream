@@ -43,9 +43,9 @@ class Date_Interval {
 
 		if ( empty( $timezone ) ) {
 			$gmt_offset = (int) get_option( 'gmt_offset' );
-			$timezone   = timezone_name_from_abbr( null, $gmt_offset * 3600, true );
+			$timezone   = timezone_name_from_abbr( '', $gmt_offset * 3600, true );
 			if ( false === $timezone ) {
-				$timezone = timezone_name_from_abbr( null, $gmt_offset * 3600, false );
+				$timezone = timezone_name_from_abbr( '', $gmt_offset * 3600, false );
 			}
 			if ( false === $timezone ) {
 				$timezone = null;
