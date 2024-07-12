@@ -80,12 +80,12 @@ class Date_Interval {
 				'this-month'     => array(
 					'label' => esc_html__( 'This Month', 'stream' ),
 					'start' => $today->modify( 'first day of this month' ),
-					'end'   => $today->modify( 'last day of this month')->modify( '+1 day -1 microsecond' ),
+					'end'   => $today->modify( 'last day of this month' )->modify( '+1 day -1 microsecond' ),
 				),
 				'last-month'     => array(
 					'label' => esc_html__( 'Last Month', 'stream' ),
 					'start' => $today->modify( 'first day of last month' ),
-					'end'   => $today->modify( 'last day of last month')->modify( '+1 day -1 microsecond' ),
+					'end'   => $today->modify( 'last day of last month' )->modify( '+1 day -1 microsecond' ),
 				),
 				'last-3-months'  => array(
 					/* translators: %d: number of months (e.g. "3") */
