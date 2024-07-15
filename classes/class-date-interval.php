@@ -41,13 +41,16 @@ class Date_Interval {
 			if ( false === $timezone ) {
 				$timezone = timezone_name_from_abbr( '', $gmt_offset * 3600, false );
 			}
-			if ( false === $timezone ) {
-				$timezone = null;
-			}
 		}
 
 		try {
-			$today          = new \DateTimeImmutable( 'today', new \DateTimeZone( $timezone ) );
+			$timezone_object = $timezone ? new \DateTimeZone( $timezone ) : null;
+		} catch ( \Exception $e ) {
+			$timezone_object = null;
+		}
+
+		try {
+			$today          = new \DateTimeImmutable( 'today', $timezone_object );
 			$date_intervals = array(
 				'today'          => array(
 					'label' => esc_html__( 'Today', 'stream' ),
@@ -121,7 +124,7 @@ class Date_Interval {
 		}
 
 		/**
-		 * Allow other plugins to filter the predefined date intervals
+		 * Allow other plugins to filter the predefined date intervals.
 		 *
 		 * @param array  $date_intervals Date intervals array.
 		 * @param string $timezone       Timezone.
