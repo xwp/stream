@@ -3,7 +3,7 @@ version: '3.6'
 services:
 
   mysql:
-    image: mariadb:10.2
+    image: mariadb:11.4.2
     volumes:
       - db_data:/var/lib/mysql
     restart: always
@@ -39,7 +39,7 @@ services:
       EMAIL: local@${DEV_URL:-stream.wpenv.net}
 
   db_phpunit:
-    image: mariadb:10.2
+    image: mariadb:11.4.2
     restart: always
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
