@@ -314,7 +314,6 @@ class Test_Admin extends WP_StreamTestCase {
 
 		$this->assertStringContainsString( 'Disconnect', $action_links[0] );
 		$this->assertStringContainsString( 'Settings', $action_links[1] );
-		$this->assertStringContainsString( 'Uninstall', $action_links[2] );
 	}
 
 	public function test_render_list_table() {

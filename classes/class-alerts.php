@@ -25,6 +25,11 @@ class Alerts {
 	const ALERTS_TRIGGERED_META_KEY = 'wp_stream_alerts_triggered';
 
 	/**
+	 * Capability required to access alerts.
+	 */
+	const CAPABILITY = 'manage_options';
+
+	/**
 	 * Holds Instance of plugin object
 	 *
 	 * @var Plugin
@@ -280,6 +285,10 @@ class Alerts {
 		foreach ( $alerts->posts as $alert ) {
 			$alert = $this->get_alert( $alert->ID );
 
+			if ( false === $alert ) {
+				continue;
+			}
+
 			$status = $alert->check_record( $record_id, $recordarr );
 			if ( $status ) {
 				$alert->send_alert( $record_id, $recordarr ); // @todo send_alert expects int, not array.
@@ -363,14 +372,14 @@ class Alerts {
 			'show_in_menu'        => false, // @see modify_admin_menu
 			'supports'            => false,
 			'capabilities'        => array(
-				'publish_posts'       => 'manage_options',
-				'edit_others_posts'   => 'manage_options',
-				'delete_posts'        => 'manage_options',
-				'delete_others_posts' => 'manage_options',
-				'read_private_posts'  => 'manage_options',
-				'edit_post'           => 'manage_options',
-				'delete_post'         => 'manage_options',
-				'read_post'           => 'manage_options',
+				'publish_posts'       => self::CAPABILITY,
+				'edit_others_posts'   => self::CAPABILITY,
+				'delete_posts'        => self::CAPABILITY,
+				'delete_others_posts' => self::CAPABILITY,
+				'read_private_posts'  => self::CAPABILITY,
+				'edit_post'           => self::CAPABILITY,
+				'delete_post'         => self::CAPABILITY,
+				'read_post'           => self::CAPABILITY,
 			),
 		);
 
@@ -444,7 +453,7 @@ class Alerts {
 			$this->plugin->admin->records_page_slug,
 			__( 'Alerts', 'stream' ),
 			__( 'Alerts', 'stream' ),
-			'manage_options',
+			self::CAPABILITY,
 			'edit.php?post_type=wp_stream_alerts'
 		);
 	}
@@ -512,8 +521,10 @@ class Alerts {
 		$alert      = null;
 		$alert_type = 'none';
 		if ( is_object( $post ) ) {
-			$alert      = $this->get_alert( $post->ID );
-			$alert_type = $alert->alert_type;
+			$alert = $this->get_alert( $post->ID );
+			if ( false !== $alert ) {
+				$alert_type = $alert->alert_type;
+			}
 		}
 		$form = new Form_Generator();
 
@@ -550,11 +561,18 @@ class Alerts {
 	 * @return void
 	 */
 	public function load_alerts_settings() {
+		if ( ! current_user_can( self::CAPABILITY ) ) {
+			wp_send_json_error(
+				array(
+					'message' => 'You do not have permission to do this.',
+				)
+			);
+		}
 		$alert   = array();
 		$post_id = wp_stream_filter_input( INPUT_POST, 'post_id' );
 		if ( ! empty( $post_id ) ) {
 			$alert = $this->get_alert( $post_id );
-			if ( ! $alert ) {
+			if ( false === $alert ) {
 				wp_send_json_error(
 					array(
 						'message' => 'Could not find alert.',
@@ -594,11 +612,14 @@ class Alerts {
 	 * @return void
 	 */
 	public function display_triggers_box( $post = array() ) {
+		$alert = false;
 		if ( is_object( $post ) ) {
 			$alert = $this->get_alert( $post->ID );
-		} else {
+		}
+		if ( false === $alert ) {
 			$alert = array();
 		}
+
 		$form = new Form_Generator();
 		do_action( 'wp_stream_alert_trigger_form_display', $form, $alert );
 		// @TODO use human readable text.
