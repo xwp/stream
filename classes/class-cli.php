@@ -134,7 +134,7 @@ class CLI extends \WP_CLI_Command {
 
 			// Catch any fields missing in records.
 			foreach ( $fields as $field ) {
-				if ( ! array_key_exists( $field, $record ) ) {
+				if ( ! property_exists( $record, $field ) ) {
 					$record->$field = null;
 				}
 			}

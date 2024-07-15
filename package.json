@@ -25,8 +25,8 @@
     "track"
   ],
   "devDependencies": {
-    "@wordpress/eslint-plugin": "^15.1.0",
-    "eslint": "^8.55.0",
+    "@wordpress/eslint-plugin": "^19.1.0",
+    "eslint": "^8.57.0",
     "grunt": "^1.6.1",
     "grunt-contrib-clean": "^2.0.1",
     "grunt-contrib-compress": "^2.0.0",
