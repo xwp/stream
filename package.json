@@ -47,13 +47,13 @@
     "test:php": "npm run cli -- composer test --working-dir=wp-content/plugins/stream-src",
     "test:php-multisite": "npm run cli -- composer test-multisite --working-dir=wp-content/plugins/stream-src",
     "test-report": "npm run cli -- composer test-report --working-dir=wp-content/plugins/stream-src",
-    "build-containers": "docker-compose --file docker-compose.build.yml build",
-    "push-containers": "docker-compose --file docker-compose.build.yml push",
-    "start": "docker-compose up --remove-orphans --detach",
-    "stop": "docker-compose down",
+    "build-containers": "docker compose --file docker-compose.build.yml build",
+    "push-containers": "docker compose --file docker-compose.build.yml push",
+    "start": "docker compose up --remove-orphans --detach",
+    "stop": "docker compose down",
     "stop-all": "docker stop $(docker ps -a -q)",
-    "logs": "docker-compose logs --follow",
-    "cli": "docker-compose run --rm --user $(id -u) wordpress --",
+    "logs": "docker compose logs --follow",
+    "cli": "docker compose run --rm --user $(id -u) wordpress --",
     "install-wordpress": "npm run cli wp core multisite-install"
   }
 }

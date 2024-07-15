@@ -55,7 +55,7 @@ jobs:
         run: npm run lint
 
       - name: Pull custom Docker images
-        run: docker-compose pull wordpress
+        run: docker compose pull wordpress
 
       - name: Test
         run: npm run test
