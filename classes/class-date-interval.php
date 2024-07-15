@@ -120,6 +120,12 @@ class Date_Interval {
 			$date_intervals = array();
 		}
 
+		/**
+		 * Allow other plugins to filter the predefined date intervals
+		 *
+		 * @param array  $date_intervals Date intervals array.
+		 * @param string $timezone       Timezone.
+		 */
 		return apply_filters( 'wp_stream_predefined_date_intervals', $date_intervals, $timezone );
 	}
 }
