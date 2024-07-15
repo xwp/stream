@@ -7,14 +7,6 @@ services:
     build:
       context: ./local/docker/wordpress
 
-  wordpress_php5.6:
-    image: ghcr.io/xwp/stream-wordpress:php5.6
-    build:
-      context: ./local/docker/wordpress
-      args:
-        PHP_VERSION: "5.6"
-        XDEBUG_VERSION: "2.5.5"
-
   wordpress_php7.4:
     image: ghcr.io/xwp/stream-wordpress:php7.4
     build:
