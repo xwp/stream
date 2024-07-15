@@ -80,9 +80,9 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->admin->admin_notices();
 		$notice = ob_get_clean();
 
-		$this->assertContains( $message, $notice );
-		$this->assertContains( 'updated', $notice );
-		$this->assertNotContains( 'error', $notice );
+		$this->assertStringContainsString( $message, $notice );
+		$this->assertStringContainsString( 'updated', $notice );
+		$this->assertStringNotContainsString( 'error', $notice );
 
 		// Clear notices and start again
 		$this->admin->notices = array();
@@ -96,9 +96,9 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->admin->admin_notices();
 		$notice = ob_get_clean();
 
-		$this->assertContains( $message, $notice );
-		$this->assertContains( 'error', $notice );
-		$this->assertNotContains( 'updated', $notice );
+		$this->assertStringContainsString( $message, $notice );
+		$this->assertStringContainsString( 'error', $notice );
+		$this->assertStringNotContainsString( 'updated', $notice );
 
 		// Prevent output
 		$this->admin->notices = array();
@@ -122,10 +122,10 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->admin->admin_notices();
 		$notices = ob_get_clean();
 
-		$this->assertContains( $allowed_html, $notices );
-		$this->assertNotContains( $disallowed_html, $notices );
-		$this->assertContains( str_replace( $disallowed_html, '', $this->admin->notices[0]['message'] ), $notices );
-		$this->assertContains( wpautop( $this->admin->notices[1]['message'] ), $notices );
+		$this->assertStringContainsString( $allowed_html, $notices );
+		$this->assertStringNotContainsString( $disallowed_html, $notices );
+		$this->assertStringContainsString( str_replace( $disallowed_html, '', $this->admin->notices[0]['message'] ), $notices );
+		$this->assertStringContainsString( wpautop( $this->admin->notices[1]['message'] ), $notices );
 
 		// Prevent output
 		$this->admin->notices = array();
@@ -199,9 +199,9 @@ class Test_Admin extends WP_StreamTestCase {
 		$classes = 'sit-down-calmy take-a-stress-pill think-things-over';
 		$admin_body_classes = $this->admin->admin_body_class( $classes );
 
-		$this->assertContains( 'think-things-over ', $admin_body_classes );
-		$this->assertContains( $this->admin->admin_body_class . ' ', $admin_body_classes );
-		$this->assertContains( $this->admin->records_page_slug . ' ', $admin_body_classes );
+		$this->assertStringContainsString( 'think-things-over ', $admin_body_classes );
+		$this->assertStringContainsString( $this->admin->admin_body_class . ' ', $admin_body_classes );
+		$this->assertStringContainsString( $this->admin->records_page_slug . ' ', $admin_body_classes );
 	}
 
 	public function test_admin_menu_css() {
@@ -215,7 +215,7 @@ class Test_Admin extends WP_StreamTestCase {
 		$dependency = $wp_styles->registered['wp-admin'];
 		$this->assertArrayHasKey( 'after', $dependency->extra );
 		$this->assertNotEmpty( $dependency->extra['after'] );
-		$this->assertContains( "#toplevel_page_{$this->admin->records_page_slug}", $dependency->extra['after'][0] );
+		$this->assertStringContainsString( "#toplevel_page_{$this->admin->records_page_slug}", $dependency->extra['after'][0] );
 	}
 
 	/*
@@ -312,9 +312,9 @@ class Test_Admin extends WP_StreamTestCase {
 
 		$action_links = $this->admin->plugin_action_links( $links, $file );
 
-		$this->assertContains( 'Disconnect', $action_links[0] );
-		$this->assertContains( 'Settings', $action_links[1] );
-		$this->assertContains( 'Uninstall', $action_links[2] );
+		$this->assertStringContainsString( 'Disconnect', $action_links[0] );
+		$this->assertStringContainsString( 'Settings', $action_links[1] );
+		$this->assertStringContainsString( 'Uninstall', $action_links[2] );
 	}
 
 	public function test_render_list_table() {
@@ -324,8 +324,8 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->admin->render_list_table();
 		$html = ob_get_clean();
 
-		$this->assertContains( '<div class="wrap">', $html );
-		$this->assertContains( 'record-filter-form', $html );
+		$this->assertStringContainsString( '<div class="wrap">', $html );
+		$this->assertStringContainsString( 'record-filter-form', $html );
 	}
 
 	public function test_render_settings_page() {
@@ -333,7 +333,7 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->admin->render_settings_page();
 		$html = ob_get_clean();
 
-		$this->assertContains( '<div class="wrap">', $html );
+		$this->assertStringContainsString( '<div class="wrap">', $html );
 
 		global $wp_scripts;
 
@@ -410,7 +410,7 @@ class Test_Admin extends WP_StreamTestCase {
 		$data = json_decode( $json );
 		$this->assertNotFalse( $data );
 		$this->assertNotEmpty( $data );
-		$this->assertInternalType( 'array', $data );
+		$this->assertIsArray( $data );
 	}
 
 	public function test_get_users_record_meta() {

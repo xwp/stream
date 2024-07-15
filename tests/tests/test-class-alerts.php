@@ -234,10 +234,10 @@ class Test_Alerts extends WP_StreamTestCase {
 		}
 
 		$response = json_decode( $this->_last_response );
-		$this->assertInternalType( 'object', $response );
-		$this->assertObjectHasAttribute( 'success', $response );
+		$this->assertIsObject( $response );
+		$this->assertObjectHasProperty( 'success', $response );
 		$this->assertTrue( $response->success );
-		$this->assertObjectHasAttribute( 'data', $response );
+		$this->assertObjectHasProperty( 'data', $response );
 
 	}
 
@@ -323,8 +323,8 @@ class Test_Alerts extends WP_StreamTestCase {
 		}
 
 		$response = json_decode( $this->_last_response );
-		$this->assertInternalType( 'object', $response );
-		$this->assertObjectHasAttribute( 'success', $response );
+		$this->assertIsObject( $response );
+		$this->assertObjectHasProperty( 'success', $response );
 		$this->assertTrue( $response->success );
 		$this->assertNotEmpty( $response->data );
 	}
@@ -346,8 +346,8 @@ class Test_Alerts extends WP_StreamTestCase {
 		}
 
 		$response = json_decode( $this->_last_response );
-		$this->assertInternalType( 'object', $response );
-		$this->assertObjectHasAttribute( 'success', $response );
+		$this->assertIsObject( $response );
+		$this->assertObjectHasProperty( 'success', $response );
 		$this->assertTrue( $response->success );
 	}
 	function test_save_new_alert_with_child_context() {
@@ -368,8 +368,8 @@ class Test_Alerts extends WP_StreamTestCase {
 		}
 
 		$response = json_decode( $this->_last_response );
-		$this->assertInternalType( 'object', $response );
-		$this->assertObjectHasAttribute( 'success', $response );
+		$this->assertIsObject( $response );
+		$this->assertObjectHasProperty( 'success', $response );
 		$this->assertTrue( $response->success );
 	}
 
@@ -502,8 +502,8 @@ class Test_Alerts extends WP_StreamTestCase {
 		}
 
 		$response = json_decode( $this->_last_response );
-		$this->assertInternalType( 'object', $response );
-		$this->assertObjectHasAttribute( 'success', $response );
+		$this->assertIsObject( $response );
+		$this->assertObjectHasProperty( 'success', $response );
 		$this->assertTrue( $response->success );
 	}
 

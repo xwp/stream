@@ -31,9 +31,9 @@ class Test_Author extends WP_StreamTestCase {
 	 * Also tests private method locate_plugin
 	 */
 	public function test_construct() {
-		$this->assertInternalType( 'int', $this->author->id );
+		$this->assertIsInt( $this->author->id );
 		$this->assertNotEmpty( $this->author->id );
-		$this->assertInternalType( 'array', $this->author->meta );
+		$this->assertIsArray( $this->author->meta );
 		$this->assertNotEmpty( $this->author->meta );
 	}
 
