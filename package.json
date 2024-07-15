@@ -53,6 +53,7 @@
     "stop": "docker-compose down",
     "stop-all": "docker stop $(docker ps -a -q)",
     "logs": "docker-compose logs --follow",
-    "cli": "docker-compose run --rm --user $(id -u) wordpress --"
+    "cli": "docker-compose run --rm --user $(id -u) wordpress --",
+    "install-wordpress": "npm run cli wp core multisite-install"
   }
 }

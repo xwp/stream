@@ -22,8 +22,9 @@ We suggest using the [Homebrew package manager](https://brew.sh) on macOS to ins
 1. See the [Git Flow](#git-flow) section below for how to fork the repository.
 2. Run `npm install` and `composer install` to setup all project dependencies.
 3. Run `npm start` to start the development environment.
-4. Visit [stream.wpenv.net](http://stream.wpenv.net) and login using `admin` / `password`.
-5. Activate the Stream plugin.
+4. Run `npm run install-wordpress` to set up the WordPress multisite network.
+5. Visit [stream.wpenv.net](http://stream.wpenv.net) and login using `admin` / `password`.
+6. Activate the Stream plugin.
 
 ### PHP Xdebug
 
