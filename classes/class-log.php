@@ -98,12 +98,10 @@ class Log {
 		}
 
 		// Prevent any meta with null values from being logged.
-		$stream_meta = array_filter(
-			$args,
-			function ( $var ) {
-				return ! is_null( $var );
-			}
-		);
+		//
+		// @see https://www.php.net/manual/en/function.array-filter.php#111091
+		$stream_meta = array_filter( $args, 'strlen' );
+		$user_meta = array_filter( $user_meta, 'strlen' );
 
 		// Add user meta to Stream meta.
 		$stream_meta['user_meta'] = $user_meta;
