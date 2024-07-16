@@ -21,16 +21,15 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "9000:9000" # Xdebug
     volumes:
       - .:/var/www/html/wp-content/plugins/stream-src # Working directory.
       - ./build:/var/www/html/wp-content/plugins/stream # Built version for testing.
       - ./local/public:/var/www/html # WP core files.
     restart: always
+    extra_hosts:
+      - host.docker.internal:host-gateway
     environment:
       APACHE_RUN_USER: "#1000" # Ensure Apache can write to the filesystem.
-      XDEBUG_MODE: coverage
-      XDEBUG_CONFIG: ${XDEBUG_CONFIG:-remote_host=host.docker.internal remote_connect_back=0}
       WP_TESTS_DIR: /var/www/html/wp-content/plugins/stream-src/vendor/wp-phpunit/wp-phpunit
       WP_PHPUNIT__TESTS_CONFIG: /var/www/html/wp-tests-config.php
       SMTPSERVER: mailhog

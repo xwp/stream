@@ -5,7 +5,7 @@
       "name": "Listen for Stream XDebug",
       "type": "php",
       "request": "launch",
-      "port": 9000,
+      "port": 9003,
       "ignore": [
         "vendor/"
       ],

@@ -28,7 +28,14 @@ We suggest using the [Homebrew package manager](https://brew.sh) on macOS to ins
 
 ### PHP Xdebug
 
-The WordPress container includes the [Xdebug PHP extension](https://xdebug.org). It is configured to [autostart](https://xdebug.org/docs/remote#remote_autostart) and to [automatically detect the IP address of the connecting client](https://xdebug.org/docs/remote#remote_connect_back) running in your code editor. See [`.vscode/launch.json`](.vscode/launch.json) for the directory mapping from the WordPress container to the project directory in your code editor.
+The WordPress container includes the [Xdebug PHP extension](https://xdebug.org). It is configured in the [`php.ini`](./local/docker/wordpress/php.ini) file to work in the [develop, debug and coverage modes](https://xdebug.org/docs/step_debug#mode).
+
+[Step Debugging](https://xdebug.org/docs/step_debug) should work out of the box in VSCode thanks to the configuration file, [`.vscode/launch.json`](.vscode/launch.json). It contains the directory mapping from the WordPress container to the project directory in your code editor.
+
+In order to set up Step Debugging in PhpStorm, follow the [official guide](https://www.jetbrains.com/help/phpstorm/configuring-xdebug.html). Make sure to set up the same directory mappings as defined for VSCode in [`.vscode/launch.json`](.vscode/launch.json), e.g.:
+- `${workspaceRoot}` -> `/var/www/html/wp-content/plugins/stream-src`,
+- `${workspaceRoot}/build` -> `/var/www/html/wp-content/plugins/stream`,
+- `${workspaceRoot}/local/public` -> `/var/www/html`
 
 ### Mail Catcher
 
@@ -38,14 +45,13 @@ We use a [MailHog](https://github.com/mailhog/MailHog) container to capture all 
 
 We use npm as the canonical task runner for the project. The following commands are available:
 
+- `npm run start` to start the project's Docker containers.
+- `npm run stop` to stop the project's Docker containers.
+- `npm run stop-all` to stop _all_ Docker containers.
 - `npm run build` to build the plugin JS and CSS files.
-
 - `npm run lint` to check JS and PHP files for syntax and style issues.
-
 - `npm run deploy` to deploy the plugin to the WordPress.org repository.
-
 - `npm run cli -- wp info` where `wp info` is the CLI command to run inside the WordPress container. For example, use `npm run cli -- ls -lah` to list all files in the root of the WordPress installation.
-
 - `npm run test` to run PHPunit tests inside the WordPress container.
 
 
