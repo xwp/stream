@@ -266,11 +266,11 @@ class Test_Alerts extends WP_StreamTestCase {
 
 		// TODO: This returns an empty 'success => true' response. It should probably return a failure response instead - 400 Bad Request?
 		$response = json_decode( $this->_last_response );
-		$this->assertInternalType( 'object', $response );
-		$this->assertObjectHasAttribute( 'success', $response );
+		$this->assertIsObject( $response );
+		$this->assertObjectHasProperty( 'success', $response );
 		$this->assertTrue( $response->success );
-		$this->assertObjectHasAttribute( 'data', $response );
-		$this->assertObjectHasAttribute( 'html', $response->data );
+		$this->assertObjectHasProperty( 'data', $response );
+		$this->assertObjectHasProperty( 'html', $response->data );
 		$this->assertEmpty( $response->data->html );
 	}
 
@@ -295,11 +295,11 @@ class Test_Alerts extends WP_StreamTestCase {
 		}
 
 		$response = json_decode( $this->_last_response );
-		$this->assertInternalType( 'object', $response );
-		$this->assertObjectHasAttribute( 'success', $response );
+		$this->assertIsObject( $response );
+		$this->assertObjectHasProperty( 'success', $response );
 		$this->assertFalse( $response->success );
-		$this->assertObjectHasAttribute( 'data', $response );
-		$this->assertObjectHasAttribute( 'message', $response->data );
+		$this->assertObjectHasProperty( 'data', $response );
+		$this->assertObjectHasProperty( 'message', $response->data );
 		$this->assertEquals( 'You do not have permission to do this.', $response->data->message );
 	}
 
