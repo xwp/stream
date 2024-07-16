@@ -216,24 +216,23 @@ class Alert_Type_IFTTT extends Alert_Type {
 			)
 		);
 
-		$user_id = $recordarr['user_id'];
-		$user    = get_user_by( 'id', $user_id );
-
-		/**
-		 * Filter User data field
-		 *
-		 * Defaults to 'user_login'.
-		 *
-		 * @param object $alert The Alert.
-		 * @param array  $recordarray The Record's data.
-		 * @return string
-		 */
-		$user_field = apply_filters( 'wp_stream_alert_ifttt_user_data_value', 'user_login', $alert, $recordarr );
+		$user_id    = ! empty( $recordarr['user_id'] ) ? $recordarr['user_id'] : 0;
+		$user       = get_user_by( 'id', $user_id );
 		$user_value = '';
-		if ( ! empty( $user->$user_field ) ) {
-			$user_value = $user->$user_field;
-		} elseif ( ! empty( $user->user_login ) ) {
-			$user_value = $user->user_login;
+
+		if ( $user instanceof \WP_User ) {
+			/**
+			 * Filter User data field.
+			 *
+			 * Defaults to 'user_login'.
+			 *
+			 * @param object $alert     The Alert object.
+			 * @param array  $recordarr Array of Record data.
+			 *
+			 * @return string
+			 */
+			$user_field = apply_filters( 'wp_stream_alert_ifttt_user_data_value', 'user_login', $alert, $recordarr );
+			$user_value = ! empty( $user->$user_field ) ? $user->$user_field : $user->user_login;
 		}
 
 		$created = $recordarr['created'];
