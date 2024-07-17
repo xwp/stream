@@ -18,7 +18,6 @@
     "automattic/vipwpcs": "^2.3",
     "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
     "humanmade/mercator": "^1.0",
-    "johnpbloch/wordpress": "^6.3",
     "php-coveralls/php-coveralls": "^2.5",
     "phpcompatibility/php-compatibility": "dev-develop as 9.99.99",
     "phpcompatibility/phpcompatibility-wp": "^2.1",

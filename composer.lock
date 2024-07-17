@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "abf1540362c6e039be43d3cb8d21bc8d",
+    "content-hash": "62e25b4f4f3d39d8850fbf58ce336c51",
     "packages": [
         {
             "name": "composer/installers",
@@ -1564,100 +1564,6 @@
                 "source": "https://github.com/humanmade/Mercator/tree/master"
             },
             "time": "2018-10-30T18:53:20+00:00"
-        },
-        {
-            "name": "johnpbloch/wordpress",
-            "version": "6.5.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/johnpbloch/wordpress.git",
-                "reference": "6f83db776f045918e8a4f104bd798ce6988167e4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/johnpbloch/wordpress/zipball/6f83db776f045918e8a4f104bd798ce6988167e4",
-                "reference": "6f83db776f045918e8a4f104bd798ce6988167e4",
-                "shasum": ""
-            },
-            "require": {
-                "johnpbloch/wordpress-core": "6.5.5",
-                "johnpbloch/wordpress-core-installer": "^1.0 || ^2.0",
-                "php": ">=7.0.0"
-            },
-            "type": "package",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "WordPress Community",
-                    "homepage": "https://wordpress.org/about/"
-                }
-            ],
-            "description": "WordPress is open source software you can use to create a beautiful website, blog, or app.",
-            "homepage": "https://wordpress.org/",
-            "keywords": [
-                "blog",
-                "cms",
-                "wordpress"
-            ],
-            "support": {
-                "docs": "https://developer.wordpress.org/",
-                "forum": "https://wordpress.org/support/",
-                "irc": "irc://irc.freenode.net/wordpress",
-                "issues": "https://core.trac.wordpress.org/",
-                "source": "https://core.trac.wordpress.org/browser"
-            },
-            "time": "2024-06-24T17:24:52+00:00"
-        },
-        {
-            "name": "johnpbloch/wordpress-core",
-            "version": "6.5.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/johnpbloch/wordpress-core.git",
-                "reference": "be6edfa018053533267a16e73f6623b0fa27b2df"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/johnpbloch/wordpress-core/zipball/be6edfa018053533267a16e73f6623b0fa27b2df",
-                "reference": "be6edfa018053533267a16e73f6623b0fa27b2df",
-                "shasum": ""
-            },
-            "require": {
-                "ext-json": "*",
-                "php": ">=7.0.0"
-            },
-            "provide": {
-                "wordpress/core-implementation": "6.5.5"
-            },
-            "type": "wordpress-core",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "WordPress Community",
-                    "homepage": "https://wordpress.org/about/"
-                }
-            ],
-            "description": "WordPress is open source software you can use to create a beautiful website, blog, or app.",
-            "homepage": "https://wordpress.org/",
-            "keywords": [
-                "blog",
-                "cms",
-                "wordpress"
-            ],
-            "support": {
-                "forum": "https://wordpress.org/support/",
-                "irc": "irc://irc.freenode.net/wordpress",
-                "issues": "https://core.trac.wordpress.org/",
-                "source": "https://core.trac.wordpress.org/browser",
-                "wiki": "https://codex.wordpress.org/"
-            },
-            "time": "2024-06-24T17:24:47+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
