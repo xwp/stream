@@ -68,8 +68,8 @@ class Connector_Menus extends Connector {
 	public function get_context_labels() {
 		$labels = array();
 		$menus  = get_terms(
-			'nav_menu',
 			array(
+				'taxonomy'   => 'nav_menu',
 				'hide_empty' => false,
 			)
 		);
