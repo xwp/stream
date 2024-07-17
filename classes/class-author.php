@@ -70,7 +70,7 @@ class Author {
 			default:
 				if ( ! empty( $this->user ) && 0 !== $this->user->ID ) {
 					if ( is_null( $this->user->$name ) ) {
-						throw new \Exception( "Unrecognized magic '$name'" );
+						throw new \Exception( sprintf( "Unrecognized magic '%s'", esc_attr( $name ) ) );
 					}
 					return $this->user->$name;
 				}
