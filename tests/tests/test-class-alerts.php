@@ -7,7 +7,7 @@ namespace WP_Stream;
  */
 class Test_Alerts extends WP_StreamTestCase {
 
-	function tearDown() {
+	function tearDown(): void {
 		// See test_load_bad_alert_type() and test_load_bad_alert_trigger.
 		remove_filter( 'wp_stream_alert_types', array( $this, 'callback_load_bad_alert_register' ), 10, 1 );
 		remove_filter( 'wp_stream_alert_triggers', array( $this, 'callback_load_bad_alert_register' ), 10, 1 );
@@ -237,11 +237,11 @@ class Test_Alerts extends WP_StreamTestCase {
 		}
 
 		$response = json_decode( $this->_last_response );
-		$this->assertInternalType( 'object', $response );
-		$this->assertObjectHasAttribute( 'success', $response );
+		$this->assertIsObject( $response );
+		$this->assertObjectHasProperty( 'success', $response );
 		$this->assertTrue( $response->success );
-		$this->assertObjectHasAttribute( 'data', $response );
-		$this->assertObjectHasAttribute( 'html', $response->data );
+		$this->assertObjectHasProperty( 'data', $response );
+		$this->assertObjectHasProperty( 'html', $response->data );
 		$this->assertStringContainsString( 'Highlight this alert on the Stream records page.', $response->data->html );
 	}
 
@@ -266,11 +266,11 @@ class Test_Alerts extends WP_StreamTestCase {
 
 		// TODO: This returns an empty 'success => true' response. It should probably return a failure response instead - 400 Bad Request?
 		$response = json_decode( $this->_last_response );
-		$this->assertInternalType( 'object', $response );
-		$this->assertObjectHasAttribute( 'success', $response );
+		$this->assertIsObject( $response );
+		$this->assertObjectHasProperty( 'success', $response );
 		$this->assertTrue( $response->success );
-		$this->assertObjectHasAttribute( 'data', $response );
-		$this->assertObjectHasAttribute( 'html', $response->data );
+		$this->assertObjectHasProperty( 'data', $response );
+		$this->assertObjectHasProperty( 'html', $response->data );
 		$this->assertEmpty( $response->data->html );
 	}
 
@@ -295,11 +295,11 @@ class Test_Alerts extends WP_StreamTestCase {
 		}
 
 		$response = json_decode( $this->_last_response );
-		$this->assertInternalType( 'object', $response );
-		$this->assertObjectHasAttribute( 'success', $response );
+		$this->assertIsObject( $response );
+		$this->assertObjectHasProperty( 'success', $response );
 		$this->assertFalse( $response->success );
-		$this->assertObjectHasAttribute( 'data', $response );
-		$this->assertObjectHasAttribute( 'message', $response->data );
+		$this->assertObjectHasProperty( 'data', $response );
+		$this->assertObjectHasProperty( 'message', $response->data );
 		$this->assertEquals( 'You do not have permission to do this.', $response->data->message );
 	}
 
@@ -367,8 +367,8 @@ class Test_Alerts extends WP_StreamTestCase {
 		}
 
 		$response = json_decode( $this->_last_response );
-		$this->assertInternalType( 'object', $response );
-		$this->assertObjectHasAttribute( 'success', $response );
+		$this->assertIsObject( $response );
+		$this->assertObjectHasProperty( 'success', $response );
 		$this->assertTrue( $response->success );
 		$this->assertNotEmpty( $response->data );
 	}
@@ -390,8 +390,8 @@ class Test_Alerts extends WP_StreamTestCase {
 		}
 
 		$response = json_decode( $this->_last_response );
-		$this->assertInternalType( 'object', $response );
-		$this->assertObjectHasAttribute( 'success', $response );
+		$this->assertIsObject( $response );
+		$this->assertObjectHasProperty( 'success', $response );
 		$this->assertTrue( $response->success );
 	}
 	function test_save_new_alert_with_child_context() {
@@ -412,8 +412,8 @@ class Test_Alerts extends WP_StreamTestCase {
 		}
 
 		$response = json_decode( $this->_last_response );
-		$this->assertInternalType( 'object', $response );
-		$this->assertObjectHasAttribute( 'success', $response );
+		$this->assertIsObject( $response );
+		$this->assertObjectHasProperty( 'success', $response );
 		$this->assertTrue( $response->success );
 	}
 
@@ -546,8 +546,8 @@ class Test_Alerts extends WP_StreamTestCase {
 		}
 
 		$response = json_decode( $this->_last_response );
-		$this->assertInternalType( 'object', $response );
-		$this->assertObjectHasAttribute( 'success', $response );
+		$this->assertIsObject( $response );
+		$this->assertObjectHasProperty( 'success', $response );
 		$this->assertTrue( $response->success );
 	}
 

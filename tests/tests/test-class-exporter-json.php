@@ -12,7 +12,7 @@ class Test_Exporter_JSON extends WP_StreamTestCase {
 	/**
 	 * Set up for tests
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 		$_GET['page'] = 'wp_stream';
 

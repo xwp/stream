@@ -9,7 +9,7 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 	 */
 	protected $driver;
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->driver = new DB_Driver_WPDB();
@@ -94,7 +94,7 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 		$table_names = $this->driver->get_table_names();
 
 		$this->assertNotEmpty( $table_names );
-		$this->assertInternalType( 'array', $table_names );
+		$this->assertIsArray( $table_names );
 		$this->assertEquals( array( $this->driver->table, $this->driver->table_meta ), $table_names );
 	}
 
