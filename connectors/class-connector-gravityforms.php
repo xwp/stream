@@ -672,7 +672,7 @@ class Connector_GravityForms extends Connector {
 		unset( $note );
 		unset( $note_type );
 
-		// Skip if no entry/lead id (e.g. Save and Continue notifications)
+		// Skip if no entry/lead id (e.g. Save and Continue notifications).
 		if ( empty( $lead_id ) ) {
 			return;
 		}
