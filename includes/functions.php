@@ -18,7 +18,7 @@
  *
  * @return mixed|false|null Value of the requested variable on success, FALSE if the filter fails, or NULL if the $variable_name is not set.
  */
-function wp_stream_filter_input( $type, $variable_name, $filter = null, $options = array() ) {
+function wp_stream_filter_input( $type, $variable_name, $filter = null, $options = array() ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 	return call_user_func_array( array( '\WP_Stream\Filter_Input', 'super' ), func_get_args() );
 }
 
@@ -34,7 +34,7 @@ function wp_stream_filter_input( $type, $variable_name, $filter = null, $options
  *
  * @return Returns the filtered data, or FALSE if the filter fails.
  */
-function wp_stream_filter_var( $value, $filter = null, $options = array() ) {
+function wp_stream_filter_var( $value, $filter = null, $options = array() ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 	return call_user_func_array( array( '\WP_Stream\Filter_Input', 'filter' ), func_get_args() );
 }
 

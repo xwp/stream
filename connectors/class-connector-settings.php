@@ -537,16 +537,16 @@ class Connector_Settings extends Connector {
 				'url'          => function ( $rule, $record ) {
 					return admin_url( $rule['submenu_slug']( $record ) );
 				},
-				'applicable'   => function ( $submenu, $record ) {
+				'applicable'   => function ( $submenu ) {
 					return ! empty( $submenu['options-general.php'] );
 				},
 			),
 			'network'           => array(
 				'menu_slug'    => 'settings.php',
-				'submenu_slug' => function ( $record ) {
+				'submenu_slug' => function () {
 					return 'settings.php';
 				},
-				'url'          => function ( $rule, $record ) {
+				'url'          => function ( $rule ) {
 					return network_admin_url( $rule['menu_slug'] );
 				},
 				'applicable'   => function ( $submenu, $record ) {
