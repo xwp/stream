@@ -294,4 +294,14 @@ abstract class Connector {
 	public function is_dependency_satisfied() {
 		return true;
 	}
+
+	/**
+	 * Escape % characters in a string to avoid Uncaught ValueErrors in $this->log().
+	 *
+	 * @param string $value The string value to be escaped.
+	 * @return string The escaped string.
+	 */
+	public function escape_percentages( $value ) {
+		return str_replace( '%', '%%', $value );
+	}
 }

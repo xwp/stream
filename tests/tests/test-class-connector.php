@@ -177,6 +177,19 @@ class Test_Connector extends WP_StreamTestCase {
 	public function test_is_dependency_satisfied() {
 		$this->assertTrue( $this->connector->is_dependency_satisfied() );
 	}
+
+	/**
+	 * Test that percentages are escaped.
+	 *
+	 * @return void
+	 */
+	public function test_escape_percentages() {
+		$escaped_value = $this->connector->escape_percentages( 'This is a message with a % sign' );
+		$this->assertEquals(
+			'This is a message with a %% sign',
+			$escaped_value
+		);
+	}
 }
 
 class Connector_Maintenance extends Connector {
