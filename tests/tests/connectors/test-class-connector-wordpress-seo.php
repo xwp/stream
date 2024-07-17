@@ -27,7 +27,7 @@ class Test_WP_Stream_Connector_WordPress_SEO extends WP_StreamTestCase {
 
 		// Make partial of Connector_WordPress_SEO class, with mocked "log" function.
 		$this->mock = $this->getMockBuilder( Connector_WordPress_SEO::class )
-			->setMethods( array( 'log' ) )
+			->onlyMethods( array( 'log' ) )
 			->getMock();
 
 		// Register connector.
