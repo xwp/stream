@@ -5,56 +5,58 @@
 
 Stream uses [npm](https://npmjs.com) for javascript dependencies, [Composer](https://getcomposer.org) for PHP dependencies and the [Grunt](https://gruntjs.com) task runner to minimize and compile scripts and styles and to deploy to the WordPress.org plugin repository.
 
-Included is a local development environment built with [Docker](https://www.docker.com) which can be optionally run inside [Vagrant](https://www.vagrantup.com) for network isolation and better performance.
+Included is a local development environment built with [Docker](https://www.docker.com).
 
 ### Requirements
 
-- [VirtualBox](https://www.virtualbox.org)
-- [Vagrant](https://www.vagrantup.com)
 - [Node.js](https://nodejs.org)
 - [Composer](https://getcomposer.org)
 
 We suggest using the [Homebrew package manager](https://brew.sh) on macOS to install the dependencies:
 
 	brew install node@16 composer
-	brew cask install virtualbox vagrant
-
-For setups with local Docker environment you don't need Vagrant and VirtualBox.
+	brew install --cask docker
 
 ### Environment Setup
 
 1. See the [Git Flow](#git-flow) section below for how to fork the repository.
-2. Run `npm install` to install all project dependencies.
-3. Run `vagrant up` to start the development environment.
-4. Visit [stream.local](http://stream.local) and login using `admin` / `password`.
-5. Activate the Stream plugin.
+2. Run `npm install` and `composer install` to setup all project dependencies.
+3. Run `npm start` to start the development environment.
+4. Run `npm run install-wordpress` to set up the WordPress multisite network.
+5. Visit [stream.wpenv.net](http://stream.wpenv.net) and login using `admin` / `password`.
+6. Activate the Stream plugin.
 
 ### PHP Xdebug
 
-The WordPress container includes the [Xdebug PHP extension](https://xdebug.org). It is configured to [autostart](https://xdebug.org/docs/remote#remote_autostart) and to [automatically detect the IP address of the connecting client](https://xdebug.org/docs/remote#remote_connect_back) running in your code editor. See [`.vscode/launch.json`](.vscode/launch.json) for the directory mapping from the WordPress container to the project directory in your code editor.
+The WordPress container includes the [Xdebug PHP extension](https://xdebug.org). It is configured in the [`php.ini`](./local/docker/wordpress/php.ini) file to work in the [develop, debug and coverage modes](https://xdebug.org/docs/step_debug#mode).
+
+[Step Debugging](https://xdebug.org/docs/step_debug) should work out of the box in VSCode thanks to the configuration file, [`.vscode/launch.json`](.vscode/launch.json). It contains the directory mapping from the WordPress container to the project directory in your code editor.
+
+In order to set up Step Debugging in PhpStorm, follow the [official guide](https://www.jetbrains.com/help/phpstorm/configuring-xdebug.html). Make sure to set up the same directory mappings as defined for VSCode in [`.vscode/launch.json`](.vscode/launch.json), e.g.:
+- `${workspaceRoot}` -> `/var/www/html/wp-content/plugins/stream-src`,
+- `${workspaceRoot}/build` -> `/var/www/html/wp-content/plugins/stream`,
+- `${workspaceRoot}/local/public` -> `/var/www/html`
 
 ### Mail Catcher
 
-We use a [MailHog](https://github.com/mailhog/MailHog) container to capture all emails sent by the WordPress container, available at [stream.local:8025](https://stream.local:8025).
+We use a [MailHog](https://github.com/mailhog/MailHog) container to capture all emails sent by the WordPress container, available at [stream.wpenv.net:8025](https://stream.wpenv.net:8025).
 
 ### Scripts and Commands
 
 We use npm as the canonical task runner for the project. The following commands are available:
 
+- `npm run start` to start the project's Docker containers.
+- `npm run stop` to stop the project's Docker containers.
+- `npm run stop-all` to stop _all_ Docker containers.
 - `npm run build` to build the plugin JS and CSS files.
-
 - `npm run lint` to check JS and PHP files for syntax and style issues.
-
 - `npm run deploy` to deploy the plugin to the WordPress.org repository.
-
 - `npm run cli -- wp info` where `wp info` is the CLI command to run inside the WordPress container. For example, use `npm run cli -- ls -lah` to list all files in the root of the WordPress installation.
+- `npm run test` to run PHPunit tests inside the WordPress container.
 
-- `npm run compose -- up -d` where `up -d` is the `docker-compose` command for the WordPress container. For example, use `npm run compose -- down` and `npm run compose -- up -d` to restart the WordPres container.
+### Docker issues
 
-- `npm run phpunit` to run PHPunit tests inside the WordPress container.
-
-All `npm` commands running inside Vagrant are prefixed with `v`, for example, `npm run vcli` and `npm run vcompose`.
-
+If you are having issues with incorrect versions of Xdebug or other Docker issues, first try rebuilding with no cache and up to date images using the command `docker compose build --no-cache --pull`. Then run `npm run start` as normal.
 
 ## Issues Tracker
 

@@ -2,7 +2,7 @@
 namespace WP_Stream;
 
 class Test_WP_Stream_Connector_Editor extends WP_StreamTestCase {
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->plugin->connectors->unload_connectors();
@@ -14,7 +14,7 @@ class Test_WP_Stream_Connector_Editor extends WP_StreamTestCase {
 		$this->mock->register();
 	}
 
-	public function tearDown() {
+	public function tearDown(): void {
 		parent::tearDown();
 	}
 

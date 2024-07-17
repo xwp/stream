@@ -9,7 +9,7 @@ class Test_Filter_Input extends WP_StreamTestCase {
 	 */
 	protected $filter;
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->filter = new Filter_Input;

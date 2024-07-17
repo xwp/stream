@@ -7,7 +7,7 @@ namespace WP_Stream;
  */
 class Test_Alert_Trigger_Context extends Test_Alert_Trigger {
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 		$this->trigger = new Alert_Trigger_Context( $this->plugin );
 

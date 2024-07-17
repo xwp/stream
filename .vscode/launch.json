@@ -5,14 +5,14 @@
       "name": "Listen for Stream XDebug",
       "type": "php",
       "request": "launch",
-      "port": 9000,
+      "port": 9003,
       "ignore": [
         "vendor/"
       ],
       "pathMappings": {
-        "/var/www/html/wp-content/plugins/stream-src": "${workspaceRoot}",
-        "/var/www/html/wp-content/plugins/stream": "${workspaceRoot}/build",
-        "/var/www/html": "${workspaceRoot}/local/public"
+        "/var/www/html/wp-content/plugins/stream-src": "${workspaceFolder}",
+        "/var/www/html/wp-content/plugins/stream": "${workspaceFolder}/build",
+        "/var/www/html": "${workspaceFolder}/local/public"
       }
     }
   ]
