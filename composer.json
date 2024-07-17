@@ -11,6 +11,7 @@
     }
   ],
   "require": {
+    "php": ">=5.6.20",
     "composer/installers": "~1.0"
   },
   "require-dev": {
@@ -21,7 +22,8 @@
     "php-coveralls/php-coveralls": "^2.5",
     "phpcompatibility/php-compatibility": "dev-develop as 9.99.99",
     "phpcompatibility/phpcompatibility-wp": "^2.1",
-    "phpunit/phpunit": "^5.7",
+    "phpunit/phpunit": "^9.6",
+    "roots/wordpress": "^6.2",
     "wp-cli/wp-cli-bundle": "^2.6",
     "wp-coding-standards/wpcs": "^2.3",
     "wp-phpunit/wp-phpunit": "^6.3",
@@ -29,8 +31,9 @@
     "wpackagist-plugin/easy-digital-downloads": "2.9.23",
     "wpackagist-plugin/jetpack": "10.0",
     "wpackagist-plugin/user-switching": "1.5.5",
-    "wpsh/local": "^0.2.3",
-    "yoast/phpunit-polyfills": "^1.0"
+    "wpackagist-theme/twentytwentythree": "^1.0",
+    "xwp/wait-for": "^0.0.1",
+    "yoast/phpunit-polyfills": "^1.1"
   },
   "config": {
     "process-timeout": 600,
@@ -40,15 +43,16 @@
     },
     "allow-plugins": {
       "composer/installers": true,
-      "johnpbloch/wordpress-core-installer": true,
-      "dealerdirect/phpcodesniffer-composer-installer": true
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "roots/wordpress-core-installer": true
     }
   },
   "extra": {
-    "wordpress-install-dir": "local/public",
+    "wordpress-install-dir": "local/public/wp",
     "installer-paths": {
-      "local/public/wp-content/plugins/{$name}/": ["type:wordpress-plugin"],
-      "local/public/wp-content/mu-plugins/{$name}/": ["type:wordpress-muplugin"]
+      "local/public/wp-content/themes/{$name}": ["type:wordpress-theme"],
+      "local/public/wp-content/plugins/{$name}": ["type:wordpress-plugin"],
+      "local/public/wp-content/mu-plugins/{$name}": ["type:wordpress-muplugin"]
     }
   },
   "scripts": {

@@ -14,7 +14,7 @@ class Test_Plugin extends WP_StreamTestCase {
 	 * Also tests private method locate_plugin
 	 */
 	public function test_construct() {
-		$this->assertInternalType( 'array', $this->plugin->locations );
+		$this->assertIsArray( $this->plugin->locations );
 		$this->assertNotEmpty( $this->plugin->locations );
 		$this->assertArrayHasKey( 'plugin', $this->plugin->locations );
 		$this->assertNotEmpty( $this->plugin->locations['plugin'] );
@@ -77,7 +77,7 @@ class Test_Plugin extends WP_StreamTestCase {
 		$comment = ob_get_clean();
 
 		$this->assertNotEmpty( $comment );
-		$this->assertContains( 'Stream WordPress user activity plugin', $comment );
+		$this->assertStringContainsString( 'Stream WordPress user activity plugin', $comment );
 	}
 
 	public function test_get_version() {

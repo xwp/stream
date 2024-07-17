@@ -9,7 +9,7 @@ class Test_Connector extends WP_StreamTestCase {
 	 */
 	protected $connector;
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->connector = new Connector_Maintenance();
@@ -113,7 +113,7 @@ class Test_Connector extends WP_StreamTestCase {
 		);
 
 		$this->assertNotEmpty( $this->connector->delayed[ $action ] );
-		$this->assertInternalType( 'array', $this->connector->delayed[ $action ] );
+		$this->assertIsArray( $this->connector->delayed[ $action ] );
 
 		global $wpdb;
 		$first_count = $wpdb->get_var( "SELECT COUNT( ID ) FROM {$wpdb->stream}" );

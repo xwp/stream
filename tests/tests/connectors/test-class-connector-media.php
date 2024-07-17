@@ -10,7 +10,7 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 	/**
 	 * Runs before each test
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		// Make partial of Connector_Media class, with mocked "log" function.

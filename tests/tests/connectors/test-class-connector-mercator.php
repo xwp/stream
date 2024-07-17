@@ -10,7 +10,7 @@ namespace WP_Stream;
 
 class Test_WP_Stream_Connector_Mercator extends WP_StreamTestCase {
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		if ( ! is_multisite() ) {
