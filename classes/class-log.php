@@ -235,10 +235,10 @@ class Log {
 				$ip_addresses = explode( ',', $exclude_value );
 
 				if ( in_array( $record['ip_address'], $ip_addresses, true ) ) {
-					$matches_found++;
+					++$matches_found;
 				}
 			} elseif ( $record[ $exclude_key ] === $exclude_value ) {
-				$matches_found++;
+				++$matches_found;
 			}
 		}
 

@@ -1040,7 +1040,7 @@ class List_Table extends \WP_List_Table {
 			$class_string = ' class="' . esc_attr( join( ' ', $classes ) ) . '"';
 		}
 
-		echo sprintf( '<tr%s>', $class_string ); // xss ok.
+		printf( '<tr%s>', $class_string ); // xss ok.
 		$this->single_row_columns( $item );
 		echo '</tr>';
 	}

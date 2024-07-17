@@ -447,7 +447,6 @@ class Connector_Widgets extends Connector {
 				);
 			}
 		}
-
 	}
 
 	/**
@@ -518,7 +517,6 @@ class Connector_Widgets extends Connector {
 				);
 			}
 		}
-
 	}
 
 	/**

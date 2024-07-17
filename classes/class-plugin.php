@@ -219,7 +219,6 @@ class Plugin {
 		$this->connectors  = new Connectors( $this );
 		$this->alerts      = new Alerts( $this );
 		$this->alerts_list = new Alerts_List( $this );
-
 	}
 
 	/**
@@ -243,7 +242,7 @@ class Plugin {
 		$comment = apply_filters( 'wp_stream_frontend_indicator', $comment );
 
 		if ( ! empty( $comment ) ) {
-			echo sprintf( "<!-- %s -->\n", esc_html( $comment ) ); // xss ok.
+			printf( "<!-- %s -->\n", esc_html( $comment ) ); // xss ok.
 		}
 	}
 
@@ -254,8 +253,8 @@ class Plugin {
 	 * @return array
 	 */
 	private function locate_plugin() {
-		$dir_url         = trailingslashit( plugins_url( '', dirname( __FILE__ ) ) );
-		$dir_path        = plugin_dir_path( dirname( __FILE__ ) );
+		$dir_url         = trailingslashit( plugins_url( '', __DIR__ ) );
+		$dir_path        = plugin_dir_path( __DIR__ );
 		$dir_basename    = basename( $dir_path );
 		$plugin_basename = trailingslashit( $dir_basename ) . $dir_basename . '.php';
 

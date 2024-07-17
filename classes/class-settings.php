@@ -7,9 +7,9 @@
 
 namespace WP_Stream;
 
-use \WP_Roles;
-use \WP_User;
-use \WP_User_Query;
+use WP_Roles;
+use WP_User;
+use WP_User_Query;
 
 /**
  * Class - Settings
@@ -602,12 +602,10 @@ class Settings {
 
 		if ( isset( $field['value'] ) ) {
 			$current_value = $field['value'];
-		} else {
-			if ( isset( $this->options[ $section . '_' . $name ] ) ) {
+		} elseif ( isset( $this->options[ $section . '_' . $name ] ) ) {
 				$current_value = $this->options[ $section . '_' . $name ];
-			} else {
-				$current_value = null;
-			}
+		} else {
+			$current_value = null;
 		}
 
 		$option_key = $this->option_key;

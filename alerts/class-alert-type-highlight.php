@@ -206,7 +206,6 @@ class Alert_Type_Highlight extends Alert_Type {
 		} else {
 			$alert->alert_meta['color'] = $input_color;
 		}
-
 	}
 
 	/**
