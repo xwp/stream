@@ -296,15 +296,15 @@ class Connector_WordPress_SEO extends Connector {
 				'wpseo_import',
 				'exported'
 			);
-		} elseif ( isset( $_FILES['settings_import_file']['name'] ) ) { // phpcs: input var okay.
+		} elseif ( isset( $_FILES['settings_import_file']['name'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$this->log(
 				sprintf(
 					/* translators: %s: a filename (e.g. "test.xml") */
 					__( 'Tried importing settings from "%s"', 'stream' ),
-					sanitize_text_field( wp_unslash( $_FILES['settings_import_file']['name'] ) ) // phpcs: input var okay.
+					sanitize_text_field( wp_unslash( $_FILES['settings_import_file']['name'] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Missing
 				),
 				array(
-					'file' => sanitize_text_field( wp_unslash( $_FILES['settings_import_file']['name'] ) ), // phpcs: input var okay.
+					'file' => sanitize_text_field( wp_unslash( $_FILES['settings_import_file']['name'] ) ), // phpcs:ignore WordPress.Security.NonceVerification.Missing
 				),
 				null,
 				'wpseo_import',
