@@ -636,18 +636,18 @@ class Connector_ACF extends Connector {
 	 * @action shutdown
 	 */
 	public function check_location_rules() {
-		foreach ( $this->cached_location_rules as $post_id => $old ) {
-			$new  = get_post_meta( $post_id, 'rule' );
-			$post = get_post( $post_id );
+		foreach ( $this->cached_location_rules as $post_id => $old_value ) {
+			$new_value = get_post_meta( $post_id, 'rule' );
+			$post      = get_post( $post_id );
 
-			if ( $old === $new ) {
+			if ( $old_value === $new_value ) {
 				continue;
 			}
 
-			$new     = array_map( 'wp_json_encode', $new );
-			$old     = array_map( 'wp_json_encode', $old );
-			$added   = array_diff( $new, $old );
-			$deleted = array_diff( $old, $new );
+			$new_value = array_map( 'wp_json_encode', $new_value );
+			$old_value = array_map( 'wp_json_encode', $old_value );
+			$added     = array_diff( $new_value, $old_value );
+			$deleted   = array_diff( $old_value, $new_value );
 
 			$this->log(
 				/* translators: %1$s: a form title, %2$d: the number of rules added, %3$d: the number of rules deleted (e.g. "Contact", "42", "7") */
