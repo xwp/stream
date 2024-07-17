@@ -65,6 +65,9 @@
       "@composer validate",
       "@lint-php"
     ],
+    "format": [
+      "phpcbf ."
+    ],
     "test": [
       "phpunit --coverage-text",
       "php local/scripts/make-clover-relative.php ./tests/reports/clover.xml"
