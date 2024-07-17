@@ -174,10 +174,10 @@ class Plugin {
 	/**
 	 * Autoloader for classes
 	 *
-	 * @param string $class  Fully qualified classname to be loaded.
+	 * @param string $class_name Fully qualified classname to be loaded.
 	 */
-	public function autoload( $class ) {
-		if ( ! preg_match( '/^(?P<namespace>.+)\\\\(?P<autoload>[^\\\\]+)$/', $class, $matches ) ) {
+	public function autoload( $class_name ) {
+		if ( ! preg_match( '/^(?P<namespace>.+)\\\\(?P<autoload>[^\\\\]+)$/', $class_name, $matches ) ) {
 			return;
 		}
 
