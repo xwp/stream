@@ -911,7 +911,8 @@ class Settings {
 								'selected-id'   => isset( $author_or_role_selected['value'] ) ? esc_attr( $author_or_role_selected['value'] ) : '',
 								'selected-text' => isset( $author_or_role_selected['text'] ) ? esc_attr( $author_or_role_selected['text'] ) : '',
 							),
-						)
+						),
+						false
 					);
 
 					// Context dropdown menu.
@@ -955,7 +956,8 @@ class Settings {
 								'group'       => 'connector',
 								'placeholder' => __( 'Any Context', 'stream' ),
 							),
-						)
+						),
+						false
 					);
 
 					$connector_input = $form->render_field(
@@ -964,7 +966,8 @@ class Settings {
 							'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'connector' ) ),
 							'value'   => $connector,
 							'classes' => 'connector',
-						)
+						),
+						false
 					);
 
 					$context_input = $form->render_field(
@@ -973,7 +976,8 @@ class Settings {
 							'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'context' ) ),
 							'value'   => $context,
 							'classes' => 'context',
-						)
+						),
+						false
 					);
 
 					// Action dropdown menu.
@@ -996,7 +1000,8 @@ class Settings {
 							'data'    => array(
 								'placeholder' => __( 'Any Action', 'stream' ),
 							),
-						)
+						),
+						false
 					);
 
 					// IP Address input.
@@ -1011,7 +1016,8 @@ class Settings {
 								'nonce'       => esc_attr( wp_create_nonce( 'stream_get_ips' ) ),
 							),
 							'multiple' => true,
-						)
+						),
+						false
 					);
 
 					// Hidden helper input.
@@ -1036,12 +1042,12 @@ class Settings {
 						( 'helper' === (string) $key ) ? 'hidden helper' : '',
 						'<input class="cb-select" type="checkbox" />',
 						$helper_input,
-						$author_or_role_input,
-						$connector_or_context_input,
-						$connector_input,
-						$context_input,
-						$action_input,
-						$ip_address_input,
+						$author_or_role_input, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						$connector_or_context_input, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						$connector_input, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						$context_input, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						$action_input, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						$ip_address_input, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						'<a href="#" class="exclude_rules_remove_rule_row">Delete</a>'
 					);
 				}
@@ -1082,7 +1088,7 @@ class Settings {
 
 		$output = $this->render_field( $field );
 
-		echo $output; // xss ok.
+		echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**

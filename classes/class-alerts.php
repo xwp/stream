@@ -525,7 +525,8 @@ class Alerts {
 		}
 		$form = new Form_Generator();
 
-		$field_html = $form->render_field(
+		echo '<label>' . esc_html__( 'Alert me by', 'stream' ) . '</label>';
+		$form->render_field(
 			'select',
 			array(
 				'id'          => 'wp_stream_alert_type',
@@ -536,9 +537,6 @@ class Alerts {
 				'title'       => 'Alert Type:',
 			)
 		);
-
-		echo '<label>' . esc_html__( 'Alert me by', 'stream' ) . '</label>';
-		echo $field_html; // Xss ok.
 
 		echo '<div id="wp_stream_alert_type_form">';
 		if ( is_object( $alert ) ) {
@@ -621,7 +619,7 @@ class Alerts {
 		do_action( 'wp_stream_alert_trigger_form_display', $form, $alert );
 		// @TODO use human readable text.
 		echo '<label>' . esc_html__( 'Alert me when', 'stream' ) . '</label>';
-		echo $form->render_fields(); // Xss ok.
+		echo $form->render_fields(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		wp_nonce_field( 'save_alert', 'wp_stream_alerts_nonce' );
 	}
 

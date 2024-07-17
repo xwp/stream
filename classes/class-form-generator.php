@@ -36,43 +36,41 @@ class Form_Generator {
 	/**
 	 * Renders all fields currently registered.
 	 *
-	 * @return string
+	 * @return void
 	 */
 	public function render_fields() {
-		$output = '';
 		foreach ( $this->fields as $data ) {
-			$output .= $this->render_field( $data['type'], $data['args'] );
+			$this->render_field( $data['type'], $data['args'] );
 		}
-		return $output;
 	}
 
 	/**
 	 * Renders all fields currently registered as a table.
 	 *
-	 * @return string
+	 * @return void
 	 */
 	public function render_fields_table() {
-		$output = '<table class="form-table">';
+		echo '<table class="form-table">';
 		foreach ( $this->fields as $data ) {
 			$title = ( array_key_exists( 'title', $data['args'] ) ) ? $data['args']['title'] : '';
 
-			$output .= '<tr><th>' . $title . '</th><td>';
-			$output .= $this->render_field( $data['type'], $data['args'] );
-			$output .= '</td><tr>';
+			printf( '<tr><th>%s</th><td>', esc_html( $title ) );
+			$this->render_field( $data['type'], $data['args'] );
+			echo '</td><tr>';
 		}
-		$output .= '</table>';
-		return $output;
+		echo '</table>';
 	}
 
 	/**
-	 * Renders a single field.
+	 * Renders or returns a single field.
 	 *
-	 * @param string $field_type The type of field being rendered.
-	 * @param array  $args The options for the field type.
+	 * @param string $field_type  The type of field being rendered.
+	 * @param array  $args        The options for the field type.
+	 * @param bool   $echo_output Whether to echo the output or return it.
 	 *
-	 * @return string
+	 * @return string|void
 	 */
-	public function render_field( $field_type, $args ) {
+	public function render_field( $field_type, $args, $echo_output = true ) {
 		$args = wp_parse_args(
 			$args,
 			array(
@@ -205,7 +203,11 @@ class Form_Generator {
 
 		$output .= ! empty( $args['description'] ) ? sprintf( '<p class="description">%s</p>', $args['description'] ) : null;
 
-		return $output;
+		if ( ! $echo_output ) {
+			return $output;
+		}
+
+		echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
