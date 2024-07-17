@@ -777,7 +777,7 @@ class Connector_Settings extends Connector {
 		<script>
 			(function ($) {
 				$(function () {
-					var hashPrefix = <?php echo wp_stream_json_encode( self::HIGHLIGHT_FIELD_URL_HASH_PREFIX ); // xss ok. ?>,
+					var hashPrefix = <?php echo wp_json_encode( self::HIGHLIGHT_FIELD_URL_HASH_PREFIX ); ?>,
 						hashFieldName = "",
 						fieldNames = [],
 						$select2Choices = {},

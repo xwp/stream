@@ -488,7 +488,7 @@ class Admin {
 					'current_order'       => isset( $_GET['order'] ) && in_array( strtolower( $_GET['order'] ), $order_types, true ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						? esc_js( $_GET['order'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						: 'desc',
-					'current_query'       => wp_stream_json_encode( $_GET ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					'current_query'       => wp_json_encode( $_GET ),
 					'current_query_count' => count( $_GET ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				)
 			);
@@ -1038,7 +1038,7 @@ class Admin {
 		}
 
 		if ( isset( $results ) ) {
-			echo wp_stream_json_encode( $results ); // xss ok.
+			echo wp_json_encode( $results );
 		}
 
 		die();

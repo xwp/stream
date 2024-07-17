@@ -154,15 +154,11 @@ class CLI extends \WP_CLI_Command {
 			}
 
 			if ( 'json' === $assoc_args['format'] ) {
-				\WP_CLI::line( wp_stream_json_encode( $formatted_records ) );
+				\WP_CLI::line( wp_json_encode( $formatted_records ) );
 			}
 
 			if ( 'json_pretty' === $assoc_args['format'] ) {
-				if ( version_compare( PHP_VERSION, '5.4', '<' ) ) {
-					\WP_CLI::line( wp_stream_json_encode( $formatted_records ) ); // xss ok.
-				} else {
-					\WP_CLI::line( wp_stream_json_encode( $formatted_records, JSON_PRETTY_PRINT ) ); // xss ok.
-				}
+				\WP_CLI::line( wp_json_encode( $formatted_records, JSON_PRETTY_PRINT ) );
 			}
 
 			if ( 'csv' === $assoc_args['format'] ) {

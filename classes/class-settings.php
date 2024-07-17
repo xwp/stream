@@ -801,7 +801,7 @@ class Settings {
 					esc_attr( $option_key ),
 					esc_attr( $section ),
 					esc_attr( $name ),
-					esc_attr( wp_stream_json_encode( $data_values ) ),
+					esc_attr( wp_json_encode( $data_values ) ),
 					esc_attr( $current_value ),
 					esc_attr( $class ),
 					/* translators: %s: the title of the dropdown menu (e.g. "users") */

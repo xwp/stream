@@ -63,31 +63,6 @@ function wp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 ) {
 }
 
 /**
- * Encode to JSON in a way that is also backwards compatible
- *
- * @param mixed $data     Data to be encoded.
- * @param int   $options  Compression options (optional).
- * @param int   $depth    Tree depth limit (optional).
- *
- * @return string
- */
-function wp_stream_json_encode( $data, $options = 0, $depth = 512 ) {
-	if ( function_exists( 'wp_json_encode' ) ) {
-		$json = wp_json_encode( $data, $options, $depth );
-	} else {
-		// @codingStandardsIgnoreStart
-		if ( version_compare( PHP_VERSION, '5.5', '<' ) ) {
-			$json = json_encode( $data, $options );
-		} else {
-			$json = json_encode( $data, $options, $depth );
-		}
-		// @codingStandardsIgnoreEnd
-	}
-
-	return $json;
-}
-
-/**
  * Return an array of sites for a network in a way that is also backwards compatible
  *
  * @param string|array $args  Argument to filter results by.
