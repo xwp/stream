@@ -25,6 +25,7 @@ $base = '/';
 $table_prefix = 'wp_';
 
 define( 'WP_DEBUG', true );
+define( 'WP_DEBUG_LOG', true );
 define( 'JETPACK_DEV_DEBUG', true );
 
 // Keep the wp-contents outside of WP core directory.

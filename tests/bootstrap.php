@@ -93,6 +93,7 @@ require $_tests_dir . '/includes/bootstrap.php';
 define( 'EDD_USE_PHP_SESSIONS', false );
 define( 'WP_USE_THEMES', false );
 activate_plugin( 'easy-digital-downloads/easy-digital-downloads.php' );
+activate_plugin( 'wordpress-seo/wp-seo.php' );
 xwp_install_edd();
 
 require __DIR__ . '/testcase.php';

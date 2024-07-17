@@ -31,6 +31,7 @@
     "wpackagist-plugin/easy-digital-downloads": "2.9.23",
     "wpackagist-plugin/jetpack": "10.0",
     "wpackagist-plugin/user-switching": "1.5.5",
+    "wpackagist-plugin/wordpress-seo": "23.0",
     "wpackagist-theme/twentytwentythree": "^1.0",
     "xwp/wait-for": "^0.0.1",
     "yoast/phpunit-polyfills": "^1.1"
@@ -69,6 +70,10 @@
     "test": [
       "phpunit --coverage-text",
       "php local/scripts/make-clover-relative.php ./tests/reports/clover.xml"
+    ],
+    "test-one": [
+      "phpunit",
+      "WP_MULTISITE=1 phpunit"
     ],
     "test-multisite": [
       "WP_MULTISITE=1 phpunit --coverage-text",
