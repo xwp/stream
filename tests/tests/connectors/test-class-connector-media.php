@@ -46,7 +46,7 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 								'parent_title' => null,
 								'parent_id'    => 0,
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -68,7 +68,7 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 								'parent_title' => 'Test post',
 								'parent_id'    => $post_id,
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -90,7 +90,7 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 								'parent_title' => 'Unidentifiable post',
 								'parent_id'    => 42,
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -180,7 +180,7 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 							'name'      => 'Attachment one',
 							'parent_id' => null,
 						);
-						return $expected === array_intersect_key( $expected, $subject );
+						return array_intersect_key( $expected, $subject ) === $expected;
 					}
 				),
 				$this->equalTo( $attachment_id ),

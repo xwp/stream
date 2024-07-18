@@ -76,7 +76,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 								'new_status'    => 'draft',
 								'old_status'    => 'new',
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -99,7 +99,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 								'new_status'    => 'publish',
 								'old_status'    => 'draft',
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -122,7 +122,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 								'new_status'    => 'draft',
 								'old_status'    => 'publish',
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -145,7 +145,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 								'new_status'    => 'draft',
 								'old_status'    => 'draft',
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -168,7 +168,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 								'new_status'    => 'pending',
 								'old_status'    => 'draft',
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -191,7 +191,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 								'new_status'    => 'future',
 								'old_status'    => 'pending',
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -214,7 +214,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 								'new_status'    => 'publish',
 								'old_status'    => 'future',
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -237,7 +237,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 								'new_status'    => 'private',
 								'old_status'    => 'publish',
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -260,7 +260,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 								'new_status'    => 'trash',
 								'old_status'    => 'private',
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -283,7 +283,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 								'new_status'    => 'publish',
 								'old_status'    => 'trash',
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -306,7 +306,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 								'new_status'    => 'publish',
 								'old_status'    => 'publish',
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -329,7 +329,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 								'new_status'    => 'publish',
 								'old_status'    => 'new',
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),

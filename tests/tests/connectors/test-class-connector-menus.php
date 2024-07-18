@@ -32,7 +32,7 @@ class Test_WP_Stream_Connector_Menus extends WP_StreamTestCase {
 				$this->callback(
 					function ( $subject ) {
 						$expected = array( 'name' => 'test-menu' );
-						return $expected === array_intersect_key( $expected, $subject );
+						return array_intersect_key( $expected, $subject ) === $expected;
 					}
 				),
 				$this->greaterThan( 0 ),

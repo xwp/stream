@@ -84,7 +84,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 							'siteurl'   => '//testsite',
 						);
 
-						return $expected_meta === array_intersect_key( $expected_meta, $meta );
+						return array_intersect_key( $expected_meta, $meta ) === $expected_meta;
 					}
 				),
 				$this->greaterThan( 0 ),
