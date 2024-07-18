@@ -242,7 +242,7 @@ class Plugin {
 		$comment = apply_filters( 'wp_stream_frontend_indicator', $comment );
 
 		if ( ! empty( $comment ) ) {
-			printf( "<!-- %s -->\n", esc_html( $comment ) ); // xss ok.
+			printf( "<!-- %s -->\n", esc_html( $comment ) );
 		}
 	}
 

@@ -514,7 +514,6 @@ class Settings {
 					$field + array(
 						'section'   => $section_name,
 						'label_for' => sprintf( '%s_%s_%s', $this->option_key, $section_name, $field['name'] ),
-						// xss ok.
 					)
 				);
 			}

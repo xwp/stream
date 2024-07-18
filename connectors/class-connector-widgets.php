@@ -110,7 +110,7 @@ class Connector_Widgets extends Connector {
 			global $wp_registered_sidebars;
 
 			if ( array_key_exists( $sidebar, $wp_registered_sidebars ) ) {
-				$links[ esc_html__( 'Edit Widget Area', 'stream' ) ] = admin_url( 'widgets.php#' . $sidebar ); // xss ok (@todo fix WPCS rule).
+				$links[ esc_html__( 'Edit Widget Area', 'stream' ) ] = admin_url( 'widgets.php#' . $sidebar );
 			}
 			// @todo Also old_sidebar_id and new_sidebar_id.
 			// @todo Add Edit Widget link.
