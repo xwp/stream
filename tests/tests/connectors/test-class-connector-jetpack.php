@@ -9,7 +9,11 @@ namespace WP_Stream;
 
 class Test_WP_Stream_Connector_Jetpack extends WP_StreamTestCase {
 
-	/** @var WP_REST_Server $wp_rest_server Rest server instance. */
+	/**
+	 * Rest server instance.
+	 *
+	 * @var WP_REST_Server $wp_rest_server
+	 */
 	protected $server;
 
 	protected $namespaced_route = '/jetpack/v4';
@@ -21,7 +25,10 @@ class Test_WP_Stream_Connector_Jetpack extends WP_StreamTestCase {
 		parent::setUp();
 
 		global $wp_rest_server;
-		$this->server = $wp_rest_server = new \WP_REST_Server();
+
+		$wp_rest_server = new \WP_REST_Server(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$this->server   = $wp_rest_server;
+
 		do_action( 'rest_api_init' );
 
 		// Make partial of Connector_Installer class, with mocked "log" function.

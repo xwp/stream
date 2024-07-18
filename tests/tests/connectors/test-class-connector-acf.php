@@ -35,13 +35,6 @@ class Test_WP_Stream_Connector_ACF extends WP_StreamTestCase {
 	}
 
 	/**
-	 * Runs after each test
-	 */
-	public function tearDown(): void {
-		parent::tearDown();
-	}
-
-	/**
 	 * Create/Update ACF field group
 	 *
 	 * @param array $config  ACF field group configuration.
