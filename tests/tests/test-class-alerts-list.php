@@ -9,12 +9,12 @@ namespace WP_Stream;
  */
 class Test_Alerts_List extends WP_StreamTestCase {
 
-	function test_construct() {
+	public function test_construct() {
 		$alerts_list = new Alerts_List( $this->plugin );
 		$this->assertNotEmpty( $alerts_list->plugin );
 	}
 
-	function test_suppress_bulk_actions() {
+	public function test_suppress_bulk_actions() {
 		$alerts_list      = new Alerts_List( $this->plugin );
 		$actions          = array(
 			'edit'          => 'edit',
@@ -29,7 +29,7 @@ class Test_Alerts_List extends WP_StreamTestCase {
 		$this->assertEquals( $expected_actions, $filtered_actions );
 	}
 
-	function test_suppress_quick_edit() {
+	public function test_suppress_quick_edit() {
 		$alerts_list      = new Alerts_List( $this->plugin );
 		$actions          = array(
 			'edit'                 => 'edit',
@@ -42,19 +42,19 @@ class Test_Alerts_List extends WP_StreamTestCase {
 		$this->assertEquals( $actions, $filtered_actions );
 	}
 
-	function test_custom_column_actions() {
+	public function test_custom_column_actions() {
 		$alerts_list                = new Alerts_List( $this->plugin );
 		$custom_column_actions_html = $alerts_list->custom_column_actions( 42 );
 		$this->assertNotEmpty( $custom_column_actions_html );
 	}
-	function test_display_custom_quick_edit() {
+	public function test_display_custom_quick_edit() {
 		$alerts_list = new Alerts_List( $this->plugin );
 		ob_start();
 		$alerts_list->display_custom_quick_edit();
 		$output = ob_get_clean();
 		$this->assertEmpty( $output );
 	}
-	function test_enqueue_scripts() {
+	public function test_enqueue_scripts() {
 		$alerts_list = new Alerts_List( $this->plugin );
 		global $current_screen;
 		$current_screen->id = 'edit-wp_stream_alerts';

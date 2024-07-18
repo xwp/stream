@@ -9,7 +9,7 @@ namespace WP_Stream;
  */
 class Test_Alert extends WP_StreamTestCase {
 
-	function test_construct() {
+	public function test_construct() {
 		$data  = $this->dummy_alert_data();
 		$alert = new Alert( $data, $this->plugin );
 
@@ -18,7 +18,7 @@ class Test_Alert extends WP_StreamTestCase {
 		}
 	}
 
-	function test_construct_blank() {
+	public function test_construct_blank() {
 		$data  = $this->dummy_alert_data();
 		$alert = new Alert( null, $this->plugin );
 
@@ -31,7 +31,7 @@ class Test_Alert extends WP_StreamTestCase {
 		$this->assertEquals( $alert->alert_meta, array() );
 	}
 
-	function test_save() {
+	public function test_save() {
 		$data     = $this->dummy_alert_data();
 		$data->ID = 0;
 		$alert    = new Alert( $data, $this->plugin );
@@ -46,13 +46,13 @@ class Test_Alert extends WP_StreamTestCase {
 		$this->assertEquals( 'none', $alert_type );
 	}
 
-	function test_process_settings_form() {
+	public function test_process_settings_form() {
 		$this->markTestIncomplete(
 			'Not implemented yet.'
 		);
 	}
 
-	function test_get_meta() {
+	public function test_get_meta() {
 		$data     = $this->dummy_alert_data();
 		$data->ID = 0;
 		$alert    = new Alert( $data, $this->plugin );
@@ -62,7 +62,7 @@ class Test_Alert extends WP_StreamTestCase {
 		$this->assertEquals( 'highlight', $value );
 	}
 
-	function test_update_meta() {
+	public function test_update_meta() {
 		$data     = $this->dummy_alert_data();
 		$data->ID = 0;
 		$alert    = new Alert( $data, $this->plugin );
@@ -77,7 +77,7 @@ class Test_Alert extends WP_StreamTestCase {
 		$this->assertEquals( 'test_value', $value );
 	}
 
-	function test_get_title() {
+	public function test_get_title() {
 		$data  = $this->dummy_alert_data();
 		$alert = new Alert( $data, $this->plugin );
 
@@ -93,7 +93,7 @@ class Test_Alert extends WP_StreamTestCase {
 		$this->assertEquals( 'Any User > Posts > Updated', $alert->get_title() );
 	}
 
-	function test_get_alert_type_obj() {
+	public function test_get_alert_type_obj() {
 		$data  = $this->dummy_alert_data();
 		$alert = new Alert( $data, $this->plugin );
 
@@ -104,7 +104,7 @@ class Test_Alert extends WP_StreamTestCase {
 		$this->assertEquals( new Alert_Type_Highlight( $this->plugin ), $alert->get_alert_type_obj() );
 	}
 
-	function test_check_record() {
+	public function test_check_record() {
 		$action = new \MockAction();
 		$data   = $this->dummy_alert_data();
 		$alert  = new Alert( $data, $this->plugin );
@@ -115,7 +115,7 @@ class Test_Alert extends WP_StreamTestCase {
 		$this->assertEquals( 1, $action->get_call_count() );
 	}
 
-	function test_send_alert() {
+	public function test_send_alert() {
 		$this->markTestIncomplete(
 			'Not implemented yet.'
 		);

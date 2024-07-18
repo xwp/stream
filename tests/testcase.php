@@ -21,7 +21,7 @@ class WP_StreamTestCase extends \WP_Ajax_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	function setUp(): void {
+	public function setUp(): void {
 		parent::setUp();
 		$this->plugin = $GLOBALS['wp_stream'];
 		$this->assertNotEmpty( $this->plugin );

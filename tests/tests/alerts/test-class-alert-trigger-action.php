@@ -17,7 +17,7 @@ class Test_Alert_Trigger_Action extends Test_Alert_Trigger {
 		$this->alert->alert_meta['trigger_action'] = 'activated';
 	}
 
-	function test_check_record_bad() {
+	public function test_check_record_bad() {
 		$data           = $this->dummy_stream_data();
 		$data['action'] = 'updated';
 
@@ -25,7 +25,7 @@ class Test_Alert_Trigger_Action extends Test_Alert_Trigger {
 		$this->assertFalse( $status );
 	}
 
-	function test_save_fields() {
+	public function test_save_fields() {
 		$_POST['wp_stream_trigger_action'] = 'updated';
 
 		$this->assertNotEquals( 'updated', $this->alert->alert_meta['trigger_action'] );

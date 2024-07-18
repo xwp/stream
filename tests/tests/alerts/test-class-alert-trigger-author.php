@@ -17,7 +17,7 @@ class Test_Alert_Trigger_Author extends Test_Alert_Trigger {
 		$this->alert->alert_meta['trigger_author'] = '1';
 	}
 
-	function test_check_record_bad() {
+	public function test_check_record_bad() {
 		$data            = $this->dummy_stream_data();
 		$data['user_id'] = '2';
 
@@ -25,7 +25,7 @@ class Test_Alert_Trigger_Author extends Test_Alert_Trigger {
 		$this->assertFalse( $status );
 	}
 
-	function test_save_fields() {
+	public function test_save_fields() {
 		$_POST['wp_stream_trigger_author'] = '0';
 
 		$this->assertNotEquals( '0', $this->alert->alert_meta['trigger_author'] );

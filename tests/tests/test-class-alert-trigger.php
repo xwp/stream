@@ -10,19 +10,19 @@ namespace WP_Stream;
 abstract class Test_Alert_Trigger extends WP_StreamTestCase {
 	public $trigger;
 
-	function test_construct() {
+	public function test_construct() {
 		// assert that 2 actions + 2 filters have been added
 	}
 
-	function test_check_record() {
+	public function test_check_record() {
 		$data   = $this->dummy_stream_data();
 		$status = $this->trigger->check_record( true, null, $data, $this->alert );
 		$this->assertTrue( $status );
 	}
 
-	abstract function test_check_record_bad();
+	abstract public function test_check_record_bad();
 
-	function test_add_fields() {
+	public function test_add_fields() {
 		$form = new Form_Generator();
 		$this->assertCount( 0, $form->fields );
 
@@ -30,9 +30,9 @@ abstract class Test_Alert_Trigger extends WP_StreamTestCase {
 		$this->assertNotCount( 0, $form->fields );
 	}
 
-	abstract function test_save_fields();
+	abstract public function test_save_fields();
 
-	function test_get_display_value() {
+	public function test_get_display_value() {
 		$output = $this->trigger->get_display_value( 'normal', $this->alert );
 		$this->assertNotEmpty( $output );
 	}
