@@ -151,10 +151,9 @@ class Export {
 	/**
 	 * Increase pagination limit for CSV Output
 	 *
-	 * @param int $records_per_page Old limit for records_per_page.
 	 * @return int
 	 */
-	public function disable_paginate( $records_per_page ) {
+	public function disable_paginate() {
 		return 10000;
 	}
 

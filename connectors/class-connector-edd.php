@@ -258,12 +258,12 @@ class Connector_EDD extends Connector {
 	/**
 	 * Track EDD-specific option changes.
 	 *
-	 * @param string $option Option key.
-	 * @param string $old    Old value.
-	 * @param string $new    New value.
+	 * @param string $option    Option key.
+	 * @param string $old_value Old value.
+	 * @param string $new_value New value.
 	 */
-	public function callback_update_option( $option, $old, $new ) {
-		$this->check( $option, $old, $new );
+	public function callback_update_option( $option, $old_value, $new_value ) {
+		$this->check( $option, $old_value, $new_value );
 	}
 
 	/**
@@ -288,12 +288,12 @@ class Connector_EDD extends Connector {
 	/**
 	 * Track EDD-specific site option changes
 	 *
-	 * @param string $option Option key.
-	 * @param string $old    Old value.
-	 * @param string $new    New value.
+	 * @param string $option    Option key.
+	 * @param string $old_value Old value.
+	 * @param string $new_value New value.
 	 */
-	public function callback_update_site_option( $option, $old, $new ) {
-		$this->check( $option, $old, $new );
+	public function callback_update_site_option( $option, $old_value, $new_value ) {
+		$this->check( $option, $old_value, $new_value );
 	}
 
 	/**
