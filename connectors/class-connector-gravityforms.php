@@ -803,8 +803,8 @@ class Connector_GravityForms extends Connector {
 	 * @param string $status   Status.
 	 */
 	public function callback_gform_update_is_read( $lead_id, $status ) {
-		$lead   = $this->get_lead( $lead_id );
-		$form   = $this->get_form( $lead['form_id'] );
+		$lead = $this->get_lead( $lead_id );
+		$form = $this->get_form( $lead['form_id'] );
 
 		$this->log(
 			sprintf(
@@ -847,7 +847,7 @@ class Connector_GravityForms extends Connector {
 			esc_html__( 'starred', 'stream' ),
 			esc_html__( 'unstarred', 'stream' )
 		);
-		$action = $status_for_message;
+		$action             = $status_for_message;
 
 		$this->log(
 			sprintf(
@@ -1040,7 +1040,9 @@ class Connector_GravityForms extends Connector {
 	/**
 	 * Get the status to use in a message with percentages in translation escaped.
 	 *
-	 * @param bool $conditional Whether or not it's a new form.
+	 * @param bool   $conditional Whether or not it's a new form.
+	 * @param string $true_string The string to return when the conditional is true.
+	 * @param string $false_string The string to return when the conditional is false.
 	 * @return string The status with percentages escaped.
 	 */
 	private function get_status_for_message( $conditional, $true_string, $false_string ) {
