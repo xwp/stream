@@ -43,7 +43,10 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 		global $wpdb;
 
 		// Check that records exist
-		$stream_result = $wpdb->get_row( "SELECT * FROM {$wpdb->stream} WHERE ID = $stream_id", ARRAY_A );
+		$stream_result = $wpdb->get_row(
+			$wpdb->prepare( "SELECT * FROM {$wpdb->stream} WHERE ID = %d", $stream_id ),
+			ARRAY_A
+		);
 		$this->assertNotEmpty( $stream_result );
 
 		foreach ( $this->dummy_stream_data() as $dummy_key => $dummy_value ) {
@@ -62,7 +65,10 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 		}
 
 		// Check that meta exists
-		$meta_result = $wpdb->get_results( "SELECT * FROM {$wpdb->streammeta} WHERE record_id = $stream_id", ARRAY_A );
+		$meta_result = $wpdb->get_results(
+			$wpdb->prepare( "SELECT * FROM {$wpdb->streammeta} WHERE record_id = %d", $stream_id ),
+			ARRAY_A
+		);
 		$this->assertNotEmpty( $meta_result );
 
 		$found_all_keys = true;

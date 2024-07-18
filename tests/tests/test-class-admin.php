@@ -240,11 +240,11 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->assertNotFalse( $meta_id );
 
 		// Check that records exist
-		$stream_result = $wpdb->get_row( "SELECT * FROM {$wpdb->stream} WHERE ID = $stream_id" );
+		$stream_result = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->stream} WHERE ID = %d", $stream_id ) );
 		$this->assertNotEmpty( $stream_result );
 
 		// Check that meta exists
-		$meta_result = $wpdb->get_row( "SELECT * FROM {$wpdb->streammeta} WHERE meta_id = $meta_id" );
+		$meta_result = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->streammeta} WHERE meta_id = %d", $meta_id ) );
 		$this->assertNotEmpty( $meta_result );
 
 		// Clear records and meta
@@ -298,11 +298,11 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->admin->purge_scheduled_action();
 
 		// Check if the old records have been cleared
-		$stream_results = $wpdb->get_row( "SELECT * FROM {$wpdb->stream} WHERE ID = $stream_id" );
+		$stream_results = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->stream} WHERE ID = %d", $stream_id ) );
 		$this->assertEmpty( $stream_results );
 
 		// Check if the old meta has been cleared
-		$meta_results = $wpdb->get_row( "SELECT * FROM {$wpdb->streammeta} WHERE meta_id = $meta_id" );
+		$meta_results = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->streammeta} WHERE meta_id = %d", $meta_id ) );
 		$this->assertEmpty( $meta_results );
 	}
 
