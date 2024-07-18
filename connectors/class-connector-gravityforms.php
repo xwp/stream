@@ -431,12 +431,12 @@ class Connector_GravityForms extends Connector {
 	/**
 	 * Track GravityForms-specific option changes.
 	 *
-	 * @param string $option Option key.
-	 * @param string $old    Old value.
-	 * @param string $new    New value.
+	 * @param string $option    Option key.
+	 * @param string $old_value Old value.
+	 * @param string $new_value New value.
 	 */
-	public function callback_update_option( $option, $old, $new ) {
-		$this->check( $option, $old, $new );
+	public function callback_update_option( $option, $old_value, $new_value ) {
+		$this->check( $option, $old_value, $new_value );
 	}
 
 	/**
@@ -461,12 +461,12 @@ class Connector_GravityForms extends Connector {
 	/**
 	 * Track GravityForms-specific site option changes
 	 *
-	 * @param string $option Option key.
-	 * @param string $old    Old value.
-	 * @param string $new    New value.
+	 * @param string $option    Option key.
+	 * @param string $old_value Old value.
+	 * @param string $new_value New value.
 	 */
-	public function callback_update_site_option( $option, $old, $new ) {
-		$this->check( $option, $old, $new );
+	public function callback_update_site_option( $option, $old_value, $new_value ) {
+		$this->check( $option, $old_value, $new_value );
 	}
 
 	/**
@@ -695,7 +695,7 @@ class Connector_GravityForms extends Connector {
 		unset( $note );
 		unset( $note_type );
 
-		// Skip if no entry/lead id (e.g. Save and Continue notifications)
+		// Skip if no entry/lead id (e.g. Save and Continue notifications).
 		if ( empty( $lead_id ) ) {
 			return;
 		}

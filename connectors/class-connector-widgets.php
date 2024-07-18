@@ -110,7 +110,7 @@ class Connector_Widgets extends Connector {
 			global $wp_registered_sidebars;
 
 			if ( array_key_exists( $sidebar, $wp_registered_sidebars ) ) {
-				$links[ esc_html__( 'Edit Widget Area', 'stream' ) ] = admin_url( 'widgets.php#' . $sidebar ); // xss ok (@todo fix WPCS rule).
+				$links[ esc_html__( 'Edit Widget Area', 'stream' ) ] = admin_url( 'widgets.php#' . $sidebar );
 			}
 			// @todo Also old_sidebar_id and new_sidebar_id.
 			// @todo Add Edit Widget link.
@@ -124,12 +124,12 @@ class Connector_Widgets extends Connector {
 	 *
 	 * @action update_option_sidebars_widgets
 	 *
-	 * @param array $old  Old sidebars widgets.
-	 * @param array $new  New sidebars widgets.
+	 * @param array $old_widgets Old sidebars widgets.
+	 * @param array $new_widgets New sidebars widgets.
 	 *
 	 * @return void
 	 */
-	public function callback_update_option_sidebars_widgets( $old, $new ) {
+	public function callback_update_option_sidebars_widgets( $old_widgets, $new_widgets ) {
 		// Disable listener if we're switching themes.
 		if ( did_action( 'after_switch_theme' ) ) {
 			return;
@@ -137,11 +137,11 @@ class Connector_Widgets extends Connector {
 
 		if ( did_action( 'customize_save' ) ) {
 			if ( is_null( $this->customizer_initial_sidebars_widgets ) ) {
-				$this->customizer_initial_sidebars_widgets = $old;
+				$this->customizer_initial_sidebars_widgets = $old_widgets;
 				add_action( 'customize_save_after', array( $this, 'callback_customize_save_after' ) );
 			}
 		} else {
-			$this->handle_sidebars_widgets_changes( $old, $new );
+			$this->handle_sidebars_widgets_changes( $old_widgets, $new_widgets );
 		}
 	}
 
@@ -162,39 +162,40 @@ class Connector_Widgets extends Connector {
 	/**
 	 * Processes tracked widget actions
 	 *
-	 * @param array $old  Old sidebar widgets.
-	 * @param array $new  New sidebar widgets.
+	 * @param array $old_widgets Old sidebar widgets.
+	 * @param array $new_widgets New sidebar widgets.
 	 */
-	protected function handle_sidebars_widgets_changes( $old, $new ) {
-		unset( $old['array_version'] );
-		unset( $new['array_version'] );
+	protected function handle_sidebars_widgets_changes( $old_widgets, $new_widgets ) {
+		unset( $old_widgets['array_version'] );
+		unset( $new_widgets['array_version'] );
 
-		if ( $old === $new ) {
+		if ( $old_widgets === $new_widgets ) {
 			return;
 		}
 
-		$this->handle_deactivated_widgets( $old, $new );
-		$this->handle_reactivated_widgets( $old, $new );
-		$this->handle_widget_removal( $old, $new );
-		$this->handle_widget_addition( $old, $new );
-		$this->handle_widget_reordering( $old, $new );
-		$this->handle_widget_moved( $old, $new );
+		$this->handle_deactivated_widgets( $old_widgets, $new_widgets );
+		$this->handle_reactivated_widgets( $old_widgets, $new_widgets );
+		$this->handle_widget_removal( $old_widgets, $new_widgets );
+		$this->handle_widget_addition( $old_widgets, $new_widgets );
+		$this->handle_widget_reordering( $old_widgets, $new_widgets );
+		$this->handle_widget_moved( $old_widgets, $new_widgets );
 	}
 
 	/**
 	 * Track deactivation of widgets from sidebars
 	 *
-	 * @param array $old  Old sidebars widgets.
-	 * @param array $new  New sidebars widgets.
+	 * @param array $old_widgets Old sidebars widgets.
+	 * @param array $new_widgets New sidebars widgets.
+	 *
 	 * @return void
 	 */
-	protected function handle_deactivated_widgets( $old, $new ) {
-		$new_deactivated_widget_ids = array_diff( $new['wp_inactive_widgets'], $old['wp_inactive_widgets'] );
+	protected function handle_deactivated_widgets( $old_widgets, $new_widgets ) {
+		$new_deactivated_widget_ids = array_diff( $new_widgets['wp_inactive_widgets'], $old_widgets['wp_inactive_widgets'] );
 
 		foreach ( $new_deactivated_widget_ids as $widget_id ) {
 			$sidebar_id = '';
 
-			foreach ( $old as $old_sidebar_id => $old_widget_ids ) {
+			foreach ( $old_widgets as $old_sidebar_id => $old_widget_ids ) {
 				if ( in_array( $widget_id, $old_widget_ids, true ) ) {
 					$sidebar_id = $old_sidebar_id;
 					break;
@@ -239,17 +240,18 @@ class Connector_Widgets extends Connector {
 	/**
 	 * Track reactivation of widgets from sidebars
 	 *
-	 * @param array $old  Old sidebars widgets.
-	 * @param array $new  New sidebars widgets.
+	 * @param array $old_widgets Old sidebars widgets.
+	 * @param array $new_widgets New sidebars widgets.
+	 *
 	 * @return void
 	 */
-	protected function handle_reactivated_widgets( $old, $new ) {
-		$new_reactivated_widget_ids = array_diff( $old['wp_inactive_widgets'], $new['wp_inactive_widgets'] );
+	protected function handle_reactivated_widgets( $old_widgets, $new_widgets ) {
+		$new_reactivated_widget_ids = array_diff( $old_widgets['wp_inactive_widgets'], $new_widgets['wp_inactive_widgets'] );
 
 		foreach ( $new_reactivated_widget_ids as $widget_id ) {
 			$sidebar_id = '';
 
-			foreach ( $new as $new_sidebar_id => $new_widget_ids ) {
+			foreach ( $new_widgets as $new_sidebar_id => $new_widget_ids ) {
 				if ( in_array( $widget_id, $new_widget_ids, true ) ) {
 					$sidebar_id = $new_sidebar_id;
 					break;
@@ -292,13 +294,14 @@ class Connector_Widgets extends Connector {
 	/**
 	 * Track deletion of widgets from sidebars
 	 *
-	 * @param array $old  Old sidebars widgets.
-	 * @param array $new  New sidebars widgets.
+	 * @param array $old_widgets Old sidebars widgets.
+	 * @param array $new_widgets New sidebars widgets.
+	 *
 	 * @return void
 	 */
-	protected function handle_widget_removal( $old, $new ) {
-		$all_old_widget_ids = array_unique( call_user_func_array( 'array_merge', array_values( $old ) ) );
-		$all_new_widget_ids = array_unique( call_user_func_array( 'array_merge', array_values( $new ) ) );
+	protected function handle_widget_removal( $old_widgets, $new_widgets ) {
+		$all_old_widget_ids = array_unique( call_user_func_array( 'array_merge', array_values( $old_widgets ) ) );
+		$all_new_widget_ids = array_unique( call_user_func_array( 'array_merge', array_values( $new_widgets ) ) );
 		// @todo In the customizer, moving widgets to other sidebars is problematic because each sidebar is registered as a separate setting; so we need to make sure that all $_POST['customized'] are applied?
 		// @todo The widget option is getting updated before the sidebars_widgets are updated, so we need to hook into the option update to try to cache any deletions for future lookup
 
@@ -307,7 +310,7 @@ class Connector_Widgets extends Connector {
 		foreach ( $deleted_widget_ids as $widget_id ) {
 			$sidebar_id = '';
 
-			foreach ( $old as $old_sidebar_id => $old_widget_ids ) {
+			foreach ( $old_widgets as $old_sidebar_id => $old_widget_ids ) {
 				if ( in_array( $widget_id, $old_widget_ids, true ) ) {
 					$sidebar_id = $old_sidebar_id;
 					break;
@@ -352,19 +355,20 @@ class Connector_Widgets extends Connector {
 	/**
 	 * Track reactivation of widgets from sidebars
 	 *
-	 * @param array $old  Old sidebars widgets.
-	 * @param array $new  New sidebars widgets.
+	 * @param array $old_widgets Old sidebars widgets.
+	 * @param array $new_widgets New sidebars widgets.
+	 *
 	 * @return void
 	 */
-	protected function handle_widget_addition( $old, $new ) {
-		$all_old_widget_ids = array_unique( call_user_func_array( 'array_merge', array_values( $old ) ) );
-		$all_new_widget_ids = array_unique( call_user_func_array( 'array_merge', array_values( $new ) ) );
+	protected function handle_widget_addition( $old_widgets, $new_widgets ) {
+		$all_old_widget_ids = array_unique( call_user_func_array( 'array_merge', array_values( $old_widgets ) ) );
+		$all_new_widget_ids = array_unique( call_user_func_array( 'array_merge', array_values( $new_widgets ) ) );
 		$added_widget_ids   = array_diff( $all_new_widget_ids, $all_old_widget_ids );
 
 		foreach ( $added_widget_ids as $widget_id ) {
 			$sidebar_id = '';
 
-			foreach ( $new as $new_sidebar_id => $new_widget_ids ) {
+			foreach ( $new_widgets as $new_sidebar_id => $new_widget_ids ) {
 				if ( in_array( $widget_id, $new_widget_ids, true ) ) {
 					$sidebar_id = $new_sidebar_id;
 					break;
@@ -409,30 +413,31 @@ class Connector_Widgets extends Connector {
 	/**
 	 * Track reordering of widgets
 	 *
-	 * @param array $old  Old sidebars widgets.
-	 * @param array $new  New sidebars widgets.
+	 * @param array $old_widgets Old sidebars widgets.
+	 * @param array $new_widgets New sidebars widgets.
+	 *
 	 * @return void
 	 */
-	protected function handle_widget_reordering( $old, $new ) {
-		$all_sidebar_ids = array_intersect( array_keys( $old ), array_keys( $new ) );
+	protected function handle_widget_reordering( $old_widgets, $new_widgets ) {
+		$all_sidebar_ids = array_intersect( array_keys( $old_widgets ), array_keys( $new_widgets ) );
 
 		foreach ( $all_sidebar_ids as $sidebar_id ) {
-			if ( $old[ $sidebar_id ] === $new[ $sidebar_id ] ) {
+			if ( $old_widgets[ $sidebar_id ] === $new_widgets[ $sidebar_id ] ) {
 				continue;
 			}
 
 			// Use intersect to ignore widget additions and removals.
-			$all_widget_ids       = array_unique( array_merge( $old[ $sidebar_id ], $new[ $sidebar_id ] ) );
-			$common_widget_ids    = array_intersect( $old[ $sidebar_id ], $new[ $sidebar_id ] );
+			$all_widget_ids       = array_unique( array_merge( $old_widgets[ $sidebar_id ], $new_widgets[ $sidebar_id ] ) );
+			$common_widget_ids    = array_intersect( $old_widgets[ $sidebar_id ], $new_widgets[ $sidebar_id ] );
 			$uncommon_widget_ids  = array_diff( $all_widget_ids, $common_widget_ids );
-			$new_widget_ids       = array_values( array_diff( $new[ $sidebar_id ], $uncommon_widget_ids ) );
-			$old_widget_ids       = array_values( array_diff( $old[ $sidebar_id ], $uncommon_widget_ids ) );
+			$new_widget_ids       = array_values( array_diff( $new_widgets[ $sidebar_id ], $uncommon_widget_ids ) );
+			$old_widget_ids       = array_values( array_diff( $old_widgets[ $sidebar_id ], $uncommon_widget_ids ) );
 			$widget_order_changed = ( $new_widget_ids !== $old_widget_ids );
 
 			if ( $widget_order_changed ) {
 				$labels         = $this->get_context_labels();
 				$sidebar_name   = isset( $labels[ $sidebar_id ] ) ? $labels[ $sidebar_id ] : $sidebar_id;
-				$old_widget_ids = $old[ $sidebar_id ];
+				$old_widget_ids = $old_widgets[ $sidebar_id ];
 
 				/* translators: %s: a sidebar name (e.g. "Footer Area 1") */
 				$message = _x( 'Widgets reordered in "%s"', 'Sidebar name', 'stream' );
@@ -447,30 +452,30 @@ class Connector_Widgets extends Connector {
 				);
 			}
 		}
-
 	}
 
 	/**
 	 * Track movement of widgets to other sidebars
 	 *
-	 * @param array $old  Old sidebars widgets.
-	 * @param array $new  New sidebars widgets.
+	 * @param array $old_widgets Old sidebars widgets.
+	 * @param array $new_widgets New sidebars widgets.
+	 *
 	 * @return void
 	 */
-	protected function handle_widget_moved( $old, $new ) {
-		$all_sidebar_ids = array_intersect( array_keys( $old ), array_keys( $new ) );
+	protected function handle_widget_moved( $old_widgets, $new_widgets ) {
+		$all_sidebar_ids = array_intersect( array_keys( $old_widgets ), array_keys( $new_widgets ) );
 
 		foreach ( $all_sidebar_ids as $new_sidebar_id ) {
-			if ( $old[ $new_sidebar_id ] === $new[ $new_sidebar_id ] ) {
+			if ( $old_widgets[ $new_sidebar_id ] === $new_widgets[ $new_sidebar_id ] ) {
 				continue;
 			}
 
-			$new_widget_ids = array_diff( $new[ $new_sidebar_id ], $old[ $new_sidebar_id ] );
+			$new_widget_ids = array_diff( $new_widgets[ $new_sidebar_id ], $old_widgets[ $new_sidebar_id ] );
 
 			foreach ( $new_widget_ids as $widget_id ) {
 				// Now find the sidebar that the widget was originally located in, as long it is not wp_inactive_widgets.
 				$old_sidebar_id = null;
-				foreach ( $old as $sidebar_id => $old_widget_ids ) {
+				foreach ( $old_widgets as $sidebar_id => $old_widget_ids ) {
 					if ( in_array( $widget_id, $old_widget_ids, true ) ) {
 						$old_sidebar_id = $sidebar_id;
 						break;
@@ -518,7 +523,6 @@ class Connector_Widgets extends Connector {
 				);
 			}
 		}
-
 	}
 
 	/**

@@ -7,9 +7,9 @@
 
 namespace WP_Stream;
 
-use \WP_Roles;
-use \WP_User;
-use \WP_User_Query;
+use WP_Roles;
+use WP_User;
+use WP_User_Query;
 
 /**
  * Class - Settings
@@ -514,7 +514,6 @@ class Settings {
 					$field + array(
 						'section'   => $section_name,
 						'label_for' => sprintf( '%s_%s_%s', $this->option_key, $section_name, $field['name'] ),
-						// xss ok.
 					)
 				);
 			}
@@ -602,12 +601,10 @@ class Settings {
 
 		if ( isset( $field['value'] ) ) {
 			$current_value = $field['value'];
-		} else {
-			if ( isset( $this->options[ $section . '_' . $name ] ) ) {
+		} elseif ( isset( $this->options[ $section . '_' . $name ] ) ) {
 				$current_value = $this->options[ $section . '_' . $name ];
-			} else {
-				$current_value = null;
-			}
+		} else {
+			$current_value = null;
 		}
 
 		$option_key = $this->option_key;
@@ -803,7 +800,7 @@ class Settings {
 					esc_attr( $option_key ),
 					esc_attr( $section ),
 					esc_attr( $name ),
-					esc_attr( wp_stream_json_encode( $data_values ) ),
+					esc_attr( wp_json_encode( $data_values ) ),
 					esc_attr( $current_value ),
 					esc_attr( $class ),
 					/* translators: %s: the title of the dropdown menu (e.g. "users") */
@@ -907,13 +904,15 @@ class Settings {
 							'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'author_or_role' ) ),
 							'options' => $author_or_role_values,
 							'classes' => 'author_or_role',
+							// Data attributes are escaped in Form_Generator::prepare_data_attributes_string().
 							'data'    => array(
-								'placeholder'   => esc_html__( 'Any Author or Role', 'stream' ),
-								'nonce'         => esc_attr( wp_create_nonce( 'stream_get_users' ) ),
-								'selected-id'   => isset( $author_or_role_selected['value'] ) ? esc_attr( $author_or_role_selected['value'] ) : '',
-								'selected-text' => isset( $author_or_role_selected['text'] ) ? esc_attr( $author_or_role_selected['text'] ) : '',
+								'placeholder'   => __( 'Any Author or Role', 'stream' ),
+								'nonce'         => wp_create_nonce( 'stream_get_users' ),
+								'selected-id'   => isset( $author_or_role_selected['value'] ) ? $author_or_role_selected['value'] : '',
+								'selected-text' => isset( $author_or_role_selected['text'] ) ? $author_or_role_selected['text'] : '',
 							),
-						)
+						),
+						false
 					);
 
 					// Context dropdown menu.
@@ -953,11 +952,13 @@ class Settings {
 							'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'connector_or_context' ) ),
 							'options' => $context_values,
 							'classes' => 'connector_or_context',
+							// Data attributes are escaped in Form_Generator::prepare_data_attributes_string().
 							'data'    => array(
 								'group'       => 'connector',
 								'placeholder' => __( 'Any Context', 'stream' ),
 							),
-						)
+						),
+						false
 					);
 
 					$connector_input = $form->render_field(
@@ -966,7 +967,8 @@ class Settings {
 							'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'connector' ) ),
 							'value'   => $connector,
 							'classes' => 'connector',
-						)
+						),
+						false
 					);
 
 					$context_input = $form->render_field(
@@ -975,7 +977,8 @@ class Settings {
 							'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'context' ) ),
 							'value'   => $context,
 							'classes' => 'context',
-						)
+						),
+						false
 					);
 
 					// Action dropdown menu.
@@ -995,10 +998,12 @@ class Settings {
 							'value'   => $action,
 							'options' => $action_values,
 							'classes' => 'action',
+							// Data attributes are escaped in Form_Generator::prepare_data_attributes_string().
 							'data'    => array(
 								'placeholder' => __( 'Any Action', 'stream' ),
 							),
-						)
+						),
+						false
 					);
 
 					// IP Address input.
@@ -1008,12 +1013,14 @@ class Settings {
 							'name'     => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'ip_address' ) ),
 							'value'    => $ip_address,
 							'classes'  => 'ip_address',
+							// Data attributes are escaped in Form_Generator::prepare_data_attributes_string().
 							'data'     => array(
-								'placeholder' => esc_attr__( 'Any IP Address', 'stream' ),
-								'nonce'       => esc_attr( wp_create_nonce( 'stream_get_ips' ) ),
+								'placeholder' => __( 'Any IP Address', 'stream' ),
+								'nonce'       => wp_create_nonce( 'stream_get_ips' ),
 							),
 							'multiple' => true,
-						)
+						),
+						false
 					);
 
 					// Hidden helper input.
@@ -1032,7 +1039,9 @@ class Settings {
 							<td>%6$s %7$s %8$s</td>
 							<td>%9$s</td>
 							<td>%10$s</td>
-							<th scope="row" class="actions-column">%11$s</th>
+							<th scope="row" class="actions-column">
+								<a href="#" class="exclude_rules_remove_rule_row">%11$s</a>
+							</th>
 						</tr>',
 						( 0 !== (int) $key % 2 ) ? 'alternate' : '',
 						( 'helper' === (string) $key ) ? 'hidden helper' : '',
@@ -1044,7 +1053,7 @@ class Settings {
 						$context_input,
 						$action_input,
 						$ip_address_input,
-						'<a href="#" class="exclude_rules_remove_rule_row">Delete</a>'
+						esc_html__( 'Delete', 'stream' )
 					);
 				}
 
@@ -1084,7 +1093,7 @@ class Settings {
 
 		$output = $this->render_field( $field );
 
-		echo $output; // xss ok.
+		echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
