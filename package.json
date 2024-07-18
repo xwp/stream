@@ -25,7 +25,7 @@
     "track"
   ],
   "devDependencies": {
-    "@wordpress/eslint-plugin": "^19.1.0",
+    "@wordpress/eslint-plugin": "^19.2.0",
     "eslint": "^8.57.0",
     "grunt": "^1.6.1",
     "grunt-contrib-clean": "^2.0.1",
@@ -43,6 +43,7 @@
     "lint": "npm-run-all lint:*",
     "lint:js": "eslint .",
     "lint:php": "composer lint",
+    "format": "composer format",
     "test": "npm-run-all test:*",
     "test:php": "npm run cli -- composer test --working-dir=wp-content/plugins/stream-src",
     "test:php-multisite": "npm run cli -- composer test-multisite --working-dir=wp-content/plugins/stream-src",

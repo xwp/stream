@@ -80,7 +80,7 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 			)
 		);
 
-		echo $form->render_fields(); // Xss ok.
+		$form->render_fields();
 	}
 
 	/**
@@ -166,14 +166,14 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 	/**
 	 * Clears all alert messages for the current user.
 	 *
-	 * @todo update this for VIP. (delete_user_meta)
+	 * @param bool $globally Whether to clear globally.
 	 *
-	 * @param bool $global Whether to clear globally.
 	 * @return void
+	 * @todo update this for VIP. (delete_user_meta)
 	 */
-	public function clear_messages( $global = false ) {
+	public function clear_messages( $globally = false ) {
 		$current_user = wp_get_current_user();
-		delete_user_meta( $current_user->ID, $this->get_key(), $global );
+		delete_user_meta( $current_user->ID, $this->get_key(), $globally );
 	}
 
 	/**

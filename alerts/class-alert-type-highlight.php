@@ -162,7 +162,7 @@ class Alert_Type_Highlight extends Alert_Type {
 		echo '<span class="wp_stream_alert_type_description">' . esc_html__( 'Highlight this alert on the Stream records page.', 'stream' ) . '</span>';
 		echo '<label for="wp_stream_highlight_color"><span class="title">' . esc_html__( 'Color', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo $form->render_field(
+		$form->render_field(
 			'select',
 			array(
 				'name'    => 'wp_stream_highlight_color',
@@ -170,7 +170,7 @@ class Alert_Type_Highlight extends Alert_Type {
 				'options' => $this->get_highlight_options(),
 				'value'   => $options['color'],
 			)
-		); // Xss ok.
+		);
 		echo '</span></label>';
 	}
 
@@ -206,7 +206,6 @@ class Alert_Type_Highlight extends Alert_Type {
 		} else {
 			$alert->alert_meta['color'] = $input_color;
 		}
-
 	}
 
 	/**
