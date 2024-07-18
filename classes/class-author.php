@@ -107,7 +107,7 @@ class Author {
 			} elseif ( ! empty( $this->meta['user_login'] ) ) {
 				return $this->meta['user_login'];
 			} else {
-				return esc_html__( 'N/A', 'stream' );
+				return $this->id;
 			}
 		} elseif ( ! empty( $this->user->display_name ) ) {
 			return $this->user->display_name;
