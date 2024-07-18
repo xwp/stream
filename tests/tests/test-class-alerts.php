@@ -1,24 +1,26 @@
 <?php
 namespace WP_Stream;
+
 /**
  * Class Test_Alerts
+ *
  * @package WP_Stream
  * @group alerts
  */
 class Test_Alerts extends WP_StreamTestCase {
 
-	function tearDown(): void {
+	public function tearDown(): void {
 		// See test_load_bad_alert_type() and test_load_bad_alert_trigger.
 		remove_filter( 'wp_stream_alert_types', array( $this, 'callback_load_bad_alert_register' ), 10, 1 );
 		remove_filter( 'wp_stream_alert_triggers', array( $this, 'callback_load_bad_alert_register' ), 10, 1 );
 	}
 
-	function test_construct() {
+	public function test_construct() {
 		$alerts = new Alerts( $this->plugin );
 		$this->assertNotEmpty( $alerts->plugin );
 	}
 
-	function test_load_alert_types() {
+	public function test_load_alert_types() {
 		$action = new \MockAction();
 		add_filter( 'wp_stream_alert_types', array( $action, 'filter' ) );
 
@@ -34,21 +36,23 @@ class Test_Alerts extends WP_StreamTestCase {
 	}
 
 	/**
+	 * Test bad alert type is not added.
+	 *
 	 * @requires PHPUnit 5.7
 	 */
-	function test_load_bad_alert_type() {
-		$alerts = new Alerts( $this->plugin );
+	public function test_load_bad_alert_type() {
+		$alerts                    = new Alerts( $this->plugin );
 		$alert_types_before_filter = count( $alerts->alert_types );
 		unset( $alerts );
 
 		add_filter( 'wp_stream_alert_types', array( $this, 'callback_load_bad_alert_register' ), 10, 1 );
-		$alerts = new Alerts( $this->plugin );
+		$alerts                   = new Alerts( $this->plugin );
 		$alert_types_after_filter = count( $alerts->alert_types );
 
 		$this->assertEquals( $alert_types_before_filter, $alert_types_after_filter );
 	}
 
-	function test_load_alert_triggers() {
+	public function test_load_alert_triggers() {
 		$action = new \MockAction();
 		add_filter( 'wp_stream_alert_triggers', array( $action, 'filter' ) );
 
@@ -66,45 +70,46 @@ class Test_Alerts extends WP_StreamTestCase {
 	/**
 	 * Test bad trigger is not added.
 	 */
-	function test_load_bad_alert_trigger() {
-		$alerts = new Alerts( $this->plugin );
+	public function test_load_bad_alert_trigger() {
+		$alerts                       = new Alerts( $this->plugin );
 		$alert_triggers_before_filter = count( $alerts->alert_triggers );
 		unset( $alerts );
 
 		add_filter( 'wp_stream_alert_triggers', array( $this, 'callback_load_bad_alert_register' ), 10, 1 );
-		$alerts = new Alerts( $this->plugin );
+		$alerts                      = new Alerts( $this->plugin );
 		$alert_triggers_after_filter = count( $alerts->alert_triggers );
 
 		$this->assertEquals( $alert_triggers_before_filter, $alert_triggers_after_filter );
 	}
 
-	function callback_load_bad_alert_register( $classes ) {
+	public function callback_load_bad_alert_register( $classes ) {
 		$classes['bad_alert_trigger'] = new \stdClass();
 		return $classes;
 	}
 
-	function test_is_valid_alert_type() {
+	public function test_is_valid_alert_type() {
 		$alerts = new Alerts( $this->plugin );
-		$this->assertFalse( $alerts->is_valid_alert_type( new \stdClass ) );
+		$this->assertFalse( $alerts->is_valid_alert_type( new \stdClass() ) );
 		$this->assertFalse( $alerts->is_valid_alert_type( new Alert_Trigger_Action( $this->plugin ) ) );
 	}
 
-	function test_is_valid_alert_trigger() {
+	public function test_is_valid_alert_trigger() {
 		$alerts = new Alerts( $this->plugin );
-		$this->assertFalse( $alerts->is_valid_alert_trigger( new \stdClass ) );
+		$this->assertFalse( $alerts->is_valid_alert_trigger( new \stdClass() ) );
 		$this->assertFalse( $alerts->is_valid_alert_trigger( new Alert_Type_None( $this->plugin ) ) );
 	}
 
-	function test_check_records() {
+	public function test_check_records() {
 		$this->markTestIncomplete(
 			'This test is incomplete.'
-		); // WP_Query not finding active alerts.
+		);
+		// WP_Query not finding active alerts.
 
 		$alerts = new Alerts( $this->plugin );
 		$alert  = new Alert( $this->dummy_alert_data(), $this->plugin );
 		$alert->save();
 
-		$action = new \MockAction;
+		$action = new \MockAction();
 		add_filter( 'wp_stream_alert_trigger_check', array( $action, 'filter' ) );
 
 		$alerts->check_records( 0, $this->dummy_stream_data() );
@@ -112,7 +117,7 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->assertEquals( 1, $action->get_call_count() );
 	}
 
-	function test_register_post_type() {
+	public function test_register_post_type() {
 		global $wp_post_types, $wp_post_statuses;
 		if ( isset( $wp_post_types['wp_stream_alerts'] ) ) {
 			unset( $wp_post_types['wp_stream_alerts'] );
@@ -151,24 +156,23 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->assertFalse( $post_status_obj->public );
 		$this->assertTrue( $post_status_obj->show_in_admin_all_list );
 		$this->assertTrue( $post_status_obj->show_in_admin_status_list );
-
 	}
 
-	function test_get_alert() {
+	public function test_get_alert() {
 		$alerts = new Alerts( $this->plugin );
 
-		$data = $this->dummy_alert_data();
-		$data->ID = 0;
+		$data           = $this->dummy_alert_data();
+		$data->ID       = 0;
 		$original_alert = new Alert( $data, $this->plugin );
-		$post_id = $original_alert->save();
+		$post_id        = $original_alert->save();
 
 		$alert = $alerts->get_alert( $post_id );
 		$this->assertEquals( $original_alert, $alert );
 	}
 
-	function test_get_alert_blank() {
+	public function test_get_alert_blank() {
 		$alerts = new Alerts( $this->plugin );
-		$alert = $alerts->get_alert();
+		$alert  = $alerts->get_alert();
 
 		$this->assertEmpty( $alert->ID );
 		$this->assertEmpty( $alert->date );
@@ -179,13 +183,13 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->assertEquals( $alert->alert_meta, array() );
 	}
 
-	function test_register_menu() {
+	public function test_register_menu() {
 		global $submenu;
 
 		$this->markTestIncomplete();
 
 		$this->assertEquals( array(), $submenu[ $this->plugin->admin->records_page_slug ] );
-		$submenu[ $this->plugin->admin->records_page_slug ] = array();
+		$submenu[ $this->plugin->admin->records_page_slug ] = array(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		$this->assertEmpty( $submenu[ $this->plugin->admin->records_page_slug ] );
 
 		$alerts = new Alerts( $this->plugin );
@@ -193,13 +197,13 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->assertNotEmpty( $submenu[ $this->plugin->admin->records_page_slug ] );
 	}
 
-	function test_display_notification_box() {
+	public function test_display_notification_box() {
 		$alerts = new Alerts( $this->plugin );
 
-		$data = $this->dummy_alert_data();
+		$data     = $this->dummy_alert_data();
 		$data->ID = 0;
-		$alert = new Alert( $data, $this->plugin );
-		$post_id = $alert->save();
+		$alert    = new Alert( $data, $this->plugin );
+		$post_id  = $alert->save();
 
 		ob_start();
 		$alerts->display_notification_box( get_post( $alert->ID ) );
@@ -216,20 +220,20 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->assertTrue( $form_test, 'Alert type settings form is present' );
 	}
 
-	function test_load_alerts_settings() {
+	public function test_load_alerts_settings() {
 		$alerts = new Alerts( $this->plugin );
 
 		// Create administrator user to test with.
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
-		$data = $this->dummy_alert_data();
+		$data     = $this->dummy_alert_data();
 		$data->ID = 0;
-		$alert = new Alert( $data, $this->plugin );
-		$post_id = $alert->save();
+		$alert    = new Alert( $data, $this->plugin );
+		$post_id  = $alert->save();
 
 		try {
-			$_POST['post_id'] = $post_id;
+			$_POST['post_id']    = $post_id;
 			$_POST['alert_type'] = 'highlight';
 			$this->_handleAjax( 'load_alerts_settings' );
 		} catch ( \WPAjaxDieContinueException $e ) {
@@ -245,17 +249,17 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->assertStringContainsString( 'Highlight this alert on the Stream records page.', $response->data->html );
 	}
 
-	function test_load_alerts_settings_bad_alert_type() {
+	public function test_load_alerts_settings_bad_alert_type() {
 		$alerts = new Alerts( $this->plugin );
 
 		// Create administrator user to test with.
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
-		$data = $this->dummy_alert_data();
+		$data     = $this->dummy_alert_data();
 		$data->ID = 0;
-		$alert = new Alert( $data, $this->plugin );
-		$post_id = $alert->save();
+		$alert    = new Alert( $data, $this->plugin );
+		$post_id  = $alert->save();
 
 		try {
 			$_POST['post_id'] = $post_id;
@@ -274,17 +278,17 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->assertEmpty( $response->data->html );
 	}
 
-	function test_load_alerts_settings_missing_caps() {
+	public function test_load_alerts_settings_missing_caps() {
 		$alerts = new Alerts( $this->plugin );
 
 		// Create a regular user for testing.
 		$user_id = $this->factory->user->create( array( 'role' => 'subscriber' ) );
 		wp_set_current_user( $user_id );
 
-		$data = $this->dummy_alert_data();
+		$data     = $this->dummy_alert_data();
 		$data->ID = 0;
-		$alert = new Alert( $data, $this->plugin );
-		$post_id = $alert->save();
+		$alert    = new Alert( $data, $this->plugin );
+		$post_id  = $alert->save();
 
 		try {
 			$_POST['post_id']    = $post_id;
@@ -303,13 +307,13 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->assertEquals( 'You do not have permission to do this.', $response->data->message );
 	}
 
-	function test_display_triggers_box() {
+	public function test_display_triggers_box() {
 		$alerts = new Alerts( $this->plugin );
 
-		$data = $this->dummy_alert_data();
+		$data     = $this->dummy_alert_data();
 		$data->ID = 0;
-		$alert = new Alert( $data, $this->plugin );
-		$post_id = $alert->save();
+		$alert    = new Alert( $data, $this->plugin );
+		$post_id  = $alert->save();
 
 		ob_start();
 		$alerts->display_triggers_box( get_post( $alert->ID ) );
@@ -323,13 +327,13 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->assertTrue( $len_test, 'Nonce field is present.' );
 	}
 
-	function test_display_submit_box() {
+	public function test_display_submit_box() {
 		$alerts = new Alerts( $this->plugin );
 
-		$data = $this->dummy_alert_data();
+		$data     = $this->dummy_alert_data();
 		$data->ID = 0;
-		$alert = new Alert( $data, $this->plugin );
-		$post_id = $alert->save();
+		$alert    = new Alert( $data, $this->plugin );
+		$post_id  = $alert->save();
 
 		ob_start();
 		$alerts->display_submit_box( get_post( $alert->ID ) );
@@ -343,7 +347,7 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->assertTrue( $len_test, 'Alert is shown as enabled.' );
 	}
 
-	function test_get_notification_values() {
+	public function test_get_notification_values() {
 		$alerts = new Alerts( $this->plugin );
 
 		$count  = count( $alerts->alert_types );
@@ -351,13 +355,13 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->assertEquals( $count, count( $output ) );
 	}
 
-	function test_save_post_info() {
+	public function test_save_post_info() {
 		$this->markTestIncomplete(
 			'This test is incomplete'
 		);
 	}
 
-	function test_get_actions() {
+	public function test_get_actions() {
 		$alerts = new Alerts( $this->plugin );
 		try {
 			$_POST['connector'] = '';
@@ -372,18 +376,18 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->assertTrue( $response->success );
 		$this->assertNotEmpty( $response->data );
 	}
-	function test_save_new_alert_with_parent_context() {
+	public function test_save_new_alert_with_parent_context() {
 		// Switch current user to an administrator.
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
 		$alerts = new Alerts( $this->plugin );
 		try {
-			$_POST['wp_stream_trigger_author'] = 'me';
+			$_POST['wp_stream_trigger_author']  = 'me';
 			$_POST['wp_stream_trigger_context'] = 'posts';
-			$_POST['wp_stream_trigger_action'] = 'edit';
-			$_POST['wp_stream_alert_type'] = 'highlight';
-			$_POST['wp_stream_alerts_nonce'] = wp_create_nonce( 'save_alert' );
+			$_POST['wp_stream_trigger_action']  = 'edit';
+			$_POST['wp_stream_alert_type']      = 'highlight';
+			$_POST['wp_stream_alerts_nonce']    = wp_create_nonce( 'save_alert' );
 			$this->_handleAjax( 'save_new_alert' );
 		} catch ( \WPAjaxDieContinueException $e ) {
 			$exception = $e;
@@ -394,18 +398,18 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->assertObjectHasProperty( 'success', $response );
 		$this->assertTrue( $response->success );
 	}
-	function test_save_new_alert_with_child_context() {
+	public function test_save_new_alert_with_child_context() {
 		// Switch current user to an administrator.
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
 		$alerts = new Alerts( $this->plugin );
 		try {
-			$_POST['wp_stream_trigger_author'] = 'me';
+			$_POST['wp_stream_trigger_author']  = 'me';
 			$_POST['wp_stream_trigger_context'] = 'posts-post';
-			$_POST['wp_stream_trigger_action'] = 'edit';
-			$_POST['wp_stream_alert_type'] = 'highlight';
-			$_POST['wp_stream_alerts_nonce'] = wp_create_nonce( 'save_alert' );
+			$_POST['wp_stream_trigger_action']  = 'edit';
+			$_POST['wp_stream_alert_type']      = 'highlight';
+			$_POST['wp_stream_alerts_nonce']    = wp_create_nonce( 'save_alert' );
 			$this->_handleAjax( 'save_new_alert' );
 		} catch ( \WPAjaxDieContinueException $e ) {
 			$exception = $e;
@@ -418,19 +422,21 @@ class Test_Alerts extends WP_StreamTestCase {
 	}
 
 	/**
+	 * Test saving a new alert with no nonce.
+	 *
 	 * @requires PHPUnit 5.7
 	 */
-	function test_save_new_alert_no_nonce() {
+	public function test_save_new_alert_no_nonce() {
 		// Switch current user to an administrator.
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
 		$alerts = new Alerts( $this->plugin );
 		try {
-			$_POST['wp_stream_trigger_author'] = 'me';
+			$_POST['wp_stream_trigger_author']  = 'me';
 			$_POST['wp_stream_trigger_context'] = 'posts-post';
-			$_POST['wp_stream_trigger_action'] = 'edit';
-			$_POST['wp_stream_alert_type'] = 'highlight';
+			$_POST['wp_stream_trigger_action']  = 'edit';
+			$_POST['wp_stream_alert_type']      = 'highlight';
 
 			$this->expectException( 'WPAjaxDieStopException' );
 			$this->_handleAjax( 'save_new_alert' );
@@ -445,20 +451,22 @@ class Test_Alerts extends WP_StreamTestCase {
 	}
 
 	/**
+	 * Test saving a new alert with an invalid nonce.
+	 *
 	 * @requires PHPUnit 5.7
 	 */
-	function test_save_new_alert_invalid_nonce() {
+	public function test_save_new_alert_invalid_nonce() {
 		// Switch current user to an administrator.
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
 		$alerts = new Alerts( $this->plugin );
 		try {
-			$_POST['wp_stream_trigger_author'] = 'me';
+			$_POST['wp_stream_trigger_author']  = 'me';
 			$_POST['wp_stream_trigger_context'] = 'posts-post';
-			$_POST['wp_stream_trigger_action'] = 'edit';
-			$_POST['wp_stream_alert_type'] = 'highlight';
-			$_POST['wp_stream_alerts_nonce'] = 'invalid';
+			$_POST['wp_stream_trigger_action']  = 'edit';
+			$_POST['wp_stream_alert_type']      = 'highlight';
+			$_POST['wp_stream_alerts_nonce']    = 'invalid';
 
 			$this->expectException( 'WPAjaxDieStopException' );
 			$this->_handleAjax( 'save_new_alert' );
@@ -473,20 +481,22 @@ class Test_Alerts extends WP_StreamTestCase {
 	}
 
 	/**
+	 * Test saving a new alert with a mismatched nonce.
+	 *
 	 * @requires PHPUnit 5.7
 	 */
-	function test_save_new_alert_mismatched_nonce() {
+	public function test_save_new_alert_mismatched_nonce() {
 		// Switch current user to an administrator.
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
 		$alerts = new Alerts( $this->plugin );
 		try {
-			$_POST['wp_stream_trigger_author'] = 'me';
+			$_POST['wp_stream_trigger_author']  = 'me';
 			$_POST['wp_stream_trigger_context'] = 'posts-post';
-			$_POST['wp_stream_trigger_action'] = 'edit';
-			$_POST['wp_stream_alert_type'] = 'highlight';
-			$_POST['wp_stream_alerts_nonce'] = wp_create_nonce( 'some_nonce' );
+			$_POST['wp_stream_trigger_action']  = 'edit';
+			$_POST['wp_stream_alert_type']      = 'highlight';
+			$_POST['wp_stream_alerts_nonce']    = wp_create_nonce( 'some_nonce' );
 
 			$this->expectException( 'WPAjaxDieStopException' );
 			$this->_handleAjax( 'save_new_alert' );
@@ -501,20 +511,22 @@ class Test_Alerts extends WP_StreamTestCase {
 	}
 
 	/**
+	 * Test saving a new alert with missing capabilities.
+	 *
 	 * @requires PHPUnit 5.7
 	 */
-	function test_save_new_alert_missing_caps() {
+	public function test_save_new_alert_missing_caps() {
 		// Switch current user to a subscriber.
 		$user_id = $this->factory->user->create( array( 'role' => 'subscriber' ) );
 		wp_set_current_user( $user_id );
 
 		$alerts = new Alerts( $this->plugin );
 		try {
-			$_POST['wp_stream_trigger_author'] = 'me';
+			$_POST['wp_stream_trigger_author']  = 'me';
 			$_POST['wp_stream_trigger_context'] = 'posts-post';
-			$_POST['wp_stream_trigger_action'] = 'edit';
-			$_POST['wp_stream_alert_type'] = 'highlight';
-			$_POST['wp_stream_alerts_nonce'] = wp_create_nonce( 'save_alert' );
+			$_POST['wp_stream_trigger_action']  = 'edit';
+			$_POST['wp_stream_alert_type']      = 'highlight';
+			$_POST['wp_stream_alerts_nonce']    = wp_create_nonce( 'save_alert' );
 
 			$this->expectException( 'WPAjaxDieStopException' );
 			$this->_handleAjax( 'save_new_alert' );
@@ -528,18 +540,18 @@ class Test_Alerts extends WP_StreamTestCase {
 		}
 	}
 
-	function test_get_new_alert_triggers_notifications() {
+	public function test_get_new_alert_triggers_notifications() {
 		// Switch current user to an administrator.
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
 		$alerts = new Alerts( $this->plugin );
 		try {
-			$_POST['wp_stream_trigger_author'] = 'me';
+			$_POST['wp_stream_trigger_author']  = 'me';
 			$_POST['wp_stream_trigger_context'] = 'posts-post';
-			$_POST['wp_stream_trigger_action'] = 'edit';
-			$_POST['wp_stream_alert_type'] = 'highlight';
-			$_POST['wp_stream_alerts_nonce'] = wp_create_nonce( 'save_alert' );
+			$_POST['wp_stream_trigger_action']  = 'edit';
+			$_POST['wp_stream_alert_type']      = 'highlight';
+			$_POST['wp_stream_alerts_nonce']    = wp_create_nonce( 'save_alert' );
 			$this->_handleAjax( 'get_new_alert_triggers_notifications' );
 		} catch ( \WPAjaxDieContinueException $e ) {
 			$exception = $e;
@@ -551,18 +563,18 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->assertTrue( $response->success );
 	}
 
-	function test_get_new_alert_triggers_notifications_missing_caps() {
+	public function test_get_new_alert_triggers_notifications_missing_caps() {
 		// Switch current user to a subscriber.
 		$user_id = $this->factory->user->create( array( 'role' => 'subscriber' ) );
 		wp_set_current_user( $user_id );
 
 		$alerts = new Alerts( $this->plugin );
 		try {
-			$_POST['wp_stream_trigger_author'] = 'me';
+			$_POST['wp_stream_trigger_author']  = 'me';
 			$_POST['wp_stream_trigger_context'] = 'posts-post';
-			$_POST['wp_stream_trigger_action'] = 'edit';
-			$_POST['wp_stream_alert_type'] = 'highlight';
-			$_POST['wp_stream_alerts_nonce'] = wp_create_nonce( 'save_alert' );
+			$_POST['wp_stream_trigger_action']  = 'edit';
+			$_POST['wp_stream_alert_type']      = 'highlight';
+			$_POST['wp_stream_alerts_nonce']    = wp_create_nonce( 'save_alert' );
 
 			$this->expectException( 'WPAjaxDieStopException' );
 			$this->_handleAjax( 'get_new_alert_triggers_notifications' );
@@ -584,7 +596,7 @@ class Test_Alerts extends WP_StreamTestCase {
 			'author'     => '1',
 			'alert_type' => 'highlight',
 			'alert_meta' => array(
-				'trigger_action' => 'activated',
+				'trigger_action'  => 'activated',
 				'trigger_author'  => 'administrator',
 				'trigger_context' => 'plugins',
 			),

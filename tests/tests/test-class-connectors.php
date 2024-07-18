@@ -40,12 +40,12 @@ class Test_Connectors extends WP_StreamTestCase {
 		$this->connectors->load_connectors();
 		$this->assertNotEmpty( $this->connectors->connectors );
 
-		foreach( $this->connectors->connectors as $connector ) {
+		foreach ( $this->connectors->connectors as $connector ) {
 			$this->assertTrue( $connector->is_registered() );
 		}
 
 		$this->connectors->unload_connectors();
-		foreach( $this->connectors->connectors as $connector ) {
+		foreach ( $this->connectors->connectors as $connector ) {
 			$this->assertFalse( $connector->is_registered() );
 		}
 	}
@@ -54,12 +54,12 @@ class Test_Connectors extends WP_StreamTestCase {
 		$this->connectors->load_connectors();
 		$this->assertNotEmpty( $this->connectors->connectors );
 		$this->connectors->unload_connectors();
-		foreach( $this->connectors->connectors as $connector ) {
+		foreach ( $this->connectors->connectors as $connector ) {
 			$this->assertFalse( $connector->is_registered() );
 		}
 
 		$this->connectors->reload_connectors();
-		foreach( $this->connectors->connectors as $connector ) {
+		foreach ( $this->connectors->connectors as $connector ) {
 			$this->assertTrue( $connector->is_registered() );
 		}
 	}

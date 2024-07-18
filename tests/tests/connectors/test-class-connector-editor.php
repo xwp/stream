@@ -14,10 +14,6 @@ class Test_WP_Stream_Connector_Editor extends WP_StreamTestCase {
 		$this->mock->register();
 	}
 
-	public function tearDown(): void {
-		parent::tearDown();
-	}
-
 	public function test_log_changes() {
 		$theme  = wp_get_theme( 'twentytwentythree' );
 		$plugin = get_plugins()['hello.php'];
@@ -71,18 +67,18 @@ class Test_WP_Stream_Connector_Editor extends WP_StreamTestCase {
 		$_SERVER['REQUEST_METHOD'] = 'POST';
 		$_POST['action']           = 'update';
 		$_POST['theme']            = 'twentytwentythree';
-		do_action( 'load-theme-editor.php' );
+		do_action( 'load-theme-editor.php' ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
 
-		\file_put_contents( $theme->get_files( 'css' )['style.css'], "\r\n", FILE_APPEND );
+		\file_put_contents( $theme->get_files( 'css' )['style.css'], "\r\n", FILE_APPEND ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
 		apply_filters( 'wp_redirect', 'theme-editor.php' );
 
 		// Update plugin file
 		$_POST['plugin'] = 'hello.php';
 		$_POST['file']   = 'hello.php';
 		unset( $_POST['theme'] );
-		do_action( 'load-plugin-editor.php' );
+		do_action( 'load-plugin-editor.php' ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
 
-		\file_put_contents( WP_PLUGIN_DIR . '/hello.php', "\r\n", FILE_APPEND );
+		\file_put_contents( WP_PLUGIN_DIR . '/hello.php', "\r\n", FILE_APPEND ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
 		apply_filters( 'wp_redirect', 'plugin-editor.php' );
 	}
 }

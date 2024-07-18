@@ -43,6 +43,7 @@
     "lint": "npm-run-all lint:*",
     "lint:js": "eslint .",
     "lint:php": "composer lint",
+    "lint:php-tests": "composer lint-tests",
     "format": "composer format",
     "test": "npm-run-all test:*",
     "test:php": "npm run cli -- composer test --working-dir=wp-content/plugins/stream-src",
