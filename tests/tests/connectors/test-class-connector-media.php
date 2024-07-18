@@ -221,11 +221,14 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 				$this->equalTo( 'edited' )
 			);
 
+		$image = new \WP_Image_Editor_GD( WP_STEAM_TESTDATA . '/images/icon-128x128.png' );
+		$image->load();
+
 		// Simulate editor page save to trigger callback.
 		\wp_save_image_file(
 			'file.jpg',
-			new \WP_Image_Editor_GD( sys_get_temp_dir() . 'file.jpg' ),
-			'image/jpeg',
+			$image,
+			'image/png',
 			$attachment_id
 		);
 

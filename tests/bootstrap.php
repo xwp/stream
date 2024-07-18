@@ -15,6 +15,7 @@ if ( empty( $_tests_dir ) || ! file_exists( $_tests_dir . '/includes' ) ) {
 // Use in code to trigger custom actions.
 define( 'WP_STREAM_TESTS', true );
 define( 'WP_STREAM_DEV_DEBUG', true );
+define( 'WP_STEAM_TESTDATA', __DIR__ . '/data' );
 
 // @see https://core.trac.wordpress.org/browser/trunk/tests/phpunit/includes/functions.php
 require_once $_tests_dir . '/includes/functions.php';
