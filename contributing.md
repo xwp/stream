@@ -30,6 +30,8 @@ We suggest using the [Homebrew package manager](https://brew.sh) on macOS to ins
 
 The WordPress container includes the [Xdebug PHP extension](https://xdebug.org). It is configured in the [`php.ini`](./local/docker/wordpress/php.ini) file to work in the [develop, debug and coverage modes](https://xdebug.org/docs/step_debug#mode).
 
+To enable Xdebug, a request must include a _sessionkey_. This can be easily achieved with a browser extension like [Xdebug helper](https://chromewebstore.google.com/detail/xdebug-helper/eadndfjplgieldjbigjakmdgkmoaaaoc?hl=en).
+
 [Step Debugging](https://xdebug.org/docs/step_debug) should work out of the box in VSCode thanks to the configuration file, [`.vscode/launch.json`](.vscode/launch.json). It contains the directory mapping from the WordPress container to the project directory in your code editor.
 
 In order to set up Step Debugging in PhpStorm, follow the [official guide](https://www.jetbrains.com/help/phpstorm/configuring-xdebug.html). Make sure to set up the same directory mappings as defined for VSCode in [`.vscode/launch.json`](.vscode/launch.json), e.g.:
