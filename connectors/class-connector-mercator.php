@@ -170,7 +170,6 @@ class Connector_Mercator extends Connector {
 			sanitize_key( $blog->blogname ),
 			'updated'
 		);
-
 	}
 
 	/**
@@ -198,7 +197,6 @@ class Connector_Mercator extends Connector {
 			sanitize_key( $blog->blogname ),
 			'deleted'
 		);
-
 	}
 
 	/**

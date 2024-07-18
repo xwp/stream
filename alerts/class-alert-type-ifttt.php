@@ -129,14 +129,14 @@ class Alert_Type_IFTTT extends Alert_Type {
 		echo '</span>';
 		echo '<label for="wp_stream_ifttt_maker_key"><span class="title">' . esc_html__( 'Maker Key', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo $form->render_field(
+		$form->render_field(
 			'text',
 			array(
 				'name'  => 'wp_stream_ifttt_maker_key',
 				'title' => esc_attr( __( 'Maker Key', 'stream' ) ),
 				'value' => $options['maker_key'],
 			)
-		); // Xss ok.
+		);
 		echo '</span>';
 		printf(
 			'<span class="input-text-wrap"><a href="%1$s" target="_blank">%2$s %3$s</a></span>',
@@ -148,14 +148,14 @@ class Alert_Type_IFTTT extends Alert_Type {
 
 		echo '<label for="wp_stream_ifttt_event_name"><span class="title">' . esc_html__( 'Event Name', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo $form->render_field(
+		$form->render_field(
 			'text',
 			array(
 				'name'  => 'wp_stream_ifttt_event_name',
 				'title' => esc_attr( __( 'Event Name', 'stream' ) ),
 				'value' => $options['event_name'],
 			)
-		);  // Xss ok.
+		);
 		echo '</span>';
 		printf(
 			'<span class="input-text-wrap"><a href="%1$s" target="_blank">%2$s %3$s</a></span>',
