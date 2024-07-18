@@ -84,7 +84,7 @@ class Test_Export extends WP_StreamTestCase {
 	 * Test pagination limit is increased
 	 */
 	public function test_disable_paginate() {
-		$limit = $this->export->disable_paginate( 0 );
+		$limit = $this->export->disable_paginate();
 		$this->assertEquals( $limit, 10000 );
 	}
 
