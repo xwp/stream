@@ -124,12 +124,12 @@ class Form_Generator {
 			case 'select2':
 				$values = array();
 
-				$multiple = ( $args['multiple'] ) ? 'multiple ' : '';
+				$multiple = ( $args['multiple'] ) ? ' multiple' : '';
 				$output   = sprintf(
 					'<select name="%1$s" id="%1$s" class="select2-select %2$s" %3$s%4$s>',
 					esc_attr( $args['name'] ),
 					esc_attr( $args['classes'] ),
-					$this->prepare_data_attributes_string( $args['data'] ),
+					$this->prepare_data_attributes_string( $args['data'] ), // The data attributes are escaped in the function.
 					$multiple
 				);
 
@@ -155,19 +155,19 @@ class Form_Generator {
 						$selected = selected( $args['value'], $parent['value'], false );
 					}
 					$output  .= sprintf(
-						'<option class="parent" value="%1$s" %3$s>%2$s</option>',
-						$parent['value'],
-						$parent['text'],
-						$selected
+						'<option class="parent" value="%1$s" %2$s>%3$s</option>',
+						esc_attr( $parent['value'] ),
+						$selected,
+						esc_html( $parent['text'] )
 					);
 					$values[] = $parent['value'];
 					if ( ! empty( $parent['children'] ) ) {
 						foreach ( $parent['children'] as $child ) {
 							$output  .= sprintf(
-								'<option class="child" value="%1$s" %3$s>%2$s</option>',
-								$child['value'],
-								$child['text'],
-								selected( $args['value'], $child['value'], false )
+								'<option class="child" value="%1$s" %2$s>%3$s</option>',
+								esc_attr( $child['value'] ),
+								selected( $args['value'], $child['value'], false ),
+								esc_html( $child['text'] )
 							);
 							$values[] = $child['value'];
 						}
@@ -179,9 +179,9 @@ class Form_Generator {
 				foreach ( $selected_values as $selected_value ) {
 					if ( ! empty( $selected_value ) && ! in_array( $selected_value, array_map( 'strval', $values ), true ) ) {
 						$output .= sprintf(
-							'<option value="%1$s" %2$s>%1$s</option>',
-							$selected_value,
-							selected( true, true, false )
+							'<option value="%1$s" selected="selected">%2$s</option>',
+							esc_attr( $selected_value ),
+							esc_html( $selected_value )
 						);
 					}
 				}
@@ -190,10 +190,10 @@ class Form_Generator {
 				break;
 			case 'checkbox':
 				$output = sprintf(
-					'<input type="checkbox" name="%1$s" id="%1$s" value="1" %3$s>%2$s',
-					$args['name'],
-					$args['text'],
-					checked( $args['value'], true, false )
+					'<input type="checkbox" name="%1$s" id="%1$s" value="1" %2$s>%3$s',
+					esc_attr( $args['name'] ),
+					checked( $args['value'], true, false ),
+					esc_html( $args['text'] )
 				);
 				break;
 			default:
@@ -201,7 +201,9 @@ class Form_Generator {
 				break;
 		}
 
-		$output .= ! empty( $args['description'] ) ? sprintf( '<p class="description">%s</p>', $args['description'] ) : null;
+		if ( ! empty( $args['description'] ) ) {
+			$output .= sprintf( '<p class="description">%s</p>', esc_html( $args['description'] ) );
+		}
 
 		if ( ! $echo_output ) {
 			return $output;
@@ -219,8 +221,11 @@ class Form_Generator {
 	public function prepare_data_attributes_string( $data ) {
 		$output = '';
 		foreach ( $data as $key => $value ) {
-			$key     = 'data-' . esc_attr( $key );
-			$output .= $key . '="' . esc_attr( $value ) . '" ';
+			$output .= sprintf(
+				'data-%s="%s" ',
+				esc_attr( $key ),
+				esc_attr( $value )
+			);
 		}
 		return $output;
 	}
