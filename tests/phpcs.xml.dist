@@ -28,4 +28,8 @@
 		<exclude name="Squiz.Commenting.InlineComment.InvalidEndChar" />
 		<exclude name="Squiz.Commenting.VariableComment.Missing" />
 	</rule>
+
+	<rule ref="Generic.CodeAnalysis">
+		<exclude name="Generic.CodeAnalysis.EmptyStatement.DetectedCatch" />
+	</rule>
 </ruleset>
