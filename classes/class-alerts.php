@@ -619,7 +619,7 @@ class Alerts {
 		do_action( 'wp_stream_alert_trigger_form_display', $form, $alert );
 		// @TODO use human readable text.
 		echo '<label>' . esc_html__( 'Alert me when', 'stream' ) . '</label>';
-		echo $form->render_fields(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		$form->render_fields();
 		wp_nonce_field( 'save_alert', 'wp_stream_alerts_nonce' );
 	}
 
