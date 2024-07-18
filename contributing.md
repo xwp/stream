@@ -53,6 +53,10 @@ We use npm as the canonical task runner for the project. The following commands 
 - `npm run deploy` to deploy the plugin to the WordPress.org repository.
 - `npm run cli -- wp info` where `wp info` is the CLI command to run inside the WordPress container. For example, use `npm run cli -- ls -lah` to list all files in the root of the WordPress installation.
 - `npm run test` to run PHPunit tests inside the WordPress container.
+- `npm run test-xdebug` will run the PHPunit tests with Xdebug enabled.
+- `npm run switch-to:php7.4` and `npm run switch-to:php8.2` will switch you to either PHP 7.4 or PHP 8.2
+
+By default, tests have `WP_DEBUG` as false. You can override this if necessary by setting `WP_STREAM_TEST_DEBUG` to "yes".
 
 ### Docker issues
 
