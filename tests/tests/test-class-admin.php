@@ -133,8 +133,7 @@ class Test_Admin extends WP_StreamTestCase {
 
 	public function test_register_menu() {
 		global $menu;
-		$menu = array();
-		// phpcs override okay
+		$menu = array(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 
 		do_action( 'admin_menu' );
 

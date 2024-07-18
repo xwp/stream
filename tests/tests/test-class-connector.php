@@ -45,7 +45,7 @@ class Test_Connector extends WP_StreamTestCase {
 	public function test_callback() {
 		global $wp_current_filter;
 		$action              = $this->connector->actions[0];
-		$wp_current_filter[] = $action;
+		$wp_current_filter[] = $action; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 
 		$this->connector->callback();
 

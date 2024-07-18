@@ -189,7 +189,7 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->markTestIncomplete();
 
 		$this->assertEquals( array(), $submenu[ $this->plugin->admin->records_page_slug ] );
-		$submenu[ $this->plugin->admin->records_page_slug ] = array();
+		$submenu[ $this->plugin->admin->records_page_slug ] = array(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		$this->assertEmpty( $submenu[ $this->plugin->admin->records_page_slug ] );
 
 		$alerts = new Alerts( $this->plugin );
