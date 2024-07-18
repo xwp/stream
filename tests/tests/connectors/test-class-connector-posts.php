@@ -369,7 +369,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 			array(
 				'ID'            => $post_id,
 				'post_status'   => 'future',
-				'post_date'     => date( 'Y-m-d H:i:s', $time ),
+				'post_date'     => date( 'Y-m-d H:i:s', $time ), // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 				'post_date_gmt' => gmdate( 'Y-m-d H:i:s', $time ),
 			)
 		);
@@ -378,7 +378,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 			array(
 				'ID'            => $post_id,
 				'post_status'   => 'publish',
-				'post_date'     => date( 'Y-m-d H:i:s', $time ),
+				'post_date'     => date( 'Y-m-d H:i:s', $time ), // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 				'post_date_gmt' => gmdate( 'Y-m-d H:i:s', $time ),
 			)
 		);

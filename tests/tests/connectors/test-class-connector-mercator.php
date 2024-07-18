@@ -197,9 +197,11 @@ class Test_WP_Stream_Connector_Mercator extends WP_StreamTestCase {
 				$this->equalTo( 'deleted' )
 			);
 
-		// Execute action to trigger callback because the tables need to
-		// run the "\Mercator\Mapping::delete() don't currently exist.
-		do_action( 'mercator.mapping.deleted', $mapping );
+		/*
+		 * Execute action to trigger callback because the tables need to
+		 * run the \Mercator\Mapping::delete() don't currently exist.
+		 */
+		do_action( 'mercator.mapping.deleted', $mapping ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
 
 		// Check callback test action.
 		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_mercator_mapping_deleted' ) );

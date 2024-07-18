@@ -9,9 +9,7 @@ namespace WP_Stream;
 
 class Test_WP_Stream_Connector_Jetpack extends WP_StreamTestCase {
 
-	/**
-	 * @var WP_REST_Server $wp_rest_server
-	 */
+	/** @var WP_REST_Server $wp_rest_server Rest server instance. */
 	protected $server;
 
 	protected $namespaced_route = '/jetpack/v4';
@@ -218,7 +216,7 @@ class Test_WP_Stream_Connector_Jetpack extends WP_StreamTestCase {
 		$this->assertArrayHasKey( $this->namespaced_route, $routes );
 
 		// Execute REST requests and trigger callbacks.
-		$request = new \WP_Rest_Request( 'POST', "{$this->namespaced_route}/settings" );
+		$request = new \WP_REST_Request( 'POST', "{$this->namespaced_route}/settings" );
 		$request->set_body_params(
 			array(
 				'carousel'                  => true,
