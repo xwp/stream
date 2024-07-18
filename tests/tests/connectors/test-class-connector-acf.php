@@ -6,6 +6,7 @@
  *
  * @package WP_Stream
  */
+
 namespace WP_Stream;
 
 class Test_WP_Stream_Connector_ACF extends WP_StreamTestCase {
@@ -78,7 +79,7 @@ class Test_WP_Stream_Connector_ACF extends WP_StreamTestCase {
 	 * @param array $config  ACF field configuration.
 	 */
 	private function update_acf_field( $config = array() ) {
-		$defaults = [
+		$defaults = array(
 			'parent'            => $this->group_key,
 			'key'               => uniqid(),
 			'label'             => 'Test Field',
@@ -97,7 +98,7 @@ class Test_WP_Stream_Connector_ACF extends WP_StreamTestCase {
 			'prepend'           => '',
 			'append'            => '',
 			'maxlength'         => '',
-		];
+		);
 
 		return \acf_update_field( array_merge( $defaults, $config ) );
 	}
@@ -200,7 +201,7 @@ class Test_WP_Stream_Connector_ACF extends WP_StreamTestCase {
 		// Register test ACF field group and field for later use.
 		$field_group = $this->update_acf_field_group(
 			array(
-				'location'              => array(
+				'location' => array(
 					array(
 						array(
 							'param'    => 'post_type',
@@ -247,7 +248,7 @@ class Test_WP_Stream_Connector_ACF extends WP_StreamTestCase {
 					),
 					$this->equalTo( $post_id ),
 					$this->equalTo( 'values' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'updated' ),
 				),
 				array(
 					$this->equalTo( esc_html_x( '"%1$s" of "%2$s" %3$s updated', 'acf', 'stream' ) ),
@@ -263,7 +264,7 @@ class Test_WP_Stream_Connector_ACF extends WP_StreamTestCase {
 					),
 					$this->equalTo( $post_id ),
 					$this->equalTo( 'values' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'updated' ),
 				),
 				array(
 					$this->equalTo( esc_html_x( '"%1$s" of "%2$s" %3$s updated', 'acf', 'stream' ) ),
@@ -279,7 +280,7 @@ class Test_WP_Stream_Connector_ACF extends WP_StreamTestCase {
 					),
 					$this->equalTo( $user_id ),
 					$this->equalTo( 'values' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'updated' ),
 				)
 			);
 

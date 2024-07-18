@@ -1,7 +1,9 @@
 <?php
 namespace WP_Stream;
+
 /**
  * Class Test_Alert_Trigger
+ *
  * @package WP_Stream
  * @group alerts
  */
@@ -13,7 +15,7 @@ abstract class Test_Alert_Trigger extends WP_StreamTestCase {
 	}
 
 	function test_check_record() {
-		$data = $this->dummy_stream_data();
+		$data   = $this->dummy_stream_data();
 		$status = $this->trigger->check_record( true, null, $data, $this->alert );
 		$this->assertTrue( $status );
 	}
@@ -21,7 +23,7 @@ abstract class Test_Alert_Trigger extends WP_StreamTestCase {
 	abstract function test_check_record_bad();
 
 	function test_add_fields() {
-		$form = new Form_Generator;
+		$form = new Form_Generator();
 		$this->assertCount( 0, $form->fields );
 
 		$this->trigger->add_fields( $form, $this->alert );

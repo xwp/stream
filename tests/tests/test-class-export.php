@@ -35,7 +35,7 @@ class Test_Export extends WP_StreamTestCase {
 	 * Test that render download uses selected renderer
 	 */
 	public function test_render_download() {
-		$_GET['record-actions'] = 'export-csv';
+		$_GET['record-actions']              = 'export-csv';
 		$_GET['stream_record_actions_nonce'] = wp_create_nonce( 'stream_record_actions_nonce' );
 
 		ob_start();
@@ -100,7 +100,7 @@ class Test_Export extends WP_StreamTestCase {
 			'action'  => '',
 			'ip'      => '',
 		);
-		$columns = $this->export->expand_columns( $test_data );
+		$columns   = $this->export->expand_columns( $test_data );
 
 		$this->assertArrayHasKey( 'date', $columns );
 		$this->assertArrayHasKey( 'summary', $columns );
@@ -128,14 +128,18 @@ class Test_Export extends WP_StreamTestCase {
 
 	/**
 	 * Test registering a invalid class type produces an error
+	 *
 	 * @requires PHPUnit 5.7
 	 */
 	public function test_register_exporter_invalid_class() {
-		add_filter( 'wp_stream_exporters', function( $exporters ) {
-			$exporters['test'] = new \stdClass();
-			remove_all_filters( 'wp_stream_exporters' );
-			return $exporters;
-		});
+		add_filter(
+			'wp_stream_exporters',
+			function ( $exporters ) {
+				$exporters['test'] = new \stdClass();
+				remove_all_filters( 'wp_stream_exporters' );
+				return $exporters;
+			}
+		);
 		$this->export->register_exporters();
 
 		$exporters = $this->export->get_exporters();
@@ -155,7 +159,7 @@ class Test_Export extends WP_StreamTestCase {
 	 * Test exporter validation produces false
 	 */
 	public function test_is_not_valid_exporter() {
-		$this->assertFalse( $this->export->is_valid_exporter( new \stdClass ) );
+		$this->assertFalse( $this->export->is_valid_exporter( new \stdClass() ) );
 	}
 
 	/**

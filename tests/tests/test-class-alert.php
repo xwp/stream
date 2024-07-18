@@ -1,14 +1,16 @@
 <?php
 namespace WP_Stream;
+
 /**
  * Class Test_Alert
+ *
  * @package WP_Stream
  * @group alerts
  */
 class Test_Alert extends WP_StreamTestCase {
 
 	function test_construct() {
-		$data	= $this->dummy_alert_data();
+		$data  = $this->dummy_alert_data();
 		$alert = new Alert( $data, $this->plugin );
 
 		foreach ( $data as $field => $value ) {
@@ -17,7 +19,7 @@ class Test_Alert extends WP_StreamTestCase {
 	}
 
 	function test_construct_blank() {
-		$data	= $this->dummy_alert_data();
+		$data  = $this->dummy_alert_data();
 		$alert = new Alert( null, $this->plugin );
 
 		$this->assertEmpty( $alert->ID );
@@ -42,7 +44,6 @@ class Test_Alert extends WP_StreamTestCase {
 		$alert->save();
 		$alert_type = $alert->get_meta( 'alert_type', true );
 		$this->assertEquals( 'none', $alert_type );
-
 	}
 
 	function test_process_settings_form() {
@@ -52,9 +53,9 @@ class Test_Alert extends WP_StreamTestCase {
 	}
 
 	function test_get_meta() {
-		$data  = $this->dummy_alert_data();
+		$data     = $this->dummy_alert_data();
 		$data->ID = 0;
-		$alert = new Alert( $data, $this->plugin );
+		$alert    = new Alert( $data, $this->plugin );
 		$alert->save();
 
 		$value = $alert->get_meta( 'alert_type', true );
@@ -77,8 +78,8 @@ class Test_Alert extends WP_StreamTestCase {
 	}
 
 	function test_get_title() {
-		$data		 = $this->dummy_alert_data();
-		$alert		= new Alert( $data, $this->plugin );
+		$data  = $this->dummy_alert_data();
+		$alert = new Alert( $data, $this->plugin );
 
 		$this->assertEquals( 'Administrator > Plugins > Activated', $alert->get_title() );
 
@@ -128,8 +129,8 @@ class Test_Alert extends WP_StreamTestCase {
 			'author'     => '1',
 			'alert_type' => 'highlight',
 			'alert_meta' => array(
-				'trigger_action'	=> 'activated',
-				'trigger_author'	=> 'administrator',
+				'trigger_action'  => 'activated',
+				'trigger_author'  => 'administrator',
 				'trigger_context' => 'plugins',
 			),
 		);

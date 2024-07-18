@@ -6,6 +6,7 @@
  *
  * @package WP_Stream
  */
+
 namespace WP_Stream;
 
 class Test_WP_Stream_Connector_Mercator extends WP_StreamTestCase {
@@ -55,10 +56,10 @@ class Test_WP_Stream_Connector_Mercator extends WP_StreamTestCase {
 	 */
 	public function test_get_context_labels() {
 		// Validate this works for foreign characters as well.
-		$id = $this->factory->blog->create( array( 'title' => 'ובזכויותיהם' ) );
+		$id     = $this->factory->blog->create( array( 'title' => 'ובזכויותיהם' ) );
 		$labels = $this->mock->get_context_labels();
 		$this->assertArrayHasKey( 'blog-1', $labels );
-		$this->assertArrayHasKey( 'blog-' . $id , $labels );
+		$this->assertArrayHasKey( 'blog-' . $id, $labels );
 	}
 
 	public function test_callback_mercator_mapping_made_primary() {

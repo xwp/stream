@@ -12,7 +12,7 @@ class Test_Author extends WP_StreamTestCase {
 	public function setUp(): void {
 		parent::setUp();
 
-		//Add admin user to test caps
+		// Add admin user to test caps
 		// We need to change user to verify editing option as admin or editor
 		$administrator_id = $this->factory->user->create(
 			array(
@@ -27,7 +27,7 @@ class Test_Author extends WP_StreamTestCase {
 		$this->assertNotEmpty( $this->author );
 	}
 
-	/*
+	/**
 	 * Also tests private method locate_plugin
 	 */
 	public function test_construct() {
@@ -53,7 +53,7 @@ class Test_Author extends WP_StreamTestCase {
 	}
 
 	public function test_get_agent() {
-		$agent = 'Heuristically programmed algorithmic computer';
+		$agent                       = 'Heuristically programmed algorithmic computer';
 		$this->author->meta['agent'] = $agent;
 		$this->assertEquals( $agent, $this->author->get_agent() );
 	}
@@ -79,11 +79,11 @@ class Test_Author extends WP_StreamTestCase {
 	}
 
 	public function test_is_wp_cli() {
-		$agent = 'wp_cli';
+		$agent                       = 'wp_cli';
 		$this->author->meta['agent'] = $agent;
 		$this->assertTrue( $this->author->is_wp_cli() );
 
-		$agent = 'Heuristically programmed algorithmic computer';
+		$agent                       = 'Heuristically programmed algorithmic computer';
 		$this->author->meta['agent'] = $agent;
 		$this->assertFalse( $this->author->is_wp_cli() );
 	}

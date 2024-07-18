@@ -44,7 +44,7 @@ class Test_Connector extends WP_StreamTestCase {
 
 	public function test_callback() {
 		global $wp_current_filter;
-		$action = $this->connector->actions[0];
+		$action              = $this->connector->actions[0];
 		$wp_current_filter[] = $action;
 
 		$this->connector->callback();
@@ -158,7 +158,7 @@ class Test_Connector extends WP_StreamTestCase {
 	public function test_get_changed_keys() {
 		$array_one = array(
 			'one' => 'foo',
-			'two'  => array(
+			'two' => array(
 				'a' => 'alpha',
 				'b' => 'beta',
 			),

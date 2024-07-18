@@ -39,37 +39,39 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 	 * @return int
 	 */
 	private function create_simple_download() {
-		$post_id = wp_insert_post( array(
-			'post_title'    => 'Test Download Product',
-			'post_name'     => 'test-download-product',
-			'post_type'     => 'download',
-			'post_status'   => 'publish'
-		) );
+		$post_id = wp_insert_post(
+			array(
+				'post_title'  => 'Test Download Product',
+				'post_name'   => 'test-download-product',
+				'post_type'   => 'download',
+				'post_status' => 'publish',
+			)
+		);
 
 		$_download_files = array(
 			array(
 				'name'      => 'Simple File 1',
 				'file'      => 'http://localhost/simple-file1.jpg',
-				'condition' => 0
+				'condition' => 0,
 			),
 		);
 
 		$meta = array(
-			'edd_price'                         => '20.00',
-			'_variable_pricing'                 => 0,
-			'edd_variable_prices'               => false,
-			'edd_download_files'                => array_values( $_download_files ),
-			'_edd_download_limit'               => 20,
-			'_edd_hide_purchase_link'           => 1,
-			'edd_product_notes'                 => 'Purchase Notes',
-			'_edd_product_type'                 => 'default',
-			'_edd_download_earnings'            => 40,
-			'_edd_download_sales'               => 2,
-			'_edd_download_limit_override_1'    => 1,
-			'edd_sku'                           => 'sku_0012'
+			'edd_price'                      => '20.00',
+			'_variable_pricing'              => 0,
+			'edd_variable_prices'            => false,
+			'edd_download_files'             => array_values( $_download_files ),
+			'_edd_download_limit'            => 20,
+			'_edd_hide_purchase_link'        => 1,
+			'edd_product_notes'              => 'Purchase Notes',
+			'_edd_product_type'              => 'default',
+			'_edd_download_earnings'         => 40,
+			'_edd_download_sales'            => 2,
+			'_edd_download_limit_override_1' => 1,
+			'edd_sku'                        => 'sku_0012',
 		);
 
-		foreach( $meta as $key => $value ) {
+		foreach ( $meta as $key => $value ) {
 			update_post_meta( $post_id, $key, $value );
 		}
 
@@ -82,7 +84,7 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 	 * @return int
 	 */
 	private function create_simple_percent_discount() {
-		$post = array(
+		$post        = array(
 			'code'              => '20OFF',
 			'uses'              => 54,
 			'max'               => 10,
@@ -93,7 +95,7 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 			'expiration'        => '12/31/2050 23:59:59',
 			'min_price'         => 128,
 			'status'            => 'active',
-			'product_condition' => 'all'
+			'product_condition' => 'all',
 		);
 		$discount_id = edd_store_discount( $post );
 
@@ -122,7 +124,7 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 					),
 					$this->equalTo( null ),
 					$this->equalTo( 'settings' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'updated' ),
 				),
 				array(
 					$this->equalTo( __( '"%s" setting updated', 'stream' ) ),
@@ -137,7 +139,7 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 					),
 					$this->equalTo( null ),
 					$this->equalTo( 'settings' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'updated' ),
 				),
 				array(
 					$this->equalTo( __( '"%s" setting updated', 'stream' ) ),
@@ -152,7 +154,7 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 					),
 					$this->equalTo( null ),
 					$this->equalTo( 'settings' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'updated' ),
 				)
 			);
 
@@ -171,7 +173,7 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 		$asserted = 0;
 		add_action(
 			'wp_stream_log_data',
-			function( $data ) use( &$asserted ) {
+			function ( $data ) use ( &$asserted ) {
 				if ( 'edd' === $data['connector'] && in_array( $data['context'], array( 'downloads', 'discounts' ), true ) ) {
 					$asserted++;
 				}

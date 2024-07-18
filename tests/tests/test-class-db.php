@@ -16,7 +16,7 @@ class Test_DB extends WP_StreamTestCase {
 		$this->assertNotEmpty( $this->db );
 	}
 
-	/*
+	/**
 	 * Also tests the insert_meta method
 	 */
 	public function test_insert() {
@@ -80,7 +80,7 @@ class Test_DB extends WP_StreamTestCase {
 
 		// Attempt to store something with HTML in there.
 		$record = array(
-			'summary' => '<b>This is a <strong>very</strong> bold attempt!</b>'
+			'summary' => '<b>This is a <strong>very</strong> bold attempt!</b>',
 		);
 
 		$record_id = $this->db->insert( $record );
@@ -92,8 +92,8 @@ class Test_DB extends WP_StreamTestCase {
 
 		$record_stored = $this->db->query(
 			array(
-				'search' => $record_id,
-				'search_field' => 'ID'
+				'search'       => $record_id,
+				'search_field' => 'ID',
 			)
 		);
 
@@ -119,16 +119,16 @@ class Test_DB extends WP_StreamTestCase {
 	private function dummy_stream_data() {
 		return array(
 			'object_id' => 9,
-			'site_id' => '1',
-			'blog_id' => get_current_blog_id(),
-			'user_id' => '1',
+			'site_id'   => '1',
+			'blog_id'   => get_current_blog_id(),
+			'user_id'   => '1',
 			'user_role' => 'administrator',
-			'created' => gmdate( 'Y-m-d h:i:s' ),
-			'summary' => '"Hello Dave" plugin activated',
-			'ip' => '192.168.0.1',
+			'created'   => gmdate( 'Y-m-d h:i:s' ),
+			'summary'   => '"Hello Dave" plugin activated',
+			'ip'        => '192.168.0.1',
 			'connector' => 'installer',
-			'context' => 'plugins',
-			'action' => 'activated',
+			'context'   => 'plugins',
+			'action'    => 'activated',
 		);
 	}
 

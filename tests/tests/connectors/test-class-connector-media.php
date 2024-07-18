@@ -1,6 +1,8 @@
 <?php
 /**
  * Tests for Media Connector class callbacks.
+ *
+ * @package WP_Stream
  */
 
 namespace WP_Stream;
@@ -38,7 +40,7 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 				array(
 					$this->equalTo( esc_html__( 'Added "%s" to Media library', 'stream' ) ),
 					$this->callback(
-						function( $subject ) {
+						function ( $subject ) {
 							$expected = array(
 								'name'         => 'Document one',
 								'parent_title' => null,
@@ -60,7 +62,7 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 						)
 					),
 					$this->callback(
-						function( $subject ) use ( $post_id ) {
+						function ( $subject ) use ( $post_id ) {
 							$expected = array(
 								'name'         => 'Document one',
 								'parent_title' => 'Test post',
@@ -82,7 +84,7 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 						)
 					),
 					$this->callback(
-						function( $subject ) {
+						function ( $subject ) {
 							$expected = array(
 								'name'         => 'Document one',
 								'parent_title' => 'Unidentifiable post',
@@ -110,7 +112,7 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 				'post_title'   => 'Document one',
 				'post_type'    => 'attachment',
 				'post_content' => 'some description',
-				'post_parent'  => $post_id
+				'post_parent'  => $post_id,
 			)
 		);
 
@@ -120,7 +122,7 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 				'post_title'   => 'Document one',
 				'post_type'    => 'attachment',
 				'post_content' => 'some description',
-				'post_parent'  => 42
+				'post_parent'  => 42,
 			)
 		);
 
@@ -154,7 +156,6 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 			array( 'post_title' => 'Document one' )
 		);
 
-
 		// Check callback test action.
 		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_edit_attachment' ) );
 	}
@@ -174,7 +175,7 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 			->with(
 				$this->equalTo( esc_html__( 'Deleted "%s"', 'stream' ) ),
 				$this->callback(
-					function( $subject ) {
+					function ( $subject ) {
 						$expected = array(
 							'name'      => 'Attachment one',
 							'parent_id' => null,

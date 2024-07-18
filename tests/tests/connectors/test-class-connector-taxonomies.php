@@ -4,6 +4,7 @@
  *
  * @package WP_Stream
  */
+
 namespace WP_Stream;
 
 class Test_WP_Stream_Connector_Taxonomies extends WP_StreamTestCase {
@@ -38,12 +39,12 @@ class Test_WP_Stream_Connector_Taxonomies extends WP_StreamTestCase {
 					)
 				),
 				$this->callback(
-					function( $subject ) {
+					function ( $subject ) {
 						$expected = array(
 							'term_name'      => 'test',
 							'taxonomy_label' => 'Category',
 							'taxonomy'       => 'category',
-							'term_parent'    => 0
+							'term_parent'    => 0,
 						);
 						return $expected === array_intersect_key( $expected, $subject );
 					}
@@ -81,7 +82,7 @@ class Test_WP_Stream_Connector_Taxonomies extends WP_StreamTestCase {
 						'taxonomy_label' => 'category',
 						'term_id'        => $term_data['term_id'],
 						'taxonomy'       => 'category',
-						'term_parent'    => 0
+						'term_parent'    => 0,
 					)
 				),
 				$this->greaterThan( 0 ),
@@ -117,7 +118,7 @@ class Test_WP_Stream_Connector_Taxonomies extends WP_StreamTestCase {
 						'taxonomy_label' => 'category',
 						'term_id'        => $term_data['term_id'],
 						'taxonomy'       => 'category',
-						'term_parent'    => 0
+						'term_parent'    => 0,
 					)
 				),
 				$this->greaterThan( 0 ),

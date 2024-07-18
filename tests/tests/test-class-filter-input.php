@@ -12,7 +12,7 @@ class Test_Filter_Input extends WP_StreamTestCase {
 	public function setUp(): void {
 		parent::setUp();
 
-		$this->filter = new Filter_Input;
+		$this->filter = new Filter_Input();
 		$this->assertNotEmpty( $this->filter );
 	}
 

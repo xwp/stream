@@ -1,7 +1,9 @@
 <?php
 namespace WP_Stream;
+
 /**
  * Class Test_Alert_Trigger_Action
+ *
  * @package WP_Stream
  * @group alerts
  */
@@ -11,12 +13,12 @@ class Test_Alert_Trigger_Action extends Test_Alert_Trigger {
 		parent::setUp();
 		$this->trigger = new Alert_Trigger_Action( $this->plugin );
 
-		$this->alert = $this->plugin->alerts->get_alert();
+		$this->alert                               = $this->plugin->alerts->get_alert();
 		$this->alert->alert_meta['trigger_action'] = 'activated';
 	}
 
 	function test_check_record_bad() {
-		$data = $this->dummy_stream_data();
+		$data           = $this->dummy_stream_data();
 		$data['action'] = 'updated';
 
 		$status = $this->trigger->check_record( true, null, $data, $this->alert );

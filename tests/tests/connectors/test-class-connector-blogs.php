@@ -4,6 +4,7 @@
  *
  * @package WP_Stream
  */
+
 namespace WP_Stream;
 
 class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
@@ -58,7 +59,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 	 */
 	public function test_get_context_labels() {
 		// Validate this works for foreign characters as well.
-		$id = self::factory()->blog->create( array( 'title'  => 'ובזכויותיהם' ) );
+		$id     = self::factory()->blog->create( array( 'title' => 'ובזכויותיהם' ) );
 		$labels = $this->mock->get_context_labels();
 		$this->assertArrayHasKey( 'blog-1', $labels );
 		$this->assertArrayHasKey( 'blog-' . $id, $labels );
@@ -77,7 +78,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 					)
 				),
 				$this->callback(
-					function( $meta ) {
+					function ( $meta ) {
 						$expected_meta = array(
 							'site_name' => 'testsite',
 							'siteurl'   => '//testsite',
@@ -92,7 +93,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 			);
 
 		// Create new blog to trigger callback.
-		self::factory()->blog->create( array( 'title'  => 'testsite' ) );
+		self::factory()->blog->create( array( 'title' => 'testsite' ) );
 
 		// Check callback test action.
 		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_wp_initialize_site' ) );
@@ -102,7 +103,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 		global $wpdb;
 
 		// Create site for later use.
-		$blog_id = self::factory()->blog->create( array( 'title'  => 'testsite' ) );
+		$blog_id = self::factory()->blog->create( array( 'title' => 'testsite' ) );
 
 		// Temporary tables will trigger DB errors when we attempt to reference them as new temporary tables.
 		$suppress = $wpdb->suppress_errors();
@@ -144,7 +145,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 
 	public function test_callback_wpmu_activate_blog() {
 		// Create site for later use.
-		$blog_id = self::factory()->blog->create( array( 'title'  => 'testsite' ) );
+		$blog_id = self::factory()->blog->create( array( 'title' => 'testsite' ) );
 
 		// Expected log calls.
 		$this->mock->expects( $this->once() )
@@ -283,7 +284,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 					),
 					$this->equalTo( $blog_id ),
 					$this->equalTo( 'testsite' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'updated' ),
 				),
 				array(
 					$this->equalTo(
@@ -303,7 +304,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 					),
 					$this->equalTo( $blog_id ),
 					$this->equalTo( 'testsite' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'updated' ),
 				),
 				array(
 					$this->equalTo(
@@ -323,7 +324,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 					),
 					$this->equalTo( $blog_id ),
 					$this->equalTo( 'testsite' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'updated' ),
 				),
 				array(
 					$this->equalTo(
@@ -343,7 +344,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 					),
 					$this->equalTo( $blog_id ),
 					$this->equalTo( 'testsite' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'updated' ),
 				),
 				array(
 					$this->equalTo(
@@ -363,7 +364,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 					),
 					$this->equalTo( $blog_id ),
 					$this->equalTo( 'testsite' ),
-					$this->equalTo( 'archive_blog' )
+					$this->equalTo( 'archive_blog' ),
 				),
 				array(
 					$this->equalTo(
@@ -383,7 +384,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 					),
 					$this->equalTo( $blog_id ),
 					$this->equalTo( 'testsite' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'updated' ),
 				),
 				array(
 					$this->equalTo(
@@ -403,7 +404,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 					),
 					$this->equalTo( $blog_id ),
 					$this->equalTo( 'testsite' ),
-					$this->equalTo( 'trashed' )
+					$this->equalTo( 'trashed' ),
 				),
 				array(
 					$this->equalTo(
@@ -423,7 +424,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 					),
 					$this->equalTo( $blog_id ),
 					$this->equalTo( 'testsite' ),
-					$this->equalTo( 'restored' )
+					$this->equalTo( 'restored' ),
 				),
 				array(
 					$this->equalTo(
@@ -443,7 +444,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 					),
 					$this->equalTo( $blog_id ),
 					$this->equalTo( 'testsite' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'updated' ),
 				),
 				array(
 					$this->equalTo(
@@ -463,7 +464,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 					),
 					$this->equalTo( $blog_id ),
 					$this->equalTo( 'testsite' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'updated' ),
 				)
 			);
 
@@ -475,7 +476,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 			'deleted'  => '1',
 			'public'   => '1',
 		);
-		foreach( $fields as $field => $value ) {
+		foreach ( $fields as $field => $value ) {
 			wp_update_site( $blog_id, array( $field => $value ) );
 			wp_update_site( $blog_id, array( $field => absint( $value ) ? '0' : '1' ) );
 		}

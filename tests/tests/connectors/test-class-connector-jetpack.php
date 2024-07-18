@@ -1,6 +1,8 @@
 <?php
 /**
  * Tests for Jetpack Connector class callbacks.
+ *
+ * @package WP_Stream
  */
 
 namespace WP_Stream;
@@ -21,7 +23,7 @@ class Test_WP_Stream_Connector_Jetpack extends WP_StreamTestCase {
 		parent::setUp();
 
 		global $wp_rest_server;
-		$this->server = $wp_rest_server = new \WP_REST_Server;
+		$this->server = $wp_rest_server = new \WP_REST_Server();
 		do_action( 'rest_api_init' );
 
 		// Make partial of Connector_Installer class, with mocked "log" function.
@@ -39,8 +41,8 @@ class Test_WP_Stream_Connector_Jetpack extends WP_StreamTestCase {
 
 	public function test_callback_jetpack_log_entry() {
 		// Get blog details and create user for later use.
-		$user_id   = self::factory()->user->create( array( 'display_name' => 'testuser' ) );
-		$user      = new \WP_User( $user_id );
+		$user_id = self::factory()->user->create( array( 'display_name' => 'testuser' ) );
+		$user    = new \WP_User( $user_id );
 
 		// Expected log calls.
 		$this->mock->expects( $this->exactly( 3 ) )
@@ -48,7 +50,7 @@ class Test_WP_Stream_Connector_Jetpack extends WP_StreamTestCase {
 			->withConsecutive(
 				array(
 					'Comments module activated',
-					array( 'module_slug' => 'comments'),
+					array( 'module_slug' => 'comments' ),
 					null,
 					'modules',
 					'activated',
@@ -69,7 +71,7 @@ class Test_WP_Stream_Connector_Jetpack extends WP_StreamTestCase {
 					array(),
 					null,
 					'blogs',
-					'register'
+					'register',
 				)
 			);
 
@@ -84,8 +86,8 @@ class Test_WP_Stream_Connector_Jetpack extends WP_StreamTestCase {
 
 	public function test_callback_sharing_get_services_state() {
 		// Create sharing service instance and services object for later use.
-		require_once JETPACK__PLUGIN_DIR. 'modules/sharedaddy/sharing-service.php';
-		$sharer = new \Sharing_Service();
+		require_once JETPACK__PLUGIN_DIR . 'modules/sharedaddy/sharing-service.php';
+		$sharer   = new \Sharing_Service();
 		$services = $sharer->get_all_services();
 
 		// Expected log calls.
@@ -105,7 +107,7 @@ class Test_WP_Stream_Connector_Jetpack extends WP_StreamTestCase {
 					),
 					$this->equalTo( null ),
 					$this->equalTo( 'sharedaddy' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'updated' ),
 				)
 			);
 
@@ -166,11 +168,11 @@ class Test_WP_Stream_Connector_Jetpack extends WP_StreamTestCase {
 							'old_value'    => null,
 							'new_value'    => array(
 								'global' => array(
-									'button_style'              => 'icon-text',
-									'sharing_label'             => 'Share this:',
-									'open_links'                => 'same',
-									'show'                      => array( 'post', 'page' ),
-									'custom'                    => array(),
+									'button_style'  => 'icon-text',
+									'sharing_label' => 'Share this:',
+									'open_links'    => 'same',
+									'show'          => array( 'post', 'page' ),
+									'custom'        => array(),
 								),
 							),
 						)
@@ -187,20 +189,20 @@ class Test_WP_Stream_Connector_Jetpack extends WP_StreamTestCase {
 							'option'       => 'sharing-options',
 							'old_value'    => array(
 								'global' => array(
-									'button_style'              => 'icon-text',
-									'sharing_label'             => 'Share this:',
-									'open_links'                => 'same',
-									'show'                      => array( 'post', 'page' ),
-									'custom'                    => array(),
+									'button_style'  => 'icon-text',
+									'sharing_label' => 'Share this:',
+									'open_links'    => 'same',
+									'show'          => array( 'post', 'page' ),
+									'custom'        => array(),
 								),
 							),
 							'new_value'    => array(
 								'global' => array(
-									'button_style'              => 'icon-text',
-									'sharing_label'             => 'Share what',
-									'open_links'                => 'same',
-									'show'                      => array( 'post', 'page' ),
-									'custom'                    => array(),
+									'button_style'  => 'icon-text',
+									'sharing_label' => 'Share what',
+									'open_links'    => 'same',
+									'show'          => array( 'post', 'page' ),
+									'custom'        => array(),
 								),
 							),
 						)
@@ -216,13 +218,13 @@ class Test_WP_Stream_Connector_Jetpack extends WP_StreamTestCase {
 		$this->assertArrayHasKey( $this->namespaced_route, $routes );
 
 		// Execute REST requests and trigger callbacks.
-		$request  = new \WP_Rest_Request( 'POST', "{$this->namespaced_route}/settings" );
+		$request = new \WP_Rest_Request( 'POST', "{$this->namespaced_route}/settings" );
 		$request->set_body_params(
 			array(
 				'carousel'                  => true,
 				'carousel_background_color' => 'white',
 				'sharedaddy'                => true,
-				'sharing_label'             => 'Share what'
+				'sharing_label'             => 'Share what',
 			)
 		);
 		$response = $this->server->dispatch( $request );

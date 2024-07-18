@@ -25,7 +25,7 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 		$this->assertEquals( $this->driver->table_meta, $wpdb->recordmeta );
 	}
 
-	/*
+	/**
 	 * Also tests the insert_meta method
 	 */
 	public function test_insert() {
@@ -100,23 +100,23 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 
 	private function dummy_stream_data() {
 		return array(
-				'object_id' => 10,
-				'site_id' => '1',
-				'blog_id' => get_current_blog_id(),
-				'user_id' => '1',
-				'user_role' => 'administrator',
-				'created' => gmdate( 'Y-m-d h:i:s' ),
-				'summary' => '"Hello Dave" plugin activated',
-				'ip' => '192.168.0.1',
-				'connector' => 'installer',
-				'context' => 'plugins',
-				'action' => 'activated',
+			'object_id' => 10,
+			'site_id'   => '1',
+			'blog_id'   => get_current_blog_id(),
+			'user_id'   => '1',
+			'user_role' => 'administrator',
+			'created'   => gmdate( 'Y-m-d h:i:s' ),
+			'summary'   => '"Hello Dave" plugin activated',
+			'ip'        => '192.168.0.1',
+			'connector' => 'installer',
+			'context'   => 'plugins',
+			'action'    => 'activated',
 		);
 	}
 
 	private function dummy_meta_data() {
 		return array(
-				'space_helmet' => 'false',
+			'space_helmet' => 'false',
 		);
 	}
 }
