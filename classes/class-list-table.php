@@ -908,10 +908,6 @@ class List_Table extends \WP_List_Table {
 	 * @return void
 	 */
 	public function filter_search() {
-		$search = null;
-		if ( isset( $_GET['search'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$search = sanitize_key( wp_unslash( $_GET['search'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		}
 		printf(
 			'<p class="search-box">
 				<label class="screen-reader-text" for="record-search-input">%1$s:</label>
@@ -919,7 +915,7 @@ class List_Table extends \WP_List_Table {
 				<input type="submit" name="" id="search-submit" class="button" value="%3$s" />
 			</p>',
 			esc_html__( 'Search Records', 'stream' ),
-			esc_attr( $search ),
+			esc_attr( ! empty( $_GET['search'] ) ? $_GET['search'] : '' ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			esc_attr__( 'Search Records', 'stream' )
 		);
 	}
