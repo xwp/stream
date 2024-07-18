@@ -51,74 +51,7 @@ class Date_Interval {
 
 		try {
 			$today          = new \DateTimeImmutable( 'today', $timezone_object );
-			$date_intervals = array(
-				'today'          => array(
-					'label' => esc_html__( 'Today', 'stream' ),
-					'start' => $today,
-					'end'   => $today->modify( '+1 day -1 microsecond' ),
-				),
-				'yesterday'      => array(
-					'label' => esc_html__( 'Yesterday', 'stream' ),
-					'start' => $today->modify( '-1 day' ),
-					'end'   => $today->modify( '-1 microsecond' ),
-				),
-				'last-7-days'    => array(
-					/* translators: %d: number of days (e.g. "7") */
-					'label' => sprintf( esc_html__( 'Last %d Days', 'stream' ), 7 ),
-					'start' => $today->modify( '-7 days' ),
-					'end'   => $today,
-				),
-				'last-14-days'   => array(
-					/* translators: %d: number of days (e.g. "7") */
-					'label' => sprintf( esc_html__( 'Last %d Days', 'stream' ), 14 ),
-					'start' => $today->modify( '-14 days' ),
-					'end'   => $today,
-				),
-				'last-30-days'   => array(
-					/* translators: %d: number of days (e.g. "7") */
-					'label' => sprintf( esc_html__( 'Last %d Days', 'stream' ), 30 ),
-					'start' => $today->modify( '-30 days' ),
-					'end'   => $today,
-				),
-				'this-month'     => array(
-					'label' => esc_html__( 'This Month', 'stream' ),
-					'start' => $today->modify( 'first day of this month' ),
-					'end'   => $today->modify( 'last day of this month' )->modify( '+1 day -1 microsecond' ),
-				),
-				'last-month'     => array(
-					'label' => esc_html__( 'Last Month', 'stream' ),
-					'start' => $today->modify( 'first day of last month' ),
-					'end'   => $today->modify( 'last day of last month' )->modify( '+1 day -1 microsecond' ),
-				),
-				'last-3-months'  => array(
-					/* translators: %d: number of months (e.g. "3") */
-					'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 3 ),
-					'start' => $today->modify( '-3 months' ),
-					'end'   => $today,
-				),
-				'last-6-months'  => array(
-					/* translators: %d: number of months (e.g. "3") */
-					'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 6 ),
-					'start' => $today->modify( '-6 months' ),
-					'end'   => $today,
-				),
-				'last-12-months' => array(
-					/* translators: %d: number of months (e.g. "3") */
-					'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 12 ),
-					'start' => $today->modify( '-12 months' ),
-					'end'   => $today,
-				),
-				'this-year'      => array(
-					'label' => esc_html__( 'This Year', 'stream' ),
-					'start' => $today->modify( 'first day of January' ),
-					'end'   => $today->modify( 'last day of December' )->modify( '+1 day -1 microsecond' ),
-				),
-				'last-year'      => array(
-					'label' => esc_html__( 'Last Year', 'stream' ),
-					'start' => $today->modify( 'first day of January' )->modify( '-1 year' ),
-					'end'   => $today->modify( 'first day of January' )->modify( '-1 microsecond' ),
-				),
-			);
+			$date_intervals = $this->generate_date_intervals( $today );
 		} catch ( \Exception $e ) {
 			$date_intervals = array();
 		}
@@ -130,5 +63,83 @@ class Date_Interval {
 		 * @param string $timezone       Timezone.
 		 */
 		return apply_filters( 'wp_stream_predefined_date_intervals', $date_intervals, $timezone );
+	}
+
+	/**
+	 * Generate date intervals relative to date object provided.
+	 *
+	 * @param \DateTimeImmutable $date Date object.
+	 *
+	 * @return array[]
+	 */
+	public function generate_date_intervals( \DateTimeImmutable $date ) {
+		return array(
+			'today'          => array(
+				'label' => esc_html__( 'Today', 'stream' ),
+				'start' => $date,
+				'end'   => $date->modify( '+1 day -1 microsecond' ),
+			),
+			'yesterday'      => array(
+				'label' => esc_html__( 'Yesterday', 'stream' ),
+				'start' => $date->modify( '-1 day' ),
+				'end'   => $date->modify( '-1 microsecond' ),
+			),
+			'last-7-days'    => array(
+				/* translators: %d: number of days (e.g. "7") */
+				'label' => sprintf( esc_html__( 'Last %d Days', 'stream' ), 7 ),
+				'start' => $date->modify( '-7 days' ),
+				'end'   => $date,
+			),
+			'last-14-days'   => array(
+				/* translators: %d: number of days (e.g. "7") */
+				'label' => sprintf( esc_html__( 'Last %d Days', 'stream' ), 14 ),
+				'start' => $date->modify( '-14 days' ),
+				'end'   => $date,
+			),
+			'last-30-days'   => array(
+				/* translators: %d: number of days (e.g. "7") */
+				'label' => sprintf( esc_html__( 'Last %d Days', 'stream' ), 30 ),
+				'start' => $date->modify( '-30 days' ),
+				'end'   => $date,
+			),
+			'this-month'     => array(
+				'label' => esc_html__( 'This Month', 'stream' ),
+				'start' => $date->modify( 'first day of this month' ),
+				'end'   => $date->modify( 'last day of this month' )->modify( '+1 day -1 microsecond' ),
+			),
+			'last-month'     => array(
+				'label' => esc_html__( 'Last Month', 'stream' ),
+				'start' => $date->modify( 'first day of last month' ),
+				'end'   => $date->modify( 'last day of last month' )->modify( '+1 day -1 microsecond' ),
+			),
+			'last-3-months'  => array(
+				/* translators: %d: number of months (e.g. "3") */
+				'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 3 ),
+				'start' => $date->modify( '-3 months' ),
+				'end'   => $date,
+			),
+			'last-6-months'  => array(
+				/* translators: %d: number of months (e.g. "3") */
+				'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 6 ),
+				'start' => $date->modify( '-6 months' ),
+				'end'   => $date,
+			),
+			'last-12-months' => array(
+				/* translators: %d: number of months (e.g. "3") */
+				'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 12 ),
+				'start' => $date->modify( '-12 months' ),
+				'end'   => $date,
+			),
+			'this-year'      => array(
+				'label' => esc_html__( 'This Year', 'stream' ),
+				'start' => $date->modify( 'first day of January' ),
+				'end'   => $date->modify( 'last day of December' )->modify( '+1 day -1 microsecond' ),
+			),
+			'last-year'      => array(
+				'label' => esc_html__( 'Last Year', 'stream' ),
+				'start' => $date->modify( 'first day of January' )->modify( '-1 year' ),
+				'end'   => $date->modify( 'first day of January' )->modify( '-1 microsecond' ),
+			),
+		);
 	}
 }
