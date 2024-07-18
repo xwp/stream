@@ -918,7 +918,7 @@ class List_Table extends \WP_List_Table {
 				<input type="search" id="record-search-input" name="search" value="%2$s" />
 				<input type="submit" name="" id="search-submit" class="button" value="%3$s" />
 			</p>',
-			esc_html( $search ),
+			esc_html__( 'Search Records', 'stream' ),
 			esc_attr( $search ),
 			esc_attr__( 'Search Records', 'stream' )
 		);
