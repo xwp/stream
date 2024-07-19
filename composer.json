@@ -67,8 +67,12 @@
       "@composer validate",
       "@lint-php"
     ],
+    "lint-tests": [
+      "phpcs ./tests --standard=./tests/phpcs.xml.dist"
+    ],
     "format": [
-      "phpcbf ."
+      "phpcbf .",
+      "phpcbf ./tests --standard=./tests/phpcs.xml.dist"
     ],
     "test": [
       "phpunit --coverage-text",

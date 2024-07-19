@@ -16,7 +16,7 @@ class Test_DB extends WP_StreamTestCase {
 		$this->assertNotEmpty( $this->db );
 	}
 
-	/*
+	/**
 	 * Also tests the insert_meta method
 	 */
 	public function test_insert() {
@@ -34,7 +34,10 @@ class Test_DB extends WP_StreamTestCase {
 		global $wpdb;
 
 		// Check that records exist
-		$stream_result = $wpdb->get_row( "SELECT * FROM {$wpdb->stream} WHERE ID = $stream_id", ARRAY_A );
+		$stream_result = $wpdb->get_row(
+			$wpdb->prepare( "SELECT * FROM {$wpdb->stream} WHERE ID = %d", $stream_id ),
+			ARRAY_A
+		);
 		$this->assertNotEmpty( $stream_result );
 
 		foreach ( $this->dummy_stream_data() as $dummy_key => $dummy_value ) {
@@ -53,7 +56,10 @@ class Test_DB extends WP_StreamTestCase {
 		}
 
 		// Check that meta exists
-		$meta_result = $wpdb->get_results( "SELECT * FROM {$wpdb->streammeta} WHERE record_id = $stream_id", ARRAY_A );
+		$meta_result = $wpdb->get_results(
+			$wpdb->prepare( "SELECT * FROM {$wpdb->streammeta} WHERE record_id = %d", $stream_id ),
+			ARRAY_A
+		);
 		$this->assertNotEmpty( $meta_result );
 
 		$found_all_keys = true;
@@ -80,7 +86,7 @@ class Test_DB extends WP_StreamTestCase {
 
 		// Attempt to store something with HTML in there.
 		$record = array(
-			'summary' => '<b>This is a <strong>very</strong> bold attempt!</b>'
+			'summary' => '<b>This is a <strong>very</strong> bold attempt!</b>',
 		);
 
 		$record_id = $this->db->insert( $record );
@@ -92,8 +98,8 @@ class Test_DB extends WP_StreamTestCase {
 
 		$record_stored = $this->db->query(
 			array(
-				'search' => $record_id,
-				'search_field' => 'ID'
+				'search'       => $record_id,
+				'search_field' => 'ID',
 			)
 		);
 
@@ -119,16 +125,16 @@ class Test_DB extends WP_StreamTestCase {
 	private function dummy_stream_data() {
 		return array(
 			'object_id' => 9,
-			'site_id' => '1',
-			'blog_id' => get_current_blog_id(),
-			'user_id' => '1',
+			'site_id'   => '1',
+			'blog_id'   => get_current_blog_id(),
+			'user_id'   => '1',
 			'user_role' => 'administrator',
-			'created' => gmdate( 'Y-m-d h:i:s' ),
-			'summary' => '"Hello Dave" plugin activated',
-			'ip' => '192.168.0.1',
+			'created'   => gmdate( 'Y-m-d h:i:s' ),
+			'summary'   => '"Hello Dave" plugin activated',
+			'ip'        => '192.168.0.1',
 			'connector' => 'installer',
-			'context' => 'plugins',
-			'action' => 'activated',
+			'context'   => 'plugins',
+			'action'    => 'activated',
 		);
 	}
 

@@ -4,6 +4,7 @@
  *
  * @package WP_Stream
  */
+
 namespace WP_Stream;
 
 class Test_WP_Stream_Connector_Menus extends WP_StreamTestCase {
@@ -29,9 +30,9 @@ class Test_WP_Stream_Connector_Menus extends WP_StreamTestCase {
 			->with(
 				$this->equalTo( __( 'Created new menu "%s"', 'stream' ) ),
 				$this->callback(
-					function( $subject ) {
+					function ( $subject ) {
 						$expected = array( 'name' => 'test-menu' );
-						return $expected === array_intersect_key( $expected, $subject );
+						return array_intersect_key( $expected, $subject ) === $expected;
 					}
 				),
 				$this->greaterThan( 0 ),
@@ -97,8 +98,8 @@ class Test_WP_Stream_Connector_Menus extends WP_StreamTestCase {
 				$this->equalTo( _x( 'Deleted "%s"', 'Menu name', 'stream' ) ),
 				$this->equalTo(
 					array(
-						'name'      => 'test-menu',
-						'menu_id'   => $menu_id,
+						'name'    => 'test-menu',
+						'menu_id' => $menu_id,
 					)
 				),
 				$this->equalTo( $menu_id ),
@@ -119,7 +120,7 @@ class Test_WP_Stream_Connector_Menus extends WP_StreamTestCase {
 		register_nav_menu( 'main', 'Main Navigation' );
 
 		// Create theme mods options for later use.
-		$locations         = get_theme_mod('nav_menu_locations');
+		$locations         = get_theme_mod( 'nav_menu_locations' );
 		$locations['main'] = '';
 		set_theme_mod( 'nav_menu_locations', $locations );
 
@@ -137,15 +138,15 @@ class Test_WP_Stream_Connector_Menus extends WP_StreamTestCase {
 					),
 					$this->equalTo(
 						array(
-							'name'         => 'test-menu',
-							'location'     => 'Main Navigation',
-							'location_id'  => 'main',
-							'menu_id'      => $menu_id,
+							'name'        => 'test-menu',
+							'location'    => 'Main Navigation',
+							'location_id' => 'main',
+							'menu_id'     => $menu_id,
 						)
 					),
 					$this->equalTo( $menu_id ),
 					$this->equalTo( 'test-menu' ),
-					$this->equalTo( 'assigned' )
+					$this->equalTo( 'assigned' ),
 				),
 				array(
 					$this->equalTo(
@@ -157,15 +158,15 @@ class Test_WP_Stream_Connector_Menus extends WP_StreamTestCase {
 					),
 					$this->equalTo(
 						array(
-							'name'         => 'test-menu',
-							'location'     => 'Main Navigation',
-							'location_id'  => 'main',
-							'menu_id'      => $menu_id,
+							'name'        => 'test-menu',
+							'location'    => 'Main Navigation',
+							'location_id' => 'main',
+							'menu_id'     => $menu_id,
 						)
 					),
 					$this->equalTo( $menu_id ),
 					$this->equalTo( 'test-menu' ),
-					$this->equalTo( 'unassigned' )
+					$this->equalTo( 'unassigned' ),
 				)
 			);
 
