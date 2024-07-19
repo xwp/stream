@@ -12,16 +12,16 @@ class Test_Filter_Input extends WP_StreamTestCase {
 	public function setUp(): void {
 		parent::setUp();
 
-		$this->filter = new Filter_Input;
+		$this->filter = new Filter_Input();
 		$this->assertNotEmpty( $this->filter );
 	}
 
 	public function test_super() {
 		$_POST['pod_bay_doors'] = 'closed';
-		$this->assertEquals( $_POST['pod_bay_doors'], $this->filter->super( INPUT_POST, 'pod_bay_doors' ) );
+		$this->assertEquals( $_POST['pod_bay_doors'], $this->filter->super( INPUT_POST, 'pod_bay_doors' ) ); // phpcs:ignore WordPress.Security.NonceVerification
 
 		$_GET['cause_of_failure'] = 'human error';
-		$this->assertEquals( $_GET['cause_of_failure'], $this->filter->super( INPUT_GET, 'cause_of_failure' ) );
+		$this->assertEquals( $_GET['cause_of_failure'], $this->filter->super( INPUT_GET, 'cause_of_failure' ) ); // phpcs:ignore WordPress.Security.NonceVerification
 
 		$this->setExpectedException( 'Exception', 'Invalid use, type must be one of INPUT_* family.' );
 		$this->filter->super( 42, 'What do you get if you multiply six by nine?' );
