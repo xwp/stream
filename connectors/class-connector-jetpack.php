@@ -384,7 +384,7 @@ class Connector_Jetpack extends Connector {
 			$message           = sprintf(
 			/* translators: %1$s: a user display name, %2$s: a status and the connection either "from" or "to" (e.g. "Jane Doe", "unlinked from") */
 				__( '%1$s\'s account %2$s Jetpack', 'stream' ),
-				esc_html( $user_display_name ),
+				$user_display_name,
 				( 'unlink' === $action ) ? esc_html__( 'unlinked from', 'stream' ) : esc_html__( 'linked to', 'stream' )
 			);
 		} elseif ( in_array( $method, array( 'register', 'disconnect', 'subsiteregister', 'subsitedisconnect' ), true ) ) {
