@@ -419,9 +419,9 @@ class Connector_WordPress_SEO extends Connector {
 			sprintf(
 				/* translators: %1$s: a meta field title, %2$s: a post title, %3$s: a post type (e.g. "Description", "Hello World", "Post") */
 				__( 'Updated "%1$s" of "%2$s" %3$s', 'stream' ),
-				$field['title'],
-				$post->post_title,
-				$post_type_label
+				$this->escape_percentages( $field['title'] ),
+				$this->escape_percentages( $post->post_title ),
+				$this->escape_percentages( $post_type_label )
 			),
 			array(
 				'meta_key'   => $meta_key,

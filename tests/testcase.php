@@ -17,6 +17,13 @@ class WP_StreamTestCase extends \WP_Ajax_UnitTestCase {
 	protected $action_prefix = 'wp_stream_test_';
 
 	/**
+	 * Holds the mocked class.
+	 *
+	 * @var MockBuilder
+	 */
+	protected $mock;
+
+	/**
 	 * PHP unit setup function
 	 *
 	 * @return void
