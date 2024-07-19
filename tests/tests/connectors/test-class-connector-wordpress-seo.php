@@ -6,6 +6,7 @@
  *
  * @package WP_Stream
  */
+
 namespace WP_Stream;
 
 class Test_WP_Stream_Connector_WordPress_SEO extends WP_StreamTestCase {
@@ -69,9 +70,9 @@ class Test_WP_Stream_Connector_WordPress_SEO extends WP_StreamTestCase {
 		// Create post for later use.
 		$post_id = wp_insert_post(
 			array(
-				'post_title'    => 'Test post %!',
-				'post_content'  => 'Lorem ipsum dolor...',
-				'post_status'   => 'publish'
+				'post_title'   => 'Test post %!',
+				'post_content' => 'Lorem ipsum dolor...',
+				'post_status'  => 'publish',
 			)
 		);
 
