@@ -110,7 +110,7 @@ abstract class Connector {
 	 */
 	public function callback() {
 		$action   = current_filter();
-		$callback = array( $this, 'callback_' . preg_replace( '/[^a-z0-9_\-]/', '_', $action ) );
+		$callback = array( $this, 'callback_' . preg_replace( '/[^a-z0-9_]/', '_', $action ) );
 
 		// For the sake of testing, trigger an action with the name of the callback.
 		if ( defined( 'WP_STREAM_TESTS' ) && WP_STREAM_TESTS ) {
