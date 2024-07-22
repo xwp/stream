@@ -18,7 +18,7 @@ class Plugin {
 	 *
 	 * @const string
 	 */
-	const VERSION = '3.10.0';
+	const VERSION = '4.0.0';
 
 	/**
 	 * WP-CLI command
@@ -91,6 +91,13 @@ class Plugin {
 	public $locations = array();
 
 	/**
+	 * IP address for the current request to be associated with the log entry.
+	 *
+	 * @var null|false|string Valid IP address, null if not set, false if invalid.
+	 */
+	protected $client_ip_address;
+
+	/**
 	 * Class constructor
 	 */
 	public function __construct() {
@@ -138,6 +145,9 @@ class Plugin {
 		// Load logger class.
 		$this->log = apply_filters( 'wp_stream_log_handler', new Log( $this ) );
 
+		// Set the IP address for the current request.
+		$this->client_ip_address = wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP );
+
 		// Load settings and connectors after widgets_init and before the default init priority.
 		add_action( 'init', array( $this, 'init' ), 9 );
 
@@ -164,10 +174,10 @@ class Plugin {
 	/**
 	 * Autoloader for classes
 	 *
-	 * @param string $class  Fully qualified classname to be loaded.
+	 * @param string $class_name Fully qualified classname to be loaded.
 	 */
-	public function autoload( $class ) {
-		if ( ! preg_match( '/^(?P<namespace>.+)\\\\(?P<autoload>[^\\\\]+)$/', $class, $matches ) ) {
+	public function autoload( $class_name ) {
+		if ( ! preg_match( '/^(?P<namespace>.+)\\\\(?P<autoload>[^\\\\]+)$/', $class_name, $matches ) ) {
 			return;
 		}
 
@@ -209,7 +219,6 @@ class Plugin {
 		$this->connectors  = new Connectors( $this );
 		$this->alerts      = new Alerts( $this );
 		$this->alerts_list = new Alerts_List( $this );
-
 	}
 
 	/**
@@ -233,7 +242,7 @@ class Plugin {
 		$comment = apply_filters( 'wp_stream_frontend_indicator', $comment );
 
 		if ( ! empty( $comment ) ) {
-			echo sprintf( "<!-- %s -->\n", esc_html( $comment ) ); // xss ok.
+			printf( "<!-- %s -->\n", esc_html( $comment ) );
 		}
 	}
 
@@ -244,8 +253,8 @@ class Plugin {
 	 * @return array
 	 */
 	private function locate_plugin() {
-		$dir_url         = trailingslashit( plugins_url( '', dirname( __FILE__ ) ) );
-		$dir_path        = plugin_dir_path( dirname( __FILE__ ) );
+		$dir_url         = trailingslashit( plugins_url( '', __DIR__ ) );
+		$dir_path        = plugin_dir_path( __DIR__ );
 		$dir_basename    = basename( $dir_path );
 		$plugin_basename = trailingslashit( $dir_basename ) . $dir_basename . '.php';
 
@@ -314,5 +323,14 @@ class Plugin {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get the IP address for the current request.
+	 *
+	 * @return false|null|string Valid IP address, null if not set, false if invalid.
+	 */
+	public function get_client_ip_address() {
+		return apply_filters( 'wp_stream_client_ip_address', $this->client_ip_address );
 	}
 }

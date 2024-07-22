@@ -1,5 +1,6 @@
 <?php
 namespace WP_Stream;
+
 /**
  * Tests for Settings connector class callbacks.
  *
@@ -9,7 +10,7 @@ class Test_Connector_Settings extends WP_StreamTestCase {
 	/**
 	 * Runs before each test.
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->plugin->connectors->unload_connectors();
@@ -39,9 +40,14 @@ class Test_Connector_Settings extends WP_StreamTestCase {
 		// Test custom ignores.
 		$this->assertFalse( $this->mock->is_option_ignored( 'ignore_me' ) );
 
-		add_filter( 'wp_stream_is_option_ignored', function( $is_ignored, $option_name, $default_ignored ) {
-			return in_array( $option_name, array_merge( [ 'ignore_me' ], $default_ignored ), true );
-		}, 10, 3 );
+		add_filter(
+			'wp_stream_is_option_ignored',
+			function ( $is_ignored, $option_name, $default_ignored ) {
+				return in_array( $option_name, array_merge( array( 'ignore_me' ), $default_ignored ), true );
+			},
+			10,
+			3
+		);
 
 		$this->assertTrue( $this->mock->is_option_ignored( 'ignore_me' ) );
 	}
@@ -74,7 +80,7 @@ class Test_Connector_Settings extends WP_StreamTestCase {
 					),
 					$this->equalTo( null ),
 					$this->equalTo( 'settings' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'updated' ),
 				),
 				array(
 					$this->equalTo( __( '"%s" setting was updated', 'stream' ) ),
@@ -89,7 +95,7 @@ class Test_Connector_Settings extends WP_StreamTestCase {
 					),
 					$this->equalTo( null ),
 					$this->equalTo( 'permalink' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'updated' ),
 				),
 				array(
 					$this->equalTo( __( '"%s" setting was updated', 'stream' ) ),
@@ -104,7 +110,7 @@ class Test_Connector_Settings extends WP_StreamTestCase {
 					),
 					$this->equalTo( null ),
 					$this->equalTo( 'permalink' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'updated' ),
 				),
 				array(
 					$this->equalTo( __( '"%s" setting was updated', 'stream' ) ),
@@ -119,7 +125,7 @@ class Test_Connector_Settings extends WP_StreamTestCase {
 					),
 					$this->equalTo( null ),
 					$this->equalTo( 'permalink' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'updated' ),
 				)
 			);
 

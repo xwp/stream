@@ -3,12 +3,12 @@ namespace WP_Stream;
 
 class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		// Make partial of Connector_ACF class, with mocked "log" function.
 		$this->mock = $this->getMockBuilder( Connector_Comments::class )
-			->setMethods( [ 'log' ] )
+			->setMethods( array( 'log' ) )
 			->getMock();
 
 		// Register connector.
@@ -17,17 +17,17 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 
 	public function test_callback_wp_insert_comment() {
 		$post_id = wp_insert_post(
-			[
-				'post_title'    => 'Test post',
-				'post_content'  => 'Lorem ipsum dolor...',
-				'post_status'   => 'publish',
-			]
+			array(
+				'post_title'   => 'Test post',
+				'post_content' => 'Lorem ipsum dolor...',
+				'post_status'  => 'publish',
+			)
 		);
 
 		$this->mock->expects( $this->atLeastOnce() )
 			->method( 'log' )
 			->withConsecutive(
-				[
+				array(
 					$this->equalTo(
 						_x(
 							'New %4$s by %1$s on %2$s %3$s',
@@ -36,21 +36,21 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 						)
 					),
 					$this->equalTo(
-						[
+						array(
 							'user_name'      => 'Jim Bean',
 							'post_title'     => '"Test post"',
 							'comment_status' => 'pending approval',
 							'comment_type'   => 'comment',
 							'post_id'        => $post_id,
 							'is_spam'        => false,
-						]
+						)
 					),
 					$this->greaterThan( 0 ),
 					$this->equalTo( 'post' ),
 					$this->equalTo( 'created' ),
-					$this->equalTo( 0 )
-				],
-				[
+					$this->equalTo( 0 ),
+				),
+				array(
 					$this->equalTo(
 						_x(
 							'Reply to %1$s\'s %5$s by %2$s on %3$s %4$s',
@@ -59,62 +59,62 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 						)
 					),
 					$this->equalTo(
-						[
+						array(
 							'parent_user_name' => 'Jim Bean',
 							'user_name'        => 'Jim Bean',
 							'post_title'       => '"Test post"',
 							'comment_status'   => 'pending approval',
 							'comment_type'     => 'comment',
 							'post_id'          => "$post_id",
-						]
+						)
 					),
 					$this->greaterThan( 0 ),
 					$this->equalTo( 'post' ),
 					$this->equalTo( 'replied' ),
-					$this->equalTo( 0 )
-				]
+					$this->equalTo( 0 ),
+				)
 			);
 
 		// Do stuff.
 		$comment_id = wp_insert_comment(
-			[
+			array(
 				'comment_content'      => 'Lorem ipsum dolor...',
 				'comment_author'       => 'Jim Bean',
 				'comment_author_email' => 'jim_bean@example.com',
 				'comment_author_IP'    => '::1',
 				'comment_post_ID'      => $post_id,
-			]
+			)
 		);
 		wp_insert_comment(
-			[
+			array(
 				'comment_content'      => 'Lorem ipsum dolor...',
 				'comment_author'       => 'Jim Bean',
 				'comment_author_email' => 'jim_bean@example.com',
 				'comment_author_IP'    => '::1',
 				'comment_post_ID'      => $post_id,
 				'comment_parent'       => $comment_id,
-			]
+			)
 		);
 
 		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_wp_insert_comment' ) );
 	}
 
 	public function test_callback_edit_comment() {
-		$post_id = wp_insert_post(
-			[
-				'post_title'    => 'Test post',
-				'post_content'  => 'Lorem ipsum dolor...',
-				'post_status'   => 'publish',
-			]
+		$post_id    = wp_insert_post(
+			array(
+				'post_title'   => 'Test post',
+				'post_content' => 'Lorem ipsum dolor...',
+				'post_status'  => 'publish',
+			)
 		);
 		$comment_id = wp_insert_comment(
-			[
+			array(
 				'comment_content'      => 'Lorem ipsum dolor...',
 				'comment_author'       => 'Jim Bean',
 				'comment_author_email' => 'jim_bean@example.com',
 				'comment_author_IP'    => '::1',
 				'comment_post_ID'      => $post_id,
-			]
+			)
 		);
 
 		$this->mock->expects( $this->atLeastOnce() )
@@ -128,13 +128,13 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 					)
 				),
 				$this->equalTo(
-					[
+					array(
 						'user_name'    => 'Jim Bean',
 						'post_title'   => '"Test post"',
 						'comment_type' => 'comment',
 						'post_id'      => "$post_id",
 						'user_id'      => 0,
-					]
+					)
 				),
 				$this->equalTo( $comment_id ),
 				$this->equalTo( 'post' ),
@@ -143,31 +143,31 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 
 		// Do stuff.
 		wp_update_comment(
-			[
+			array(
 				'comment_ID'      => $comment_id,
 				'comment_content' => 'Lorem ipsum dolor... 2',
-			]
+			)
 		);
 
 		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_edit_comment' ) );
 	}
 
 	public function test_callback_delete_comment() {
-		$post_id = wp_insert_post(
-			[
-				'post_title'    => 'Test post',
-				'post_content'  => 'Lorem ipsum dolor...',
-				'post_status'   => 'publish',
-			]
+		$post_id    = wp_insert_post(
+			array(
+				'post_title'   => 'Test post',
+				'post_content' => 'Lorem ipsum dolor...',
+				'post_status'  => 'publish',
+			)
 		);
 		$comment_id = wp_insert_comment(
-			[
+			array(
 				'comment_content'      => 'Lorem ipsum dolor...',
 				'comment_author'       => 'Jim Bean',
 				'comment_author_email' => 'jim_bean@example.com',
 				'comment_author_IP'    => '::1',
 				'comment_post_ID'      => $post_id,
-			]
+			)
 		);
 
 		$this->mock->expects( $this->atLeastOnce() )
@@ -181,13 +181,13 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 					)
 				),
 				$this->equalTo(
-					[
+					array(
 						'user_name'    => 'Jim Bean',
 						'post_title'   => '"Test post"',
 						'comment_type' => 'comment',
 						'post_id'      => "$post_id",
 						'user_id'      => 0,
-					]
+					)
 				),
 				$this->equalTo( $comment_id ),
 				$this->equalTo( 'post' ),
@@ -201,21 +201,21 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 	}
 
 	public function test_callback_trash_comment() {
-		$post_id = wp_insert_post(
-			[
-				'post_title'    => 'Test post',
-				'post_content'  => 'Lorem ipsum dolor...',
-				'post_status'   => 'publish',
-			]
+		$post_id    = wp_insert_post(
+			array(
+				'post_title'   => 'Test post',
+				'post_content' => 'Lorem ipsum dolor...',
+				'post_status'  => 'publish',
+			)
 		);
 		$comment_id = wp_insert_comment(
-			[
+			array(
 				'comment_content'      => 'Lorem ipsum dolor...',
 				'comment_author'       => 'Jim Bean',
 				'comment_author_email' => 'jim_bean@example.com',
 				'comment_author_IP'    => '::1',
 				'comment_post_ID'      => $post_id,
-			]
+			)
 		);
 
 		$this->mock->expects( $this->atLeastOnce() )
@@ -229,13 +229,13 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 					)
 				),
 				$this->equalTo(
-					[
+					array(
 						'user_name'    => 'Jim Bean',
 						'post_title'   => '"Test post"',
 						'comment_type' => 'comment',
 						'post_id'      => "$post_id",
 						'user_id'      => 0,
-					]
+					)
 				),
 				$this->equalTo( $comment_id ),
 				$this->equalTo( 'post' ),
@@ -249,21 +249,21 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 	}
 
 	public function test_callback_untrash_comment() {
-		$post_id = wp_insert_post(
-			[
-				'post_title'    => 'Test post',
-				'post_content'  => 'Lorem ipsum dolor...',
-				'post_status'   => 'publish',
-			]
+		$post_id    = wp_insert_post(
+			array(
+				'post_title'   => 'Test post',
+				'post_content' => 'Lorem ipsum dolor...',
+				'post_status'  => 'publish',
+			)
 		);
 		$comment_id = wp_insert_comment(
-			[
+			array(
 				'comment_content'      => 'Lorem ipsum dolor...',
 				'comment_author'       => 'Jim Bean',
 				'comment_author_email' => 'jim_bean@example.com',
 				'comment_author_IP'    => '::1',
 				'comment_post_ID'      => $post_id,
-			]
+			)
 		);
 		wp_trash_comment( $comment_id );
 
@@ -278,13 +278,13 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 					)
 				),
 				$this->equalTo(
-					[
+					array(
 						'user_name'    => 'Jim Bean',
 						'post_title'   => '"Test post"',
 						'comment_type' => 'comment',
 						'post_id'      => "$post_id",
 						'user_id'      => 0,
-					]
+					)
 				),
 				$this->equalTo( $comment_id ),
 				$this->equalTo( 'post' ),
@@ -298,21 +298,21 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 	}
 
 	public function test_callback_spam_comment() {
-		$post_id = wp_insert_post(
-			[
-				'post_title'    => 'Test post',
-				'post_content'  => 'Lorem ipsum dolor...',
-				'post_status'   => 'publish',
-			]
+		$post_id    = wp_insert_post(
+			array(
+				'post_title'   => 'Test post',
+				'post_content' => 'Lorem ipsum dolor...',
+				'post_status'  => 'publish',
+			)
 		);
 		$comment_id = wp_insert_comment(
-			[
+			array(
 				'comment_content'      => 'Lorem ipsum dolor...',
 				'comment_author'       => 'Jim Bean',
 				'comment_author_email' => 'jim_bean@example.com',
 				'comment_author_IP'    => '::1',
 				'comment_post_ID'      => $post_id,
-			]
+			)
 		);
 
 		$this->mock->expects( $this->atLeastOnce() )
@@ -326,13 +326,13 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 					)
 				),
 				$this->equalTo(
-					[
+					array(
 						'user_name'    => 'Jim Bean',
 						'post_title'   => '"Test post"',
 						'comment_type' => 'comment',
 						'post_id'      => "$post_id",
 						'user_id'      => 0,
-					]
+					)
 				),
 				$this->equalTo( $comment_id ),
 				$this->equalTo( 'post' ),
@@ -346,21 +346,21 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 	}
 
 	public function test_callback_unspam_comment() {
-		$post_id = wp_insert_post(
-			[
-				'post_title'    => 'Test post',
-				'post_content'  => 'Lorem ipsum dolor...',
-				'post_status'   => 'publish',
-			]
+		$post_id    = wp_insert_post(
+			array(
+				'post_title'   => 'Test post',
+				'post_content' => 'Lorem ipsum dolor...',
+				'post_status'  => 'publish',
+			)
 		);
 		$comment_id = wp_insert_comment(
-			[
+			array(
 				'comment_content'      => 'Lorem ipsum dolor...',
 				'comment_author'       => 'Jim Bean',
 				'comment_author_email' => 'jim_bean@example.com',
 				'comment_author_IP'    => '::1',
 				'comment_post_ID'      => $post_id,
-			]
+			)
 		);
 		wp_spam_comment( $comment_id );
 
@@ -375,13 +375,13 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 					)
 				),
 				$this->equalTo(
-					[
+					array(
 						'user_name'    => 'Jim Bean',
 						'post_title'   => '"Test post"',
 						'comment_type' => 'comment',
 						'post_id'      => "$post_id",
 						'user_id'      => 0,
-					]
+					)
 				),
 				$this->equalTo( $comment_id ),
 				$this->equalTo( 'post' ),
@@ -395,21 +395,21 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 	}
 
 	public function test_callback_transition_comment_status() {
-		$post_id = wp_insert_post(
-			[
-				'post_title'    => 'Test post',
-				'post_content'  => 'Lorem ipsum dolor...',
-				'post_status'   => 'publish',
-			]
+		$post_id    = wp_insert_post(
+			array(
+				'post_title'   => 'Test post',
+				'post_content' => 'Lorem ipsum dolor...',
+				'post_status'  => 'publish',
+			)
 		);
 		$comment_id = wp_insert_comment(
-			[
+			array(
 				'comment_content'      => 'Lorem ipsum dolor...',
 				'comment_author'       => 'Jim Bean',
 				'comment_author_email' => 'jim_bean@example.com',
 				'comment_author_IP'    => '::1',
 				'comment_post_ID'      => $post_id,
-			]
+			)
 		);
 
 		$this->mock->expects( $this->atLeastOnce() )
@@ -423,7 +423,7 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 					)
 				),
 				$this->equalTo(
-					[
+					array(
 						'user_name'    => 'Jim Bean',
 						'new_status'   => 'unapproved',
 						'comment_type' => 'comment',
@@ -431,7 +431,7 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 						'post_title'   => '"Test post"',
 						'post_id'      => "$post_id",
 						'user_id'      => 0,
-					]
+					)
 				),
 				$this->equalTo( $comment_id ),
 				$this->equalTo( 'post' ),
@@ -445,22 +445,22 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 	}
 
 	public function test_callback_comment_duplicate_trigger() {
-		$post_id = wp_insert_post(
-			[
-				'post_title'    => 'Test post',
-				'post_content'  => 'Lorem ipsum dolor...',
-				'post_status'   => 'publish',
-			]
+		$post_id    = wp_insert_post(
+			array(
+				'post_title'   => 'Test post',
+				'post_content' => 'Lorem ipsum dolor...',
+				'post_status'  => 'publish',
+			)
 		);
 		$comment_id = wp_insert_comment(
-			[
+			array(
 				'comment_content'      => 'Lorem ipsum dolor...',
 				'comment_author'       => 'Jim Bean',
 				'comment_author_email' => 'jim_bean@example.com',
 				'comment_author_url'   => '',
 				'comment_author_IP'    => '::1',
 				'comment_post_ID'      => $post_id,
-			]
+			)
 		);
 
 		// Create duplicate comment and trigger mock.

@@ -16,9 +16,9 @@
  * @param int    $filter         The ID of the filter to apply.
  * @param mixed  $options        Associative array of options or bitwise disjunction of flags. If filter accepts options, flags can be provided in "flags" field of array.
  *
- * @return Value of the requested variable on success, FALSE if the filter fails, or NULL if the $variable_name is not set.
+ * @return mixed|false|null Value of the requested variable on success, FALSE if the filter fails, or NULL if the $variable_name is not set.
  */
-function wp_stream_filter_input( $type, $variable_name, $filter = null, $options = array() ) {
+function wp_stream_filter_input( $type, $variable_name, $filter = null, $options = array() ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 	return call_user_func_array( array( '\WP_Stream\Filter_Input', 'super' ), func_get_args() );
 }
 
@@ -28,13 +28,13 @@ function wp_stream_filter_input( $type, $variable_name, $filter = null, $options
  * This is a polyfill function intended to be used in place of PHP's
  * filter_var() function, which can occasionally be unreliable.
  *
- * @param string $var      Value to filter.
- * @param int    $filter   The ID of the filter to apply.
- * @param mixed  $options  Associative array of options or bitwise disjunction of flags. If filter accepts options, flags can be provided in "flags" field of array. For the "callback" filter, callable type should be passed. The callback must accept one argument, the value to be filtered, and return the value after filtering/sanitizing it.
+ * @param string $value   Value to filter.
+ * @param int    $filter  The ID of the filter to apply.
+ * @param mixed  $options Associative array of options or bitwise disjunction of flags. If filter accepts options, flags can be provided in "flags" field of array. For the "callback" filter, callable type should be passed. The callback must accept one argument, the value to be filtered, and return the value after filtering/sanitizing it.
  *
  * @return Returns the filtered data, or FALSE if the filter fails.
  */
-function wp_stream_filter_var( $var, $filter = null, $options = array() ) {
+function wp_stream_filter_var( $value, $filter = null, $options = array() ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 	return call_user_func_array( array( '\WP_Stream\Filter_Input', 'filter' ), func_get_args() );
 }
 
@@ -60,31 +60,6 @@ function wp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 ) {
 	$date     = new DateTime( gmdate( 'Y-m-d H:i:s.' . $micro_seconds, $microtime ), $timezone );
 
 	return $date->format( 'Y-m-d\TH:i:sO' );
-}
-
-/**
- * Encode to JSON in a way that is also backwards compatible
- *
- * @param mixed $data     Data to be encoded.
- * @param int   $options  Compression options (optional).
- * @param int   $depth    Tree depth limit (optional).
- *
- * @return string
- */
-function wp_stream_json_encode( $data, $options = 0, $depth = 512 ) {
-	if ( function_exists( 'wp_json_encode' ) ) {
-		$json = wp_json_encode( $data, $options, $depth );
-	} else {
-		// @codingStandardsIgnoreStart
-		if ( version_compare( PHP_VERSION, '5.5', '<' ) ) {
-			$json = json_encode( $data, $options );
-		} else {
-			$json = json_encode( $data, $options, $depth );
-		}
-		// @codingStandardsIgnoreEnd
-	}
-
-	return $json;
 }
 
 /**

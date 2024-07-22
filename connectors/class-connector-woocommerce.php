@@ -315,7 +315,7 @@ class Connector_Woocommerce extends Connector {
 	 * Prevent the Stream Comments connector from logging status
 	 * change comments on orders
 	 *
-	 * @filter wp_stream_commnent_exclude_comment_types
+	 * @filter wp_stream_comment_exclude_comment_types
 	 *
 	 * @param array $comment_types  Ignored post types.
 	 *
@@ -332,11 +332,11 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action transition_post_status
 	 *
-	 * @param string   $new   New status.
-	 * @param string   $old   Old status.
-	 * @param \WP_Post $post  Post object.
+	 * @param string   $new_status New status.
+	 * @param string   $old_status Old status.
+	 * @param \WP_Post $post       Post object.
 	 */
-	public function callback_transition_post_status( $new, $old, $post ) {
+	public function callback_transition_post_status( $new_status, $old_status, $post ) {
 		// Only track orders.
 		if ( 'shop_order' !== $post->post_type ) {
 			return;
@@ -357,9 +357,9 @@ class Connector_Woocommerce extends Connector {
 			return;
 		}
 
-		if ( in_array( $new, array( 'auto-draft', 'draft', 'inherit' ), true ) ) {
+		if ( in_array( $new_status, array( 'auto-draft', 'draft', 'inherit' ), true ) ) {
 			return;
-		} elseif ( 'auto-draft' === $old && 'publish' === $new ) {
+		} elseif ( 'auto-draft' === $old_status && 'publish' === $new_status ) {
 			/* translators: %s: an order title (e.g. "Order #42") */
 			$message = esc_html_x(
 				'%s created',
@@ -367,7 +367,7 @@ class Connector_Woocommerce extends Connector {
 				'stream'
 			);
 			$action  = 'created';
-		} elseif ( 'trash' === $new ) {
+		} elseif ( 'trash' === $new_status ) {
 			/* translators: %s: an order title (e.g. "Order #42") */
 			$message = esc_html_x(
 				'%s trashed',
@@ -375,7 +375,7 @@ class Connector_Woocommerce extends Connector {
 				'stream'
 			);
 			$action  = 'trashed';
-		} elseif ( 'trash' === $old && 'publish' === $new ) {
+		} elseif ( 'trash' === $old_status && 'publish' === $new_status ) {
 			/* translators: %s: an order title (e.g. "Order #42") */
 			$message = esc_html_x(
 				'%s restored from the trash',
@@ -405,8 +405,8 @@ class Connector_Woocommerce extends Connector {
 			array(
 				'post_title'    => $order_title,
 				'singular_name' => $order_type_name,
-				'new_status'    => $new,
-				'old_status'    => $old,
+				'new_status'    => $new_status,
+				'old_status'    => $old_status,
 				'revision_id'   => null,
 			),
 			$post->ID,
@@ -463,27 +463,27 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action woocommerce_order_status_changed
 	 *
-	 * @param int    $order_id  Order ID.
-	 * @param string $old       Old status.
-	 * @param string $new       New status.
+	 * @param int    $order_id         Order ID.
+	 * @param string $old_order_status Old order status.
+	 * @param string $new_order_status New order status.
 	 */
-	public function callback_woocommerce_order_status_changed( $order_id, $old, $new ) {
+	public function callback_woocommerce_order_status_changed( $order_id, $old_order_status, $new_order_status ) {
 		// Don't track customer actions.
 		if ( ! is_admin() ) {
 			return;
 		}
 
 		// Don't track new statuses.
-		if ( empty( $old ) ) {
+		if ( empty( $old_order_status ) ) {
 			return;
 		}
 
 		if ( version_compare( $this->plugin_version, '2.2', '>=' ) ) {
-			$old_status_name = wc_get_order_status_name( $old );
-			$new_status_name = wc_get_order_status_name( $new );
+			$old_status_name = wc_get_order_status_name( $old_order_status );
+			$new_status_name = wc_get_order_status_name( $new_order_status );
 		} else {
-			$old_status      = wp_stream_is_vip() ? wpcom_vip_get_term_by( 'slug', $old, 'shop_order_status' ) : get_term_by( 'slug', $old, 'shop_order_status' );
-			$new_status      = wp_stream_is_vip() ? wpcom_vip_get_term_by( 'slug', $new, 'shop_order_status' ) : get_term_by( 'slug', $new, 'shop_order_status' );
+			$old_status      = wp_stream_is_vip() ? wpcom_vip_get_term_by( 'slug', $old_order_status, 'shop_order_status' ) : get_term_by( 'slug', $old_order_status, 'shop_order_status' );
+			$new_status      = wp_stream_is_vip() ? wpcom_vip_get_term_by( 'slug', $new_order_status, 'shop_order_status' ) : get_term_by( 'slug', $new_order_status, 'shop_order_status' );
 			$new_status_name = $new_status->name;
 			$old_status_name = $old_status->name;
 		}
@@ -506,8 +506,8 @@ class Connector_Woocommerce extends Connector {
 				'old_status_name' => $old_status_name,
 				'new_status_name' => $new_status_name,
 				'singular_name'   => $order_type_name,
-				'new_status'      => $new,
-				'old_status'      => $old,
+				'new_status'      => $new_order_status,
+				'old_status'      => $old_order_status,
 				'revision_id'     => null,
 			),
 			$order_id,
@@ -787,7 +787,7 @@ class Connector_Woocommerce extends Connector {
 				foreach ( $sections as $section_key => $section_label ) {
 					$_fields = array_filter(
 						$page->get_settings( $section_key ),
-						function( $item ) {
+						function ( $item ) {
 							return isset( $item['id'] ) && ( ! in_array( $item['type'], array( 'title', 'sectionend' ), true ) );
 						}
 					);
@@ -811,7 +811,7 @@ class Connector_Woocommerce extends Connector {
 			// Provide additional context for each of the settings pages.
 			array_walk(
 				$settings_pages,
-				function( &$value ) {
+				function ( &$value ) {
 					$value .= ' ' . esc_html__( 'Settings', 'stream' );
 				}
 			);

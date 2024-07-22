@@ -4,6 +4,7 @@
  *
  * @package WP_Stream
  */
+
 namespace WP_Stream;
 
 class Test_WP_Stream_Connector_Users extends WP_StreamTestCase {
@@ -11,7 +12,7 @@ class Test_WP_Stream_Connector_Users extends WP_StreamTestCase {
 	/**
 	 * Runs before each test
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		// Make partial of Connector_Users class, with mocked "log" function.
@@ -38,7 +39,7 @@ class Test_WP_Stream_Connector_Users extends WP_StreamTestCase {
 					$this->greaterThan( 0 ),
 					$this->equalTo( 'users' ),
 					$this->equalTo( 'created' ),
-					$this->greaterThan( 0 )
+					$this->greaterThan( 0 ),
 				),
 				array(
 					$this->equalTo(
@@ -57,7 +58,7 @@ class Test_WP_Stream_Connector_Users extends WP_StreamTestCase {
 					$this->greaterThan( 0 ),
 					$this->equalTo( 'users' ),
 					$this->equalTo( 'created' ),
-					$this->greaterThan( 0 )
+					$this->greaterThan( 0 ),
 				)
 			);
 
@@ -86,7 +87,7 @@ class Test_WP_Stream_Connector_Users extends WP_StreamTestCase {
 					$this->equalTo( $user_id ),
 					$this->equalTo( 'profiles' ),
 					$this->equalTo( 'password-reset' ),
-					$this->equalTo( $user_id )
+					$this->equalTo( $user_id ),
 				)
 			);
 
@@ -113,14 +114,14 @@ class Test_WP_Stream_Connector_Users extends WP_StreamTestCase {
 					$this->equalTo( $user_id ),
 					$this->equalTo( 'sessions' ),
 					$this->equalTo( 'forgot-password' ),
-					$this->equalTo( $user_id )
+					$this->equalTo( $user_id ),
 				),
 				array(
 					$this->equalTo( __( '%s\'s profile was updated', 'stream' ) ),
 					$this->equalTo( array( 'display_name' => 'TestGuy' ) ),
 					$this->equalTo( $user_id ),
 					$this->equalTo( 'profiles' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'updated' ),
 				)
 			);
 
@@ -171,7 +172,7 @@ class Test_WP_Stream_Connector_Users extends WP_StreamTestCase {
 
 	public function test_callback_deleted_user() {
 		// Create Users.
-		$user_id = self::factory()->user->create( array( 'display_name' => 'TestGuy' ));
+		$user_id = self::factory()->user->create( array( 'display_name' => 'TestGuy' ) );
 		$user    = get_user_by( 'ID', $user_id );
 
 		// Expected log calls.
@@ -195,7 +196,7 @@ class Test_WP_Stream_Connector_Users extends WP_StreamTestCase {
 					$this->equalTo( $user_id ),
 					$this->equalTo( 'users' ),
 					$this->equalTo( 'deleted' ),
-					$this->equalTo( 0 )
+					$this->equalTo( 0 ),
 				),
 				array(
 					$this->equalTo( esc_html__( 'User account #%d was deleted', 'stream' ) ),
@@ -208,7 +209,7 @@ class Test_WP_Stream_Connector_Users extends WP_StreamTestCase {
 					$this->equalTo( $user_id ),
 					$this->equalTo( 'users' ),
 					$this->equalTo( 'deleted' ),
-					$this->equalTo( 0 )
+					$this->equalTo( 0 ),
 				)
 			);
 
@@ -223,7 +224,7 @@ class Test_WP_Stream_Connector_Users extends WP_StreamTestCase {
 
 	public function test_callback_set_user_role() {
 		// Create user.
-		$user_id = self::factory()->user->create( array( 'display_name' => 'TestGuy' ));
+		$user_id = self::factory()->user->create( array( 'display_name' => 'TestGuy' ) );
 		$user    = get_user_by( 'id', $user_id );
 
 		// Expected log calls.

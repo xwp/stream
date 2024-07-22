@@ -4,6 +4,7 @@
  *
  * @package WP_Stream
  */
+
 namespace WP_Stream;
 
 class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
@@ -24,7 +25,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 	/**
 	 * Runs before each test.
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->plugin->connectors->unload_connectors();
@@ -52,7 +53,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 			'post_content'  => 'Lorem ipsum dolor...',
 			'post_date'     => $this->date,
 			'post_date_gmt' => $this->date_gmt,
-			'post_status'   => 'draft'
+			'post_status'   => 'draft',
 		);
 
 		// Set expected calls for the Mock.
@@ -68,14 +69,14 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 						)
 					),
 					$this->callback(
-						function( $subject ) {
+						function ( $subject ) {
 							$expected = array(
 								'post_title'    => 'Test post',
 								'singular_name' => 'post',
 								'new_status'    => 'draft',
 								'old_status'    => 'new',
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -91,14 +92,14 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 						)
 					),
 					$this->callback(
-						function( $subject ) {
+						function ( $subject ) {
 							$expected = array(
 								'post_title'    => 'Test post',
 								'singular_name' => 'post',
 								'new_status'    => 'publish',
 								'old_status'    => 'draft',
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -114,14 +115,14 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 						)
 					),
 					$this->callback(
-						function( $subject ) {
+						function ( $subject ) {
 							$expected = array(
 								'post_title'    => 'Test post',
 								'singular_name' => 'post',
 								'new_status'    => 'draft',
 								'old_status'    => 'publish',
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -137,14 +138,14 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 						)
 					),
 					$this->callback(
-						function( $subject ) {
+						function ( $subject ) {
 							$expected = array(
 								'post_title'    => 'Test post',
 								'singular_name' => 'post',
 								'new_status'    => 'draft',
 								'old_status'    => 'draft',
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -160,14 +161,14 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 						)
 					),
 					$this->callback(
-						function( $subject ) {
+						function ( $subject ) {
 							$expected = array(
 								'post_title'    => 'Test post',
 								'singular_name' => 'post',
 								'new_status'    => 'pending',
 								'old_status'    => 'draft',
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -183,14 +184,14 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 						)
 					),
 					$this->callback(
-						function( $subject ) {
+						function ( $subject ) {
 							$expected = array(
 								'post_title'    => 'Test post',
 								'singular_name' => 'post',
 								'new_status'    => 'future',
 								'old_status'    => 'pending',
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -206,14 +207,14 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 						)
 					),
 					$this->callback(
-						function( $subject ) {
+						function ( $subject ) {
 							$expected = array(
 								'post_title'    => 'Test post',
 								'singular_name' => 'post',
 								'new_status'    => 'publish',
 								'old_status'    => 'future',
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -229,14 +230,14 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 						)
 					),
 					$this->callback(
-						function( $subject ) {
+						function ( $subject ) {
 							$expected = array(
 								'post_title'    => 'Test post',
 								'singular_name' => 'post',
 								'new_status'    => 'private',
 								'old_status'    => 'publish',
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -252,14 +253,14 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 						)
 					),
 					$this->callback(
-						function( $subject ) {
+						function ( $subject ) {
 							$expected = array(
 								'post_title'    => 'Test post',
 								'singular_name' => 'post',
 								'new_status'    => 'trash',
 								'old_status'    => 'private',
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -275,14 +276,14 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 						)
 					),
 					$this->callback(
-						function( $subject ) {
+						function ( $subject ) {
 							$expected = array(
 								'post_title'    => 'Test post',
 								'singular_name' => 'post',
 								'new_status'    => 'publish',
 								'old_status'    => 'trash',
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -298,14 +299,14 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 						)
 					),
 					$this->callback(
-						function( $subject ) {
+						function ( $subject ) {
 							$expected = array(
 								'post_title'    => 'Test post',
 								'singular_name' => 'post',
 								'new_status'    => 'publish',
 								'old_status'    => 'publish',
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -321,14 +322,14 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 						)
 					),
 					$this->callback(
-						function( $subject ) {
+						function ( $subject ) {
 							$expected = array(
 								'post_title'    => 'Test post',
 								'singular_name' => 'post',
 								'new_status'    => 'publish',
 								'old_status'    => 'new',
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -368,8 +369,8 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 			array(
 				'ID'            => $post_id,
 				'post_status'   => 'future',
-				'post_date'     => date( 'Y-m-d H:i:s', $time ),
-    			'post_date_gmt' => gmdate( 'Y-m-d H:i:s', $time ),
+				'post_date'     => date( 'Y-m-d H:i:s', $time ), // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
+				'post_date_gmt' => gmdate( 'Y-m-d H:i:s', $time ),
 			)
 		);
 		$time = strtotime( 'now' );
@@ -377,8 +378,8 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 			array(
 				'ID'            => $post_id,
 				'post_status'   => 'publish',
-				'post_date'     => date( 'Y-m-d H:i:s', $time ),
-    			'post_date_gmt' => gmdate( 'Y-m-d H:i:s', $time ),
+				'post_date'     => date( 'Y-m-d H:i:s', $time ), // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
+				'post_date_gmt' => gmdate( 'Y-m-d H:i:s', $time ),
 			)
 		);
 		wp_update_post(
@@ -409,9 +410,9 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 		// Expected log to be made with "created" action.
 		wp_insert_post(
 			array(
-				'post_title'    => 'Test post',
-				'post_content'  => 'Lorem ipsum dolor...',
-				'post_status'   => 'publish',
+				'post_title'   => 'Test post',
+				'post_content' => 'Lorem ipsum dolor...',
+				'post_status'  => 'publish',
 			)
 		);
 
@@ -421,13 +422,12 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 		 */
 		wp_insert_post(
 			array(
-				'post_title'    => 'Test attachment',
-				'post_content'  => 'Lorem ipsum dolor...',
-				'post_status'   => 'publish',
-				'post_type'     => 'attachment',
+				'post_title'   => 'Test attachment',
+				'post_content' => 'Lorem ipsum dolor...',
+				'post_status'  => 'publish',
+				'post_type'    => 'attachment',
 			)
 		);
-
 
 		// Confirm callback execution.
 		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_transition_post_status' ) );
@@ -440,25 +440,25 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 		// Create post for later use.
 		$post_id = wp_insert_post(
 			array(
-				'post_title'    => 'Test post',
-				'post_content'  => 'Lorem ipsum dolor...',
-				'post_status'   => 'publish'
+				'post_title'   => 'Test post',
+				'post_content' => 'Lorem ipsum dolor...',
+				'post_status'  => 'publish',
 			)
 		);
 
 		$auto_draft_post_id = wp_insert_post(
 			array(
-				'post_title'    => 'Test post',
-				'post_content'  => 'Lorem ipsum dolor...',
-				'post_status'   => 'auto-draft'
+				'post_title'   => 'Test post',
+				'post_content' => 'Lorem ipsum dolor...',
+				'post_status'  => 'auto-draft',
 			)
 		);
 
 		$attachment_post_id = wp_insert_post(
 			array(
-				'post_title'    => 'Test post',
-				'post_content'  => 'Lorem ipsum dolor...',
-				'post_type'     => 'attachment'
+				'post_title'   => 'Test post',
+				'post_content' => 'Lorem ipsum dolor...',
+				'post_type'    => 'attachment',
 			)
 		);
 
@@ -491,9 +491,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 		wp_delete_post( $auto_draft_post_id, true );
 		wp_delete_post( $attachment_post_id, true );
 
-
 		// Confirm callback execution.
 		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_deleted_post' ) );
 	}
-
 }

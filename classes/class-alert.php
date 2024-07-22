@@ -66,8 +66,9 @@ class Alert {
 	/**
 	 * Class constructor
 	 *
-	 * @param object $item Alert data.
-	 * @param Plugin $plugin Instance of plugin object.
+	 * @param ?object $item   Alert data.
+	 * @param Plugin  $plugin Instance of plugin object.
+	 *
 	 * @return void
 	 */
 	public function __construct( $item, $plugin ) {
@@ -186,7 +187,7 @@ class Alert {
 	/**
 	 * Determine the title of the alert.
 	 *
-	 * @todo enhance human readibility
+	 * @todo enhance human readability
 	 * @return string The title of the alert
 	 */
 	public function get_title() {
@@ -207,7 +208,7 @@ class Alert {
 	}
 
 	/**
-	 * Retreive current alert type object
+	 * Retrieve current alert type object
 	 *
 	 * @return Alert_Type
 	 */
@@ -298,16 +299,16 @@ class Alert {
 	 * Using that ID, it fetches that Alert post's meta, then
 	 * returns the value of the requested setting (ie., "post meta" field).
 	 *
-	 * @see Alert_Type_Highlight::post_class() for an example.
+	 * @param object $record        The Record object.
+	 * @param string $alert_slug    The slug of the Alert Type.
+	 * @param string $setting       The requested meta value of the Alert.
+	 * @param mixed  $default_value The default value if no value is found.
 	 *
-	 * @param object $record The Record object.
-	 * @param string $alert_slug The slug of the Alert Type.
-	 * @param string $setting The requested meta value of the Alert.
-	 * @param mixed  $default The default value if no value is found.
+	 * @see Alert_Type_Highlight::post_class() for an example.
 	 *
 	 * @return mixed
 	 */
-	public function get_single_alert_setting_from_record( $record, $alert_slug, $setting, $default = false ) {
+	public function get_single_alert_setting_from_record( $record, $alert_slug, $setting, $default_value = false ) {
 		if ( ! is_object( $record ) || ! is_string( $alert_slug ) || ! is_string( $setting ) ) {
 			return false;
 		}
@@ -341,7 +342,7 @@ class Alert {
 
 		$alert = $this->plugin->alerts->get_alert( $post_id );
 
-		$value = ! empty( $alert->alert_meta[ $setting ] ) ? $alert->alert_meta[ $setting ] : $default;
+		$value = ! empty( $alert->alert_meta[ $setting ] ) ? $alert->alert_meta[ $setting ] : $default_value;
 		return $value;
 	}
 }

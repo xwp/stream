@@ -84,7 +84,7 @@ class Alert_Type_Email extends Alert_Type {
 		$user    = get_user_by( 'id', $user_id );
 
 		// translators: Placeholder refers to a username  (e.g. "administrator").
-		$message .= sprintf( __( "User:\t%s", 'stream' ), $user->user_login ) . "\n";
+		$message .= sprintf( __( "User:\t%s", 'stream' ), ! empty( $user->user_login ) ? $user->user_login : __( 'unknown', 'stream' ) ) . "\n";
 
 		if ( ! empty( $alert->alert_meta['trigger_context'] ) ) {
 			$context = $this->plugin->alerts->alert_triggers['context']->get_display_value( 'list_table', $alert );
@@ -146,26 +146,26 @@ class Alert_Type_Email extends Alert_Type {
 		echo '<span class="wp_stream_alert_type_description">' . esc_html__( 'Send a notification email to the recipient.', 'stream' ) . '</span>';
 		echo '<label for="wp_stream_email_recipient"><span class="title">' . esc_html__( 'Recipient', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo $form->render_field(
+		$form->render_field(
 			'text',
 			array(
 				'name'  => 'wp_stream_email_recipient',
 				'title' => esc_attr( __( 'Email Recipient', 'stream' ) ),
 				'value' => $options['email_recipient'],
 			)
-		); // Xss ok.
+		);
 		echo '</span></label>';
 
 		echo '<label for="wp_stream_email_subject"><span class="title">' . esc_html__( 'Subject', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo $form->render_field(
+		$form->render_field(
 			'text',
 			array(
 				'name'  => 'wp_stream_email_subject',
 				'title' => esc_attr( __( 'Email Subject', 'stream' ) ),
 				'value' => $options['email_subject'],
 			)
-		); // Xss ok.
+		);
 		echo '</span></label>';
 	}
 

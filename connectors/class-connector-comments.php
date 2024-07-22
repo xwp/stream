@@ -578,7 +578,13 @@ class Connector_Comments extends Connector {
 			return;
 		}
 
-		if ( 'approved' !== $new_status && 'unapproved' !== $new_status || 'trash' === $old_status || 'spam' === $old_status ) {
+		if (
+			( 'approved' !== $new_status && 'unapproved' !== $new_status )
+			||
+			'trash' === $old_status
+			||
+			'spam' === $old_status
+		) {
 			return;
 		}
 

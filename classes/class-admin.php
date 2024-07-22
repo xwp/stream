@@ -10,8 +10,8 @@ namespace WP_Stream;
 use DateTime;
 use DateTimeZone;
 use DateInterval;
-use \WP_CLI;
-use \WP_Roles;
+use WP_CLI;
+use WP_Roles;
 
 /**
  * Class - Admin
@@ -220,6 +220,12 @@ class Admin {
 		$this->network     = new Network( $this->plugin );
 		$this->live_update = new Live_Update( $this->plugin );
 		$this->export      = new Export( $this->plugin );
+
+		// Check if the host has configured the `REMOTE_ADDR` correctly.
+		$client_ip = $this->plugin->get_client_ip_address();
+		if ( empty( $client_ip ) && $this->is_stream_screen() ) {
+			$this->notice( __( 'Stream plugin can\'t determine a reliable client IP address! Please update the hosting environment to set the $_SERVER[\'REMOTE_ADDR\'] variable or use the wp_stream_client_ip_address filter to specify the verified client IP address!', 'stream' ) );
+		}
 	}
 
 	/**
@@ -390,8 +396,8 @@ class Admin {
 	 * @return void
 	 */
 	public function admin_enqueue_scripts( $hook ) {
-		wp_register_script( 'wp-stream-select2', $this->plugin->locations['url'] . 'ui/lib/select2/js/select2.full.min.js', array( 'jquery' ), '3.5.2', true );
-		wp_register_style( 'wp-stream-select2', $this->plugin->locations['url'] . 'ui/lib/select2/css/select2.min.css', array(), '3.5.2' );
+		wp_register_script( 'wp-stream-select2', $this->plugin->locations['url'] . 'ui/lib/select2/js/select2.full.min.js', array( 'jquery' ), '4.0.13', true );
+		wp_register_style( 'wp-stream-select2', $this->plugin->locations['url'] . 'ui/lib/select2/css/select2.min.css', array(), '4.0.13' );
 		wp_register_script( 'wp-stream-timeago', $this->plugin->locations['url'] . 'ui/lib/timeago/jquery.timeago.js', array(), '1.4.1', true );
 
 		$locale    = strtolower( substr( get_locale(), 0, 2 ) );
@@ -463,8 +469,8 @@ class Admin {
 				'wp_stream',
 				array(
 					'i18n'       => array(
-						'confirm_purge'     => esc_html__( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
-						'confirm_defaults'  => esc_html__( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
+						'confirm_purge'    => esc_html__( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
+						'confirm_defaults' => esc_html__( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
 					),
 					'locale'     => esc_js( $locale ),
 					'gmt_offset' => get_option( 'gmt_offset' ),
@@ -482,7 +488,7 @@ class Admin {
 					'current_order'       => isset( $_GET['order'] ) && in_array( strtolower( $_GET['order'] ), $order_types, true ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						? esc_js( $_GET['order'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						: 'desc',
-					'current_query'       => wp_stream_json_encode( $_GET ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					'current_query'       => wp_json_encode( $_GET ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					'current_query_count' => count( $_GET ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				)
 			);
@@ -541,9 +547,10 @@ class Admin {
 			return true;
 		}
 
-		$screen = get_current_screen();
-		if ( Alerts::POST_TYPE === $screen->post_type ) {
-			return true;
+		if ( is_admin() && function_exists( 'get_current_screen' ) ) {
+			$screen = get_current_screen();
+
+			return ( Alerts::POST_TYPE === $screen->post_type );
 		}
 
 		return false;
@@ -857,7 +864,7 @@ class Admin {
 				<h2 class="nav-tab-wrapper">
 					<?php $i = 0; ?>
 					<?php foreach ( $sections as $section => $data ) : ?>
-						<?php $i++; ?>
+						<?php ++$i; ?>
 						<?php $is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section ); ?>
 						<a href="<?php echo esc_url( add_query_arg( 'tab', $section ) ); ?>" class="nav-tab <?php echo $is_active ? esc_attr( ' nav-tab-active' ) : ''; ?>">
 							<?php echo esc_html( $data['title'] ); ?>
@@ -872,7 +879,7 @@ class Admin {
 						<?php
 						$i = 0;
 						foreach ( $sections as $section => $data ) {
-							$i++;
+							++$i;
 
 							$is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section );
 
@@ -1031,7 +1038,7 @@ class Admin {
 		}
 
 		if ( isset( $results ) ) {
-			echo wp_stream_json_encode( $results ); // xss ok.
+			echo wp_json_encode( $results );
 		}
 
 		die();

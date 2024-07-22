@@ -6,13 +6,14 @@
  *
  * @package WP_Stream
  */
+
 namespace WP_Stream;
 
 class Test_WP_Stream_Connector_User_Switching extends WP_StreamTestCase {
 	/**
 	 * Runs before each test
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->plugin->connectors->unload_connectors();
@@ -35,20 +36,20 @@ class Test_WP_Stream_Connector_User_Switching extends WP_StreamTestCase {
 
 	public function test_callback_switch_to_user() {
 		// Create and authenticate user to be switched from.
-		$old_user_id    = self::factory()->user->create(
+		$old_user_id = self::factory()->user->create(
 			array(
 				'user_login'   => 'oldtestuser',
-				'user_role'    => 'adminstrator',
+				'user_role'    => 'administrator',
 				'display_name' => 'oldtestuserdisplay',
 			)
 		);
 		wp_set_current_user( $old_user_id );
 
 		// Create user ID for destination user.
-		$user_id        = self::factory()->user->create(
+		$user_id = self::factory()->user->create(
 			array(
 				'user_login'   => 'testuser',
-				'user_role'    => 'adminstrator',
+				'user_role'    => 'administrator',
 				'display_name' => 'testuserdisplay',
 			)
 		);
@@ -85,17 +86,17 @@ class Test_WP_Stream_Connector_User_Switching extends WP_StreamTestCase {
 
 	public function test_callback_switch_back_user() {
 		// Create and authenticate users for later use.
-		$old_user_id    = self::factory()->user->create(
+		$old_user_id = self::factory()->user->create(
 			array(
 				'user_login'   => 'oldtestuser',
-				'user_role'    => 'adminstrator',
+				'user_role'    => 'administrator',
 				'display_name' => 'oldtestuserdisplay',
 			)
 		);
-		$user_id        = self::factory()->user->create(
+		$user_id     = self::factory()->user->create(
 			array(
 				'user_login'   => 'testuser',
-				'user_role'    => 'adminstrator',
+				'user_role'    => 'administrator',
 				'display_name' => 'testuserdisplay',
 			)
 		);
@@ -135,10 +136,10 @@ class Test_WP_Stream_Connector_User_Switching extends WP_StreamTestCase {
 
 	public function test_callback_switch_off_user() {
 		// Create/authenticate user for later use.
-		$user_id        = self::factory()->user->create(
+		$user_id = self::factory()->user->create(
 			array(
 				'user_login'   => 'testuser',
-				'user_role'    => 'adminstrator',
+				'user_role'    => 'administrator',
 				'display_name' => 'testuserdisplay',
 			)
 		);

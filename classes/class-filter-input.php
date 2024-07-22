@@ -76,33 +76,34 @@ class Filter_Input {
 			throw new \Exception( esc_html__( 'Invalid use, type must be one of INPUT_* family.', 'stream' ) );
 		}
 
-		$var = isset( $super[ $variable_name ] ) ? $super[ $variable_name ] : null;
-		$var = self::filter( $var, $filter, $options );
+		$value = isset( $super[ $variable_name ] ) ? $super[ $variable_name ] : null;
+		$value = self::filter( $value, $filter, $options );
 
-		return $var;
+		return $value;
 	}
 
 	/**
 	 * Sanitize or validate input.
 	 *
-	 * @param mixed $var      Raw input.
-	 * @param int   $filter   Filter callback.
-	 * @param array $options  Filter callback parameters.
-	 * @throws \Exception Unsupported filter provided.
+	 * @param mixed $value   Raw input value.
+	 * @param int   $filter  Filter callback.
+	 * @param array $options Filter callback parameters.
+	 *
 	 * @return mixed
+	 * @throws \Exception Unsupported filter provided.
 	 */
-	public static function filter( $var, $filter = null, $options = array() ) {
+	public static function filter( $value, $filter = null, $options = array() ) {
 		// Default filter is a sanitizer, not validator.
 		$filter_type = 'sanitizer';
 
 		// Only filter value if it is not null.
-		if ( isset( $var ) && $filter && FILTER_DEFAULT !== $filter ) {
+		if ( isset( $value ) && $filter && FILTER_DEFAULT !== $filter ) {
 			if ( ! isset( self::$filter_callbacks[ $filter ] ) ) {
 				throw new \Exception( esc_html__( 'Filter not supported.', 'stream' ) );
 			}
 
 			$filter_callback = self::$filter_callbacks[ $filter ];
-			$result          = call_user_func( $filter_callback, $var );
+			$result          = call_user_func( $filter_callback, $value );
 
 			/**
 			 * "filter_var / filter_input" treats validation/sanitization filters the same
@@ -112,42 +113,41 @@ class Filter_Input {
 			$filter_type = ( $filter < 500 ) ? 'validator' : 'sanitizer';
 			if ( 'validator' === $filter_type ) { // Validation functions.
 				if ( ! $result ) {
-					$var = false;
+					$value = false;
 				}
 			} else { // Santization functions.
-				$var = $result;
+				$value = $result;
 			}
 		}
 
 		// Detect FILTER_REQUIRE_ARRAY flag.
-		if ( isset( $var ) && is_int( $options ) && FILTER_REQUIRE_ARRAY === $options ) {
-			if ( ! is_array( $var ) ) {
-				$var = ( 'validator' === $filter_type ) ? false : null;
+		if ( isset( $value ) && is_int( $options ) && FILTER_REQUIRE_ARRAY === $options ) {
+			if ( ! is_array( $value ) ) {
+				$value = ( 'validator' === $filter_type ) ? false : null;
 			}
 		}
 
 		// Polyfill the `default` attribute only, for now.
 		if ( is_array( $options ) && ! empty( $options['options']['default'] ) ) {
-			if ( 'validator' === $filter_type && false === $var ) {
-				$var = $options['options']['default'];
-			} elseif ( 'sanitizer' === $filter_type && null === $var ) {
-				$var = $options['options']['default'];
+			if ( 'validator' === $filter_type && false === $value ) {
+				$value = $options['options']['default'];
+			} elseif ( 'sanitizer' === $filter_type && null === $value ) {
+				$value = $options['options']['default'];
 			}
 		}
 
-		return $var;
+		return $value;
 	}
 
 	/**
 	 * Returns whether the variable is a Regular Expression or not?
 	 *
-	 * @param string $var  Raw input.
+	 * @param string $maybe_regex Raw input value.
+	 *
 	 * @return boolean
 	 */
-	public static function is_regex( $var ) {
-		// @codingStandardsIgnoreStart
-		$test = @preg_match( $var, '' );
-		// @codingStandardsIgnoreEnd
+	public static function is_regex( $maybe_regex ) {
+		$test = @preg_match( $maybe_regex, '' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 
 		return false !== $test;
 	}
@@ -155,10 +155,11 @@ class Filter_Input {
 	/**
 	 * Returns whether the variable is an IP address or not?
 	 *
-	 * @param string $var  Raw input.
+	 * @param string $maybe_ip Raw input.
+	 *
 	 * @return boolean
 	 */
-	public static function is_ip_address( $var ) {
-		return false !== \WP_Http::is_ip_address( $var );
+	public static function is_ip_address( $maybe_ip ) {
+		return false !== \WP_Http::is_ip_address( $maybe_ip );
 	}
 }

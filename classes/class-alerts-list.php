@@ -331,10 +331,8 @@ class Alerts_List {
 
 	/**
 	 * Enqueue scripts for the alerts list screen.
-	 *
-	 * @param string $page The current page name.
 	 */
-	public function enqueue_scripts( $page ) {
+	public function enqueue_scripts() {
 		$screen = get_current_screen();
 		if ( 'edit-wp_stream_alerts' !== $screen->id ) {
 			return;
