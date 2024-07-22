@@ -27,7 +27,7 @@ class Test_Connector extends WP_StreamTestCase {
 			 */
 			public $actions = array(
 				'simulate_fault',
-        'hyphenated-action',
+				'hyphenated-action',
 			);
 
 			/**
@@ -71,16 +71,16 @@ class Test_Connector extends WP_StreamTestCase {
 				do_action( 'wp_stream_test_child_callback_simulate_fault' );
 			}
 
-      /**
-       * Log the hyphenated action callback.
-       *
-       * @action hyphenated-action
-       *
-       * @return void
-       */
-      public function callback_hyphenated_action() {
+			/**
+			* Log the hyphenated action callback.
+			*
+			* @action hyphenated-action
+			*
+			* @return void
+			*/
+			public function callback_hyphenated_action() {
 				do_action( 'wp_stream_test_child_callback_hyphenated_action' );
-      }
+			}
 		};
 
 		$this->assertNotEmpty( $this->connector );
@@ -258,7 +258,6 @@ class Test_Connector extends WP_StreamTestCase {
 	public function test_is_dependency_satisfied() {
 		$this->assertTrue( $this->connector->is_dependency_satisfied() );
 	}
-
 
 	/**
 	 * Test that percentages are escaped.
