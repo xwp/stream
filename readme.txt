@@ -3,7 +3,7 @@ Contributors: xwp
 Tags: wp stream, stream, activity, logs, track
 Requires at least: 4.5
 Tested up to: 6.3
-Stable tag: 3.10.1
+Stable tag: 3.10.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -102,10 +102,6 @@ Track changes to posts when using the block editor.
 
 
 == Changelog ==
-
-= 3.10.1 - October 9, 2023 =
-
-- Fix: Fixed the dynamic callback locating routine by removing the hyphen as a valid function name character.
 
 = 3.10.0 - October 9, 2023 =
 
