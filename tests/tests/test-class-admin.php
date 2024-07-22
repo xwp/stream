@@ -9,6 +9,13 @@ class Test_Admin extends WP_StreamTestCase {
 	 */
 	protected $admin;
 
+	/**
+	 * Holds the administrator id.
+	 *
+	 * @var int
+	 */
+	protected $admin_user_id;
+
 	public function setUp(): void {
 		parent::setUp();
 
@@ -17,14 +24,29 @@ class Test_Admin extends WP_StreamTestCase {
 
 		// Add admin user to test caps
 		// We need to change user to verify editing option as admin or editor
-		$administrator_id = $this->factory->user->create(
+		$this->admin_user_id = \WP_UnitTestCase_Base::factory()->user->create(
 			array(
 				'role'       => 'administrator',
 				'user_login' => 'test_admin',
 				'email'      => 'test@land.com',
 			)
 		);
-		wp_set_current_user( $administrator_id );
+		wp_set_current_user( $this->admin_user_id );
+	}
+
+	/**
+	 * Tear down after each test. Delete the admin user and start afresh.
+	 *
+	 * @return void
+	 */
+	public function tearDown(): void {
+		parent::tear_down();
+
+		if ( is_multisite() ) {
+			wpmu_delete_user( $this->admin_user_id );
+		} else {
+			wp_delete_user( $this->admin_user_id );
+		}
 	}
 
 	public function test_construct() {
@@ -350,7 +372,7 @@ class Test_Admin extends WP_StreamTestCase {
 	 * Also tests private method role_can_view
 	 */
 	public function test_filter_user_caps() {
-		$user = new \WP_User( get_current_user_id() );
+		$user = new \WP_User( $this->admin_user_id );
 
 		$this->plugin->settings->options['general_role_access'] = array( 'administrator' );
 		$this->assertTrue( $user->has_cap( $this->admin->view_cap ) );
@@ -379,7 +401,7 @@ class Test_Admin extends WP_StreamTestCase {
 	 * @requires PHPUnit 5.7
 	 */
 	public function test_ajax_filters() {
-		$user = new \WP_User( get_current_user_id() );
+		$user = new \WP_User( $this->admin_user_id );
 
 		$this->_setRole( 'subscriber' );
 
@@ -415,9 +437,9 @@ class Test_Admin extends WP_StreamTestCase {
 	}
 
 	public function test_get_users_record_meta() {
-		$user_id = get_current_user_id();
+		$user_id = $this->admin_user_id;
 		$authors = array(
-			$user_id => wp_get_current_user(),
+			$user_id => get_user_by( 'id', $user_id ),
 		);
 
 		$records = $this->admin->get_users_record_meta( $authors );
@@ -430,27 +452,27 @@ class Test_Admin extends WP_StreamTestCase {
 	public function test_get_user_meta() {
 		$key   = 'message_1';
 		$value = 'It is dangerous to remain here. You must leave within two days.';
-		update_user_meta( get_current_user_id(), $key, $value );
-		$this->assertEquals( $this->admin->get_user_meta( get_current_user_id(), $key, true ), $value );
+		update_user_meta( $this->admin_user_id, $key, $value );
+		$this->assertEquals( $this->admin->get_user_meta( $this->admin_user_id, $key, true ), $value );
 	}
 
 	public function test_update_user_meta() {
 		$key   = 'message_2';
 		$value = 'I understand. It is important that you believe me. Look behind you.';
-		$this->admin->update_user_meta( get_current_user_id(), $key, $value );
-		$this->assertEquals( get_user_meta( get_current_user_id(), $key, true ), $value );
+		$this->admin->update_user_meta( $this->admin_user_id, $key, $value );
+		$this->assertEquals( get_user_meta( $this->admin_user_id, $key, true ), $value );
 	}
 
 	public function test_delete_user_meta() {
 		$key   = 'message_3';
 		$value = 'I was David Bowman.';
 
-		update_user_meta( get_current_user_id(), $key, $value );
-		$this->assertEquals( get_user_meta( get_current_user_id(), $key, true ), $value );
+		update_user_meta( $this->admin_user_id, $key, $value );
+		$this->assertEquals( get_user_meta( $this->admin_user_id, $key, true ), $value );
 
-		$this->admin->delete_user_meta( get_current_user_id(), $key );
+		$this->admin->delete_user_meta( $this->admin_user_id, $key );
 
-		$this->assertEmpty( get_user_meta( get_current_user_id(), $key, true ) );
+		$this->assertEmpty( get_user_meta( $this->admin_user_id, $key, true ) );
 	}
 
 	private function dummy_stream_data() {

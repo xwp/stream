@@ -77,10 +77,13 @@
       "phpunit --coverage-text",
       "php local/scripts/make-clover-relative.php ./tests/reports/clover.xml"
     ],
-    "test-xdebug": "XDEBUG_TRIGGER=1 phpunit --coverage-text",
     "test-multisite": [
       "WP_MULTISITE=1 phpunit --coverage-text",
       "php local/scripts/make-clover-relative.php ./tests/reports/clover.xml"
+    ],
+    "test-xdebug": [
+      "XDEBUG_TRIGGER=1 phpunit",
+      "WP_MULTISITE=1 XDEBUG_TRIGGER=1 phpunit"
     ],
     "test-report": [
       "php-coveralls --verbose"
