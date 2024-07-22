@@ -410,18 +410,19 @@ class Alerts {
 	/**
 	 * Return alert object of the given ID
 	 *
-	 * @param string $post_id Post ID for the alert.
+	 * @param string|int $post_id Post ID for the alert.
 	 *
 	 * @return Alert
 	 */
 	public function get_alert( $post_id = '' ) {
 		if ( ! $post_id ) {
-			$obj = new Alert( null, $this->plugin );
-
-			return $obj;
+			return new Alert( null, $this->plugin );
 		}
 
 		$post = get_post( $post_id );
+		if ( ! ( $post instanceof \WP_Post ) ) {
+			return new Alert( null, $this->plugin );
+		}
 
 		$alert_type = get_post_meta( $post_id, 'alert_type', true );
 		$alert_meta = get_post_meta( $post_id, 'alert_meta', true );
@@ -565,7 +566,7 @@ class Alerts {
 		}
 		$alert   = array();
 		$post_id = wp_stream_filter_input( INPUT_POST, 'post_id' );
-		if ( ! empty( $post_id ) ) {
+		if ( ! empty( $post_id ) && 'new' !== $post_id ) {
 			$alert = $this->get_alert( $post_id );
 			if ( false === $alert ) {
 				wp_send_json_error(
