@@ -197,7 +197,7 @@ class Log {
 			$exclude_rules = array_filter(
 				$exclude,
 				function ( $value ) {
-					return ! is_null( $value ) && '' !== $value;
+					return ! is_null( $value );
 				}
 			);
 
