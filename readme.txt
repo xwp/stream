@@ -1,8 +1,8 @@
 === Stream ===
 Contributors: xwp
 Tags: wp stream, stream, activity, logs, track
-Requires at least: 4.5
-Tested up to: 6.4
+Requires at least: 4.6
+Tested up to: 6.6
 Stable tag: 4.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html

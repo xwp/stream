@@ -66,8 +66,9 @@ class Alert {
 	/**
 	 * Class constructor
 	 *
-	 * @param object $item Alert data.
-	 * @param Plugin $plugin Instance of plugin object.
+	 * @param ?object $item   Alert data.
+	 * @param Plugin  $plugin Instance of plugin object.
+	 *
 	 * @return void
 	 */
 	public function __construct( $item, $plugin ) {

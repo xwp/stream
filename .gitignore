@@ -10,6 +10,7 @@
 /stream.zip
 /stream-*.zip
 npm-debug.log
+debug.log
 package.lock
 .phpunit.result.cache
 

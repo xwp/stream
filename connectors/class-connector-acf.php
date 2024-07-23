@@ -614,7 +614,7 @@ class Connector_ACF extends Connector {
 				/* translators: %1$s: a field label, %2$s: an object title, %3$s: an object type (e.g. "Message", "Hello World", "post") */
 				esc_html_x( '"%1$s" of "%2$s" %3$s updated', 'acf', 'stream' ),
 				array(
-					'field_label'   => $cache['field']['label'],
+					'field_label'   => ! empty( $cache['field']['label'] ) ? $cache['field']['label'] : __( 'unknown', 'stream' ),
 					'title'         => $title,
 					'singular_name' => $type_name,
 					'meta_value'    => $value,

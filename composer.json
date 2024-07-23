@@ -11,7 +11,7 @@
     }
   ],
   "require": {
-    "php": ">=5.6.20",
+    "php": ">=7.0",
     "composer/installers": "~1.0",
     "ext-json": "*"
   },
@@ -19,11 +19,12 @@
     "automattic/vipwpcs": "^3.0",
     "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
     "humanmade/mercator": "^1.0",
+    "johnbillion/query-monitor": "^3.16",
     "php-coveralls/php-coveralls": "^2.5",
     "phpcompatibility/php-compatibility": "dev-develop as 9.99.99",
     "phpcompatibility/phpcompatibility-wp": "^2.1",
     "phpunit/phpunit": "^9.6",
-    "roots/wordpress": "^6.5",
+    "roots/wordpress": "^6.6",
     "wp-cli/wp-cli-bundle": "^2.6",
     "wp-coding-standards/wpcs": "^3.1",
     "wp-phpunit/wp-phpunit": "^6.6",
@@ -31,6 +32,7 @@
     "wpackagist-plugin/easy-digital-downloads": "3.3.1",
     "wpackagist-plugin/jetpack": "13.6",
     "wpackagist-plugin/user-switching": "1.8.0",
+    "wpackagist-plugin/wordpress-seo": "23.0",
     "wpackagist-theme/twentytwentythree": "^1.0",
     "xwp/wait-for": "^0.0.1",
     "yoast/phpunit-polyfills": "^1.1"
@@ -76,6 +78,10 @@
     "test": [
       "phpunit --coverage-text",
       "php local/scripts/make-clover-relative.php ./tests/reports/clover.xml"
+    ],
+    "test-one": [
+      "phpunit",
+      "WP_MULTISITE=1 phpunit"
     ],
     "test-multisite": [
       "WP_MULTISITE=1 phpunit --coverage-text",
