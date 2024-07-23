@@ -56,6 +56,7 @@
     "start": "docker compose up --remove-orphans --detach",
     "switch-to:php8.2": "docker compose build --build-arg PHP_VERSION=8.2 --build-arg XDEBUG_VERSION=3.3.2 && npm run start",
     "switch-to:php7.4": "docker compose build && npm run start",
+    "which-php": "npm run cli -- php --version",
     "stop": "docker compose down",
     "stop-all": "docker stop $(docker ps -a -q)",
     "logs": "docker compose logs --follow",
