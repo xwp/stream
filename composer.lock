@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "110cc9c044abb9fbc0eb4f3a1936e013",
+    "content-hash": "753ae3362f0b46d66f1bba422505dab4",
     "packages": [
         {
             "name": "composer/installers",
@@ -8374,15 +8374,15 @@
         },
         {
             "name": "wpackagist-plugin/jetpack",
-            "version": "10.0",
+            "version": "13.6",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/jetpack/",
-                "reference": "tags/10.0"
+                "reference": "tags/13.6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/jetpack.10.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/jetpack.13.6.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -8392,15 +8392,15 @@
         },
         {
             "name": "wpackagist-plugin/user-switching",
-            "version": "1.7.3",
+            "version": "1.8.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/user-switching/",
-                "reference": "tags/1.7.3"
+                "reference": "tags/1.8.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/user-switching.1.7.3.zip"
+                "url": "https://downloads.wordpress.org/plugin/user-switching.1.8.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
