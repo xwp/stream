@@ -212,7 +212,7 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 				$this->equalTo(
 					array(
 						'name'     => 'icon-128x128.png',
-						'filename' => WP_STEAM_TESTDATA . '/images/icon-128x128.png',
+						'filename' => WP_STEAM_TESTDATA . '/tmp/icon-128x128.png',
 						'post_id'  => $attachment_id,
 					)
 				),
@@ -226,7 +226,7 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 
 		// Simulate editor page save to trigger callback.
 		\wp_save_image_file(
-			WP_STEAM_TESTDATA . '/images/icon-128x128.png',
+			WP_STEAM_TESTDATA . '/tmp/icon-128x128.png',
 			$image,
 			'image/png',
 			$attachment_id
