@@ -24,6 +24,10 @@ class Test_WP_Stream_Connector_WordPress_SEO extends WP_StreamTestCase {
 	public function setUp(): void {
 		parent::setUp();
 
+		if ( is_multisite() ) {
+			$this->markTestSkipped( 'Currently testing in single sites only.' );
+		}
+
 		$this->plugin->connectors->unload_connectors();
 
 		// Make partial of Connector_WordPress_SEO class, with mocked "log" function.

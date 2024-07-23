@@ -110,8 +110,11 @@ define( 'EDD_USE_PHP_SESSIONS', false );
 define( 'WP_USE_THEMES', false );
 define( 'EDD_DOING_TESTS', true );
 activate_plugin( 'easy-digital-downloads/easy-digital-downloads.php' );
-activate_plugin( 'wordpress-seo/wp-seo.php' );
 wp_stream_install_edd();
+
+if ( ! is_multisite() ) {
+	activate_plugin( 'wordpress-seo/wp-seo.php' );
+}
 
 require __DIR__ . '/testcase.php';
 

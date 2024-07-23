@@ -81,15 +81,15 @@
     ],
     "test-one": [
       "phpunit",
-      "WP_MULTISITE=1 phpunit"
+      "WP_MULTISITE=1 phpunit -c phpunit-multisite.xml"
     ],
     "test-multisite": [
-      "WP_MULTISITE=1 phpunit --coverage-text",
+      "WP_MULTISITE=1 phpunit -c phpunit-multisite.xml --coverage-text",
       "php local/scripts/make-clover-relative.php ./tests/reports/clover.xml"
     ],
     "test-xdebug": [
       "XDEBUG_TRIGGER=1 phpunit",
-      "WP_MULTISITE=1 XDEBUG_TRIGGER=1 phpunit"
+      "WP_MULTISITE=1 XDEBUG_TRIGGER=1 phpunit -c phpunit-multisite.xml"
     ],
     "test-report": [
       "php-coveralls --verbose"
