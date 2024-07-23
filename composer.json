@@ -32,7 +32,7 @@
     "wpackagist-plugin/easy-digital-downloads": "3.3.1",
     "wpackagist-plugin/jetpack": "13.6",
     "wpackagist-plugin/user-switching": "1.8.0",
-    "wpackagist-plugin/wordpress-seo": "23.0",
+    "wpackagist-plugin/wordpress-seo": "23.1",
     "wpackagist-theme/twentytwentythree": "^1.0",
     "xwp/wait-for": "^0.0.1",
     "yoast/phpunit-polyfills": "^1.1"
