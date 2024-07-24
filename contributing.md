@@ -55,6 +55,7 @@ We use npm as the canonical task runner for the project. The following commands 
 - `npm run test` to run PHPunit tests inside the WordPress container.
 - `npm run test-xdebug` will run the PHPunit tests with Xdebug enabled.
 - `npm run switch-to:php7.4` and `npm run switch-to:php8.2` will switch you to either PHP 7.4 or PHP 8.2
+- `npm run document:connectors` generates [connectors.md](connectors.md). This runs via your local php.
 
 By default, tests have `WP_DEBUG` as false. You can override this if necessary by setting `WP_STREAM_TEST_DEBUG` to "yes".
 
