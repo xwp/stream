@@ -28,11 +28,11 @@
     "wp-cli/wp-cli-bundle": "^2.6",
     "wp-coding-standards/wpcs": "^3.1",
     "wp-phpunit/wp-phpunit": "^6.6",
-    "wpackagist-plugin/advanced-custom-fields": "5.8.12",
-    "wpackagist-plugin/easy-digital-downloads": "2.9.23",
-    "wpackagist-plugin/jetpack": "10.0",
-    "wpackagist-plugin/user-switching": "1.5.5",
-    "wpackagist-plugin/wordpress-seo": "23.0",
+    "wpackagist-plugin/advanced-custom-fields": "6.3.4",
+    "wpackagist-plugin/easy-digital-downloads": "3.3.1",
+    "wpackagist-plugin/jetpack": "13.6",
+    "wpackagist-plugin/user-switching": "1.8.0",
+    "wpackagist-plugin/wordpress-seo": "23.1",
     "wpackagist-theme/twentytwentythree": "^1.0",
     "xwp/wait-for": "^0.0.1",
     "yoast/phpunit-polyfills": "^1.1"
@@ -81,11 +81,15 @@
     ],
     "test-one": [
       "phpunit",
-      "WP_MULTISITE=1 phpunit"
+      "WP_MULTISITE=1 phpunit -c phpunit-multisite.xml"
     ],
     "test-multisite": [
-      "WP_MULTISITE=1 phpunit --coverage-text",
+      "WP_MULTISITE=1 phpunit -c phpunit-multisite.xml --coverage-text",
       "php local/scripts/make-clover-relative.php ./tests/reports/clover.xml"
+    ],
+    "test-xdebug": [
+      "XDEBUG_TRIGGER=1 phpunit",
+      "WP_MULTISITE=1 XDEBUG_TRIGGER=1 phpunit -c phpunit-multisite.xml"
     ],
     "test-report": [
       "php-coveralls --verbose"

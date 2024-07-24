@@ -17,7 +17,7 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 
 		// Make partial of Connector_Media class, with mocked "log" function.
 		$this->mock = $this->getMockBuilder( Connector_Media::class )
-			->setMethods( array( 'log' ) )
+			->onlyMethods( array( 'log' ) )
 			->getMock();
 
 		// Register connector.
@@ -211,8 +211,8 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 				$this->equalTo( __( 'Edited image "%s"', 'stream' ) ),
 				$this->equalTo(
 					array(
-						'name'     => 'file.jpg',
-						'filename' => 'file.jpg',
+						'name'     => 'icon-128x128.png',
+						'filename' => WP_STEAM_TESTDATA . '/tmp/icon-128x128.png',
 						'post_id'  => $attachment_id,
 					)
 				),
@@ -221,11 +221,14 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 				$this->equalTo( 'edited' )
 			);
 
+		$image = new \WP_Image_Editor_GD( WP_STEAM_TESTDATA . '/images/icon-128x128.png' );
+		$image->load();
+
 		// Simulate editor page save to trigger callback.
 		\wp_save_image_file(
-			'file.jpg',
-			new \WP_Image_Editor_GD( sys_get_temp_dir() . 'file.jpg' ),
-			'image/jpeg',
+			WP_STEAM_TESTDATA . '/tmp/icon-128x128.png',
+			$image,
+			'image/png',
 			$attachment_id
 		);
 

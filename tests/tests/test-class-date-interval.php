@@ -53,7 +53,7 @@ class Test_Date_Interval extends WP_StreamTestCase {
 	 * Test generate_date_intervals
 	 *
 	 * @return void
-	 * @throws \Exception
+	 * @throws \Exception Emits Exception in case of an error.
 	 */
 	public function test_generate_date_intervals() {
 		$timezone  = new \DateTimeZone( 'UTC' );

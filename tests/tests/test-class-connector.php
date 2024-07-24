@@ -72,12 +72,12 @@ class Test_Connector extends WP_StreamTestCase {
 			}
 
 			/**
-			* Log the hyphenated action callback.
-			*
-			* @action hyphenated-action
-			*
-			* @return void
-			*/
+			 * Log the hyphenated action callback.
+			 *
+			 * @action hyphenated-action
+			 *
+			 * @return void
+			 */
 			public function callback_hyphenated_action() {
 				do_action( 'wp_stream_test_child_callback_hyphenated_action' );
 			}
@@ -125,7 +125,7 @@ class Test_Connector extends WP_StreamTestCase {
 
 	public function test_callback_hyphenated() {
 		global $wp_current_filter;
-		$action = $this->connector->actions[1];
+		$action              = $this->connector->actions[1];
 		$wp_current_filter[] = $action; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 
 		$this->connector->callback();

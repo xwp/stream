@@ -18,3 +18,6 @@ package.lock
 ui/js/*.min.js
 ui/css/*.min.css
 alerts/js/*.min.js
+
+# Generated test data
+tests/data/tmp/*

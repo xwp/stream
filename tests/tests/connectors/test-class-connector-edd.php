@@ -10,6 +10,7 @@
 namespace WP_Stream;
 
 class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
+
 	/**
 	 * Runs before each test
 	 */
@@ -20,7 +21,7 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 
 		// Make partial of Connector_EDD class, with mocked "log" function.
 		$this->mock = $this->getMockBuilder( Connector_EDD::class )
-			->setMethods( array( 'log' ) )
+			->onlyMethods( array( 'log' ) )
 			->getMock();
 
 		$this->mock->register();
@@ -90,7 +91,7 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 			'status'            => 'active',
 			'product_condition' => 'all',
 		);
-		$discount_id = edd_store_discount( $post );
+		$discount_id = edd_add_discount( $post );
 
 		return $discount_id;
 	}
@@ -178,7 +179,12 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 
 		// Create download and discount to trigger logs.
 		$this->create_simple_download();
-		$this->create_simple_percent_discount();
+		$discount_id = $this->create_simple_percent_discount();
+		$discount    = new \EDD_Discount( $discount_id );
+		$discount->update_status( 'inactive' );
+
+		// NOTE: the following function does *not* trigger the "edd_pre_update_status_option":
+		// edd_update_discount_status( $discount_id, 'inactive' );
 
 		// Check assertion flags
 		$this->assertSame( $asserted, 2 );
@@ -186,8 +192,11 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 
 	public function test_callback_edd_pre_update_discount_status() {
 		// Create discount for later use.
-		$post_id  = $this->create_simple_percent_discount();
-		$discount = new \EDD_Discount( $post_id );
+		$discount_id = $this->create_simple_percent_discount();
+		$discount    = new \EDD_Discount( $discount_id );
+
+		// NOTE: the following function does *not* trigger the "edd_pre_update_status_option":
+		// edd_update_discount_status( $discount_id, 'inactive' );
 
 		// Expected log calls.
 		$this->mock->expects( $this->once() )
@@ -196,17 +205,17 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 				$this->equalTo(
 					sprintf(
 						__( '"%1$s" discount %2$s', 'stream' ),
-						$discount->name,
+						edd_get_discount_field( $discount_id, 'name' ),
 						esc_html__( 'deactivated', 'stream' )
 					)
 				),
 				$this->equalTo(
 					array(
-						'post_id' => $post_id,
-						'status'  => 'inactive',
+						'discount_id' => $discount_id,
+						'status'      => 'inactive',
 					)
 				),
-				$this->equalTo( $post_id ),
+				$this->equalTo( $discount_id ),
 				$this->equalTo( 'discounts' ),
 				$this->equalTo( 'updated' )
 			);

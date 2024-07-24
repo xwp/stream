@@ -15,6 +15,7 @@ if ( empty( $_tests_dir ) || ! file_exists( $_tests_dir . '/includes' ) ) {
 // Use in code to trigger custom actions.
 define( 'WP_STREAM_TESTS', true );
 define( 'WP_STREAM_DEV_DEBUG', true );
+define( 'WP_STEAM_TESTDATA', __DIR__ . '/data' );
 
 // @see https://core.trac.wordpress.org/browser/trunk/tests/phpunit/includes/functions.php
 require_once $_tests_dir . '/includes/functions.php';
@@ -70,7 +71,18 @@ tests_add_filter( 'muplugins_loaded', 'wp_stream_manually_load_mercator' );
  */
 function wp_stream_install_edd() {
 
+	add_filter(
+		'pre_http_request',
+		function () {
+			return new WP_Error( 'no_reqs_in_unit_tests', __( 'HTTP Requests disabled for unit tests', 'stream' ) );
+		}
+	);
+
 	edd_install();
+	edd_install_component_database_tables();
+
+	// I am not sure why this is required.
+	require_once WP_PLUGIN_DIR . '/easy-digital-downloads/includes/gateways/stripe/includes/admin/class-notices-registry.php';
 
 	global $current_user, $edd_options;
 
@@ -86,13 +98,6 @@ function wp_stream_install_edd() {
 		)
 	);
 	add_filter( 'edd_log_email_errors', '__return_false' );
-
-	add_filter(
-		'pre_http_request',
-		function () {
-			return new WP_Error( 'no_reqs_in_unit_tests', __( 'HTTP Requests disabled for unit tests', 'stream' ) );
-		}
-	);
 }
 
 // Run Jetpack in offline mode for testing.
@@ -103,9 +108,13 @@ require $_tests_dir . '/includes/bootstrap.php';
 
 define( 'EDD_USE_PHP_SESSIONS', false );
 define( 'WP_USE_THEMES', false );
+define( 'EDD_DOING_TESTS', true );
 activate_plugin( 'easy-digital-downloads/easy-digital-downloads.php' );
-activate_plugin( 'wordpress-seo/wp-seo.php' );
 wp_stream_install_edd();
+
+if ( ! is_multisite() ) {
+	activate_plugin( 'wordpress-seo/wp-seo.php' );
+}
 
 require __DIR__ . '/testcase.php';
 

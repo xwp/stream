@@ -9,7 +9,7 @@
 // Rely on Composer autoload to pull in tooling helpers.
 require_once __DIR__ . '/wp-content/plugins/stream-src/vendor/autoload.php';
 
-define( 'WP_DEBUG', true );
+define( 'WP_DEBUG', isset( $_ENV['WP_STREAM_TEST_DEBUG'] ) ? $_ENV['WP_STREAM_TEST_DEBUG'] === 'yes' : false );
 
 # Configured in docker-compose.yml.
 define( 'DB_NAME', 'wordpress_test' );
