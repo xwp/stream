@@ -205,7 +205,7 @@ class Connector_BuddyPress extends Connector {
 				),
 				admin_url( 'admin.php' )
 			);
-		} elseif ( in_array( $record->context, array( 'groups' ), true ) ) {
+		} elseif ( in_array( $record->context, array( 'groups' ), true ) && function_exists( 'groups_get_group' ) ) {
 			$group_id = $record->get_meta( 'id', true );
 			$group    = \groups_get_group(
 				array(
@@ -224,7 +224,7 @@ class Connector_BuddyPress extends Connector {
 				$links[ esc_html__( 'View group', 'stream' ) ]   = $visit_url;
 				$links[ esc_html__( 'Delete group', 'stream' ) ] = $delete_url;
 			}
-		} elseif ( in_array( $record->context, array( 'activity' ), true ) ) {
+		} elseif ( in_array( $record->context, array( 'activity' ), true ) && function_exists( 'bp_activity_get' ) ) {
 			$activity_id = $record->get_meta( 'id', true );
 			$activities  = \bp_activity_get(
 				array(
@@ -271,7 +271,7 @@ class Connector_BuddyPress extends Connector {
 					),
 					admin_url( 'users.php' )
 				);
-			} else {
+			} elseif ( class_exists( 'BP_XProfile_Field' ) ) {
 				$field = new \BP_XProfile_Field( $field_id );
 				if ( empty( $field->type ) ) {
 					return $links;
