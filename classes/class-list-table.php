@@ -391,37 +391,33 @@ class List_Table extends \WP_List_Table {
 				 * Registers new Columns to be inserted into the table. The cell contents of this column is set
 				 * below with 'wp_stream_insert_column_default_'
 				 *
-				 * @param array $new_columns  Columns injected in the table.
+				 * @since      3.5.1
+				 * @deprecated 4.0.1 Use the {@see 'wp_stream_list_table_columns'} filter instead.
+				 *
+				 * @param array $new_columns Columns injected in the table.
 				 *
 				 * @return array
 				 */
-				$inserted_columns = apply_filters( 'wp_stream_register_column_defaults', array() );
+				apply_filters_deprecated(
+					'wp_stream_register_column_defaults',
+					array( array() ),
+					/* translators: %s is the Stream version number. It is part of a filter deprecation notice and is preceded by: "{hook_name} is deprecated since version %s of Stream". */
+					sprintf( __( '%s of Stream', 'stream' ), '4.0.1' ),
+					'wp_stream_list_table_columns',
+					__( 'Usage of this filter is redundant. Instead, define custom column name and title using the `wp_stream_list_table_columns` filter and provide the default value using the `wp_stream_insert_column_default_{$column_name}` filter.', 'stream' )
+				);
 
-				if ( ! empty( $inserted_columns ) && is_array( $inserted_columns ) ) {
-					foreach ( $inserted_columns as $column_title ) {
-						/**
-						 * If column title inserted via wp_stream_register_column_defaults ($column_title) exists
-						 * among columns registered with get_columns ($column_name) and there is an action associated
-						 * with this column, do the action
-						 *
-						 * Also, note that the action name must include the $column_title registered
-						 * with wp_stream_register_column_defaults
-						 */
-						if ( $column_title === $column_name ) {
-							/**
-							 * Allows for the addition of content under a specified column.
-							 *
-							 * @param string $out          Column content.
-							 * @param object $record       Record with row content.
-							 * @param string $column_name  Column name.
-							 *
-							 * @return string
-							 */
-							$out = apply_filters( "wp_stream_insert_column_default_{$column_title}", $out, $record, $column_name );
-							break;
-						}
-					}
-				}
+				/**
+				 * Allows for the addition of content under a specified column.
+				 *
+				 * @param string $out         Column content.
+				 * @param object $record      Record with row content.
+				 * @param string $column_name Column name.
+				 *
+				 * @return string
+				 */
+				$out = (string) apply_filters( "wp_stream_insert_column_default_{$column_name}", $out, $record, $column_name );
+				break;
 		}
 
 		$allowed_tags                  = wp_kses_allowed_html( 'post' );
