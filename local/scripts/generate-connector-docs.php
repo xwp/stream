@@ -66,11 +66,13 @@ function wp_stream_create_connector_information( $connector ) {
 
 ### Class register()
 
-This is the register method for the Connector. Occasionally there are additional actions in here.
+<details>
+<summary>This is the register method for the Connector. Occasionally there are additional actions in here.</summary>
 
 ```php
 <?php echo $register_method; ?>
 ```
+</details>
 
 <?php
 	return ob_get_clean();

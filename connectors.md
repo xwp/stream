@@ -18,7 +18,8 @@
 
 ### Class register()
 
-This is the register method for the Connector. Occasionally there are additional actions in here.
+<details>
+<summary>This is the register method for the Connector. Occasionally there are additional actions in here.</summary>
 
 ```php
 	public function register() {
@@ -36,6 +37,7 @@ This is the register method for the Connector. Occasionally there are additional
 		parent::register();
 	}
 ```
+</details>
 
 
 ## Connector: WP_Stream\Connector_BbPress
@@ -46,7 +48,8 @@ This is the register method for the Connector. Occasionally there are additional
 
 ### Class register()
 
-This is the register method for the Connector. Occasionally there are additional actions in here.
+<details>
+<summary>This is the register method for the Connector. Occasionally there are additional actions in here.</summary>
 
 ```php
 	public function register() {
@@ -55,6 +58,7 @@ This is the register method for the Connector. Occasionally there are additional
 		add_filter( 'wp_stream_log_data', array( $this, 'log_override' ) );
 	}
 ```
+</details>
 
 
 ## Connector: WP_Stream\Connector_Blogs
@@ -79,7 +83,8 @@ This is the register method for the Connector. Occasionally there are additional
 
 ### Class register()
 
-This is the register method for the Connector. Occasionally there are additional actions in here.
+<details>
+<summary>This is the register method for the Connector. Occasionally there are additional actions in here.</summary>
 
 ```php
 	public function register() {
@@ -96,6 +101,7 @@ This is the register method for the Connector. Occasionally there are additional
 		$this->is_registered = true;
 	}
 ```
+</details>
 
 
 ## Connector: WP_Stream\Connector_BuddyPress
@@ -132,7 +138,8 @@ This is the register method for the Connector. Occasionally there are additional
 
 ### Class register()
 
-This is the register method for the Connector. Occasionally there are additional actions in here.
+<details>
+<summary>This is the register method for the Connector. Occasionally there are additional actions in here.</summary>
 
 ```php
 	public function register() {
@@ -185,6 +192,7 @@ This is the register method for the Connector. Occasionally there are additional
 		);
 	}
 ```
+</details>
 
 
 ## Connector: WP_Stream\Connector_Comments
@@ -206,7 +214,8 @@ This is the register method for the Connector. Occasionally there are additional
 
 ### Class register()
 
-This is the register method for the Connector. Occasionally there are additional actions in here.
+<details>
+<summary>This is the register method for the Connector. Occasionally there are additional actions in here.</summary>
 
 ```php
 	public function register() {
@@ -223,6 +232,7 @@ This is the register method for the Connector. Occasionally there are additional
 		$this->is_registered = true;
 	}
 ```
+</details>
 
 
 ## Connector: WP_Stream\Connector_EDD
@@ -249,7 +259,8 @@ This is the register method for the Connector. Occasionally there are additional
 
 ### Class register()
 
-This is the register method for the Connector. Occasionally there are additional actions in here.
+<details>
+<summary>This is the register method for the Connector. Occasionally there are additional actions in here.</summary>
 
 ```php
 	public function register() {
@@ -262,6 +273,7 @@ This is the register method for the Connector. Occasionally there are additional
 		);
 	}
 ```
+</details>
 
 
 ## Connector: WP_Stream\Connector_Editor
@@ -271,7 +283,8 @@ This is the register method for the Connector. Occasionally there are additional
 
 ### Class register()
 
-This is the register method for the Connector. Occasionally there are additional actions in here.
+<details>
+<summary>This is the register method for the Connector. Occasionally there are additional actions in here.</summary>
 
 ```php
 	public function register() {
@@ -281,6 +294,7 @@ This is the register method for the Connector. Occasionally there are additional
 		add_filter( 'wp_redirect', array( $this, 'log_changes' ) );
 	}
 ```
+</details>
 
 
 ## Connector: WP_Stream\Connector_GravityForms
@@ -316,7 +330,8 @@ This is the register method for the Connector. Occasionally there are additional
 
 ### Class register()
 
-This is the register method for the Connector. Occasionally there are additional actions in here.
+<details>
+<summary>This is the register method for the Connector. Occasionally there are additional actions in here.</summary>
 
 ```php
 	public function register() {
@@ -345,6 +360,7 @@ This is the register method for the Connector. Occasionally there are additional
 		);
 	}
 ```
+</details>
 
 
 ## Connector: WP_Stream\Connector_Installer
@@ -362,7 +378,8 @@ This is the register method for the Connector. Occasionally there are additional
 
 ### Class register()
 
-This is the register method for the Connector. Occasionally there are additional actions in here.
+<details>
+<summary>This is the register method for the Connector. Occasionally there are additional actions in here.</summary>
 
 ```php
 	public function register() {
@@ -379,6 +396,7 @@ This is the register method for the Connector. Occasionally there are additional
 		$this->is_registered = true;
 	}
 ```
+</details>
 
 
 ## Connector: WP_Stream\Connector_Jetpack
@@ -397,7 +415,8 @@ This is the register method for the Connector. Occasionally there are additional
 
 ### Class register()
 
-This is the register method for the Connector. Occasionally there are additional actions in here.
+<details>
+<summary>This is the register method for the Connector. Occasionally there are additional actions in here.</summary>
 
 ```php
 	public function register() {
@@ -527,6 +546,7 @@ This is the register method for the Connector. Occasionally there are additional
 		);
 	}
 ```
+</details>
 
 
 ## Connector: WP_Stream\Connector_Media
@@ -541,7 +561,8 @@ This is the register method for the Connector. Occasionally there are additional
 
 ### Class register()
 
-This is the register method for the Connector. Occasionally there are additional actions in here.
+<details>
+<summary>This is the register method for the Connector. Occasionally there are additional actions in here.</summary>
 
 ```php
 	public function register() {
@@ -558,6 +579,7 @@ This is the register method for the Connector. Occasionally there are additional
 		$this->is_registered = true;
 	}
 ```
+</details>
 
 
 ## Connector: WP_Stream\Connector_Menus
@@ -570,7 +592,8 @@ This is the register method for the Connector. Occasionally there are additional
 
 ### Class register()
 
-This is the register method for the Connector. Occasionally there are additional actions in here.
+<details>
+<summary>This is the register method for the Connector. Occasionally there are additional actions in here.</summary>
 
 ```php
 	public function register() {
@@ -579,6 +602,7 @@ This is the register method for the Connector. Occasionally there are additional
 		add_action( 'update_option_theme_mods_' . get_option( 'stylesheet' ), array( $this, 'callback_update_option_theme_mods' ), 10, 2 );
 	}
 ```
+</details>
 
 
 ## Connector: WP_Stream\Connector_Mercator
@@ -592,7 +616,8 @@ This is the register method for the Connector. Occasionally there are additional
 
 ### Class register()
 
-This is the register method for the Connector. Occasionally there are additional actions in here.
+<details>
+<summary>This is the register method for the Connector. Occasionally there are additional actions in here.</summary>
 
 ```php
 	public function register() {
@@ -609,6 +634,7 @@ This is the register method for the Connector. Occasionally there are additional
 		$this->is_registered = true;
 	}
 ```
+</details>
 
 
 ## Connector: WP_Stream\Connector_Posts
@@ -620,7 +646,8 @@ This is the register method for the Connector. Occasionally there are additional
 
 ### Class register()
 
-This is the register method for the Connector. Occasionally there are additional actions in here.
+<details>
+<summary>This is the register method for the Connector. Occasionally there are additional actions in here.</summary>
 
 ```php
 	public function register() {
@@ -637,6 +664,7 @@ This is the register method for the Connector. Occasionally there are additional
 		$this->is_registered = true;
 	}
 ```
+</details>
 
 
 ## Connector: WP_Stream\Connector_Settings
@@ -652,7 +680,8 @@ This is the register method for the Connector. Occasionally there are additional
 
 ### Class register()
 
-This is the register method for the Connector. Occasionally there are additional actions in here.
+<details>
+<summary>This is the register method for the Connector. Occasionally there are additional actions in here.</summary>
 
 ```php
 	public function register() {
@@ -768,6 +797,7 @@ This is the register method for the Connector. Occasionally there are additional
 		add_action( sprintf( 'update_option_theme_mods_%s', get_option( 'stylesheet' ) ), array( $this, 'log_theme_modification' ), 10, 2 );
 	}
 ```
+</details>
 
 
 ## Connector: WP_Stream\Connector_Taxonomies
@@ -781,7 +811,8 @@ This is the register method for the Connector. Occasionally there are additional
 
 ### Class register()
 
-This is the register method for the Connector. Occasionally there are additional actions in here.
+<details>
+<summary>This is the register method for the Connector. Occasionally there are additional actions in here.</summary>
 
 ```php
 	public function register() {
@@ -798,6 +829,7 @@ This is the register method for the Connector. Occasionally there are additional
 		$this->is_registered = true;
 	}
 ```
+</details>
 
 
 ## Connector: WP_Stream\Connector_User_Switching
@@ -811,7 +843,8 @@ This is the register method for the Connector. Occasionally there are additional
 
 ### Class register()
 
-This is the register method for the Connector. Occasionally there are additional actions in here.
+<details>
+<summary>This is the register method for the Connector. Occasionally there are additional actions in here.</summary>
 
 ```php
 	public function register() {
@@ -820,6 +853,7 @@ This is the register method for the Connector. Occasionally there are additional
 		add_filter( 'wp_stream_log_data', array( $this, 'log_override' ) );
 	}
 ```
+</details>
 
 
 ## Connector: WP_Stream\Connector_Users
@@ -839,7 +873,8 @@ This is the register method for the Connector. Occasionally there are additional
 
 ### Class register()
 
-This is the register method for the Connector. Occasionally there are additional actions in here.
+<details>
+<summary>This is the register method for the Connector. Occasionally there are additional actions in here.</summary>
 
 ```php
 	public function register() {
@@ -856,6 +891,7 @@ This is the register method for the Connector. Occasionally there are additional
 		$this->is_registered = true;
 	}
 ```
+</details>
 
 
 ## Connector: WP_Stream\Connector_Widgets
@@ -867,7 +903,8 @@ This is the register method for the Connector. Occasionally there are additional
 
 ### Class register()
 
-This is the register method for the Connector. Occasionally there are additional actions in here.
+<details>
+<summary>This is the register method for the Connector. Occasionally there are additional actions in here.</summary>
 
 ```php
 	public function register() {
@@ -884,6 +921,7 @@ This is the register method for the Connector. Occasionally there are additional
 		$this->is_registered = true;
 	}
 ```
+</details>
 
 
 ## Connector: WP_Stream\Connector_Woocommerce
@@ -904,7 +942,8 @@ This is the register method for the Connector. Occasionally there are additional
 
 ### Class register()
 
-This is the register method for the Connector. Occasionally there are additional actions in here.
+<details>
+<summary>This is the register method for the Connector. Occasionally there are additional actions in here.</summary>
 
 ```php
 	public function register() {
@@ -916,6 +955,7 @@ This is the register method for the Connector. Occasionally there are additional
 		$this->get_woocommerce_settings_fields();
 	}
 ```
+</details>
 
 
 ## Connector: WP_Stream\Connector_WordPress_SEO
@@ -931,7 +971,8 @@ This is the register method for the Connector. Occasionally there are additional
 
 ### Class register()
 
-This is the register method for the Connector. Occasionally there are additional actions in here.
+<details>
+<summary>This is the register method for the Connector. Occasionally there are additional actions in here.</summary>
 
 ```php
 	public function register() {
@@ -956,4 +997,5 @@ This is the register method for the Connector. Occasionally there are additional
 		add_filter( 'wp_stream_log_data', array( $this, 'log_override' ) );
 	}
 ```
+</details>
 
