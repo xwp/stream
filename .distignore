@@ -22,4 +22,3 @@ renovate.json
 local
 node_modules
 tests
-vendor
