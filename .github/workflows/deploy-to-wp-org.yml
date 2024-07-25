@@ -17,18 +17,48 @@ jobs:
 
   deploy_to_wp_repository:
     name: Deploy to WP.org
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      packages: read
     steps:
 
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      # Build the dependencies.
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer:v2
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer packages
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-php-${{ hashFiles( 'composer.lock' ) }}
+          restore-keys: ${{ runner.os }}-php-
+
+      # Install dependencies.
+      - name: Install NPM dependencies
+        run: npm install
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev
+
+      # Build.
       - name: Build
-        run: |
-          npm install
-          npm run build
-          composer install --no-dev
+        run: npm run build
 
       - name: WordPress Plugin Deploy
 
