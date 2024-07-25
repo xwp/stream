@@ -86,12 +86,15 @@
 }
 
 .toplevel_page_wp_stream .column-date {
-	min-width: 10%;
+	width: 120px;
 	white-space: nowrap;
 }
 
 .toplevel_page_wp_stream .column-date .timeago {
-	padding-right: 1em;
+	display: inline-block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 100%;
 }
 
 .toplevel_page_wp_stream .column-user_id {
@@ -100,6 +103,17 @@
 
 .toplevel_page_wp_stream .column-summary {
 	width: auto;
+}
+
+/*
+Ensure the summary column is not squeezed if there are custom columns added.
+
+This is because columns width is set to 12% by default (above). Adding a single
+custom column leaves less space for the auto-width summary column. Having 2 or
+more custom columns squeezes the summary column to a narrow strip.
+*/
+.toplevel_page_wp_stream :where(.wp-list-table tr:has(> *:nth-child(7))) .column-summary {
+	width: 30%;
 }
 
 .toplevel_page_wp_stream .column-ip {
