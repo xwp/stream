@@ -14,7 +14,7 @@ Included is a local development environment built with [Docker](https://www.dock
 
 We suggest using the [Homebrew package manager](https://brew.sh) on macOS to install the dependencies:
 
-	brew install node@16 composer
+	brew install node@20 composer
 	brew install --cask docker
 
 ### Environment Setup
