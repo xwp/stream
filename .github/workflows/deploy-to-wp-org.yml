@@ -19,7 +19,7 @@ jobs:
     name: Deploy to WP.org
     runs-on: ubuntu-22.04
     permissions:
-      contents: read
+      contents: write
       packages: read
     steps:
 
