@@ -120,3 +120,6 @@ require __DIR__ . '/testcase.php';
 
 // Base class for future tests
 require __DIR__ . '/tests/test-class-alert-trigger.php';
+
+global $wp_version;
+print( "WP Version: {$wp_version}\n" );
