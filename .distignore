@@ -18,6 +18,7 @@ renovate.json
 .git
 .github
 .vscode
+.wordpress-org
 local
 node_modules
 tests
