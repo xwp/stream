@@ -404,7 +404,7 @@ class List_Table extends \WP_List_Table {
 					/* translators: %s is the Stream version number. It is part of a filter deprecation notice and is preceded by: "{hook_name} is deprecated since version %s of Stream". */
 					sprintf( __( '%s of Stream', 'stream' ), '4.0.1' ),
 					'wp_stream_list_table_columns',
-					__( 'Usage of this filter is redundant. Instead, define custom column name and title using the `wp_stream_list_table_columns` filter and provide the default value using the `wp_stream_insert_column_default_{$column_name}` filter.', 'stream' )
+					__( 'This filter is being deprecated as it is redundant. You can define custom column names and titles using the `wp_stream_list_table_columns` filter then provide the value for the custom columns using the `wp_stream_insert_column_default_{$column_name}` filter.', 'stream' )
 				);
 
 				/**
