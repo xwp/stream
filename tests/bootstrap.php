@@ -122,4 +122,4 @@ require __DIR__ . '/testcase.php';
 require __DIR__ . '/tests/test-class-alert-trigger.php';
 
 global $wp_version;
-print( "WP Version: {$wp_version}\n" );
+printf( "WP Version: %s\n", esc_html( $wp_version ) );
