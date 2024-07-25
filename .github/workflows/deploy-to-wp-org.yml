@@ -10,8 +10,8 @@ on:
   # This allows us to run and manage plugin releases from a single location.
   release:
 
-    # run only when a new release is published, but not when it's classified as a pre-release.
-#    types: [released]
+    # Run only when a new release is published, but not when it's classified as a pre-release.
+    types: [published] # Replace with [released] after testing.
 
 jobs:
 
