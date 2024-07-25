@@ -11,7 +11,7 @@ on:
   release:
 
     # run only when a new release is published, but not when it's classified as a pre-release.
-    types: [released]
+#    types: [released]
 
 jobs:
 
