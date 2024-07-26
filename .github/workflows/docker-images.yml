@@ -3,7 +3,7 @@ name: Build and Publish Docker Images
 on:
   push:
     paths:
-      - '.github/workflows/**'
+      - '.github/workflows/docker-images.yml'
       - 'docker-compose.yml'
       - 'docker-compose.build.yml'
       - 'local/docker/**'
