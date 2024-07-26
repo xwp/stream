@@ -13,6 +13,10 @@
 
 View the [plugin description on WordPress.org](https://wordpress.org/plugins/stream/) for the list of features and screenshots.
 
+### Connectors
+
+A list of the connectors is in [connectors.md](connectors.md).
+
 
 ## Known Issues
 

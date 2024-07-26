@@ -74,11 +74,12 @@ class Alert_Type_Slack extends Alert_Type {
 		if ( empty( $options['webhook'] ) ) {
 			return;
 		}
-		$user_id = (int) $recordarr['user_id'];
-		$user    = get_userdata( $user_id );
-		$logo    = wp_get_attachment_image_src( get_theme_mod( 'custom_logo' ), 'full' );
-		$context = $recordarr['context'];
-		$action  = $recordarr['action'];
+		$user_id           = (int) $recordarr['user_id'];
+		$user              = get_userdata( $user_id );
+		$maybe_custom_logo = get_theme_mod( 'custom_logo' );
+		$default_logo_url  = ( ! empty( $maybe_custom_logo ) ) ? wp_get_attachment_image_url( $maybe_custom_logo, 'full' ) : '';
+		$context           = $recordarr['context'];
+		$action            = $recordarr['action'];
 
 		if ( ! empty( $alert->alert_meta['trigger_context'] ) ) {
 			$context = $this->plugin->alerts->alert_triggers['context']->get_display_value( 'list_table', $alert );
@@ -145,7 +146,7 @@ class Alert_Type_Slack extends Alert_Type {
 			'fallback'    => html_entity_decode( $recordarr['summary'], ENT_COMPAT ),
 			'fields'      => $fields,
 			'footer'      => get_bloginfo( 'name' ),
-			'footer_icon' => get_site_icon_url( 16, $logo[0], $recordarr['blog_id'] ),
+			'footer_icon' => get_site_icon_url( 16, $default_logo_url, $recordarr['blog_id'] ),
 			'title'       => html_entity_decode( $recordarr['summary'], ENT_COMPAT ),
 			'ts'          => strtotime( $recordarr['created'] ),
 		);
