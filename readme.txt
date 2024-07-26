@@ -127,7 +127,7 @@ Past Contributors: fjarrett, shadyvb, chacha, westonruter, johnregan3, jacobschw
 
 == Upgrade Notice ==
 
-= 4.0.1 =
+= 4.0.0 =
 
 Use only `$_SERVER['REMOTE_ADDR']` as the client IP address for event logs without additional support for `X-Forwarded-For` HTTP request header value which could be spoofed. See the changelog for additional details.
 
@@ -138,7 +138,7 @@ Use only `$_SERVER['REMOTE_ADDR']` as the client IP address for event logs witho
 
 - Fix: CLI PHP Type error by [@Soean](https://github.com/Soean) in [#1475](https://github.com/xwp/stream/pull/1475)
 - Fix: [Security] Update `select2` to `4.0.13` (by [@delawski](https://github.com/delawski) in [#1495](https://github.com/xwp/stream/pull/1495))
-- Fix: Uncaught ValueError in Gravity Forms and WordPress SEO connectors by [@tharsheblows](https://github.com/tharsheblows) in [#1508](https://github.com/xwp/stream/pull/1508)
+- Fix: Uncaught ValueError in Gravity Forms and WordPress SEO connectors by [@krokodok](https://github.com/krokodok) and [@tharsheblows](https://github.com/tharsheblows) in [#1508](https://github.com/xwp/stream/pull/1508)
 - Fix: PHP 8.1 compatibility issues by [@delawski](https://github.com/delawski) in [#1494](https://github.com/xwp/stream/pull/1494)
 - Fix: Dynamic callback method detection by [@shadyvb](https://github.com/shadyvb) in [#1469](https://github.com/xwp/stream/pull/1469)
 - Fix: Replace `strlen` with custom callback that accepts `null` by [@delawski](https://github.com/delawski) in [#1513](https://github.com/xwp/stream/pull/1513) and [@ocean90](https://github.com/ocean90) in [#1466](https://github.com/xwp/stream/pull/1466)
@@ -146,7 +146,6 @@ Use only `$_SERVER['REMOTE_ADDR']` as the client IP address for event logs witho
 - Fix: Adding multiple columns to the Stream table using filters HTML by [@delawski](https://github.com/delawski) in [#1519](https://github.com/xwp/stream/pull/1519)
 - Fix: Offset warning in Slack alert when there is no custom logo by [@tharsheblows](https://github.com/tharsheblows) in [#1522](https://github.com/xwp/stream/pull/1522)
 - Development: VSCode `launch.json` and update Docker troubleshooting  by [@tharsheblows](https://github.com/tharsheblows) in [#1496](https://github.com/xwp/stream/pull/1496)
-- Development: Publish Docker image on `master` only by [@tharsheblows](https://github.com/tharsheblows) in [#1505](https://github.com/xwp/stream/pull/1505)
 - Development: Update tooling and automations by [@kasparsd](https://github.com/kasparsd) in [#1423](https://github.com/xwp/stream/pull/1423)
 - Development: Fix php8.2 test error, xdebug default off on testing, allow php version switching by [@tharsheblows](https://github.com/tharsheblows) in [#1511](https://github.com/xwp/stream/pull/1511)
 - Development: Require PHP ≥ 7.0 and WordPress ≥ 4.6 by [@delawski](https://github.com/delawski) in [#1512](https://github.com/xwp/stream/pull/1512)
