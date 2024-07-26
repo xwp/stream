@@ -167,3 +167,52 @@ Please use the [git flow for pull requests](#git-flow) and follow [WordPress Cod
 7. [Open a Pull Request](https://help.github.com/articles/using-pull-requests/) (with a clear title and description) to the `develop` branch.
 
 **IMPORTANT**: By submitting a patch, you agree to allow the project owner to license your work under the [GPL v2 license](https://www.gnu.org/licenses/gpl-2.0.html).
+
+## Release Cycle
+
+The plugin versioning follows [semantic versioning](https://semver.org).
+
+### Pre-release
+
+Features, bug fixes, and other changes are assigned to a milestone. Once all issues in a milestone are closed:
+
+1. **Create Release Branch:**
+   - Branch off from `develop`.
+   - Name it `release/vX.Y.Z`, where `X.Y.Z` is the version number.
+
+2. **Update Metadata:**
+   - Update the plugin version, changelog and other relevant information.
+
+3. **Create Pre-release in GitHub:**
+   - Name the release like `X.Y.Z-rc.N`, e.g. `4.0.1-rc.1`.
+   - The tag name should be prefixed with `v`, e.g. `v4.0.1-rc.1`.
+
+4. **Review and Test:**
+   - Publishing a pre-release will trigger a GitHub action.
+   - A dry-run of WP.org deployment will occur (no files are committed).
+      - Review the SVN changes log in the action output.
+   - A ZIP archive with the plugin is created and uploaded as a release asset.
+      - Use that ZIP file for final testing.
+
+5. **Fix Issues:**
+   - If any issues are found, fix them in the release branch.
+   - Repeat the process from step 3.
+
+### Release
+
+Once ready, follow these steps:
+
+1. **Create Release in GitHub:**
+   - Name the release like `X.Y.Z`, e.g. `4.0.1`.
+   - The tag name should be prefixed with `v`, e.g. `v4.0.1`.
+
+2. **Confirm Deployment:**
+   - The GitHub action deploys the plugin to WP.org.
+      - Confirm the changes have been deployed to SVN in the [plugin trac](https://plugins.trac.wordpress.org/browser/stream/).
+   - A ZIP archive is created and uploaded to GitHub release assets.
+
+3. **Merge Branches:**
+   - Merge the release branch into `master`.
+   - Merge `master` into `develop`.
+
+By following this process, you ensure a smooth and consistent release cycle.
