@@ -21,7 +21,17 @@ jobs:
     permissions:
       contents: write
       packages: read
+
     steps:
+      - name: Set dry-run based on release type
+        id: set-dry-run
+        run: |
+          if [ "${{ github.event.release.prerelease }}" = "true" ]; then
+            echo "dry-run=true" >> $GITHUB_ENV
+          else
+            echo "dry-run=false" >> $GITHUB_ENV
+          fi
+          echo "Dry-run is set to: ${{ env.dry-run }}"
 
       - name: Checkout
         uses: actions/checkout@v3
