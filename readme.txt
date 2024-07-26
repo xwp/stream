@@ -3,7 +3,7 @@ Contributors: xwp
 Tags: wp stream, stream, activity, logs, track
 Requires at least: 4.6
 Tested up to: 6.6
-Stable tag: 4.0.0
+Stable tag: 4.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -127,12 +127,39 @@ Past Contributors: fjarrett, shadyvb, chacha, westonruter, johnregan3, jacobschw
 
 == Upgrade Notice ==
 
-= 4.0.0 =
+= 4.0.1 =
 
 Use only `$_SERVER['REMOTE_ADDR']` as the client IP address for event logs without additional support for `X-Forwarded-For` HTTP request header value which could be spoofed. See the changelog for additional details.
 
 
 == Changelog ==
+
+= 4.0.1 - July 26, 2024 =
+
+- Fix: CLI PHP Type error by [@Soean](https://github.com/Soean) in [#1475](https://github.com/xwp/stream/pull/1475)
+- Fix: [Security] Update `select2` to `4.0.13` (by [@delawski](https://github.com/delawski) in [#1495](https://github.com/xwp/stream/pull/1495))
+- Fix: Uncaught ValueError in Gravity Forms and WordPress SEO connectors by [@tharsheblows](https://github.com/tharsheblows) in [#1508](https://github.com/xwp/stream/pull/1508)
+- Fix: PHP 8.1 compatibility issues by [@delawski](https://github.com/delawski) in [#1494](https://github.com/xwp/stream/pull/1494)
+- Fix: Dynamic callback method detection by [@shadyvb](https://github.com/shadyvb) in [#1469](https://github.com/xwp/stream/pull/1469)
+- Fix: Replace `strlen` with custom callback that accepts `null` by [@delawski](https://github.com/delawski) in [#1513](https://github.com/xwp/stream/pull/1513) and [@ocean90](https://github.com/ocean90) in [#1466](https://github.com/xwp/stream/pull/1466)
+- Fix: BuddyPress Connector - check for BP dependencies before blindly assuming they're available by [@dd32](https://github.com/dd32) in [#1517](https://github.com/xwp/stream/pull/1517)
+- Fix: Adding multiple columns to the Stream table using filters HTML by [@delawski](https://github.com/delawski) in [#1519](https://github.com/xwp/stream/pull/1519)
+- Fix: Offset warning in Slack alert when there is no custom logo by [@tharsheblows](https://github.com/tharsheblows) in [#1522](https://github.com/xwp/stream/pull/1522)
+- Development: VSCode `launch.json` and update Docker troubleshooting  by [@tharsheblows](https://github.com/tharsheblows) in [#1496](https://github.com/xwp/stream/pull/1496)
+- Development: Publish Docker image on `master` only by [@tharsheblows](https://github.com/tharsheblows) in [#1505](https://github.com/xwp/stream/pull/1505)
+- Development: Update tooling and automations by [@kasparsd](https://github.com/kasparsd) in [#1423](https://github.com/xwp/stream/pull/1423)
+- Development: Fix php8.2 test error, xdebug default off on testing, allow php version switching by [@tharsheblows](https://github.com/tharsheblows) in [#1511](https://github.com/xwp/stream/pull/1511)
+- Development: Require PHP ≥ 7.0 and WordPress ≥ 4.6 by [@delawski](https://github.com/delawski) in [#1512](https://github.com/xwp/stream/pull/1512)
+- Development: Update `wp-coding-standards/wpcs` and fix lint issues  by [@delawski](https://github.com/delawski) in [#1507](https://github.com/xwp/stream/pull/1507)
+- Development: Enable `phpcs` sniffs for PHPUnit test files by [@delawski](https://github.com/delawski) in [#1509](https://github.com/xwp/stream/pull/1509)
+- Development: Document Connectors by [@tharsheblows](https://github.com/tharsheblows) in [#1518](https://github.com/xwp/stream/pull/1518)
+- Development: Update dependencies:
+  - `eslint` to `^8.57.0` (in [#1480](https://github.com/xwp/stream/pull/1480))
+  - `@babel/traverse` from `7.20.10` to `7.23.2` (in [#1463](https://github.com/xwp/stream/pull/1463))
+  - `braces` from `3.0.2` to `3.0.3` (in [#1487](https://github.com/xwp/stream/pull/1487))
+  - `composer/composer` from `2.2.21` to `2.2.24` (in [#1488](https://github.com/xwp/stream/pull/1488))
+  - `@wordpress/eslint-plugin` to `v19` (in [#1452](https://github.com/xwp/stream/pull/1452))
+  - `@wordpress/eslint-plugin` to `^19.2.0` (in [#1490](https://github.com/xwp/stream/pull/1490))
 
 = 4.0.0 - January 9, 2024 =
 
