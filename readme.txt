@@ -136,29 +136,36 @@ Use only `$_SERVER['REMOTE_ADDR']` as the client IP address for event logs witho
 
 = 4.0.1 - July 26, 2024 =
 
-- Fix: CLI PHP Type error by [@Soean](https://github.com/Soean) in [#1475](https://github.com/xwp/stream/pull/1475)
-- Fix: [Security] Update `select2` to `4.0.13` (by [@delawski](https://github.com/delawski) in [#1495](https://github.com/xwp/stream/pull/1495))
-- Fix: Uncaught ValueError in Gravity Forms and WordPress SEO connectors by [@krokodok](https://github.com/krokodok) and [@tharsheblows](https://github.com/tharsheblows) in [#1508](https://github.com/xwp/stream/pull/1508)
-- Fix: PHP 8.1 compatibility issues by [@delawski](https://github.com/delawski) in [#1494](https://github.com/xwp/stream/pull/1494)
-- Fix: Dynamic callback method detection by [@shadyvb](https://github.com/shadyvb) in [#1469](https://github.com/xwp/stream/pull/1469)
-- Fix: Replace `strlen` with custom callback that accepts `null` by [@delawski](https://github.com/delawski) in [#1513](https://github.com/xwp/stream/pull/1513) and [@ocean90](https://github.com/ocean90) in [#1466](https://github.com/xwp/stream/pull/1466)
-- Fix: BuddyPress Connector - check for BP dependencies before blindly assuming they're available by [@dd32](https://github.com/dd32) in [#1517](https://github.com/xwp/stream/pull/1517)
-- Fix: Adding multiple columns to the Stream table using filters HTML by [@delawski](https://github.com/delawski) in [#1519](https://github.com/xwp/stream/pull/1519)
-- Fix: Offset warning in Slack alert when there is no custom logo by [@tharsheblows](https://github.com/tharsheblows) in [#1522](https://github.com/xwp/stream/pull/1522)
-- Development: VSCode `launch.json` and update Docker troubleshooting  by [@tharsheblows](https://github.com/tharsheblows) in [#1496](https://github.com/xwp/stream/pull/1496)
-- Development: Update tooling and automations by [@kasparsd](https://github.com/kasparsd) in [#1423](https://github.com/xwp/stream/pull/1423)
-- Development: Fix php8.2 test error, xdebug default off on testing, allow php version switching by [@tharsheblows](https://github.com/tharsheblows) in [#1511](https://github.com/xwp/stream/pull/1511)
-- Development: Require PHP ≥ 7.0 and WordPress ≥ 4.6 by [@delawski](https://github.com/delawski) in [#1512](https://github.com/xwp/stream/pull/1512)
-- Development: Update `wp-coding-standards/wpcs` and fix lint issues  by [@delawski](https://github.com/delawski) in [#1507](https://github.com/xwp/stream/pull/1507)
-- Development: Enable `phpcs` sniffs for PHPUnit test files by [@delawski](https://github.com/delawski) in [#1509](https://github.com/xwp/stream/pull/1509)
-- Development: Document Connectors by [@tharsheblows](https://github.com/tharsheblows) in [#1518](https://github.com/xwp/stream/pull/1518)
-- Development: Update dependencies:
+**Bug fixes**
+
+- Fix PHP Type error in CLI (in [#1475](https://github.com/xwp/stream/pull/1475)) props [@Soean](https://github.com/Soean)
+- Fix Uncaught ValueError in Gravity Forms and WordPress SEO connectors (in [#1508](https://github.com/xwp/stream/pull/1508)) props [@krokodok](https://github.com/krokodok)
+- Fix dynamic callback method detection for custom connectors (in [#1469](https://github.com/xwp/stream/pull/1469)) props [@shadyvb](https://github.com/shadyvb)
+- Fix PHP warning in PHP 8 by adjusting exclude rules filtering to avoid passing null to `strlen()` (in [#1513](https://github.com/xwp/stream/pull/1513)) props [@ocean90](https://github.com/ocean90)
+- Fix adding multiple columns to the stream table using filters only displays the last column correctly (in [#1519](https://github.com/xwp/stream/pull/1519)) props [@thefrosty](https://github.com/thefrosty)
+- Fix offset warning in Slack alert when there is no custom logo (in [#1522](https://github.com/xwp/stream/pull/1522)) props [@benerd](https://github.com/benerd)
+- Fix BuddyPress Connector, check for BuddyPress dependencies before using (in [#1517](https://github.com/xwp/stream/pull/1517)) props [@dd32](https://github.com/dd32)
+- Fix [Security] Update `select2` to `4.0.13` (in [#1495](https://github.com/xwp/stream/pull/1495))
+
+**Development**
+
+- Update local development environment to use Docker (in [#1423](https://github.com/xwp/stream/pull/1423))
+- Update `wp-coding-standards/wpcs` and fix all linting issues
+- Require PHP ≥ 7.0 and WordPress ≥ 4.6
+- Allow switching between PHP 7.4 and PHP 8.2
+- Document Connectors (in [#1518](https://github.com/xwp/stream/pull/1518))
+- Update dependencies
   - `eslint` to `^8.57.0` (in [#1480](https://github.com/xwp/stream/pull/1480))
   - `@babel/traverse` from `7.20.10` to `7.23.2` (in [#1463](https://github.com/xwp/stream/pull/1463))
   - `braces` from `3.0.2` to `3.0.3` (in [#1487](https://github.com/xwp/stream/pull/1487))
   - `composer/composer` from `2.2.21` to `2.2.24` (in [#1488](https://github.com/xwp/stream/pull/1488))
   - `@wordpress/eslint-plugin` to `v19` (in [#1452](https://github.com/xwp/stream/pull/1452))
   - `@wordpress/eslint-plugin` to `^19.2.0` (in [#1490](https://github.com/xwp/stream/pull/1490))
+
+**Deprecations**
+
+- Deprecate PHP 5.6 (in [#1499](https://github.com/xwp/stream/issues/1499))
+- Deprecate `wp_stream_register_column_defaults` filter (in [#1519](https://github.com/xwp/stream/pull/1519))
 
 = 4.0.0 - January 9, 2024 =
 
