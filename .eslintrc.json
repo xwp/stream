@@ -9,5 +9,9 @@
     "camelcase": "off",
     "no-alert": "off",
     "vars-on-top": "warn"
-  }
+  },
+  "ignorePatterns": [
+    "e2e/*",
+    "playwright.config.js"
+  ]
 }
