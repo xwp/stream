@@ -134,7 +134,7 @@ Use only `$_SERVER['REMOTE_ADDR']` as the client IP address for event logs witho
 
 == Changelog ==
 
-= 4.0.1 - July 26, 2024 =
+= 4.0.1 - July 30, 2024 =
 
 **Bug fixes**
 
