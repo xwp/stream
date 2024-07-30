@@ -4,6 +4,8 @@ services:
     image: mariadb:11.4.2
     volumes:
       - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
     restart: always
     environment:
       MYSQL_DATABASE: wordpress
