@@ -7,14 +7,14 @@ class Test_Plugin extends WP_StreamTestCase {
 	 * Make sure the plugin is initialized with it's global variable.
 	 */
 	public function test_plugin_initialized() {
-		$this->assertFalse( null == $this->plugin );
+		$this->assertNotNull( $this->plugin );
 	}
 
-	/*
+	/**
 	 * Also tests private method locate_plugin
 	 */
 	public function test_construct() {
-		$this->assertInternalType( 'array', $this->plugin->locations );
+		$this->assertIsArray( $this->plugin->locations );
 		$this->assertNotEmpty( $this->plugin->locations );
 		$this->assertArrayHasKey( 'plugin', $this->plugin->locations );
 		$this->assertNotEmpty( $this->plugin->locations['plugin'] );
@@ -45,11 +45,14 @@ class Test_Plugin extends WP_StreamTestCase {
 		 * Make sure we get the correct MO file during tests.
 		 * WP looks in develop installation where MO file is not found.
 		 */
-		add_filter( 'load_textdomain_mofile', function( $mofile ) {
-			$locale = get_locale();
-			$mofile = sprintf( '%s/languages/stream-%s.mo', $this->plugin->locations['dir'], $locale );
-			return $mofile;
-		} );
+		add_filter(
+			'load_textdomain_mofile',
+			function ( $mofile ) {
+				$locale = get_locale();
+				$mofile = sprintf( '%s/languages/stream-%s.mo', $this->plugin->locations['dir'], $locale );
+				return $mofile;
+			}
+		);
 
 		$this->plugin->i18n();
 		$this->assertArrayHasKey( 'stream', $l10n );
@@ -77,7 +80,7 @@ class Test_Plugin extends WP_StreamTestCase {
 		$comment = ob_get_clean();
 
 		$this->assertNotEmpty( $comment );
-		$this->assertContains( 'Stream WordPress user activity plugin', $comment );
+		$this->assertStringContainsString( 'Stream WordPress user activity plugin', $comment );
 	}
 
 	public function test_get_version() {

@@ -12,7 +12,7 @@ class Test_Exporter_CSV extends WP_StreamTestCase {
 	/**
 	 * Set up for tests
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 		$_GET['page'] = 'wp_stream';
 
@@ -28,8 +28,16 @@ class Test_Exporter_CSV extends WP_StreamTestCase {
 	 * Test CSV exporter output
 	 */
 	public function test_output_file() {
-		$array   = array( array( 'key' => 'value', 'key2' => 'value2' ) );
-		$columns = array( 'key' => 'Key', 'key2' => 'Key2' );
+		$array   = array(
+			array(
+				'key'  => 'value',
+				'key2' => 'value2',
+			),
+		);
+		$columns = array(
+			'key'  => 'Key',
+			'key2' => 'Key2',
+		);
 
 		$this->expectOutputString( "Key,Key2\nvalue,value2\n" );
 		$this->csv_exporter->output_file( $array, $columns );

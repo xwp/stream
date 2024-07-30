@@ -87,7 +87,9 @@ class List_Table extends \WP_List_Table {
 	 */
 	public function extra_tablenav( $which ) {
 		if ( 'top' === $which ) {
-			echo $this->filters_form(); // xss ok.
+			echo '<div class="alignleft actions">';
+			$this->render_filters_form();
+			echo '</div>';
 		}
 	}
 
@@ -389,37 +391,33 @@ class List_Table extends \WP_List_Table {
 				 * Registers new Columns to be inserted into the table. The cell contents of this column is set
 				 * below with 'wp_stream_insert_column_default_'
 				 *
-				 * @param array $new_columns  Columns injected in the table.
+				 * @since      3.5.1
+				 * @deprecated 4.0.1 Use the {@see 'wp_stream_list_table_columns'} filter instead.
+				 *
+				 * @param array $new_columns Columns injected in the table.
 				 *
 				 * @return array
 				 */
-				$inserted_columns = apply_filters( 'wp_stream_register_column_defaults', array() );
+				apply_filters_deprecated(
+					'wp_stream_register_column_defaults',
+					array( array() ),
+					/* translators: %s is the Stream version number. It is part of a filter deprecation notice and is preceded by: "{hook_name} is deprecated since version %s of Stream". */
+					sprintf( __( '%s of Stream', 'stream' ), '4.0.1' ),
+					'wp_stream_list_table_columns',
+					__( 'This filter is being deprecated as it is redundant. You can define custom column names and titles using the `wp_stream_list_table_columns` filter then provide the value for the custom columns using the `wp_stream_insert_column_default_{$column_name}` filter.', 'stream' )
+				);
 
-				if ( ! empty( $inserted_columns ) && is_array( $inserted_columns ) ) {
-					foreach ( $inserted_columns as $column_title ) {
-						/**
-						 * If column title inserted via wp_stream_register_column_defaults ($column_title) exists
-						 * among columns registered with get_columns ($column_name) and there is an action associated
-						 * with this column, do the action
-						 *
-						 * Also, note that the action name must include the $column_title registered
-						 * with wp_stream_register_column_defaults
-						 */
-						if ( $column_title === $column_name ) {
-							/**
-							 * Allows for the addition of content under a specified column.
-							 *
-							 * @param string $out          Column content.
-							 * @param object $record       Record with row content.
-							 * @param string $column_name  Column name.
-							 *
-							 * @return string
-							 */
-							$out = apply_filters( "wp_stream_insert_column_default_{$column_title}", $out, $record, $column_name );
-							break;
-						}
-					}
-				}
+				/**
+				 * Allows for the addition of content under a specified column.
+				 *
+				 * @param string $out         Column content.
+				 * @param object $record      Record with row content.
+				 * @param string $column_name Column name.
+				 *
+				 * @return string
+				 */
+				$out = (string) apply_filters( "wp_stream_insert_column_default_{$column_name}", $out, $record, $column_name );
+				break;
 		}
 
 		$allowed_tags                  = wp_kses_allowed_html( 'post' );
@@ -618,12 +616,12 @@ class List_Table extends \WP_List_Table {
 			if ( array_key_exists( $record, $existing_records ) ) {
 				$active_records[ $record ] = array(
 					'label'    => $label,
-					'disabled' => '',
+					'disabled' => false,
 				);
 			} else {
 				$disabled_records[ $record ] = array(
 					'label'    => $label,
-					'disabled' => 'disabled="disabled"',
+					'disabled' => true,
 				);
 			}
 		}
@@ -699,15 +697,15 @@ class List_Table extends \WP_List_Table {
 	}
 
 	/**
-	 * Returns table filters form.
+	 * Renders table filters form.
 	 *
-	 * @return string
+	 * @return void
 	 */
-	public function filters_form() {
+	public function render_filters_form() {
 		$filters = $this->get_filters();
 
-		$filters_string  = sprintf( '<input type="hidden" name="page" value="%s" />', 'wp_stream' );
-		$filters_string .= sprintf( '<span class="filter_info hidden">%s</span>', esc_html__( 'Show filter controls via the screen options tab above.', 'stream' ) );
+		printf( '<input type="hidden" name="page" value="%s" />', 'wp_stream' );
+		printf( '<span class="filter_info hidden">%s</span>', esc_html__( 'Show filter controls via the screen options tab above.', 'stream' ) );
 
 		foreach ( $filters as $name => $data ) {
 
@@ -721,7 +719,7 @@ class List_Table extends \WP_List_Table {
 			);
 
 			if ( 'date' === $name ) {
-				$filters_string .= $this->filter_date( $data['items'] );
+				$this->filter_date( $data['items'] );
 			} else {
 				if ( 'context' === $name ) {
 					// Add Connectors as parents, and apply the Contexts as children.
@@ -759,17 +757,20 @@ class List_Table extends \WP_List_Table {
 					array_multisort( $labels, SORT_ASC, $data['items'] );
 
 					// Output a hidden input to handle the connector value.
-					$filters_string .= sprintf(
+					printf(
 						'<input type="hidden" name="connector" class="record-filter-connector" value="%s" />',
 						esc_attr( wp_stream_filter_input( INPUT_GET, 'connector' ) )
 					);
 				}
 
-				$filters_string .= $this->filter_select( $name, $data['title'], $data['items'], $data['ajax'] );
+				$this->filter_select( $name, $data['title'], $data['items'], $data['ajax'] );
 			}
 		}
 
-		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s" />', __( 'Filter', 'stream' ) );
+		printf(
+			'<input type="submit" id="record-query-submit" class="button" value="%s" />',
+			esc_attr__( 'Filter', 'stream' )
+		);
 
 		// Parse all query vars into an array.
 		$query_vars = array();
@@ -794,77 +795,88 @@ class List_Table extends \WP_List_Table {
 
 		// Display reset action if records are being filtered.
 		if ( ! empty( $query_vars ) ) {
-			$filters_string .= sprintf( '<a href="%s" id="record-query-reset"><span class="dashicons dashicons-dismiss"></span> <span class="record-query-reset-text">%s</span></a>', esc_url( $url ), __( 'Reset filters', 'stream' ) );
+			printf(
+				'<a href="%1$s" id="record-query-reset"><span class="dashicons dashicons-dismiss"></span> <span class="record-query-reset-text">%2$s</span></a>',
+				esc_url( $url ),
+				esc_html__( 'Reset filters', 'stream' )
+			);
 		}
-
-		return sprintf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss ok.
 	}
 
 	/**
-	 * Returns HTML string of filterable select control with filtered items.
+	 * Renders a filterable select control with filtered items.
 	 *
-	 * @param string  $name   Search input.
-	 * @param string  $title  Name of the control.
-	 * @param array   $items  Items to be filtered.
-	 * @param boolean $ajax   Whether is an ajax request or not.
-	 * @return string
+	 * @param string  $name  Search input.
+	 * @param string  $title Name of the control.
+	 * @param array   $items Items to be filtered.
+	 * @param boolean $ajax  Whether is an ajax request or not.
+	 *
+	 * @return void
 	 */
 	public function filter_select( $name, $title, $items, $ajax = false ) {
-		$options  = array( '<option value=""></option>' );
 		$selected = wp_stream_filter_input( INPUT_GET, $name );
+
+		printf(
+			'<select name="%1$s" class="chosen-select" data-placeholder="%2$s">',
+			esc_attr( $name ),
+			esc_attr(
+				sprintf(
+					/* translators: %s: the title of the dropdown menu (e.g. "users") */
+					__( 'Show all %s', 'stream' ),
+					$title
+				)
+			)
+		);
+
+		// First option should be empty.
+		echo '<option value=""></option>';
 
 		foreach ( $items as $key => $item ) {
 			$value       = isset( $item['children'] ) ? 'group-' . $key : $key;
 			$option_args = array(
 				'value'    => $value,
-				'selected' => selected( $value, $selected, false ),
-				'disabled' => isset( $item['disabled'] ) ? $item['disabled'] : null,
+				'selected' => (string) $value === (string) $selected,
+				'disabled' => ! empty( $item['disabled'] ),
 				'icon'     => isset( $item['icon'] ) ? $item['icon'] : null,
 				'group'    => isset( $item['children'] ) ? $key : null,
 				'tooltip'  => isset( $item['tooltip'] ) ? $item['tooltip'] : null,
 				'class'    => isset( $item['children'] ) ? 'level-1' : null,
 				'label'    => isset( $item['label'] ) ? $item['label'] : null,
 			);
-			$options[]   = $this->filter_option( $option_args );
+			$this->filter_option( $option_args );
 
 			if ( isset( $item['children'] ) ) {
 				foreach ( $item['children'] as $child_value => $child_item ) {
 					$option_args = array(
 						'value'    => $child_value,
-						'selected' => selected( $child_value, $selected, false ),
-						'disabled' => isset( $child_item['disabled'] ) ? $child_item['disabled'] : null,
+						'selected' => (string) $child_value === (string) $selected,
+						'disabled' => ! empty( $child_item['disabled'] ),
 						'icon'     => isset( $child_item['icon'] ) ? $child_item['icon'] : null,
 						'group'    => $key,
 						'tooltip'  => isset( $child_item['tooltip'] ) ? $child_item['tooltip'] : null,
 						'class'    => 'level-2',
 						'label'    => isset( $child_item['label'] ) ? '- ' . $child_item['label'] : null,
 					);
-					$options[]   = $this->filter_option( $option_args );
+					$this->filter_option( $option_args );
 				}
 			}
 		}
-		$out = sprintf(
-			'<select name="%s" class="chosen-select" data-placeholder="%s">%s</select>',
-			esc_attr( $name ),
-			/* translators: %s: the title of the dropdown menu (e.g. "users") */
-			sprintf( esc_attr__( 'Show all %s', 'stream' ), $title ),
-			implode( '', $options )
-		);
 
-		return $out;
+		echo '</select>';
 	}
 
 	/**
-	 * Return HTML string of a filterable select option.
+	 * Render a filterable select option.
 	 *
-	 * @param array $args  Option attributes.
-	 * @return string
+	 * @param array $args Option attributes.
+	 *
+	 * @return void
 	 */
 	public function filter_option( $args ) {
 		$defaults = array(
 			'value'    => null,
-			'selected' => null,
-			'disabled' => null,
+			'selected' => false,
+			'disabled' => false,
 			'icon'     => null,
 			'group'    => null,
 			'tooltip'  => null,
@@ -873,11 +885,11 @@ class List_Table extends \WP_List_Table {
 		);
 		wp_parse_args( $args, $defaults );
 
-		return sprintf(
+		printf(
 			'<option value="%s" %s %s %s %s %s class="%s">%s</option>',
 			esc_attr( $args['value'] ),
-			$args['selected'],
-			$args['disabled'],
+			selected( $args['selected'], true, false ),
+			disabled( $args['disabled'], true, false ),
 			$args['icon'] ? sprintf( 'data-icon="%s"', esc_attr( $args['icon'] ) ) : null,
 			$args['group'] ? sprintf( 'data-group="%s"', esc_attr( $args['group'] ) ) : null,
 			$args['tooltip'] ? sprintf( 'title="%s"', esc_attr( $args['tooltip'] ) ) : null,
@@ -887,33 +899,29 @@ class List_Table extends \WP_List_Table {
 	}
 
 	/**
-	 * Return HTML string of a filter search box.
+	 * Render filter search box.
 	 *
-	 * @return string
+	 * @return void
 	 */
 	public function filter_search() {
-		$search = null;
-		if ( isset( $_GET['search'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$search = sanitize_key( wp_unslash( $_GET['search'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		}
-		$out = sprintf(
+		printf(
 			'<p class="search-box">
 				<label class="screen-reader-text" for="record-search-input">%1$s:</label>
 				<input type="search" id="record-search-input" name="search" value="%2$s" />
-				<input type="submit" name="" id="search-submit" class="button" value="%1$s" />
+				<input type="submit" name="" id="search-submit" class="button" value="%3$s" />
 			</p>',
-			esc_attr__( 'Search Records', 'stream' ),
-			$search
+			esc_html__( 'Search Records', 'stream' ),
+			esc_attr( ! empty( $_GET['search'] ) ? $_GET['search'] : '' ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			esc_attr__( 'Search Records', 'stream' )
 		);
-
-		return $out;
 	}
 
 	/**
-	 * Return HTML string of a filter select box based upon date.
+	 * Renders a filter select box based upon date.
 	 *
-	 * @param array $items  Records.
-	 * @return string
+	 * @param array $items Records.
+	 *
+	 * @return void
 	 */
 	public function filter_date( $items ) {
 		wp_enqueue_style( 'jquery-ui' );
@@ -924,7 +932,6 @@ class List_Table extends \WP_List_Table {
 		$date_from       = wp_stream_filter_input( INPUT_GET, 'date_from' );
 		$date_to         = wp_stream_filter_input( INPUT_GET, 'date_to' );
 
-		ob_start();
 		?>
 		<div class="date-interval">
 
@@ -962,14 +969,12 @@ class List_Table extends \WP_List_Table {
 
 		</div>
 		<?php
-
-		return ob_get_clean();
 	}
 
 	/**
-	 * Output a Select dropdown of actions relating to the Stream records
+	 * Render a Select dropdown of actions relating to the Stream records
 	 *
-	 * @return string
+	 * @return void
 	 */
 	public function record_actions_form() {
 		/**
@@ -980,10 +985,9 @@ class List_Table extends \WP_List_Table {
 		$actions = apply_filters( 'wp_stream_record_actions_menu', array() );
 
 		if ( empty( $actions ) ) {
-			return '';
+			return;
 		}
 
-		ob_start();
 		printf( '<div class="alignleft actions recordactions"><select name="%s">', esc_attr( 'record-actions' ) );
 		printf( '<option value="">%s</option>', esc_attr__( 'Record Actions', 'stream' ) );
 		foreach ( $actions as $value => $name ) {
@@ -1008,8 +1012,6 @@ class List_Table extends \WP_List_Table {
 
 		printf( '<input type="submit" name="" id="record-actions-submit" class="button" value="%s">', esc_attr__( 'Apply', 'stream' ) );
 		echo '<div class="clear"></div>';
-
-		return ob_get_clean();
 	}
 
 	/**
@@ -1019,12 +1021,12 @@ class List_Table extends \WP_List_Table {
 		$url = self_admin_url( $this->plugin->admin->admin_parent_page );
 
 		echo '<form method="get" action="' . esc_url( $url ) . '" id="record-filter-form">';
-		echo $this->filter_search(); // xss ok.
+		$this->filter_search();
 		parent::display();
 		echo '</form>';
 
 		echo '<form method="get" action="' . esc_url( $url ) . '" id="record-actions-form">';
-		echo $this->record_actions_form(); // xss ok.
+		$this->record_actions_form();
 		echo '</form>';
 	}
 
@@ -1034,13 +1036,14 @@ class List_Table extends \WP_List_Table {
 	 * @param array $item  Record data.
 	 */
 	public function single_row( $item ) {
-		$classes      = apply_filters( 'wp_stream_record_classes', array(), $item );
-		$class_string = '';
-		if ( ! empty( $classes ) ) {
-			$class_string = ' class="' . esc_attr( join( ' ', $classes ) ) . '"';
+		$classes = apply_filters( 'wp_stream_record_classes', array(), $item );
+
+		if ( empty( $classes ) ) {
+			echo '<tr>';
+		} else {
+			printf( '<tr class="%s">', esc_attr( join( ' ', $classes ) ) );
 		}
 
-		echo sprintf( '<tr%s>', $class_string ); // xss ok.
 		$this->single_row_columns( $item );
 		echo '</tr>';
 	}
@@ -1209,8 +1212,7 @@ class List_Table extends \WP_List_Table {
 		$record_meta = array();
 
 		foreach ( $users as $user_id => $args ) {
-			$user     = new Author( $user_id );
-			$disabled = isset( $args['disabled'] ) ? $args['disabled'] : null;
+			$user = new Author( $user_id );
 
 			$record_meta[ $user_id ] = array(
 				'text'     => $user->get_display_name(),
@@ -1218,7 +1220,7 @@ class List_Table extends \WP_List_Table {
 				'label'    => $user->get_display_name(),
 				'icon'     => $user->get_avatar_src( 32 ),
 				'title'    => '',
-				'disabled' => $disabled,
+				'disabled' => ! empty( $args['disabled'] ),
 			);
 		}
 

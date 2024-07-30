@@ -221,20 +221,23 @@ class Connector_GravityForms extends Connector {
 	 * @param bool  $is_new  Is this a new form?.
 	 */
 	public function callback_gform_after_save_form( $form, $is_new ) {
-		$title = $form['title'];
-		$id    = $form['id'];
+		$id = $form['id'];
 
 		$this->log(
 			sprintf(
 				/* translators: %1$s a form title, %2$s a status (e.g. "Contact Form", "created") */
 				__( '"%1$s" form %2$s', 'stream' ),
-				$title,
-				$is_new ? esc_html__( 'created', 'stream' ) : esc_html__( 'updated', 'stream' )
+				$this->get_form_title_for_message( $form ),
+				$this->get_status_for_message(
+					$is_new,
+					esc_html__( 'created', 'stream' ),
+					esc_html__( 'updated', 'stream' )
+				)
 			),
 			array(
 				'action' => $is_new,
 				'id'     => $id,
-				'title'  => $title,
+				'title'  => $form['title'],
 			),
 			$id,
 			'forms',
@@ -258,9 +261,13 @@ class Connector_GravityForms extends Connector {
 			sprintf(
 				/* translators: %1$s: a confirmation name, %2$s: a status, %3$s: a form title (e.g. "Email", "created", "Contact Form") */
 				__( '"%1$s" confirmation %2$s for "%3$s"', 'stream' ),
-				$confirmation['name'],
-				$is_new ? esc_html__( 'created', 'stream' ) : esc_html__( 'updated', 'stream' ),
-				$form['title']
+				$this->get_name_for_message( $confirmation ),
+				$this->get_status_for_message(
+					$is_new,
+					esc_html__( 'created', 'stream' ),
+					esc_html__( 'updated', 'stream' )
+				),
+				$this->get_form_title_for_message( $form )
 			),
 			array(
 				'is_new'  => $is_new,
@@ -291,9 +298,13 @@ class Connector_GravityForms extends Connector {
 			sprintf(
 				/* translators: %1$s: a notification name, %2$s: a status, %3$s: a form title (e.g. "Email", "created", "Contact Form") */
 				__( '"%1$s" notification %2$s for "%3$s"', 'stream' ),
-				$notification['name'],
-				$is_new ? esc_html__( 'created', 'stream' ) : esc_html__( 'updated', 'stream' ),
-				$form['title']
+				$this->get_name_for_message( $notification ),
+				$this->get_status_for_message(
+					$is_new,
+					esc_html__( 'created', 'stream' ),
+					esc_html__( 'updated', 'stream' )
+				),
+				$this->get_form_title_for_message( $form )
 			),
 			array(
 				'is_update' => $is_new,
@@ -318,8 +329,8 @@ class Connector_GravityForms extends Connector {
 			sprintf(
 				/* translators: %1$s: a notification name, %2$s: a form title (e.g. "Email", "Contact Form") */
 				__( '"%1$s" notification deleted from "%2$s"', 'stream' ),
-				$notification['name'],
-				$form['title']
+				$this->get_name_for_message( $notification ),
+				$this->get_form_title_for_message( $form )
 			),
 			array(
 				'form_id'      => $form['id'],
@@ -342,8 +353,8 @@ class Connector_GravityForms extends Connector {
 			sprintf(
 				/* translators: %1$s: a confirmation name, %2$s: a form title (e.g. "Email", "Contact Form") */
 				__( '"%1$s" confirmation deleted from "%2$s"', 'stream' ),
-				$confirmation['name'],
-				$form['title']
+				$this->get_name_for_message( $confirmation ),
+				$this->get_form_title_for_message( $form )
 			),
 			array(
 				'form_id'      => $form['id'],
@@ -367,9 +378,13 @@ class Connector_GravityForms extends Connector {
 			sprintf(
 				/* translators: %1$s: a confirmation name, %2$s: a status, %3$s: a form title (e.g. "Email", "activated", "Contact Form") */
 				__( '"%1$s" confirmation %2$s from "%3$s"', 'stream' ),
-				$confirmation['name'],
-				$is_active ? esc_html__( 'activated', 'stream' ) : esc_html__( 'deactivated', 'stream' ),
-				$form['title']
+				$this->get_name_for_message( $confirmation ),
+				$this->get_status_for_message(
+					$is_active,
+					esc_html__( 'activated', 'stream' ),
+					esc_html__( 'deactivated', 'stream' )
+				),
+				$this->get_form_title_for_message( $form )
 			),
 			array(
 				'form_id'      => $form['id'],
@@ -394,9 +409,13 @@ class Connector_GravityForms extends Connector {
 			sprintf(
 				/* translators: %1$s: a notification name, %2$s: a status, %3$s: a form title (e.g. "Email", "activated", "Contact Form") */
 				__( '"%1$s" notification %2$s from "%3$s"', 'stream' ),
-				$notification['name'],
-				$is_active ? esc_html__( 'activated', 'stream' ) : esc_html__( 'deactivated', 'stream' ),
-				$form['title']
+				$this->get_name_for_message( $notification ),
+				$this->get_status_for_message(
+					$is_active,
+					esc_html__( 'activated', 'stream' ),
+					esc_html__( 'deactivated', 'stream' )
+				),
+				$this->get_form_title_for_message( $form )
 			),
 			array(
 				'form_id'      => $form['id'],
@@ -412,12 +431,12 @@ class Connector_GravityForms extends Connector {
 	/**
 	 * Track GravityForms-specific option changes.
 	 *
-	 * @param string $option Option key.
-	 * @param string $old    Old value.
-	 * @param string $new    New value.
+	 * @param string $option    Option key.
+	 * @param string $old_value Old value.
+	 * @param string $new_value New value.
 	 */
-	public function callback_update_option( $option, $old, $new ) {
-		$this->check( $option, $old, $new );
+	public function callback_update_option( $option, $old_value, $new_value ) {
+		$this->check( $option, $old_value, $new_value );
 	}
 
 	/**
@@ -442,12 +461,12 @@ class Connector_GravityForms extends Connector {
 	/**
 	 * Track GravityForms-specific site option changes
 	 *
-	 * @param string $option Option key.
-	 * @param string $old    Old value.
-	 * @param string $new    New value.
+	 * @param string $option    Option key.
+	 * @param string $old_value Old value.
+	 * @param string $new_value New value.
 	 */
-	public function callback_update_site_option( $option, $old, $new ) {
-		$this->check( $option, $old, $new );
+	public function callback_update_site_option( $option, $old_value, $new_value ) {
+		$this->check( $option, $old_value, $new_value );
 	}
 
 	/**
@@ -514,7 +533,11 @@ class Connector_GravityForms extends Connector {
 			sprintf(
 				/* translators: %s: a status (e.g. "updated") */
 				__( 'Gravity Forms license key %s', 'stream' ),
-				$is_update ? esc_html__( 'updated', 'stream' ) : esc_html__( 'deleted', 'stream' )
+				$this->get_status_for_message(
+					$is_update,
+					esc_html__( 'updated', 'stream' ),
+					esc_html__( 'deleted', 'stream' )
+				)
 			),
 			compact( 'option', 'old_value', 'new_value' ),
 			null,
@@ -672,7 +695,7 @@ class Connector_GravityForms extends Connector {
 		unset( $note );
 		unset( $note_type );
 
-		// Skip if no entry/lead id (e.g. Save and Continue notifications)
+		// Skip if no entry/lead id (e.g. Save and Continue notifications).
 		if ( empty( $lead_id ) ) {
 			return;
 		}
@@ -755,8 +778,8 @@ class Connector_GravityForms extends Connector {
 				/* translators: %1$d: an ID, %2$s: a status, %3$s: a form title (e.g. "42", "activated", "Contact Form") */
 				__( 'Lead #%1$d %2$s on "%3$s" form', 'stream' ),
 				$lead_id,
-				$actions[ $status ],
-				$form['title']
+				$this->escape_percentages( $actions[ $status ] ),
+				$this->get_form_title_for_message( $form )
 			),
 			array(
 				'lead_id'    => $lead_id,
@@ -780,18 +803,21 @@ class Connector_GravityForms extends Connector {
 	 * @param string $status   Status.
 	 */
 	public function callback_gform_update_is_read( $lead_id, $status ) {
-		$lead   = $this->get_lead( $lead_id );
-		$form   = $this->get_form( $lead['form_id'] );
-		$status = ( ! empty( $status ) ) ? esc_html__( 'read', 'stream' ) : esc_html__( 'unread', 'stream' );
+		$lead = $this->get_lead( $lead_id );
+		$form = $this->get_form( $lead['form_id'] );
 
 		$this->log(
 			sprintf(
 				/* translators: %1$d: a lead ID, %2$s: a status, %3$s: a form ID, %4$s: a form title (e.g. "42", "unread", "Contact Form") */
 				__( 'Entry #%1$d marked as %2$s on form #%3$d ("%4$s")', 'stream' ),
 				$lead_id,
-				$status,
+				$this->get_status_for_message(
+					! empty( $status ),
+					esc_html__( 'read', 'stream' ),
+					esc_html__( 'unread', 'stream' )
+				),
 				$form['id'],
-				$form['title']
+				$this->get_form_title_for_message( $form )
 			),
 			array(
 				'lead_id'     => $lead_id,
@@ -814,19 +840,23 @@ class Connector_GravityForms extends Connector {
 	 * @param int $status   Status.
 	 */
 	public function callback_gform_update_is_starred( $lead_id, $status ) {
-		$lead   = $this->get_lead( $lead_id );
-		$form   = $this->get_form( $lead['form_id'] );
-		$status = ( ! empty( $status ) ) ? esc_html__( 'starred', 'stream' ) : esc_html__( 'unstarred', 'stream' );
-		$action = $status;
+		$lead               = $this->get_lead( $lead_id );
+		$form               = $this->get_form( $lead['form_id'] );
+		$status_for_message = $this->get_status_for_message(
+			! empty( $status ),
+			esc_html__( 'starred', 'stream' ),
+			esc_html__( 'unstarred', 'stream' )
+		);
+		$action             = $status_for_message;
 
 		$this->log(
 			sprintf(
 				/* translators: %1$d: an ID, %2$s: a status, %3$d: a form title (e.g. "42", "starred", "Contact Form") */
 				__( 'Entry #%1$d %2$s on form #%3$d ("%4$s")', 'stream' ),
 				$lead_id,
-				$status,
+				$status_for_message, // This has been escaped above.
 				$form['id'],
-				$form['title']
+				$this->get_form_title_for_message( $form )
 			),
 			array(
 				'lead_id'     => $lead_id,
@@ -945,8 +975,8 @@ class Connector_GravityForms extends Connector {
 				/* translators: %1$d: an ID, %2$s: a form title, %3$s: a status (e.g. "42", "Contact Form", "Activated") */
 				__( 'Form #%1$d ("%2$s") %3$s', 'stream' ),
 				$form_id,
-				$form['title'],
-				strtolower( $actions[ $action ] )
+				$this->get_form_title_for_message( $form ),
+				strtolower( $this->escape_percentages( $actions[ $action ] ) )
 			),
 			array(
 				'form_id'     => $form_id,
@@ -975,5 +1005,48 @@ class Connector_GravityForms extends Connector {
 	 */
 	private function get_form( $form_id ) {
 		return \GFFormsModel::get_form_meta( $form_id );
+	}
+
+	/**
+	 * Get the name from an associative array with percentages escaped.
+	 * To be used when calling $this->log().
+	 *
+	 * @param array $data_array The array with a 'name' key to be escaped.
+	 * @return string The name value with percentages escaped.
+	 */
+	private function get_name_for_message( $data_array ) {
+		if ( empty( $data_array['name'] ) ) {
+			return $this->escape_percentages( __( 'This does not have a name key', 'stream' ) );
+		}
+
+		return $this->escape_percentages( $data_array['name'] );
+	}
+
+	/**
+	 * Get the form title from a form array with percentages escaped.
+	 * To be used when calling $this->log().
+	 *
+	 * @param array $form The form data array.
+	 * @return string The title value with percentages escaped.
+	 */
+	private function get_form_title_for_message( $form ) {
+		if ( empty( $form['title'] ) ) {
+			return $this->escape_percentages( __( 'This does not have a title key', 'stream' ) );
+		}
+
+		return $this->escape_percentages( $form['title'] );
+	}
+
+	/**
+	 * Get the status to use in a message with percentages in translation escaped.
+	 *
+	 * @param bool   $conditional Whether or not it's a new form.
+	 * @param string $true_string The string to return when the conditional is true.
+	 * @param string $false_string The string to return when the conditional is false.
+	 * @return string The status with percentages escaped.
+	 */
+	private function get_status_for_message( $conditional, $true_string, $false_string ) {
+		$status = $conditional ? $true_string : $false_string;
+		return $this->escape_percentages( $status );
 	}
 }

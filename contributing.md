@@ -5,56 +5,63 @@
 
 Stream uses [npm](https://npmjs.com) for javascript dependencies, [Composer](https://getcomposer.org) for PHP dependencies and the [Grunt](https://gruntjs.com) task runner to minimize and compile scripts and styles and to deploy to the WordPress.org plugin repository.
 
-Included is a local development environment built with [Docker](https://www.docker.com) which can be optionally run inside [Vagrant](https://www.vagrantup.com) for network isolation and better performance.
+Included is a local development environment built with [Docker](https://www.docker.com).
 
 ### Requirements
 
-- [VirtualBox](https://www.virtualbox.org)
-- [Vagrant](https://www.vagrantup.com)
 - [Node.js](https://nodejs.org)
 - [Composer](https://getcomposer.org)
 
 We suggest using the [Homebrew package manager](https://brew.sh) on macOS to install the dependencies:
 
-	brew install node@16 composer
-	brew cask install virtualbox vagrant
-
-For setups with local Docker environment you don't need Vagrant and VirtualBox.
+	brew install node@20 composer
+	brew install --cask docker
 
 ### Environment Setup
 
 1. See the [Git Flow](#git-flow) section below for how to fork the repository.
-2. Run `npm install` to install all project dependencies.
-3. Run `vagrant up` to start the development environment.
-4. Visit [stream.local](http://stream.local) and login using `admin` / `password`.
-5. Activate the Stream plugin.
+2. Run `npm install` and `composer install` to setup all project dependencies.
+3. Run `npm start` to start the development environment.
+4. Run `npm run install-wordpress` to set up the WordPress multisite network.
+5. Visit [stream.wpenv.net](http://stream.wpenv.net) and login using `admin` / `password`.
+6. Activate the Stream plugin.
 
 ### PHP Xdebug
 
-The WordPress container includes the [Xdebug PHP extension](https://xdebug.org). It is configured to [autostart](https://xdebug.org/docs/remote#remote_autostart) and to [automatically detect the IP address of the connecting client](https://xdebug.org/docs/remote#remote_connect_back) running in your code editor. See [`.vscode/launch.json`](.vscode/launch.json) for the directory mapping from the WordPress container to the project directory in your code editor.
+The WordPress container includes the [Xdebug PHP extension](https://xdebug.org). It is configured in the [`php.ini`](./local/docker/wordpress/php.ini) file to work in the [develop, debug and coverage modes](https://xdebug.org/docs/step_debug#mode).
+
+[Step Debugging](https://xdebug.org/docs/step_debug) should work out of the box in VSCode thanks to the configuration file, [`.vscode/launch.json`](.vscode/launch.json). It contains the directory mapping from the WordPress container to the project directory in your code editor.
+
+In order to set up Step Debugging in PhpStorm, follow the [official guide](https://www.jetbrains.com/help/phpstorm/configuring-xdebug.html). Make sure to set up the same directory mappings as defined for VSCode in [`.vscode/launch.json`](.vscode/launch.json), e.g.:
+- `${workspaceRoot}` -> `/var/www/html/wp-content/plugins/stream-src`,
+- `${workspaceRoot}/build` -> `/var/www/html/wp-content/plugins/stream`,
+- `${workspaceRoot}/local/public` -> `/var/www/html`
 
 ### Mail Catcher
 
-We use a [MailHog](https://github.com/mailhog/MailHog) container to capture all emails sent by the WordPress container, available at [stream.local:8025](https://stream.local:8025).
+We use a [MailHog](https://github.com/mailhog/MailHog) container to capture all emails sent by the WordPress container, available at [stream.wpenv.net:8025](https://stream.wpenv.net:8025).
 
 ### Scripts and Commands
 
 We use npm as the canonical task runner for the project. The following commands are available:
 
+- `npm run start` to start the project's Docker containers.
+- `npm run stop` to stop the project's Docker containers.
+- `npm run stop-all` to stop _all_ Docker containers.
 - `npm run build` to build the plugin JS and CSS files.
-
 - `npm run lint` to check JS and PHP files for syntax and style issues.
-
 - `npm run deploy` to deploy the plugin to the WordPress.org repository.
-
 - `npm run cli -- wp info` where `wp info` is the CLI command to run inside the WordPress container. For example, use `npm run cli -- ls -lah` to list all files in the root of the WordPress installation.
+- `npm run test` to run PHPunit tests inside the WordPress container.
+- `npm run test-xdebug` will run the PHPunit tests with Xdebug enabled.
+- `npm run switch-to:php7.4` and `npm run switch-to:php8.2` will switch you to either PHP 7.4 or PHP 8.2
+- `npm run document:connectors` generates [connectors.md](connectors.md). This runs via your local php.
 
-- `npm run compose -- up -d` where `up -d` is the `docker-compose` command for the WordPress container. For example, use `npm run compose -- down` and `npm run compose -- up -d` to restart the WordPres container.
+By default, tests have `WP_DEBUG` as false. You can override this if necessary by setting `WP_STREAM_TEST_DEBUG` to "yes".
 
-- `npm run phpunit` to run PHPunit tests inside the WordPress container.
+### Docker issues
 
-All `npm` commands running inside Vagrant are prefixed with `v`, for example, `npm run vcli` and `npm run vcompose`.
-
+If you are having issues with incorrect versions of Xdebug or other Docker issues, first try rebuilding with no cache and up to date images using the command `docker compose build --no-cache --pull`. Then run `npm run start` as normal.
 
 ## Issues Tracker
 
@@ -161,3 +168,52 @@ Please use the [git flow for pull requests](#git-flow) and follow [WordPress Cod
 7. [Open a Pull Request](https://help.github.com/articles/using-pull-requests/) (with a clear title and description) to the `develop` branch.
 
 **IMPORTANT**: By submitting a patch, you agree to allow the project owner to license your work under the [GPL v2 license](https://www.gnu.org/licenses/gpl-2.0.html).
+
+## Release Cycle
+
+The plugin versioning follows [semantic versioning](https://semver.org).
+
+### Pre-release
+
+Features, bug fixes, and other changes are assigned to a milestone. Once all issues in a milestone are closed:
+
+1. **Create Release Branch:**
+   - Branch off from `develop`.
+   - Name it `release/vX.Y.Z`, where `X.Y.Z` is the version number.
+
+2. **Update Metadata:**
+   - Update the plugin version, changelog and other relevant information.
+
+3. **Create Pre-release in GitHub:**
+   - Name the release like `X.Y.Z-rc.N`, e.g. `4.0.1-rc.1`.
+   - The tag name should be prefixed with `v`, e.g. `v4.0.1-rc.1`.
+
+4. **Review and Test:**
+   - Publishing a pre-release will trigger a GitHub action.
+   - A dry-run of WP.org deployment will occur (no files are committed).
+      - Review the SVN changes log in the action output.
+   - A ZIP archive with the plugin is created and uploaded as a release asset.
+      - Use that ZIP file for final testing.
+
+5. **Fix Issues:**
+   - If any issues are found, fix them in the release branch.
+   - Repeat the process from step 3.
+
+### Release
+
+Once ready, follow these steps:
+
+1. **Create Release in GitHub:**
+   - Name the release like `X.Y.Z`, e.g. `4.0.1`.
+   - The tag name should be prefixed with `v`, e.g. `v4.0.1`.
+
+2. **Confirm Deployment:**
+   - The GitHub action deploys the plugin to WP.org.
+      - Confirm the changes have been deployed to SVN in the [plugin trac](https://plugins.trac.wordpress.org/browser/stream/).
+   - A ZIP archive is created and uploaded to GitHub release assets.
+
+3. **Merge Branches:**
+   - Merge the release branch into `master`.
+   - Merge `master` into `develop`.
+
+By following this process, you ensure a smooth and consistent release cycle.

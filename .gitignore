@@ -5,15 +5,19 @@
 /vendor/
 /build/
 /dist/
-/.vagrant/
 /console.log
 /phpcs.xml
 /stream.zip
 /stream-*.zip
 npm-debug.log
+debug.log
 package.lock
+.phpunit.result.cache
 
 # Compiled files
 ui/js/*.min.js
 ui/css/*.min.css
 alerts/js/*.min.js
+
+# Generated test data
+tests/data/tmp/*

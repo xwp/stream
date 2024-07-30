@@ -11,26 +11,31 @@
     }
   ],
   "require": {
-    "composer/installers": "~1.0"
+    "php": ">=7.0",
+    "composer/installers": "~1.0",
+    "ext-json": "*"
   },
   "require-dev": {
-    "automattic/vipwpcs": "^2.3",
+    "automattic/vipwpcs": "^3.0",
     "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
     "humanmade/mercator": "^1.0",
-    "johnpbloch/wordpress": "^6.3",
+    "johnbillion/query-monitor": "^3.16",
     "php-coveralls/php-coveralls": "^2.5",
     "phpcompatibility/php-compatibility": "dev-develop as 9.99.99",
     "phpcompatibility/phpcompatibility-wp": "^2.1",
-    "phpunit/phpunit": "^5.7",
+    "phpunit/phpunit": "^9.6",
+    "roots/wordpress": "^6.6",
     "wp-cli/wp-cli-bundle": "^2.6",
-    "wp-coding-standards/wpcs": "^2.3",
-    "wp-phpunit/wp-phpunit": "^6.3",
-    "wpackagist-plugin/advanced-custom-fields": "5.8.12",
-    "wpackagist-plugin/easy-digital-downloads": "2.9.23",
-    "wpackagist-plugin/jetpack": "10.0",
-    "wpackagist-plugin/user-switching": "1.5.5",
-    "wpsh/local": "^0.2.3",
-    "yoast/phpunit-polyfills": "^1.0"
+    "wp-coding-standards/wpcs": "^3.1",
+    "wp-phpunit/wp-phpunit": "^6.6",
+    "wpackagist-plugin/advanced-custom-fields": "6.3.4",
+    "wpackagist-plugin/easy-digital-downloads": "3.3.1",
+    "wpackagist-plugin/jetpack": "13.6",
+    "wpackagist-plugin/user-switching": "1.8.0",
+    "wpackagist-plugin/wordpress-seo": "23.1",
+    "wpackagist-theme/twentytwentythree": "^1.0",
+    "xwp/wait-for": "^0.0.1",
+    "yoast/phpunit-polyfills": "^1.1"
   },
   "config": {
     "process-timeout": 600,
@@ -40,15 +45,16 @@
     },
     "allow-plugins": {
       "composer/installers": true,
-      "johnpbloch/wordpress-core-installer": true,
-      "dealerdirect/phpcodesniffer-composer-installer": true
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "roots/wordpress-core-installer": true
     }
   },
   "extra": {
-    "wordpress-install-dir": "local/public",
+    "wordpress-install-dir": "local/public/wp",
     "installer-paths": {
-      "local/public/wp-content/plugins/{$name}/": ["type:wordpress-plugin"],
-      "local/public/wp-content/mu-plugins/{$name}/": ["type:wordpress-muplugin"]
+      "local/public/wp-content/themes/{$name}": ["type:wordpress-theme"],
+      "local/public/wp-content/plugins/{$name}": ["type:wordpress-plugin"],
+      "local/public/wp-content/mu-plugins/{$name}": ["type:wordpress-muplugin"]
     }
   },
   "scripts": {
@@ -62,13 +68,28 @@
       "@composer validate",
       "@lint-php"
     ],
+    "lint-tests": [
+      "phpcs ./tests --standard=./tests/phpcs.xml.dist"
+    ],
+    "format": [
+      "phpcbf .",
+      "phpcbf ./tests --standard=./tests/phpcs.xml.dist"
+    ],
     "test": [
       "phpunit --coverage-text",
       "php local/scripts/make-clover-relative.php ./tests/reports/clover.xml"
     ],
+    "test-one": [
+      "phpunit",
+      "WP_MULTISITE=1 phpunit -c phpunit-multisite.xml"
+    ],
     "test-multisite": [
-      "WP_MULTISITE=1 phpunit --coverage-text",
+      "WP_MULTISITE=1 phpunit -c phpunit-multisite.xml --coverage-text",
       "php local/scripts/make-clover-relative.php ./tests/reports/clover.xml"
+    ],
+    "test-xdebug": [
+      "XDEBUG_TRIGGER=1 phpunit",
+      "WP_MULTISITE=1 XDEBUG_TRIGGER=1 phpunit -c phpunit-multisite.xml"
     ],
     "test-report": [
       "php-coveralls --verbose"

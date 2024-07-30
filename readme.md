@@ -1,6 +1,6 @@
 # Stream for WordPress
 
-[![Build Status](https://travis-ci.com/xwp/stream.svg?branch=master)](https://travis-ci.com/xwp/stream)
+[![Lint and Test](https://github.com/xwp/stream/actions/workflows/ci.yml/badge.svg)](https://github.com/xwp/stream/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/xwp/stream/badge.svg?branch=develop)](https://coveralls.io/github/xwp/stream?branch=develop)
 
 **Track WordPress user and system actions for debugging, logging and compliance purposes.**
@@ -12,6 +12,10 @@
 ## Documentation
 
 View the [plugin description on WordPress.org](https://wordpress.org/plugins/stream/) for the list of features and screenshots.
+
+### Connectors
+
+A list of the connectors is in [connectors.md](connectors.md).
 
 
 ## Known Issues

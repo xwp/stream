@@ -10,27 +10,21 @@
 namespace WP_Stream;
 
 class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
+
 	/**
 	 * Runs before each test
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->plugin->connectors->unload_connectors();
 
 		// Make partial of Connector_EDD class, with mocked "log" function.
 		$this->mock = $this->getMockBuilder( Connector_EDD::class )
-			->setMethods( array( 'log' ) )
+			->onlyMethods( array( 'log' ) )
 			->getMock();
 
 		$this->mock->register();
-	}
-
-	/**
-	 * Runs after each test
-	 */
-	public function tearDown() {
-		parent::tearDown();
 	}
 
 	/**
@@ -39,37 +33,39 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 	 * @return int
 	 */
 	private function create_simple_download() {
-		$post_id = wp_insert_post( array(
-			'post_title'    => 'Test Download Product',
-			'post_name'     => 'test-download-product',
-			'post_type'     => 'download',
-			'post_status'   => 'publish'
-		) );
+		$post_id = wp_insert_post(
+			array(
+				'post_title'  => 'Test Download Product',
+				'post_name'   => 'test-download-product',
+				'post_type'   => 'download',
+				'post_status' => 'publish',
+			)
+		);
 
 		$_download_files = array(
 			array(
 				'name'      => 'Simple File 1',
 				'file'      => 'http://localhost/simple-file1.jpg',
-				'condition' => 0
+				'condition' => 0,
 			),
 		);
 
 		$meta = array(
-			'edd_price'                         => '20.00',
-			'_variable_pricing'                 => 0,
-			'edd_variable_prices'               => false,
-			'edd_download_files'                => array_values( $_download_files ),
-			'_edd_download_limit'               => 20,
-			'_edd_hide_purchase_link'           => 1,
-			'edd_product_notes'                 => 'Purchase Notes',
-			'_edd_product_type'                 => 'default',
-			'_edd_download_earnings'            => 40,
-			'_edd_download_sales'               => 2,
-			'_edd_download_limit_override_1'    => 1,
-			'edd_sku'                           => 'sku_0012'
+			'edd_price'                      => '20.00',
+			'_variable_pricing'              => 0,
+			'edd_variable_prices'            => false,
+			'edd_download_files'             => array_values( $_download_files ),
+			'_edd_download_limit'            => 20,
+			'_edd_hide_purchase_link'        => 1,
+			'edd_product_notes'              => 'Purchase Notes',
+			'_edd_product_type'              => 'default',
+			'_edd_download_earnings'         => 40,
+			'_edd_download_sales'            => 2,
+			'_edd_download_limit_override_1' => 1,
+			'edd_sku'                        => 'sku_0012',
 		);
 
-		foreach( $meta as $key => $value ) {
+		foreach ( $meta as $key => $value ) {
 			update_post_meta( $post_id, $key, $value );
 		}
 
@@ -82,7 +78,7 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 	 * @return int
 	 */
 	private function create_simple_percent_discount() {
-		$post = array(
+		$post        = array(
 			'code'              => '20OFF',
 			'uses'              => 54,
 			'max'               => 10,
@@ -93,9 +89,9 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 			'expiration'        => '12/31/2050 23:59:59',
 			'min_price'         => 128,
 			'status'            => 'active',
-			'product_condition' => 'all'
+			'product_condition' => 'all',
 		);
-		$discount_id = edd_store_discount( $post );
+		$discount_id = edd_add_discount( $post );
 
 		return $discount_id;
 	}
@@ -122,7 +118,7 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 					),
 					$this->equalTo( null ),
 					$this->equalTo( 'settings' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'updated' ),
 				),
 				array(
 					$this->equalTo( __( '"%s" setting updated', 'stream' ) ),
@@ -137,7 +133,7 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 					),
 					$this->equalTo( null ),
 					$this->equalTo( 'settings' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'updated' ),
 				),
 				array(
 					$this->equalTo( __( '"%s" setting updated', 'stream' ) ),
@@ -152,7 +148,7 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 					),
 					$this->equalTo( null ),
 					$this->equalTo( 'settings' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'updated' ),
 				)
 			);
 
@@ -171,7 +167,7 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 		$asserted = 0;
 		add_action(
 			'wp_stream_log_data',
-			function( $data ) use( &$asserted ) {
+			function ( $data ) use ( &$asserted ) {
 				if ( 'edd' === $data['connector'] && in_array( $data['context'], array( 'downloads', 'discounts' ), true ) ) {
 					$asserted++;
 				}
@@ -183,7 +179,12 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 
 		// Create download and discount to trigger logs.
 		$this->create_simple_download();
-		$this->create_simple_percent_discount();
+		$discount_id = $this->create_simple_percent_discount();
+		$discount    = new \EDD_Discount( $discount_id );
+		$discount->update_status( 'inactive' );
+
+		// NOTE: the following function does *not* trigger the "edd_pre_update_status_option":
+		// edd_update_discount_status( $discount_id, 'inactive' );
 
 		// Check assertion flags
 		$this->assertSame( $asserted, 2 );
@@ -191,8 +192,11 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 
 	public function test_callback_edd_pre_update_discount_status() {
 		// Create discount for later use.
-		$post_id  = $this->create_simple_percent_discount();
-		$discount = new \EDD_Discount( $post_id );
+		$discount_id = $this->create_simple_percent_discount();
+		$discount    = new \EDD_Discount( $discount_id );
+
+		// NOTE: the following function does *not* trigger the "edd_pre_update_status_option":
+		// edd_update_discount_status( $discount_id, 'inactive' );
 
 		// Expected log calls.
 		$this->mock->expects( $this->once() )
@@ -201,17 +205,17 @@ class Test_WP_Stream_Connector_EDD extends WP_StreamTestCase {
 				$this->equalTo(
 					sprintf(
 						__( '"%1$s" discount %2$s', 'stream' ),
-						$discount->name,
+						edd_get_discount_field( $discount_id, 'name' ),
 						esc_html__( 'deactivated', 'stream' )
 					)
 				),
 				$this->equalTo(
 					array(
-						'post_id' => $post_id,
-						'status'  => 'inactive',
+						'discount_id' => $discount_id,
+						'status'      => 'inactive',
 					)
 				),
-				$this->equalTo( $post_id ),
+				$this->equalTo( $discount_id ),
 				$this->equalTo( 'discounts' ),
 				$this->equalTo( 'updated' )
 			);

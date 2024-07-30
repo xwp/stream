@@ -9,10 +9,80 @@ class Test_Connector extends WP_StreamTestCase {
 	 */
 	protected $connector;
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
-		$this->connector = new Connector_Maintenance();
+		$this->connector = new class() extends Connector {
+			/**
+			 * Connector slug
+			 *
+			 * @var string
+			 */
+			public $name = 'maintenance';
+
+			/**
+			 * Actions registered for this connector
+			 *
+			 * @var array
+			 */
+			public $actions = array(
+				'simulate_fault',
+				'hyphenated-action',
+			);
+
+			/**
+			 * Return translated connector label
+			 *
+			 * @return string Translated connector label
+			 */
+			public function get_label() {
+				return esc_html__( 'Maintenance', 'stream' );
+			}
+
+			/**
+			 * Return translated action labels
+			 *
+			 * @return array Action label translations
+			 */
+			public function get_action_labels() {
+				return array(
+					'simulated_fault' => esc_html__( 'Fault', 'stream' ),
+				);
+			}
+
+			/**
+			 * Return translated context labels
+			 *
+			 * @return array Context label translations
+			 */
+			public function get_context_labels() {
+				return array(
+					'ae35' => esc_html__( 'AE35 Unit', 'stream' ),
+				);
+			}
+
+			/**
+			 * Log the ae35 test result
+			 *
+			 * @action ae35_test
+			 */
+			public function callback_simulate_fault() {
+				// This is used to check if this callback method actually ran
+				do_action( 'wp_stream_test_child_callback_simulate_fault' );
+			}
+
+			/**
+			 * Log the hyphenated action callback.
+			 *
+			 * @action hyphenated-action
+			 *
+			 * @return void
+			 */
+			public function callback_hyphenated_action() {
+				do_action( 'wp_stream_test_child_callback_hyphenated_action' );
+			}
+		};
+
 		$this->assertNotEmpty( $this->connector );
 	}
 
@@ -44,13 +114,24 @@ class Test_Connector extends WP_StreamTestCase {
 
 	public function test_callback() {
 		global $wp_current_filter;
-		$action = $this->connector->actions[0];
-		$wp_current_filter[] = $action;
+		$action              = $this->connector->actions[0];
+		$wp_current_filter[] = $action; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 
 		$this->connector->callback();
 
 		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_' . $action ) );
 		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'child_callback_' . $action ) );
+	}
+
+	public function test_callback_hyphenated() {
+		global $wp_current_filter;
+		$action              = $this->connector->actions[1];
+		$wp_current_filter[] = $action; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+
+		$this->connector->callback();
+
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_hyphenated_action' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'child_callback_hyphenated_action' ) );
 	}
 
 	public function test_action_links() {
@@ -113,7 +194,7 @@ class Test_Connector extends WP_StreamTestCase {
 		);
 
 		$this->assertNotEmpty( $this->connector->delayed[ $action ] );
-		$this->assertInternalType( 'array', $this->connector->delayed[ $action ] );
+		$this->assertIsArray( $this->connector->delayed[ $action ] );
 
 		global $wpdb;
 		$first_count = $wpdb->get_var( "SELECT COUNT( ID ) FROM {$wpdb->stream}" );
@@ -158,7 +239,7 @@ class Test_Connector extends WP_StreamTestCase {
 	public function test_get_changed_keys() {
 		$array_one = array(
 			'one' => 'foo',
-			'two'  => array(
+			'two' => array(
 				'a' => 'alpha',
 				'b' => 'beta',
 			),
@@ -177,63 +258,17 @@ class Test_Connector extends WP_StreamTestCase {
 	public function test_is_dependency_satisfied() {
 		$this->assertTrue( $this->connector->is_dependency_satisfied() );
 	}
-}
-
-class Connector_Maintenance extends Connector {
-	/**
-	 * Connector slug
-	 *
-	 * @var string
-	 */
-	public $name = 'maintenance';
 
 	/**
-	 * Actions registered for this connector
+	 * Test that percentages are escaped.
 	 *
-	 * @var array
+	 * @return void
 	 */
-	public $actions = array(
-		'simulate_fault',
-	);
-
-	/**
-	 * Return translated connector label
-	 *
-	 * @return string Translated connector label
-	 */
-	public function get_label() {
-		return esc_html__( 'Maintenance', 'stream' );
-	}
-
-	/**
-	 * Return translated action labels
-	 *
-	 * @return array Action label translations
-	 */
-	public function get_action_labels() {
-		return array(
-			'simulated_fault' => esc_html__( 'Fault', 'stream' ),
+	public function test_escape_percentages() {
+		$escaped_value = $this->connector->escape_percentages( 'This is a message with a % sign' );
+		$this->assertEquals(
+			'This is a message with a %% sign',
+			$escaped_value
 		);
-	}
-
-	/**
-	 * Return translated context labels
-	 *
-	 * @return array Context label translations
-	 */
-	public function get_context_labels() {
-		return array(
-			'ae35' => esc_html__( 'AE35 Unit', 'stream' ),
-		);
-	}
-
-	/**
-	 * Log the ae35 test result
-	 *
-	 * @action ae35_test
-	 */
-	public function callback_simulate_fault() {
-		// This is used to check if this callback method actually ran
-		do_action( 'wp_stream_test_child_callback_simulate_fault' );
 	}
 }

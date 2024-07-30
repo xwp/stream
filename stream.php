@@ -3,7 +3,7 @@
  * Plugin Name: Stream
  * Plugin URI: https://xwp.co/work/stream/
  * Description: Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
- * Version: 4.0.0
+ * Version: 4.0.1
  * Author: XWP
  * Author URI: https://xwp.co
  * License: GPLv2+
@@ -31,7 +31,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-if ( version_compare( PHP_VERSION, '5.3', '<' ) ) {
+const WP_STREAM_MIN_PHP_VERSION = '7.0';
+
+if ( version_compare( PHP_VERSION, WP_STREAM_MIN_PHP_VERSION, '<' ) ) {
 	add_action( 'shutdown', 'wp_stream_fail_php_version' );
 } else {
 	require __DIR__ . '/classes/class-plugin.php';
@@ -49,7 +51,8 @@ if ( version_compare( PHP_VERSION, '5.3', '<' ) ) {
 function wp_stream_fail_php_version() {
 	load_plugin_textdomain( 'stream', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 
-	$message      = esc_html__( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' );
+	/* translators: %s is the minimum PHP version. */
+	$message      = sprintf( __( 'Stream requires PHP version %s or newer. Plugin is currently NOT ACTIVE.', 'stream' ), WP_STREAM_MIN_PHP_VERSION );
 	$html_message = sprintf( '<div class="error">%s</div>', wpautop( $message ) );
 
 	echo wp_kses_post( $html_message );

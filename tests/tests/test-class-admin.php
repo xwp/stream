@@ -9,22 +9,44 @@ class Test_Admin extends WP_StreamTestCase {
 	 */
 	protected $admin;
 
-	public function setUp() {
+	/**
+	 * Holds the administrator id.
+	 *
+	 * @var int
+	 */
+	protected $admin_user_id;
+
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->admin = $this->plugin->admin;
 		$this->assertNotEmpty( $this->admin );
 
-		//Add admin user to test caps
+		// Add admin user to test caps
 		// We need to change user to verify editing option as admin or editor
-		$administrator_id = $this->factory->user->create(
+		$this->admin_user_id = \WP_UnitTestCase_Base::factory()->user->create(
 			array(
 				'role'       => 'administrator',
 				'user_login' => 'test_admin',
 				'email'      => 'test@land.com',
 			)
 		);
-		wp_set_current_user( $administrator_id );
+		wp_set_current_user( $this->admin_user_id );
+	}
+
+	/**
+	 * Tear down after each test. Delete the admin user and start afresh.
+	 *
+	 * @return void
+	 */
+	public function tearDown(): void {
+		parent::tear_down();
+
+		if ( is_multisite() ) {
+			wpmu_delete_user( $this->admin_user_id );
+		} else {
+			wp_delete_user( $this->admin_user_id );
+		}
 	}
 
 	public function test_construct() {
@@ -80,9 +102,9 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->admin->admin_notices();
 		$notice = ob_get_clean();
 
-		$this->assertContains( $message, $notice );
-		$this->assertContains( 'updated', $notice );
-		$this->assertNotContains( 'error', $notice );
+		$this->assertStringContainsString( $message, $notice );
+		$this->assertStringContainsString( 'updated', $notice );
+		$this->assertStringNotContainsString( 'error', $notice );
 
 		// Clear notices and start again
 		$this->admin->notices = array();
@@ -96,17 +118,17 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->admin->admin_notices();
 		$notice = ob_get_clean();
 
-		$this->assertContains( $message, $notice );
-		$this->assertContains( 'error', $notice );
-		$this->assertNotContains( 'updated', $notice );
+		$this->assertStringContainsString( $message, $notice );
+		$this->assertStringContainsString( 'error', $notice );
+		$this->assertStringNotContainsString( 'updated', $notice );
 
 		// Prevent output
 		$this->admin->notices = array();
 	}
 
 	public function test_admin_notices() {
-		$allowed_html    = '<progress class="migration" max="100"></progress>';
-		$disallowed_html = '<iframe></iframe>';
+		$allowed_html         = '<progress class="migration" max="100"></progress>';
+		$disallowed_html      = '<iframe></iframe>';
 		$this->admin->notices = array(
 			array(
 				'message'  => "I'm sorry, Dave. I'm afraid I can't do that. $disallowed_html",
@@ -122,10 +144,10 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->admin->admin_notices();
 		$notices = ob_get_clean();
 
-		$this->assertContains( $allowed_html, $notices );
-		$this->assertNotContains( $disallowed_html, $notices );
-		$this->assertContains( str_replace( $disallowed_html, '', $this->admin->notices[0]['message'] ), $notices );
-		$this->assertContains( wpautop( $this->admin->notices[1]['message'] ), $notices );
+		$this->assertStringContainsString( $allowed_html, $notices );
+		$this->assertStringNotContainsString( $disallowed_html, $notices );
+		$this->assertStringContainsString( str_replace( $disallowed_html, '', $this->admin->notices[0]['message'] ), $notices );
+		$this->assertStringContainsString( wpautop( $this->admin->notices[1]['message'] ), $notices );
 
 		// Prevent output
 		$this->admin->notices = array();
@@ -133,7 +155,7 @@ class Test_Admin extends WP_StreamTestCase {
 
 	public function test_register_menu() {
 		global $menu;
-		$menu = array(); //phpcs override okay
+		$menu = array(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 
 		do_action( 'admin_menu' );
 
@@ -196,12 +218,12 @@ class Test_Admin extends WP_StreamTestCase {
 		}
 		$_GET['page'] = $this->admin->records_page_slug;
 
-		$classes = 'sit-down-calmy take-a-stress-pill think-things-over';
+		$classes            = 'sit-down-calmy take-a-stress-pill think-things-over';
 		$admin_body_classes = $this->admin->admin_body_class( $classes );
 
-		$this->assertContains( 'think-things-over ', $admin_body_classes );
-		$this->assertContains( $this->admin->admin_body_class . ' ', $admin_body_classes );
-		$this->assertContains( $this->admin->records_page_slug . ' ', $admin_body_classes );
+		$this->assertStringContainsString( 'think-things-over ', $admin_body_classes );
+		$this->assertStringContainsString( $this->admin->admin_body_class . ' ', $admin_body_classes );
+		$this->assertStringContainsString( $this->admin->records_page_slug . ' ', $admin_body_classes );
 	}
 
 	public function test_admin_menu_css() {
@@ -215,10 +237,10 @@ class Test_Admin extends WP_StreamTestCase {
 		$dependency = $wp_styles->registered['wp-admin'];
 		$this->assertArrayHasKey( 'after', $dependency->extra );
 		$this->assertNotEmpty( $dependency->extra['after'] );
-		$this->assertContains( "#toplevel_page_{$this->admin->records_page_slug}", $dependency->extra['after'][0] );
+		$this->assertStringContainsString( "#toplevel_page_{$this->admin->records_page_slug}", $dependency->extra['after'][0] );
 	}
 
-	/*
+	/**
 	 * Also tests private method erase_stream_records
 	 */
 	public function test_wp_ajax_reset() {
@@ -240,11 +262,11 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->assertNotFalse( $meta_id );
 
 		// Check that records exist
-		$stream_result = $wpdb->get_row( "SELECT * FROM {$wpdb->stream} WHERE ID = $stream_id" );
+		$stream_result = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->stream} WHERE ID = %d", $stream_id ) );
 		$this->assertNotEmpty( $stream_result );
 
 		// Check that meta exists
-		$meta_result = $wpdb->get_row( "SELECT * FROM {$wpdb->streammeta} WHERE meta_id = $meta_id" );
+		$meta_result = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->streammeta} WHERE meta_id = %d", $meta_id ) );
 		$this->assertNotEmpty( $meta_result );
 
 		// Clear records and meta
@@ -270,11 +292,11 @@ class Test_Admin extends WP_StreamTestCase {
 	public function test_purge_scheduled_action() {
 		// Set the TTL to one day
 		if ( is_multisite() && is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
-			$options = (array) get_site_option( 'wp_stream_network', array() );
+			$options                        = (array) get_site_option( 'wp_stream_network', array() );
 			$options['general_records_ttl'] = '1';
 			update_site_option( 'wp_stream_network', $options );
 		} else {
-			$options = (array) get_option( 'wp_stream', array() );
+			$options                        = (array) get_option( 'wp_stream', array() );
 			$options['general_records_ttl'] = '1';
 			update_option( 'wp_stream', $options );
 		}
@@ -282,7 +304,7 @@ class Test_Admin extends WP_StreamTestCase {
 		global $wpdb;
 
 		// Create (two day old) dummy records
-		$stream_data = $this->dummy_stream_data();
+		$stream_data            = $this->dummy_stream_data();
 		$stream_data['created'] = gmdate( 'Y-m-d h:i:s', strtotime( '2 days ago' ) );
 		$wpdb->insert( $wpdb->stream, $stream_data );
 		$stream_id = $wpdb->insert_id;
@@ -298,11 +320,11 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->admin->purge_scheduled_action();
 
 		// Check if the old records have been cleared
-		$stream_results = $wpdb->get_row( "SELECT * FROM {$wpdb->stream} WHERE ID = $stream_id" );
+		$stream_results = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->stream} WHERE ID = %d", $stream_id ) );
 		$this->assertEmpty( $stream_results );
 
 		// Check if the old meta has been cleared
-		$meta_results = $wpdb->get_row( "SELECT * FROM {$wpdb->streammeta} WHERE meta_id = $meta_id" );
+		$meta_results = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->streammeta} WHERE meta_id = %d", $meta_id ) );
 		$this->assertEmpty( $meta_results );
 	}
 
@@ -312,8 +334,8 @@ class Test_Admin extends WP_StreamTestCase {
 
 		$action_links = $this->admin->plugin_action_links( $links, $file );
 
-		$this->assertContains( 'Disconnect', $action_links[0] );
-		$this->assertContains( 'Settings', $action_links[1] );
+		$this->assertStringContainsString( 'Disconnect', $action_links[0] );
+		$this->assertStringContainsString( 'Settings', $action_links[1] );
 	}
 
 	public function test_render_list_table() {
@@ -323,8 +345,8 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->admin->render_list_table();
 		$html = ob_get_clean();
 
-		$this->assertContains( '<div class="wrap">', $html );
-		$this->assertContains( 'record-filter-form', $html );
+		$this->assertStringContainsString( '<div class="wrap">', $html );
+		$this->assertStringContainsString( 'record-filter-form', $html );
 	}
 
 	public function test_render_settings_page() {
@@ -332,7 +354,7 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->admin->render_settings_page();
 		$html = ob_get_clean();
 
-		$this->assertContains( '<div class="wrap">', $html );
+		$this->assertStringContainsString( '<div class="wrap">', $html );
 
 		global $wp_scripts;
 
@@ -346,11 +368,11 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->assertInstanceOf( '\WP_Stream\List_Table', $this->admin->list_table );
 	}
 
-	/*
+	/**
 	 * Also tests private method role_can_view
 	 */
 	public function test_filter_user_caps() {
-		$user = new \WP_User( get_current_user_id() );
+		$user = new \WP_User( $this->admin_user_id );
 
 		$this->plugin->settings->options['general_role_access'] = array( 'administrator' );
 		$this->assertTrue( $user->has_cap( $this->admin->view_cap ) );
@@ -359,7 +381,7 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->assertFalse( $user->has_cap( $this->admin->view_cap ) );
 	}
 
-	/*
+	/**
 	 * Also tests private method role_can_view
 	 */
 	public function test_filter_role_caps() {
@@ -379,19 +401,21 @@ class Test_Admin extends WP_StreamTestCase {
 	 * @requires PHPUnit 5.7
 	 */
 	public function test_ajax_filters() {
-		$user = new \WP_User( get_current_user_id() );
+		$user = new \WP_User( $this->admin_user_id );
 
 		$this->_setRole( 'subscriber' );
 
 		$_POST['filter'] = 'user_id';
-		$_POST['q'] = $user->display_name;
-		$_POST['nonce'] = wp_create_nonce( 'stream_filters_user_search_nonce' );
+		$_POST['q']      = $user->display_name;
+		$_POST['nonce']  = wp_create_nonce( 'stream_filters_user_search_nonce' );
 
 		$this->expectException( 'WPAjaxDieStopException' );
 
 		try {
 			$this->_handleAjax( 'wp_stream_filters' );
-		} catch ( WPAjaxDieStopException $e ) {}
+		} catch ( WPAjaxDieStopException $e ) {
+			// Do nothing.
+		}
 
 		// Check that the exception was thrown.
 		$this->assertTrue( isset( $e ) );
@@ -403,19 +427,19 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->_setRole( 'administrator' );
 
 		$this->_handleAjax( 'wp_stream_filters' );
-		$json = $this-> _last_response;
+		$json = $this->_last_response;
 
 		$this->assertNotEmpty( $json );
 		$data = json_decode( $json );
 		$this->assertNotFalse( $data );
 		$this->assertNotEmpty( $data );
-		$this->assertInternalType( 'array', $data );
+		$this->assertIsArray( $data );
 	}
 
 	public function test_get_users_record_meta() {
-		$user_id = get_current_user_id();
+		$user_id = $this->admin_user_id;
 		$authors = array(
-			$user_id => wp_get_current_user(),
+			$user_id => get_user_by( 'id', $user_id ),
 		);
 
 		$records = $this->admin->get_users_record_meta( $authors );
@@ -428,42 +452,42 @@ class Test_Admin extends WP_StreamTestCase {
 	public function test_get_user_meta() {
 		$key   = 'message_1';
 		$value = 'It is dangerous to remain here. You must leave within two days.';
-		update_user_meta( get_current_user_id(), $key, $value );
-		$this->assertEquals( $this->admin->get_user_meta( get_current_user_id(), $key, true ), $value );
+		update_user_meta( $this->admin_user_id, $key, $value );
+		$this->assertEquals( $this->admin->get_user_meta( $this->admin_user_id, $key, true ), $value );
 	}
 
 	public function test_update_user_meta() {
 		$key   = 'message_2';
 		$value = 'I understand. It is important that you believe me. Look behind you.';
-		$this->admin->update_user_meta( get_current_user_id(), $key, $value );
-		$this->assertEquals( get_user_meta( get_current_user_id(), $key, true ), $value );
+		$this->admin->update_user_meta( $this->admin_user_id, $key, $value );
+		$this->assertEquals( get_user_meta( $this->admin_user_id, $key, true ), $value );
 	}
 
 	public function test_delete_user_meta() {
 		$key   = 'message_3';
 		$value = 'I was David Bowman.';
 
-		update_user_meta( get_current_user_id(), $key, $value );
-		$this->assertEquals( get_user_meta( get_current_user_id(), $key, true ), $value );
+		update_user_meta( $this->admin_user_id, $key, $value );
+		$this->assertEquals( get_user_meta( $this->admin_user_id, $key, true ), $value );
 
-		$this->admin->delete_user_meta( get_current_user_id(), $key );
+		$this->admin->delete_user_meta( $this->admin_user_id, $key );
 
-		$this->assertEmpty( get_user_meta( get_current_user_id(), $key, true ) );
+		$this->assertEmpty( get_user_meta( $this->admin_user_id, $key, true ) );
 	}
 
 	private function dummy_stream_data() {
 		return array(
 			'object_id' => null,
-			'site_id' => '1',
-			'blog_id' => get_current_blog_id(),
-			'user_id' => '1',
+			'site_id'   => '1',
+			'blog_id'   => get_current_blog_id(),
+			'user_id'   => '1',
 			'user_role' => 'administrator',
-			'created' => gmdate( 'Y-m-d H:i:s' ),
-			'summary' => '"Hello Dave" plugin activated',
-			'ip' => '192.168.0.1',
+			'created'   => gmdate( 'Y-m-d H:i:s' ),
+			'summary'   => '"Hello Dave" plugin activated',
+			'ip'        => '192.168.0.1',
 			'connector' => 'installer',
-			'context' => 'plugins',
-			'action' => 'activated',
+			'context'   => 'plugins',
+			'action'    => 'activated',
 		);
 	}
 

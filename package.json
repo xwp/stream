@@ -6,7 +6,7 @@
   "author": "XWP",
   "license": "GPLv2+",
   "engines": {
-    "node": "^16.20.2"
+    "node": "^20"
   },
   "repository": {
     "type": "git",
@@ -25,35 +25,38 @@
     "track"
   ],
   "devDependencies": {
-    "@wordpress/eslint-plugin": "^15.1.0",
-    "eslint": "^8.55.0",
+    "@wordpress/eslint-plugin": "^19.2.0",
+    "eslint": "^8.57.0",
     "grunt": "^1.6.1",
     "grunt-contrib-clean": "^2.0.1",
-    "grunt-contrib-compress": "^2.0.0",
-    "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-cssmin": "^5.0.0",
     "grunt-contrib-uglify": "^5.2.2",
-    "grunt-wp-deploy": "^2.1.2"
+    "npm-run-all": "^4.1.5"
   },
   "scripts": {
-    "build": "grunt build",
-    "release": "grunt release",
-    "deploy": "grunt deploy",
-    "lint-js": "eslint .",
-    "lint-php": "composer lint",
-    "lint": "npm run lint-js && npm run lint-php",
-    "build-containers": "docker-compose --file docker-compose.build.yml build",
-    "push-containers": "docker-compose --file docker-compose.build.yml push",
+    "build": "grunt",
+    "lint": "npm-run-all lint:*",
+    "lint:js": "eslint .",
+    "lint:php": "composer lint",
+    "lint:php-tests": "composer lint-tests",
+    "format": "composer format",
+    "test": "npm-run-all test:*",
+    "test:php": "npm run cli -- composer test --working-dir=wp-content/plugins/stream-src",
+    "test:php-multisite": "npm run cli -- composer test-multisite --working-dir=wp-content/plugins/stream-src",
+    "test-xdebug": "npm run cli -- composer test-xdebug --working-dir=wp-content/plugins/stream-src",
+    "test-one": "npm run cli -- composer test-one --working-dir=wp-content/plugins/stream-src --",
+    "test-report": "npm run cli -- composer test-report --working-dir=wp-content/plugins/stream-src",
+    "build-containers": "docker compose --file docker-compose.build.yml build",
+    "push-containers": "docker compose --file docker-compose.build.yml push",
+    "start": "docker compose up --remove-orphans --detach",
+    "switch-to:php8.2": "docker compose build --build-arg PHP_VERSION=8.2 --build-arg XDEBUG_VERSION=3.3.2 && npm run start",
+    "switch-to:php7.4": "docker compose build && npm run start",
+    "which-php": "npm run cli -- php --version",
+    "document:connectors": "php ./local/scripts/generate-connector-docs.php",
+    "stop": "docker compose down",
     "stop-all": "docker stop $(docker ps -a -q)",
-    "cli": "docker-compose run --rm --user $(id -u) wordpress xwp_wait db_phpunit:3306 -s -t 300 --",
-    "vcli": "vagrant ssh -- docker-compose -f /vagrant/docker-compose.yml run --rm --user $(id -u) wordpress xwp_wait db_phpunit:3306 -s -t 300 --",
-    "phpunit": "npm run cli -- composer test --working-dir=wp-content/plugins/stream-src",
-    "phpunit-multisite": "npm run cli -- composer test-multisite --working-dir=wp-content/plugins/stream-src",
-    "vphpunit": "npm run vcli -- composer test --working-dir=wp-content/plugins/stream-src",
-    "vphpunit-multisite": "npm run vcli -- composer test-multisite --working-dir=wp-content/plugins/stream-src",
-    "phpunit-report": "npm run cli -- composer test-report --working-dir=wp-content/plugins/stream-src",
-    "vphpunit-report": "npm run vcli -- composer test-report --working-dir=wp-content/plugins/stream-src",
-    "vcompose": "vagrant ssh -- docker-compose -f /vagrant/docker-compose.yml"
-  },
-  "dependencies": {}
+    "logs": "docker compose logs --follow",
+    "cli": "docker compose run --rm --user $(id -u) wordpress --",
+    "install-wordpress": "npm run cli wp core multisite-install"
+  }
 }

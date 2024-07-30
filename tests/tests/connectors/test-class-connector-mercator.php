@@ -6,11 +6,12 @@
  *
  * @package WP_Stream
  */
+
 namespace WP_Stream;
 
 class Test_WP_Stream_Connector_Mercator extends WP_StreamTestCase {
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		if ( ! is_multisite() ) {
@@ -55,10 +56,10 @@ class Test_WP_Stream_Connector_Mercator extends WP_StreamTestCase {
 	 */
 	public function test_get_context_labels() {
 		// Validate this works for foreign characters as well.
-		$id = $this->factory->blog->create( array( 'title' => 'ובזכויותיהם' ) );
+		$id     = $this->factory->blog->create( array( 'title' => 'ובזכויותיהם' ) );
 		$labels = $this->mock->get_context_labels();
 		$this->assertArrayHasKey( 'blog-1', $labels );
-		$this->assertArrayHasKey( 'blog-' . $id , $labels );
+		$this->assertArrayHasKey( 'blog-' . $id, $labels );
 	}
 
 	public function test_callback_mercator_mapping_made_primary() {
@@ -196,9 +197,11 @@ class Test_WP_Stream_Connector_Mercator extends WP_StreamTestCase {
 				$this->equalTo( 'deleted' )
 			);
 
-		// Execute action to trigger callback because the tables need to
-		// run the "\Mercator\Mapping::delete() don't currently exist.
-		do_action( 'mercator.mapping.deleted', $mapping );
+		/*
+		 * Execute action to trigger callback because the tables need to
+		 * run the \Mercator\Mapping::delete() don't currently exist.
+		 */
+		do_action( 'mercator.mapping.deleted', $mapping ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
 
 		// Check callback test action.
 		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_mercator_mapping_deleted' ) );

@@ -134,7 +134,7 @@ class CLI extends \WP_CLI_Command {
 
 			// Catch any fields missing in records.
 			foreach ( $fields as $field ) {
-				if ( ! array_key_exists( $field, $record ) ) {
+				if ( ! property_exists( $record, $field ) ) {
 					$record->$field = null;
 				}
 			}
@@ -154,15 +154,11 @@ class CLI extends \WP_CLI_Command {
 			}
 
 			if ( 'json' === $assoc_args['format'] ) {
-				\WP_CLI::line( wp_stream_json_encode( $formatted_records ) );
+				\WP_CLI::line( wp_json_encode( $formatted_records ) );
 			}
 
 			if ( 'json_pretty' === $assoc_args['format'] ) {
-				if ( version_compare( PHP_VERSION, '5.4', '<' ) ) {
-					\WP_CLI::line( wp_stream_json_encode( $formatted_records ) ); // xss ok.
-				} else {
-					\WP_CLI::line( wp_stream_json_encode( $formatted_records, JSON_PRETTY_PRINT ) ); // xss ok.
-				}
+				\WP_CLI::line( wp_json_encode( $formatted_records, JSON_PRETTY_PRINT ) );
 			}
 
 			if ( 'csv' === $assoc_args['format'] ) {
@@ -183,22 +179,22 @@ class CLI extends \WP_CLI_Command {
 	/**
 	 * Convert any field to a flat array.
 	 *
-	 * @param string $name   The output array element name.
-	 * @param mixed  $object Any value to be converted to an array.
+	 * @param string $name  The output array element name.
+	 * @param mixed  $value Any value to be converted to an array.
 	 *
 	 * @return array  The flat array
 	 */
-	private function format_field( $name, $object ) {
+	private function format_field( $name, $value ) {
 		$array = array();
 
-		if ( is_object( $object ) ) {
-			foreach ( $object as $key => $property ) {
+		if ( is_object( $value ) ) {
+			foreach ( $value as $key => $property ) {
 				$array = array_merge( $array, $this->format_field( $name . '.' . $key, $property ) );
 			}
-		} elseif ( is_array( $object ) ) {
-			$array[ $name ] = $object[0];
+		} elseif ( is_array( $value ) ) {
+			$array[ $name ] = $value[0];
 		} else {
-			$array[ $name ] = $object;
+			$array[ $name ] = $value;
 		}
 
 		return $array;
@@ -207,13 +203,13 @@ class CLI extends \WP_CLI_Command {
 	/**
 	 * Convert an array of flat records to CSV
 	 *
-	 * @param array $array  The input array of records.
+	 * @param array $records The input array of records.
 	 */
-	private function csv_format( $array ) {
+	private function csv_format( $records ) {
 		$output = fopen( 'php://output', 'w' ); // @codingStandardsIgnoreLine Clever output for WP CLI using php://output
 
-		foreach ( $array as $line ) {
-			fputcsv( $output, $line ); // @codingStandardsIgnoreLine
+		foreach ( $records as $line ) {
+			fputcsv( $output, $line );
 		}
 
 		fclose( $output ); // @codingStandardsIgnoreLine

@@ -4,7 +4,7 @@ namespace WP_Stream;
 
 class Test_Log extends WP_StreamTestCase {
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$admin_role = get_role( 'administrator' );
@@ -22,7 +22,7 @@ class Test_Log extends WP_StreamTestCase {
 			);
 		}
 
-		$role = 'this_is_a_really_long_user_role_slug_that_will_not_be_logged_in_stream';
+		$role       = 'this_is_a_really_long_user_role_slug_that_will_not_be_logged_in_stream';
 		$extra_long = get_role( $role );
 		if ( ! $extra_long ) {
 			$extra_long = add_role(
@@ -36,10 +36,20 @@ class Test_Log extends WP_StreamTestCase {
 		 * Add users for testing and assign roles.
 		 */
 		$user_id = wp_create_user( 'test1', 'password', 'test1@example.com' );
-		wp_update_user( array( 'ID' => $user_id, 'role' => $long->name ) );
+		wp_update_user(
+			array(
+				'ID'   => $user_id,
+				'role' => $long->name,
+			)
+		);
 
 		$user_id = wp_create_user( 'test2', 'password', 'test2@example.com' );
-		wp_update_user( array( 'ID' => $user_id, 'role' => $extra_long->name ) );
+		wp_update_user(
+			array(
+				'ID'   => $user_id,
+				'role' => $extra_long->name,
+			)
+		);
 	}
 
 	public function test_field_lengths() {
@@ -50,7 +60,12 @@ class Test_Log extends WP_StreamTestCase {
 		// Test user_role length (<=50)
 		$result = $this->plugin->log->log( 'test_connector', 'Test user_role 1', array(), 0, 'settings', 'test', $user1->ID );
 		$this->assertNotEmpty( $result );
-		$record = $this->plugin->db->query( array( 'search' => $result, 'search_field' => 'ID' ) );
+		$record = $this->plugin->db->query(
+			array(
+				'search'       => $result,
+				'search_field' => 'ID',
+			)
+		);
 		$this->assertEquals( $result, $record[0]->ID );
 
 		// Test user_role length (>50)
@@ -64,7 +79,6 @@ class Test_Log extends WP_StreamTestCase {
 		// Test action length
 
 		// Test IP length
-
 	}
 
 	public function test_can_map_exclude_rules_settings_to_rows() {
@@ -73,31 +87,31 @@ class Test_Log extends WP_StreamTestCase {
 				null,
 				null,
 			),
-			'action' => array(
+			'action'      => array(
 				'one',
 				null,
-				'three'
-			)
+				'three',
+			),
 		);
 
 		$this->assertEquals(
 			array(
 				array(
-					'exclude_row' => null,
-					'action' => 'one',
+					'exclude_row'    => null,
+					'action'         => 'one',
 					'author_or_role' => null,
-					'connector' => null,
-					'context' => null,
-					'ip_address' => null,
+					'connector'      => null,
+					'context'        => null,
+					'ip_address'     => null,
 				),
 				array(
-					'exclude_row' => null,
-					'action' => null,
+					'exclude_row'    => null,
+					'action'         => null,
 					'author_or_role' => null,
-					'connector' => null,
-					'context' => null,
-					'ip_address' => null,
-				)
+					'connector'      => null,
+					'context'        => null,
+					'ip_address'     => null,
+				),
 			),
 			$this->plugin->log->exclude_rules_by_rows( $rules_settings )
 		);
@@ -111,7 +125,7 @@ class Test_Log extends WP_StreamTestCase {
 		$this->assertTrue(
 			$this->plugin->log->record_matches_rules(
 				array(
-					'action' => 'mega_action',
+					'action'     => 'mega_action',
 					'ip_address' => '1.1.1.1',
 				),
 				$rules
@@ -143,24 +157,28 @@ class Test_Log extends WP_StreamTestCase {
 			'Record IP address is different'
 		);
 
-		$this->assertTrue( $this->plugin->log->record_matches_rules(
-			array(
-				'ip_address' => '1.1.1.1',
-			),
-			array(
-				'ip_address' => '1.1.1.1',
-			),
-			'Record and rule IP addresses match'
-		) );
+		$this->assertTrue(
+			$this->plugin->log->record_matches_rules(
+				array(
+					'ip_address' => '1.1.1.1',
+				),
+				array(
+					'ip_address' => '1.1.1.1',
+				),
+				'Record and rule IP addresses match'
+			)
+		);
 
-		$this->assertTrue( $this->plugin->log->record_matches_rules(
-			array(
-				'ip_address' => '1.1.1.1',
-			),
-			array(
-				'ip_address' => '8.8.8.8,1.1.1.1',
-			),
-			'Record IP address is one of the IP addresses in the rule'
-		) );
+		$this->assertTrue(
+			$this->plugin->log->record_matches_rules(
+				array(
+					'ip_address' => '1.1.1.1',
+				),
+				array(
+					'ip_address' => '8.8.8.8,1.1.1.1',
+				),
+				'Record IP address is one of the IP addresses in the rule'
+			)
+		);
 	}
 }

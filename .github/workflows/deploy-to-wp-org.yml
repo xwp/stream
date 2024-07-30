@@ -1,0 +1,95 @@
+name: Deploy to WordPress.org Repository
+
+on:
+
+  # The action will run when a release or a pre-release is created.
+  #
+  # In case of a pre-release, the action will not commit to WP.org (dry-run). However, it will still
+  # create a zip file and upload it to the release. Note that a pre-release (release candidate)
+  # should not be changed to a release but rather a new release should be created.
+  release:
+    types:
+      - released
+      - prereleased
+
+jobs:
+
+  deploy_to_wp_repository:
+    name: Deploy to WP.org
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+      packages: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer:v2
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-php-${{ hashFiles( 'composer.lock' ) }}
+          restore-keys: ${{ runner.os }}-php-
+
+      # Install dependencies.
+      - name: Install NPM dependencies
+        run: npm install
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev
+
+      # Build.
+      - name: Build
+        run: npm run build
+
+      - name: WordPress Plugin Deploy
+        # This is used to get the zip-path later.
+        id: deploy
+        uses: 10up/action-wordpress-plugin-deploy@stable
+        with:
+          generate-zip: true
+          # In case of a pre-release, do not commit to WP.org.
+          dry-run: ${{ github.event.release.prerelease }}
+
+        # Use secrets to authenticate with WP.org.
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+
+      # After the deployment, we also want to create a zip and upload it to the release on GitHub.
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          # Note, this is an exception to action secrets: GITHUB_TOKEN is always available and provides access to
+          # the current repository this action runs in.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+        with:
+          # Get the URL for uploading assets to the current release.
+          upload_url: ${{ github.event.release.upload_url }}
+
+          # Provide the path to the file generated in the previous step using the output.
+          asset_path: ${{ steps.deploy.outputs.zip-path }}
+
+          # Provide what the file should be named when attached to the release (plugin-name.zip)
+          asset_name: ${{ github.event.repository.name }}.zip
+
+          # Provide the file type.
+          asset_content_type: application/zip

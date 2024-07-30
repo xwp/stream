@@ -1,9 +1,9 @@
 === Stream ===
 Contributors: xwp
 Tags: wp stream, stream, activity, logs, track
-Requires at least: 4.5
-Tested up to: 6.4
-Stable tag: 4.0.0
+Requires at least: 4.6
+Tested up to: 6.6
+Stable tag: 4.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -133,6 +133,39 @@ Use only `$_SERVER['REMOTE_ADDR']` as the client IP address for event logs witho
 
 
 == Changelog ==
+
+= 4.0.1 - July 30, 2024 =
+
+**Bug fixes**
+
+- Fix PHP Type error in CLI (in [#1475](https://github.com/xwp/stream/pull/1475)) props [@Soean](https://github.com/Soean)
+- Fix Uncaught ValueError in Gravity Forms and WordPress SEO connectors (in [#1508](https://github.com/xwp/stream/pull/1508)) props [@krokodok](https://github.com/krokodok)
+- Fix dynamic callback method detection for custom connectors (in [#1469](https://github.com/xwp/stream/pull/1469)) props [@shadyvb](https://github.com/shadyvb)
+- Fix PHP warning in PHP 8 by adjusting exclude rules filtering to avoid passing null to `strlen()` (in [#1513](https://github.com/xwp/stream/pull/1513)) props [@ocean90](https://github.com/ocean90)
+- Fix adding multiple columns to the stream table using filters only displays the last column correctly (in [#1519](https://github.com/xwp/stream/pull/1519)) props [@thefrosty](https://github.com/thefrosty)
+- Fix offset warning in Slack alert when there is no custom logo (in [#1522](https://github.com/xwp/stream/pull/1522)) props [@benerd](https://github.com/benerd)
+- Fix BuddyPress Connector, check for BuddyPress dependencies before using (in [#1517](https://github.com/xwp/stream/pull/1517)) props [@dd32](https://github.com/dd32)
+- Fix [Security] Update `select2` to `4.0.13` (in [#1495](https://github.com/xwp/stream/pull/1495))
+
+**Development**
+
+- Update local development environment to use Docker (in [#1423](https://github.com/xwp/stream/pull/1423))
+- Update `wp-coding-standards/wpcs` and fix all linting issues
+- Require PHP ≥ 7.0 and WordPress ≥ 4.6
+- Allow switching between PHP 7.4 and PHP 8.2
+- Document Connectors (in [#1518](https://github.com/xwp/stream/pull/1518))
+- Update dependencies
+  - `eslint` to `^8.57.0` (in [#1480](https://github.com/xwp/stream/pull/1480))
+  - `@babel/traverse` from `7.20.10` to `7.23.2` (in [#1463](https://github.com/xwp/stream/pull/1463))
+  - `braces` from `3.0.2` to `3.0.3` (in [#1487](https://github.com/xwp/stream/pull/1487))
+  - `composer/composer` from `2.2.21` to `2.2.24` (in [#1488](https://github.com/xwp/stream/pull/1488))
+  - `@wordpress/eslint-plugin` to `v19` (in [#1452](https://github.com/xwp/stream/pull/1452))
+  - `@wordpress/eslint-plugin` to `^19.2.0` (in [#1490](https://github.com/xwp/stream/pull/1490))
+
+**Deprecations**
+
+- Deprecate PHP 5.6 (in [#1499](https://github.com/xwp/stream/issues/1499))
+- Deprecate `wp_stream_register_column_defaults` filter (in [#1519](https://github.com/xwp/stream/pull/1519))
 
 = 4.0.0 - January 9, 2024 =
 

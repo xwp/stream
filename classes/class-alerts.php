@@ -134,7 +134,6 @@ class Alerts {
 			11,
 			2
 		);
-
 	}
 
 	/**
@@ -296,7 +295,6 @@ class Alerts {
 		}
 
 		return $recordarr;
-
 	}
 
 	/**
@@ -412,18 +410,19 @@ class Alerts {
 	/**
 	 * Return alert object of the given ID
 	 *
-	 * @param string $post_id Post ID for the alert.
+	 * @param string|int $post_id Post ID for the alert.
 	 *
 	 * @return Alert
 	 */
 	public function get_alert( $post_id = '' ) {
 		if ( ! $post_id ) {
-			$obj = new Alert( null, $this->plugin );
-
-			return $obj;
+			return new Alert( null, $this->plugin );
 		}
 
 		$post = get_post( $post_id );
+		if ( ! ( $post instanceof \WP_Post ) ) {
+			return new Alert( null, $this->plugin );
+		}
 
 		$alert_type = get_post_meta( $post_id, 'alert_type', true );
 		$alert_meta = get_post_meta( $post_id, 'alert_meta', true );
@@ -438,7 +437,6 @@ class Alerts {
 		);
 
 		return new Alert( $obj, $this->plugin );
-
 	}
 
 	/**
@@ -528,7 +526,8 @@ class Alerts {
 		}
 		$form = new Form_Generator();
 
-		$field_html = $form->render_field(
+		echo '<label>' . esc_html__( 'Alert me by', 'stream' ) . '</label>';
+		$form->render_field(
 			'select',
 			array(
 				'id'          => 'wp_stream_alert_type',
@@ -539,9 +538,6 @@ class Alerts {
 				'title'       => 'Alert Type:',
 			)
 		);
-
-		echo '<label>' . esc_html__( 'Alert me by', 'stream' ) . '</label>';
-		echo $field_html; // Xss ok.
 
 		echo '<div id="wp_stream_alert_type_form">';
 		if ( is_object( $alert ) ) {
@@ -570,7 +566,7 @@ class Alerts {
 		}
 		$alert   = array();
 		$post_id = wp_stream_filter_input( INPUT_POST, 'post_id' );
-		if ( ! empty( $post_id ) ) {
+		if ( ! empty( $post_id ) && 'new' !== $post_id ) {
 			$alert = $this->get_alert( $post_id );
 			if ( false === $alert ) {
 				wp_send_json_error(
@@ -624,7 +620,7 @@ class Alerts {
 		do_action( 'wp_stream_alert_trigger_form_display', $form, $alert );
 		// @TODO use human readable text.
 		echo '<label>' . esc_html__( 'Alert me when', 'stream' ) . '</label>';
-		echo $form->render_fields(); // Xss ok.
+		$form->render_fields();
 		wp_nonce_field( 'save_alert', 'wp_stream_alerts_nonce' );
 	}
 
@@ -768,16 +764,14 @@ class Alerts {
 			$trigger_connector_and_context_split = explode( '-', $trigger_connector_and_context );
 			$trigger_connector                   = $trigger_connector_and_context_split[0];
 			$trigger_context                     = $trigger_connector_and_context_split[1];
-		} else {
-			if ( ! empty( $trigger_connector_and_context ) ) {
+		} elseif ( ! empty( $trigger_connector_and_context ) ) {
 				// This is a parent connector with no dash such as posts.
 				$trigger_connector = $trigger_connector_and_context;
 				$trigger_context   = '';
-			} else {
-				// There is no connector or context.
-				$trigger_connector = '';
-				$trigger_context   = '';
-			}
+		} else {
+			// There is no connector or context.
+			$trigger_connector = '';
+			$trigger_context   = '';
 		}
 
 		$trigger_action = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_action' );

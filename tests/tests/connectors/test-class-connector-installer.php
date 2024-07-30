@@ -1,7 +1,10 @@
 <?php
 /**
  * Tests for Installer Connector class callbacks.
+ *
+ * @package WP_Stream
  */
+
 namespace WP_Stream;
 
 class Test_WP_Stream_Connector_Installer extends WP_StreamTestCase {
@@ -9,7 +12,7 @@ class Test_WP_Stream_Connector_Installer extends WP_StreamTestCase {
 	/**
 	 * Runs before each test
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		// Make partial of Connector_Installer class, with mocked "log" function.
@@ -46,7 +49,7 @@ class Test_WP_Stream_Connector_Installer extends WP_StreamTestCase {
 					),
 					null,
 					'plugins',
-					'installed'
+					'installed',
 				),
 				array(
 					_x(
@@ -65,7 +68,7 @@ class Test_WP_Stream_Connector_Installer extends WP_StreamTestCase {
 					),
 					null,
 					'themes',
-					'updated'
+					'updated',
 				)
 			);
 
@@ -90,7 +93,7 @@ class Test_WP_Stream_Connector_Installer extends WP_StreamTestCase {
 				$this->equalTo(
 					array(
 						'name'         => 'Hello Dolly',
-						'network_wide' => null
+						'network_wide' => null,
 					)
 				),
 				$this->equalTo( null ),
@@ -199,7 +202,6 @@ class Test_WP_Stream_Connector_Installer extends WP_StreamTestCase {
 
 		// Do stuff.
 
-
 		// Check callback test action.
 		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_pre_set_site_transient_update_plugins' ) );
 	}
@@ -223,7 +225,7 @@ class Test_WP_Stream_Connector_Installer extends WP_StreamTestCase {
 					),
 					$this->equalTo( null ),
 					$this->equalTo( 'WordPress' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'updated' ),
 				),
 				array(
 					$this->equalTo( esc_html__( 'WordPress updated to %s', 'stream' ) ),
@@ -236,7 +238,7 @@ class Test_WP_Stream_Connector_Installer extends WP_StreamTestCase {
 					),
 					$this->equalTo( null ),
 					$this->equalTo( 'WordPress' ),
-					$this->equalTo( 'updated' )
+					$this->equalTo( 'updated' ),
 				)
 			);
 

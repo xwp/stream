@@ -1,9 +1,7 @@
-version: '3'
-
 services:
 
   mysql:
-    image: mariadb:10.2
+    image: mariadb:11.4.2
     volumes:
       - db_data:/var/lib/mysql
     restart: always
@@ -14,7 +12,7 @@ services:
       MYSQL_ROOT_PASSWORD: password
 
   wordpress:
-    image: xwpco/stream-wordpress:${WORDPRESS_IMAGE_VERSION:-latest}
+    image: ghcr.io/xwp/stream-wordpress:${WORDPRESS_IMAGE_VERSION:-latest}
     build:
       context: ./local/docker/wordpress
     depends_on:
@@ -23,25 +21,22 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "9000:9000" # Xdebug
     volumes:
       - .:/var/www/html/wp-content/plugins/stream-src # Working directory.
       - ./build:/var/www/html/wp-content/plugins/stream # Built version for testing.
       - ./local/public:/var/www/html # WP core files.
-      - ./local/config/.htaccess:/var/www/html/.htaccess
-      - ./local/config/wp-cli.yml:/var/www/html/wp-cli.yml
-      - ./local/config/wp-config.php:/var/www/html/wp-config.php
-      - ./local/config/wp-tests-config.php:/var/www/html/wp-tests-config.php
-      - ./local/config/sunrise.php:/var/www/html/wp-content/sunrise.php
     restart: always
+    extra_hosts:
+      - host.docker.internal:host-gateway
     environment:
-      COMPOSER_HOME: /tmp/.composer
       APACHE_RUN_USER: "#1000" # Ensure Apache can write to the filesystem.
       WP_TESTS_DIR: /var/www/html/wp-content/plugins/stream-src/vendor/wp-phpunit/wp-phpunit
       WP_PHPUNIT__TESTS_CONFIG: /var/www/html/wp-tests-config.php
+      SMTPSERVER: mailhog
+      EMAIL: local@${DEV_URL:-stream.wpenv.net}
 
   db_phpunit:
-    image: mariadb:10.2
+    image: mariadb:11.4.2
     restart: always
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
@@ -52,7 +47,6 @@ services:
   mailhog:
     image: mailhog/mailhog
     ports:
-      - "1025:1025"
       - "8025:8025"
 
 volumes:

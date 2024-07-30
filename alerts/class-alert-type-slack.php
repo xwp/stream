@@ -74,11 +74,12 @@ class Alert_Type_Slack extends Alert_Type {
 		if ( empty( $options['webhook'] ) ) {
 			return;
 		}
-		$user_id = (int) $recordarr['user_id'];
-		$user    = get_userdata( $user_id );
-		$logo    = wp_get_attachment_image_src( get_theme_mod( 'custom_logo' ), 'full' );
-		$context = $recordarr['context'];
-		$action  = $recordarr['action'];
+		$user_id           = (int) $recordarr['user_id'];
+		$user              = get_userdata( $user_id );
+		$maybe_custom_logo = get_theme_mod( 'custom_logo' );
+		$default_logo_url  = ( ! empty( $maybe_custom_logo ) ) ? wp_get_attachment_image_url( $maybe_custom_logo, 'full' ) : '';
+		$context           = $recordarr['context'];
+		$action            = $recordarr['action'];
 
 		if ( ! empty( $alert->alert_meta['trigger_context'] ) ) {
 			$context = $this->plugin->alerts->alert_triggers['context']->get_display_value( 'list_table', $alert );
@@ -145,7 +146,7 @@ class Alert_Type_Slack extends Alert_Type {
 			'fallback'    => html_entity_decode( $recordarr['summary'], ENT_COMPAT ),
 			'fields'      => $fields,
 			'footer'      => get_bloginfo( 'name' ),
-			'footer_icon' => get_site_icon_url( 16, $logo[0], $recordarr['blog_id'] ),
+			'footer_icon' => get_site_icon_url( 16, $default_logo_url, $recordarr['blog_id'] ),
 			'title'       => html_entity_decode( $recordarr['summary'], ENT_COMPAT ),
 			'ts'          => strtotime( $recordarr['created'] ),
 		);
@@ -203,53 +204,53 @@ class Alert_Type_Slack extends Alert_Type {
 		echo '<span class="wp_stream_alert_type_description">' . esc_html__( 'Send a rich message notification to Slack.', 'stream' ) . '</span>';
 		echo '<label for="wp_stream_slack_webhook"><span class="title">' . esc_html__( 'Webhook URL', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo $form->render_field(
+		$form->render_field(
 			'text',
 			array(
 				'name'  => 'wp_stream_slack_webhook',
 				'title' => esc_attr( __( 'Webhook URL', 'stream' ) ),
 				'value' => $options['webhook'],
 			)
-		); // Xss ok.
+		);
 		echo '</span>';
 		echo '<span class="input-text-wrap">' . esc_html__( 'The webhook URL', 'stream' ) . '</span>';
 		echo '</label>';
 		echo '<label for="wp_stream_slack_channel"><span class="title">' . esc_html__( 'Channel', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo $form->render_field(
+		$form->render_field(
 			'text',
 			array(
 				'name'  => 'wp_stream_slack_channel',
 				'title' => esc_attr( __( 'Channel', 'stream' ) ),
 				'value' => $options['channel'],
 			)
-		); // Xss ok.
+		);
 		echo '</span>';
 		echo '<span class="input-text-wrap">' . esc_html__( 'The channel to send to (optional)', 'stream' ) . '</span>';
 		echo '</label>';
 		echo '<label for="wp_stream_slack_username"><span class="title">' . esc_html__( 'Username', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo $form->render_field(
+		$form->render_field(
 			'text',
 			array(
 				'name'  => 'wp_stream_slack_username',
 				'title' => esc_attr( __( 'Username', 'stream' ) ),
 				'value' => $options['username'],
 			)
-		); // Xss ok.
+		);
 		echo '</span>';
 		echo '<span class="input-text-wrap">' . esc_html__( 'The username to send as (optional)', 'stream' ) . '</span>';
 		echo '</label>';
 		echo '<label for="wp_stream_slack_icon"><span class="title">' . esc_html__( 'Icon', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo $form->render_field(
+		$form->render_field(
 			'text',
 			array(
 				'name'  => 'wp_stream_slack_icon',
 				'title' => esc_attr( __( 'Icon', 'stream' ) ),
 				'value' => $options['icon'],
 			)
-		); // Xss ok.
+		);
 		echo '</span>';
 		echo '<span class="input-text-wrap">' . esc_html__( 'The URL or emoji (with colons!) to use as the icon (optional)', 'stream' ) . '</span>';
 		echo '</label>';

@@ -70,7 +70,7 @@ class Author {
 			default:
 				if ( ! empty( $this->user ) && 0 !== $this->user->ID ) {
 					if ( is_null( $this->user->$name ) ) {
-						throw new \Exception( "Unrecognized magic '$name'" );
+						throw new \Exception( sprintf( "Unrecognized magic '%s'", esc_attr( $name ) ) );
 					}
 					return $this->user->$name;
 				}
@@ -101,20 +101,18 @@ class Author {
 				return 'WP-CLI'; // No translation needed.
 			}
 			return esc_html__( 'N/A', 'stream' );
-		} else {
-			if ( $this->is_deleted() ) {
-				if ( ! empty( $this->meta['display_name'] ) ) {
-					return $this->meta['display_name'];
-				} elseif ( ! empty( $this->meta['user_login'] ) ) {
-					return $this->meta['user_login'];
-				} else {
-					return esc_html__( 'N/A', 'stream' );
-				}
-			} elseif ( ! empty( $this->user->display_name ) ) {
-				return $this->user->display_name;
+		} elseif ( $this->is_deleted() ) {
+			if ( ! empty( $this->meta['display_name'] ) ) {
+				return $this->meta['display_name'];
+			} elseif ( ! empty( $this->meta['user_login'] ) ) {
+				return $this->meta['user_login'];
 			} else {
-				return $this->user->user_login;
+				return $this->id;
 			}
+		} elseif ( ! empty( $this->user->display_name ) ) {
+			return $this->user->display_name;
+		} else {
+			return $this->user->user_login;
 		}
 	}
 
@@ -153,13 +151,11 @@ class Author {
 			$stream = wp_stream_get_instance();
 			$url    = $stream->locations['url'] . 'ui/stream-icons/wp-cli.png';
 			$avatar = sprintf( '<img alt="%1$s" src="%2$s" class="avatar avatar-%3$s photo" height="%3$s" width="%3$s">', esc_attr( $this->get_display_name() ), esc_url( $url ), esc_attr( $size ) );
-		} else {
-			if ( $this->is_deleted() && isset( $this->meta['user_email'] ) ) {
+		} elseif ( $this->is_deleted() && isset( $this->meta['user_email'] ) ) {
 				$email  = $this->meta['user_email'];
 				$avatar = get_avatar( $email, $size );
-			} else {
-				$avatar = get_avatar( $this->id, $size );
-			}
+		} else {
+			$avatar = get_avatar( $this->id, $size );
 		}
 
 		return $avatar;
@@ -210,7 +206,7 @@ class Author {
 			$user_role = $this->meta['user_role_label'];
 		} elseif ( ! empty( $this->user->roles ) ) {
 			$roles = array_map(
-				function( $role ) use ( $wp_roles ) {
+				function ( $role ) use ( $wp_roles ) {
 					return $wp_roles->role_names[ $role ];
 				},
 				$this->user->roles

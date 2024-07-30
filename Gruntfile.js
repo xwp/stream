@@ -50,80 +50,19 @@ module.exports = function( grunt ) {
 			},
 		},
 
-		// Build a deploy-able plugin
-		copy: {
-			build: {
-				src: [
-					'*.php',
-					'alerts/**',
-					'assets/**',
-					'classes/**',
-					'connectors/**',
-					'exporters/**',
-					'includes/**',
-					'ui/**',
-					'languages/*',
-					'readme.txt',
-					'readme.md',
-					'composer.json',
-					'contributing.md',
-				],
-				dest: 'build',
-				expand: true,
-				dot: true,
-			},
-		},
-
-		compress: {
-			release: {
-				options: {
-					archive: function() {
-						if ( process.env.TRAVIS_TAG ) {
-							return `stream-${process.env.TRAVIS_TAG}.zip`;
-						}
-
-						return 'stream.zip';
-					},
-				},
-				cwd: 'build',
-				dest: 'stream',
-				src: [
-					'**/*',
-				],
-			},
-		},
-
 		// Clean up the build
 		clean: {
 			build: {
 				src: [ 'build' ],
 			},
 		},
-
-		// Deploys a git Repo to the WordPress SVN repo
-		wp_deploy: {
-			deploy: {
-				options: {
-					plugin_slug: 'stream',
-					plugin_main_file: 'stream.php',
-					build_dir: 'build',
-					assets_dir: 'assets',
-				},
-			},
-		},
 	} );
 
 	// Load tasks
 	grunt.loadNpmTasks( 'grunt-contrib-clean' );
-	grunt.loadNpmTasks( 'grunt-contrib-copy' );
 	grunt.loadNpmTasks( 'grunt-contrib-cssmin' );
-	grunt.loadNpmTasks( 'grunt-contrib-compress' );
 	grunt.loadNpmTasks( 'grunt-contrib-uglify' );
-	grunt.loadNpmTasks( 'grunt-wp-deploy' );
 
 	// Register tasks
 	grunt.registerTask( 'default', [ 'clean', 'uglify', 'cssmin' ] );
-	grunt.registerTask( 'build', [ 'default', 'copy' ] );
-	grunt.registerTask( 'release', [ 'build', 'compress' ] );
-	grunt.registerTask( 'deploy', [ 'build', 'wp_deploy', 'clean' ] );
 };

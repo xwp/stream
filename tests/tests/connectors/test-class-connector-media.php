@@ -1,6 +1,8 @@
 <?php
 /**
  * Tests for Media Connector class callbacks.
+ *
+ * @package WP_Stream
  */
 
 namespace WP_Stream;
@@ -10,12 +12,12 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 	/**
 	 * Runs before each test
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		// Make partial of Connector_Media class, with mocked "log" function.
 		$this->mock = $this->getMockBuilder( Connector_Media::class )
-			->setMethods( array( 'log' ) )
+			->onlyMethods( array( 'log' ) )
 			->getMock();
 
 		// Register connector.
@@ -38,13 +40,13 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 				array(
 					$this->equalTo( esc_html__( 'Added "%s" to Media library', 'stream' ) ),
 					$this->callback(
-						function( $subject ) {
+						function ( $subject ) {
 							$expected = array(
 								'name'         => 'Document one',
 								'parent_title' => null,
 								'parent_id'    => 0,
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -60,13 +62,13 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 						)
 					),
 					$this->callback(
-						function( $subject ) use ( $post_id ) {
+						function ( $subject ) use ( $post_id ) {
 							$expected = array(
 								'name'         => 'Document one',
 								'parent_title' => 'Test post',
 								'parent_id'    => $post_id,
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -82,13 +84,13 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 						)
 					),
 					$this->callback(
-						function( $subject ) {
+						function ( $subject ) {
 							$expected = array(
 								'name'         => 'Document one',
 								'parent_title' => 'Unidentifiable post',
 								'parent_id'    => 42,
 							);
-							return $expected === array_intersect_key( $expected, $subject );
+							return array_intersect_key( $expected, $subject ) === $expected;
 						}
 					),
 					$this->greaterThan( 0 ),
@@ -110,7 +112,7 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 				'post_title'   => 'Document one',
 				'post_type'    => 'attachment',
 				'post_content' => 'some description',
-				'post_parent'  => $post_id
+				'post_parent'  => $post_id,
 			)
 		);
 
@@ -120,7 +122,7 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 				'post_title'   => 'Document one',
 				'post_type'    => 'attachment',
 				'post_content' => 'some description',
-				'post_parent'  => 42
+				'post_parent'  => 42,
 			)
 		);
 
@@ -154,7 +156,6 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 			array( 'post_title' => 'Document one' )
 		);
 
-
 		// Check callback test action.
 		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_edit_attachment' ) );
 	}
@@ -174,12 +175,12 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 			->with(
 				$this->equalTo( esc_html__( 'Deleted "%s"', 'stream' ) ),
 				$this->callback(
-					function( $subject ) {
+					function ( $subject ) {
 						$expected = array(
 							'name'      => 'Attachment one',
 							'parent_id' => null,
 						);
-						return $expected === array_intersect_key( $expected, $subject );
+						return array_intersect_key( $expected, $subject ) === $expected;
 					}
 				),
 				$this->equalTo( $attachment_id ),
@@ -210,8 +211,8 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 				$this->equalTo( __( 'Edited image "%s"', 'stream' ) ),
 				$this->equalTo(
 					array(
-						'name'     => 'file.jpg',
-						'filename' => 'file.jpg',
+						'name'     => 'icon-128x128.png',
+						'filename' => WP_STEAM_TESTDATA . '/tmp/icon-128x128.png',
 						'post_id'  => $attachment_id,
 					)
 				),
@@ -220,11 +221,14 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 				$this->equalTo( 'edited' )
 			);
 
+		$image = new \WP_Image_Editor_GD( WP_STEAM_TESTDATA . '/images/icon-128x128.png' );
+		$image->load();
+
 		// Simulate editor page save to trigger callback.
 		\wp_save_image_file(
-			'file.jpg',
-			new \WP_Image_Editor_GD( sys_get_temp_dir() . 'file.jpg' ),
-			'image/jpeg',
+			WP_STEAM_TESTDATA . '/tmp/icon-128x128.png',
+			$image,
+			'image/png',
 			$attachment_id
 		);
 
