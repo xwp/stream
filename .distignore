@@ -3,6 +3,7 @@
 .editorconfig
 .eslintignore
 .eslintrc.json
+.eslintrc.playwright.json
 .gitignore
 .nvmrc
 composer.lock
@@ -14,6 +15,7 @@ package-lock.json
 phpcs.xml.dist
 phpunit.xml
 phpunit-multisite.xml
+playwright.config.js
 renovate.json
 .git
 .github
