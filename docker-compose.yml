@@ -14,7 +14,7 @@ services:
       MYSQL_ROOT_PASSWORD: password
 
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin:5.2.1
+    image: phpmyadmin:5.2.1
     ports:
       - "8080:80"
     depends_on:
