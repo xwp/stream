@@ -41,6 +41,10 @@ In order to set up Step Debugging in PhpStorm, follow the [official guide](https
 
 We use a [MailHog](https://github.com/mailhog/MailHog) container to capture all emails sent by the WordPress container, available at [stream.wpenv.net:8025](https://stream.wpenv.net:8025).
 
+### phpMyAdmin
+
+[phpMyAdmin ](https://www.phpmyadmin.net/) is available at [stream.wpenv.net:8080](http://stream.wpenv.net:8080/).
+
 ### Scripts and Commands
 
 We use npm as the canonical task runner for the project. The following commands are available:

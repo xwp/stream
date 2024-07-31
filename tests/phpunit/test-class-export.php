@@ -43,7 +43,7 @@ class Test_Export extends WP_StreamTestCase {
 		$output = ob_get_clean();
 
 		$this->assertNotEmpty( $output );
-		$this->assertStringStartsWith( 'Date,Summary,User,Connector,Context,Action,IP Address', $output );
+		$this->assertStringStartsWith( 'Date,Summary,User,"User ID",Connector,Context,"Object ID",Action,"IP Address"', $output );
 
 		unset( $_GET['action'] );
 	}
