@@ -29,6 +29,7 @@
     "wp-coding-standards/wpcs": "^3.1",
     "wp-phpunit/wp-phpunit": "^6.6",
     "wpackagist-plugin/advanced-custom-fields": "6.3.4",
+    "wpackagist-plugin/classic-editor": "1.6.4",
     "wpackagist-plugin/easy-digital-downloads": "3.3.1",
     "wpackagist-plugin/jetpack": "13.6",
     "wpackagist-plugin/user-switching": "1.8.0",
