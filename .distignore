@@ -24,3 +24,9 @@ renovate.json
 local
 node_modules
 tests
+
+# Playwright generated files.
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
