@@ -87,14 +87,11 @@
 
 .toplevel_page_wp_stream .column-date {
 	width: 120px;
-	white-space: nowrap;
 }
 
 .toplevel_page_wp_stream .column-date .timeago {
 	display: inline-block;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	max-width: 100%;
+	padding-bottom: 2px;
 }
 
 .toplevel_page_wp_stream .column-user_id {
