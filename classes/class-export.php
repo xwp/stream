@@ -118,9 +118,13 @@ class Export {
 					$row_out[ $column_name ] = $record->summary;
 					break;
 
-				case 'user_id':
+				case 'user':
 					$user                    = new Author( (int) $record->user_id, (array) $record->user_meta );
 					$row_out[ $column_name ] = $user->get_display_name();
+					break;
+
+				case 'user_id':
+					$row_out[ $column_name ] = $record->user_id;
 					break;
 
 				case 'connector':
@@ -129,6 +133,10 @@ class Export {
 
 				case 'context':
 					$row_out[ $column_name ] = $record->context;
+					break;
+
+				case 'object_id':
+					$row_out[ $column_name ] = $record->object_id;
 					break;
 
 				case 'action':
@@ -167,9 +175,11 @@ class Export {
 		$new_columns = array(
 			'date'      => $columns['date'],
 			'summary'   => $columns['summary'],
-			'user_id'   => $columns['user_id'],
+			'user'      => $columns['user_id'],
+			'user_id'   => __( 'User ID', 'stream' ),
 			'connector' => __( 'Connector', 'stream' ),
 			'context'   => $columns['context'],
+			'object_id' => __( 'Object ID', 'stream' ),
 			'action'    => $columns['action'],
 			'ip'        => $columns['ip'],
 		);
