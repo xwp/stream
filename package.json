@@ -26,7 +26,7 @@
   ],
   "devDependencies": {
     "@playwright/test": "^1.45.3",
-    "@types/node": "^22.0.0",
+    "@types/node": "^22.0.2",
     "@wordpress/e2e-test-utils-playwright": "^1.4.0",
     "@wordpress/eslint-plugin": "^20.1.0",
     "eslint": "^8.57.0",
