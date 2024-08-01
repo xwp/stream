@@ -1,36 +1,36 @@
-/* globals jQuery */
-jQuery(
-	function( $ ) {
-		var highlight, input, tab;
+/**
+ * External dependencies.
+ */
+import $ from 'jquery';
 
-		if ( window.location.hash.substr( 'stream-highlight-' ) ) {
-			highlight = window.location.hash.replace( 'stream-highlight-', '' );
-			input = $( ':input' + highlight );
+var highlight, input, tab;
 
-			window.location.hash = '';
+if ( window.location.hash.includes( 'stream-highlight-' ) ) {
+	highlight = window.location.hash.replace( 'stream-highlight-', '' );
+	input = $( ':input' + highlight );
 
-			if ( input.length ) {
-				if ( $( '#wpseo-tabs' ).length ) {
-					tab = input.parents( '.wpseotab' ).first().attr( 'id' );
-					window.location.hash = '#top#' + tab;
-				}
+	window.location.hash = '';
 
-				jQuery( document ).ready(
+	if ( input.length ) {
+		if ( $( '#wpseo-tabs' ).length ) {
+			tab = input.parents( '.wpseotab' ).first().attr( 'id' );
+			window.location.hash = '#top#' + tab;
+		}
+
+		$( document ).ready(
+			function() {
+				setTimeout(
 					function() {
-						setTimeout(
+						$( 'body,html' ).animate(
+							{ scrollTop: input.offset().top - 50 },
+							'slow',
 							function() {
-								$( 'body,html' ).animate(
-									{ scrollTop: input.offset().top - 50 },
-									'slow',
-									function() {
-										input.animate( { backgroundColor: 'yellow' }, 'slow' );
-									}
-								);
-							}, 500
+								input.animate( { backgroundColor: 'yellow' }, 'slow' );
+							}
 						);
-					}
+					}, 500
 				);
 			}
-		}
+		);
 	}
-);
+}
