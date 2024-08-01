@@ -15,11 +15,6 @@ namespace WP_Stream;
 class Alert_Type_Highlight extends Alert_Type {
 
 	/**
-	 * Main JS file script handle.
-	 */
-	const SCRIPT_HANDLE = 'wp-stream-alert-highlight-js';
-
-	/**
 	 * Remove Highlight Ajax action label.
 	 */
 	const REMOVE_ACTION = 'stream_remove_highlight';
@@ -307,34 +302,19 @@ class Alert_Type_Highlight extends Alert_Type {
 	 * @param string $page WP admin page.
 	 */
 	public function enqueue_scripts( $page ) {
-		if ( 'toplevel_page_wp_stream' === $page ) {
-			$min = wp_stream_min_suffix();
+		if ( 'toplevel_page_wp_stream' !== $page ) {
+			return;
+		}
 
-			wp_register_script(
-				self::SCRIPT_HANDLE,
-				$this->plugin->locations['url'] . 'alerts/js/alert-type-highlight.' . $min . 'js',
-				array(
-					'jquery',
-				),
-				$this->plugin->get_version(),
-				false
-			);
-
-			$exports = array(
+		$this->plugin->enqueue_asset(
+			'alert-type-highlight',
+			array(),
+			array(
 				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
 				'removeAction' => self::REMOVE_ACTION,
 				'security'     => wp_create_nonce( self::REMOVE_ACTION_NONCE ),
-			);
-
-			wp_scripts()->add_data(
-				self::SCRIPT_HANDLE,
-				'data',
-				sprintf( 'var _streamAlertTypeHighlightExports = %s;', wp_json_encode( $exports ) )
-			);
-
-			wp_add_inline_script( self::SCRIPT_HANDLE, 'streamAlertTypeHighlight.init();', 'after' );
-			wp_enqueue_script( self::SCRIPT_HANDLE );
-		}
+			),
+		);
 	}
 
 	/**

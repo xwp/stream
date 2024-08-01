@@ -5,6 +5,7 @@ module.exports = {
 	entry: {
 		admin: './ui/js/admin.js',
 		'admin-exclude': './ui/js/admin-exclude.js',
+		'alert-type-highlight': './ui/js/alert-type-highlight.js',
 		alerts: './ui/js/alerts.js',
 		'alerts-list': './ui/js/alerts-list.js',
 		global: './ui/js/global.js',
