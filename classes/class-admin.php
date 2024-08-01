@@ -180,6 +180,7 @@ class Admin {
 				'admin_enqueue_scripts',
 			)
 		);
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_menu_css' ) );
 
 		// Reset Streams database.
@@ -386,6 +387,53 @@ class Admin {
 		}
 	}
 
+	public function enqueue_admin_assets( $hook ) {
+		if (
+			! in_array( $hook, $this->screen_id, true )
+			&&
+			! in_array( $hook, array( 'plugins.php' ), true )
+		) {
+			return;
+		}
+
+		$script_asset_path = $this->plugin->locations['dir'] . 'build/admin.asset.php';
+
+		if ( ! file_exists( $script_asset_path ) ) {
+			throw new RuntimeException( 'Built JavaScript assets not found. Please run `npm run build`' );
+		}
+
+		$script_asset = require $script_asset_path; // phpcs:disable WPThemeReview.CoreFunctionality.FileInclude.FileIncludeFound
+
+		wp_enqueue_script(
+			'wp-stream-admin',
+			$this->plugin->locations['url'] . 'build/admin.js',
+			$script_asset['dependencies'],
+			$script_asset['version'],
+			true
+		);
+		wp_enqueue_style(
+			'wp-stream-admin',
+			$this->plugin->locations['url'] . 'build/admin.css',
+			array(),
+			$script_asset['version']
+		);
+
+		$admin_data = array(
+			'i18n'       => array(
+				'confirm_purge'    => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
+				'confirm_defaults' => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
+			),
+			'locale'     => strtolower( substr( get_locale(), 0, 2 ) ),
+			'gmt_offset' => get_option( 'gmt_offset' ),
+		);
+
+		wp_add_inline_script(
+			'wp-stream-admin',
+			sprintf( 'window.wp_stream = %s;', wp_json_encode( $admin_data ) ),
+			'before',
+		);
+	}
+
 	/**
 	 * Enqueue scripts/styles for admin screen
 	 *
@@ -422,7 +470,6 @@ class Admin {
 		}
 
 		$min = wp_stream_min_suffix();
-		wp_enqueue_style( 'wp-stream-admin', $this->plugin->locations['url'] . 'ui/css/admin.' . $min . 'css', array(), $this->plugin->get_version() );
 
 		$script_screens = array( 'plugins.php' );
 
@@ -433,16 +480,6 @@ class Admin {
 			wp_enqueue_script( 'wp-stream-timeago' );
 			wp_enqueue_script( 'wp-stream-timeago-locale' );
 
-			wp_enqueue_script(
-				'wp-stream-admin',
-				$this->plugin->locations['url'] . 'ui/js/admin.' . $min . 'js',
-				array(
-					'jquery',
-					'wp-stream-select2',
-				),
-				$this->plugin->get_version(),
-				false
-			);
 			wp_enqueue_script(
 				'wp-stream-admin-exclude',
 				$this->plugin->locations['url'] . 'ui/js/exclude.' . $min . 'js',
@@ -462,19 +499,6 @@ class Admin {
 				),
 				$this->plugin->get_version(),
 				false
-			);
-
-			wp_localize_script(
-				'wp-stream-admin',
-				'wp_stream',
-				array(
-					'i18n'       => array(
-						'confirm_purge'    => esc_html__( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
-						'confirm_defaults' => esc_html__( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
-					),
-					'locale'     => esc_js( $locale ),
-					'gmt_offset' => get_option( 'gmt_offset' ),
-				)
 			);
 
 			$order_types = array( 'asc', 'desc' );
