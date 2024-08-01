@@ -10,7 +10,6 @@ namespace WP_Stream;
 use DateTime;
 use DateTimeZone;
 use DateInterval;
-use RuntimeException;
 use WP_CLI;
 use WP_Roles;
 
@@ -433,7 +432,7 @@ class Admin {
 			wp_enqueue_script( 'wp-stream-timeago' );
 			wp_enqueue_script( 'wp-stream-timeago-locale' );
 
-			$this->enqueue_asset(
+			$this->plugin->enqueue_asset(
 				'admin',
 				array(),
 				array(
@@ -446,12 +445,12 @@ class Admin {
 				),
 			);
 
-			$this->enqueue_asset(
+			$this->plugin->enqueue_asset(
 				'admin-exclude',
 				array( 'wp-stream-select2' ),
 			);
 
-			$this->enqueue_asset(
+			$this->plugin->enqueue_asset(
 				'live-updates',
 				array( 'heartbeat' ),
 				array(
@@ -480,7 +479,7 @@ class Admin {
 		 */
 		$bulk_actions_threshold = apply_filters( 'wp_stream_bulk_actions_threshold', 100 );
 
-		$this->enqueue_asset(
+		$this->plugin->enqueue_asset(
 			'global',
 			array(),
 			array(
@@ -1070,56 +1069,5 @@ class Admin {
 	 */
 	public function delete_user_meta( $user_id, $meta_key, $meta_value = '' ) {
 		return delete_user_meta( $user_id, $meta_key, $meta_value );
-	}
-
-	/**
-	 * Enqueue a script along with a stylesheet if it exists.
-	 *
-	 * @param string $handle                  Script handle.
-	 * @param array  $additional_dependencies Additional dependencies.
-	 * @param array  $data                    Data to pass to the script.
-	 *
-	 * @throws RuntimeException If built JavaScript assets are not found.
-	 * @return void
-	 */
-	protected function enqueue_asset( $handle, $additional_dependencies = array(), $data = array() ): void {
-		$path = untrailingslashit( $this->plugin->locations['dir'] );
-		$url  = untrailingslashit( $this->plugin->locations['url'] );
-
-		$script_asset_path = "$path/build/$handle.asset.php";
-
-		if ( ! file_exists( $script_asset_path ) ) {
-			throw new RuntimeException( 'Built JavaScript assets not found. Please run `npm run build`' );
-		}
-
-		$script_asset = require $script_asset_path; // phpcs:disable WPThemeReview.CoreFunctionality.FileInclude.FileIncludeFound
-
-		wp_enqueue_script(
-			"wp-stream-$handle",
-			"$url/build/$handle.js",
-			array_merge(
-				$script_asset['dependencies'],
-				(array) $additional_dependencies,
-			),
-			$script_asset['version'],
-			true,
-		);
-
-		if ( file_exists( "$path/build/$handle.css" ) ) {
-			wp_enqueue_style(
-				"wp-stream-$handle",
-				"$url/build/$handle.css",
-				[],
-				$script_asset['version'],
-			);
-		}
-
-		if ( ! empty( $data ) ) {
-			wp_add_inline_script(
-				"wp-stream-$handle",
-				sprintf( 'window["%s"] = %s;', esc_attr( "wp-stream-$handle" ), wp_json_encode( $data ) ),
-				'before',
-			);
-		}
 	}
 }

@@ -7,6 +7,8 @@
 
 namespace WP_Stream;
 
+use RuntimeException;
+
 /**
  * Class Plugin
  */
@@ -332,5 +334,56 @@ class Plugin {
 	 */
 	public function get_client_ip_address() {
 		return apply_filters( 'wp_stream_client_ip_address', $this->client_ip_address );
+	}
+
+	/**
+	 * Enqueue a script along with a stylesheet if it exists.
+	 *
+	 * @param string $handle                  Script handle.
+	 * @param array  $additional_dependencies Additional dependencies.
+	 * @param array  $data                    Data to pass to the script.
+	 *
+	 * @throws RuntimeException If built JavaScript assets are not found.
+	 * @return void
+	 */
+	public function enqueue_asset( $handle, $additional_dependencies = array(), $data = array() ): void {
+		$path = untrailingslashit( $this->locations['dir'] );
+		$url  = untrailingslashit( $this->locations['url'] );
+
+		$script_asset_path = "$path/build/$handle.asset.php";
+
+		if ( ! file_exists( $script_asset_path ) ) {
+			throw new RuntimeException( 'Built JavaScript assets not found. Please run `npm run build`' );
+		}
+
+		$script_asset = require $script_asset_path; // phpcs:disable WPThemeReview.CoreFunctionality.FileInclude.FileIncludeFound
+
+		wp_enqueue_script(
+			"wp-stream-$handle",
+			"$url/build/$handle.js",
+			array_merge(
+				$script_asset['dependencies'],
+				(array) $additional_dependencies,
+			),
+			$script_asset['version'],
+			true,
+		);
+
+		if ( file_exists( "$path/build/$handle.css" ) ) {
+			wp_enqueue_style(
+				"wp-stream-$handle",
+				"$url/build/$handle.css",
+				[],
+				$script_asset['version'],
+			);
+		}
+
+		if ( ! empty( $data ) ) {
+			wp_add_inline_script(
+				"wp-stream-$handle",
+				sprintf( 'window["%s"] = %s;', esc_attr( "wp-stream-$handle" ), wp_json_encode( $data ) ),
+				'before',
+			);
+		}
 	}
 }
