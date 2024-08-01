@@ -1,4 +1,9 @@
 /* globals jQuery */
+/**
+ * Internal dependencies.
+ */
+import '../css/alerts-list.css';
+
 ( function( $ ) {
 	$( document ).ready(
 		function() {
