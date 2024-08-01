@@ -57,6 +57,9 @@
     "stop-all": "docker stop $(docker ps -a -q)",
     "logs": "docker compose logs --follow",
     "cli": "docker compose run --rm --user $(id -u) wordpress --",
+    "large-log-tables:remove": "npm run cli -- /bin/sh -c  'mysql mysql -hmysql -uroot -ppassword < /var/local/scripts/large-datasets/remove-test-logs.sql'",
+    "large-log-tables:generate": "npm run cli -- /bin/sh -c  'mysql mysql -hmysql -uroot -ppassword < /var/local/scripts/large-datasets/bulk-insert-logs.sql'",
+    "large-log-tables:show": "npm run cli -- /bin/sh -c  'mysql mysql -hmysql -uroot -ppassword < /var/local/scripts/large-datasets/show-stream-db-stats.sql'",
     "install-wordpress": "npm run cli wp core multisite-install"
   }
 }
