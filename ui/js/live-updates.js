@@ -1,8 +1,13 @@
-/* globals wp, wp_stream_regenerate_alt_rows */
+/* globals wp */
 /**
  * External dependencies.
  */
 import $ from 'jquery';
+
+/**
+ * Internal dependencies.
+ */
+import wp_stream_regenerate_alt_rows from './utils/wp-stream-regenerate-alt-rows'
 
 $( document ).ready(
 	function() {

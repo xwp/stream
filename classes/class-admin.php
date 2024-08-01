@@ -480,22 +480,14 @@ class Admin {
 		 */
 		$bulk_actions_threshold = apply_filters( 'wp_stream_bulk_actions_threshold', 100 );
 
-		wp_enqueue_script(
-			'wp-stream-global',
-			$this->plugin->locations['url'] . 'ui/js/global.' . $min . 'js',
-			array( 'jquery' ),
-			$this->plugin->get_version(),
-			false,
-		);
-
-		wp_localize_script(
-			'wp-stream-global',
-			'wp_stream_global',
+		$this->enqueue_asset(
+			'global',
+			array(),
 			array(
 				'bulk_actions'       => array(
 					'i18n'      => array(
 						/* translators: %s: a number of items (e.g. "1,742") */
-						'confirm_action' => sprintf( esc_html__( 'Are you sure you want to perform bulk actions on over %s items? This process could take a while to complete.', 'stream' ), number_format( absint( $bulk_actions_threshold ) ) ),
+						'confirm_action' => sprintf( __( 'Are you sure you want to perform bulk actions on over %s items? This process could take a while to complete.', 'stream' ), number_format( absint( $bulk_actions_threshold ) ) ),
 					),
 					'threshold' => absint( $bulk_actions_threshold ),
 				),

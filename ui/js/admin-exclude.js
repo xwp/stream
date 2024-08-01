@@ -1,8 +1,13 @@
-/* globals ajaxurl, wp_stream_regenerate_alt_rows */
+/* globals ajaxurl */
 /**
  * External dependencies.
  */
 import $ from 'jquery';
+
+/**
+ * Internal dependencies.
+ */
+import wp_stream_regenerate_alt_rows from './utils/wp-stream-regenerate-alt-rows'
 
 var $excludeRows = $( '.stream-exclude-list tbody tr:not(.hidden)' );
 var $placeholderRow = $( '.stream-exclude-list tr.helper' );
