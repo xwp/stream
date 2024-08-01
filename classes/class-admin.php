@@ -10,6 +10,7 @@ namespace WP_Stream;
 use DateTime;
 use DateTimeZone;
 use DateInterval;
+use RuntimeException;
 use WP_CLI;
 use WP_Roles;
 
@@ -169,7 +170,7 @@ class Admin {
 				'plugin_action_links',
 			),
 			10,
-			2
+			2,
 		);
 
 		// Load admin scripts and styles.
@@ -178,9 +179,8 @@ class Admin {
 			array(
 				$this,
 				'admin_enqueue_scripts',
-			)
+			),
 		);
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_menu_css' ) );
 
 		// Reset Streams database.
@@ -189,7 +189,7 @@ class Admin {
 			array(
 				$this,
 				'wp_ajax_reset',
-			)
+			),
 		);
 
 		// Auto purge setup.
@@ -199,7 +199,7 @@ class Admin {
 			array(
 				$this,
 				'purge_scheduled_action',
-			)
+			),
 		);
 
 		// Ajax users list.
@@ -208,7 +208,7 @@ class Admin {
 			array(
 				$this,
 				'ajax_filters',
-			)
+			),
 		);
 	}
 
@@ -341,7 +341,7 @@ class Admin {
 			$this->records_page_slug,
 			array( $this, 'render_list_table' ),
 			'div',
-			$main_menu_position
+			$main_menu_position,
 		);
 
 		/**
@@ -365,7 +365,7 @@ class Admin {
 			esc_html__( 'Settings', 'stream' ),
 			$this->settings_cap,
 			$this->settings_page_slug,
-			array( $this, 'render_settings_page' )
+			array( $this, 'render_settings_page' ),
 		);
 
 		if ( isset( $this->screen_id['main'] ) ) {
@@ -382,56 +382,9 @@ class Admin {
 				array(
 					$this,
 					'register_list_table',
-				)
+				),
 			);
 		}
-	}
-
-	public function enqueue_admin_assets( $hook ) {
-		if (
-			! in_array( $hook, $this->screen_id, true )
-			&&
-			! in_array( $hook, array( 'plugins.php' ), true )
-		) {
-			return;
-		}
-
-		$script_asset_path = $this->plugin->locations['dir'] . 'build/admin.asset.php';
-
-		if ( ! file_exists( $script_asset_path ) ) {
-			throw new RuntimeException( 'Built JavaScript assets not found. Please run `npm run build`' );
-		}
-
-		$script_asset = require $script_asset_path; // phpcs:disable WPThemeReview.CoreFunctionality.FileInclude.FileIncludeFound
-
-		wp_enqueue_script(
-			'wp-stream-admin',
-			$this->plugin->locations['url'] . 'build/admin.js',
-			$script_asset['dependencies'],
-			$script_asset['version'],
-			true
-		);
-		wp_enqueue_style(
-			'wp-stream-admin',
-			$this->plugin->locations['url'] . 'build/admin.css',
-			array(),
-			$script_asset['version']
-		);
-
-		$admin_data = array(
-			'i18n'       => array(
-				'confirm_purge'    => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
-				'confirm_defaults' => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
-			),
-			'locale'     => strtolower( substr( get_locale(), 0, 2 ) ),
-			'gmt_offset' => get_option( 'gmt_offset' ),
-		);
-
-		wp_add_inline_script(
-			'wp-stream-admin',
-			sprintf( 'window.wp_stream = %s;', wp_json_encode( $admin_data ) ),
-			'before',
-		);
 	}
 
 	/**
@@ -457,7 +410,7 @@ class Admin {
 				$this->plugin->locations['url'] . sprintf( $file_tmpl, $locale ),
 				array( 'wp-stream-timeago' ),
 				'1',
-				false
+				false,
 			);
 		} else {
 			wp_register_script(
@@ -465,7 +418,7 @@ class Admin {
 				$this->plugin->locations['url'] . sprintf( $file_tmpl, 'en' ),
 				array( 'wp-stream-timeago' ),
 				'1',
-				false
+				false,
 			);
 		}
 
@@ -480,6 +433,19 @@ class Admin {
 			wp_enqueue_script( 'wp-stream-timeago' );
 			wp_enqueue_script( 'wp-stream-timeago-locale' );
 
+			$this->enqueue_asset(
+				'admin',
+				array(),
+				array(
+					'i18n'       => array(
+						'confirm_purge'    => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
+						'confirm_defaults' => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
+					),
+					'locale'     => strtolower( substr( get_locale(), 0, 2 ) ),
+					'gmt_offset' => get_option( 'gmt_offset' ),
+				),
+			);
+
 			wp_enqueue_script(
 				'wp-stream-admin-exclude',
 				$this->plugin->locations['url'] . 'ui/js/exclude.' . $min . 'js',
@@ -488,33 +454,21 @@ class Admin {
 					'wp-stream-select2',
 				),
 				$this->plugin->get_version(),
-				false
-			);
-			wp_enqueue_script(
-				'wp-stream-live-updates',
-				$this->plugin->locations['url'] . 'ui/js/live-updates.' . $min . 'js',
-				array(
-					'jquery',
-					'heartbeat',
-				),
-				$this->plugin->get_version(),
-				false
+				false,
 			);
 
-			$order_types = array( 'asc', 'desc' );
-
-			wp_localize_script(
-				'wp-stream-live-updates',
-				'wp_stream_live_updates',
+			$this->enqueue_asset(
+				'live-updates',
+				array( 'heartbeat' ),
 				array(
 					'current_screen'      => $hook,
 					'current_page'        => isset( $_GET['paged'] ) ? absint( wp_unslash( $_GET['paged'] ) ) : '1', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-					'current_order'       => isset( $_GET['order'] ) && in_array( strtolower( $_GET['order'] ), $order_types, true ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					'current_order'       => isset( $_GET['order'] ) && in_array( strtolower( $_GET['order'] ), array( 'asc', 'desc' ), true ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						? esc_js( $_GET['order'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						: 'desc',
 					'current_query'       => wp_json_encode( $_GET ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					'current_query_count' => count( $_GET ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				)
+				),
 			);
 		}
 
@@ -537,7 +491,7 @@ class Admin {
 			$this->plugin->locations['url'] . 'ui/js/global.' . $min . 'js',
 			array( 'jquery' ),
 			$this->plugin->get_version(),
-			false
+			false,
 		);
 
 		wp_localize_script(
@@ -552,7 +506,7 @@ class Admin {
 					'threshold' => absint( $bulk_actions_threshold ),
 				),
 				'plugins_screen_url' => self_admin_url( 'plugins.php#stream' ),
-			)
+			),
 		);
 	}
 
@@ -698,7 +652,7 @@ class Admin {
 
 		if ( ! current_user_can( $this->settings_cap ) ) {
 			wp_die(
-				esc_html__( "You don't have sufficient privileges to do this action.", 'stream' )
+				esc_html__( "You don't have sufficient privileges to do this action.", 'stream' ),
 			);
 		}
 
@@ -714,8 +668,8 @@ class Admin {
 					'page'    => is_network_admin() ? $this->network->network_settings_page_slug : $this->settings_page_slug,
 					'message' => 'data_erased',
 				),
-				self_admin_url( $this->admin_parent_page )
-			)
+				self_admin_url( $this->admin_parent_page ),
+			),
 		);
 
 		exit;
@@ -740,7 +694,7 @@ class Admin {
 			FROM {$wpdb->stream} AS `stream`
 			LEFT JOIN {$wpdb->streammeta} AS `meta`
 			ON `meta`.`record_id` = `stream`.`ID`
-			WHERE 1=1 {$where};" // @codingStandardsIgnoreLine $where already prepared
+			WHERE 1=1 {$where};", // @codingStandardsIgnoreLine $where already prepared
 		);
 	}
 
@@ -803,7 +757,7 @@ class Admin {
 			FROM {$wpdb->stream} AS `stream`
 			LEFT JOIN {$wpdb->streammeta} AS `meta`
 			ON `meta`.`record_id` = `stream`.`ID`
-			WHERE 1=1 {$where};" // @codingStandardsIgnoreLine $where already prepared
+			WHERE 1=1 {$where};", // @codingStandardsIgnoreLine $where already prepared
 		);
 	}
 
@@ -832,14 +786,14 @@ class Admin {
 				array(
 					'page' => $this->network->network_settings_page_slug,
 				),
-				network_admin_url( $this->admin_parent_page )
+				network_admin_url( $this->admin_parent_page ),
 			);
 		} else {
 			$admin_page_url = add_query_arg(
 				array(
 					'page' => $this->settings_page_slug,
 				),
-				admin_url( $this->admin_parent_page )
+				admin_url( $this->admin_parent_page ),
 			);
 		}
 
@@ -929,7 +883,7 @@ class Admin {
 			$this->plugin,
 			array(
 				'screen' => $this->screen_id['main'],
-			)
+			),
 		);
 	}
 
@@ -974,9 +928,9 @@ class Admin {
 				$user->roles,
 				array_filter(
 					array_keys( $user->caps ),
-					array( $_wp_roles, 'is_role' )
-				)
-			)
+					array( $_wp_roles, 'is_role' ),
+				),
+			),
 		);
 
 		$stream_view_caps = array( $this->view_cap );
@@ -1037,7 +991,7 @@ class Admin {
 							'display_name' => 'WP-CLI',
 						),
 					),
-					get_users()
+					get_users(),
 				);
 
 				$search = wp_stream_filter_input( INPUT_GET, 'q' );
@@ -1047,7 +1001,7 @@ class Admin {
 						$users,
 						function ( $user ) use ( $search ) {
 							return false !== mb_strpos( mb_strtolower( $user->display_name ), mb_strtolower( $search ) );
-						}
+						},
 					);
 				}
 
@@ -1130,5 +1084,56 @@ class Admin {
 	 */
 	public function delete_user_meta( $user_id, $meta_key, $meta_value = '' ) {
 		return delete_user_meta( $user_id, $meta_key, $meta_value );
+	}
+
+	/**
+	 * Enqueue a script along with a stylesheet if it exists.
+	 *
+	 * @param string $handle                  Script handle.
+	 * @param array  $additional_dependencies Additional dependencies.
+	 * @param array  $data                    Data to pass to the script.
+	 *
+	 * @throws RuntimeException If built JavaScript assets are not found.
+	 * @return void
+	 */
+	protected function enqueue_asset( $handle, $additional_dependencies = array(), $data = array() ): void {
+		$path = untrailingslashit( $this->plugin->locations['dir'] );
+		$url  = untrailingslashit( $this->plugin->locations['url'] );
+
+		$script_asset_path = "$path/build/$handle.asset.php";
+
+		if ( ! file_exists( $script_asset_path ) ) {
+			throw new RuntimeException( 'Built JavaScript assets not found. Please run `npm run build`' );
+		}
+
+		$script_asset = require $script_asset_path; // phpcs:disable WPThemeReview.CoreFunctionality.FileInclude.FileIncludeFound
+
+		wp_enqueue_script(
+			"wp-stream-$handle",
+			"$url/build/$handle.js",
+			array_merge(
+				$script_asset['dependencies'],
+				(array) $additional_dependencies,
+			),
+			$script_asset['version'],
+			true,
+		);
+
+		if ( file_exists( "$path/build/$handle.css" ) ) {
+			wp_enqueue_style(
+				"wp-stream-$handle",
+				"$url/build/$handle.css",
+				[],
+				$script_asset['version'],
+			);
+		}
+
+		if ( ! empty( $data ) ) {
+			wp_add_inline_script(
+				"wp-stream-$handle",
+				sprintf( 'window["%s"] = %s;', esc_attr( "wp-stream-$handle" ), wp_json_encode( $data ) ),
+				'before',
+			);
+		}
 	}
 }

@@ -11,7 +11,7 @@ import '../css/admin.css';
 jQuery(
 	function( $ ) {
 		// Shorter timeago strings for English locale
-		if ( 'en' === window.wp_stream.locale && 'undefined' !== typeof $.timeago ) {
+		if ( 'en' === window['wp-stream-admin'].locale && 'undefined' !== typeof $.timeago ) {
 			$.timeago.settings.strings.seconds = 'seconds';
 			$.timeago.settings.strings.minute = 'a minute';
 			$.timeago.settings.strings.hour = 'an hour';
@@ -160,7 +160,7 @@ jQuery(
 		// Confirmation on some important actions
 		$( 'body' ).on(
 			'click', '#wp_stream_advanced_delete_all_records, #wp_stream_network_advanced_delete_all_records', function( e ) {
-				if ( ! window.confirm( window.wp_stream.i18n.confirm_purge ) ) {
+				if ( ! window.confirm( window['wp-stream-admin'].i18n.confirm_purge ) ) {
 					e.preventDefault();
 				}
 			}
@@ -168,7 +168,7 @@ jQuery(
 
 		$( 'body' ).on(
 			'click', '#wp_stream_advanced_reset_site_settings, #wp_stream_network_advanced_reset_site_settings', function( e ) {
-				if ( ! window.confirm( window.wp_stream.i18n.confirm_defaults ) ) {
+				if ( ! window.confirm( window['wp-stream-admin'].i18n.confirm_defaults ) ) {
 					e.preventDefault();
 				}
 			}
@@ -374,7 +374,7 @@ jQuery(
 
 						if ( jQuery.datepicker ) {
 							// Apply a GMT offset due to Date() using the visitor's local time
-							var	siteGMTOffsetHours = parseFloat( window.wp_stream.gmt_offset ),
+							var	siteGMTOffsetHours = parseFloat( window['wp-stream-admin'].gmt_offset ),
 								localGMTOffsetHours = new Date().getTimezoneOffset() / 60 * -1,
 								totalGMTOffsetHours = siteGMTOffsetHours - localGMTOffsetHours,
 								localTime = new Date(),
