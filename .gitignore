@@ -21,3 +21,7 @@ alerts/js/*.min.js
 
 # Generated test data
 tests/data/tmp/*
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

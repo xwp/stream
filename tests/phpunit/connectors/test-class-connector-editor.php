@@ -2,16 +2,29 @@
 namespace WP_Stream;
 
 class Test_WP_Stream_Connector_Editor extends WP_StreamTestCase {
+
+	/**
+	 * The original contents of the file.
+	 *
+	 * @var string
+	 */
+	private string $original_contents;
+
 	public function setUp(): void {
 		parent::setUp();
 
 		$this->plugin->connectors->unload_connectors();
+		$this->original_contents = file_get_contents( WP_PLUGIN_DIR . '/hello.php' );
 
 		$this->mock = $this->getMockBuilder( Connector_Editor::class )
 			->setMethods( array( 'log' ) )
 			->getMock();
 
 		$this->mock->register();
+	}
+
+	public function tearDown(): void {
+		file_put_contents( WP_PLUGIN_DIR . '/hello.php', $this->original_contents ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
 	}
 
 	public function test_log_changes() {
