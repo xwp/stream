@@ -42,6 +42,7 @@
   "scripts": {
     "build": "grunt",
     "build:wp": "wp-scripts build",
+    "dev": "wp-scripts start",
     "lint": "npm-run-all lint:*",
     "lint:js": "eslint .",
     "lint:js-playwright": "DEBUG=eslint:cli-engine eslint tests/e2e/** --config .eslintrc.playwright.json --no-ignore",
