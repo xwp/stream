@@ -446,15 +446,9 @@ class Admin {
 				),
 			);
 
-			wp_enqueue_script(
-				'wp-stream-admin-exclude',
-				$this->plugin->locations['url'] . 'ui/js/exclude.' . $min . 'js',
-				array(
-					'jquery',
-					'wp-stream-select2',
-				),
-				$this->plugin->get_version(),
-				false,
+			$this->enqueue_asset(
+				'admin-exclude',
+				array( 'wp-stream-select2' ),
 			);
 
 			$this->enqueue_asset(
