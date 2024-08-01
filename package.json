@@ -28,13 +28,13 @@
     "@playwright/test": "^1.45.3",
     "@types/node": "^22.0.0",
     "@wordpress/e2e-test-utils-playwright": "^1.4.0",
-    "@wordpress/eslint-plugin": "^19.2.0",
+    "@wordpress/eslint-plugin": "^20.1.0",
     "eslint": "^8.57.0",
     "grunt": "^1.6.1",
     "grunt-contrib-clean": "^2.0.1",
     "grunt-contrib-cssmin": "^5.0.0",
     "grunt-contrib-uglify": "^5.2.2",
-    "npm-run-all2": "^5.0.0",
+    "npm-run-all2": "^6.2.2",
     "uuid": "^10.0.0"
   },
   "scripts": {
