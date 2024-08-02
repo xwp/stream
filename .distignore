@@ -31,3 +31,6 @@ tests
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# JS and SCSS source files.
+/src/
