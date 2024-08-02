@@ -7,7 +7,7 @@ import $ from 'jquery';
 /**
  * Internal dependencies
  */
-import '../css/admin.css';
+import '../css/admin.scss';
 import getQueryVars from './utils/get-query-vars';
 
 // Shorter timeago strings for English locale

@@ -529,7 +529,6 @@ class Admin {
 	 */
 	public function admin_menu_css() {
 		$min = wp_stream_min_suffix();
-		wp_register_style( 'wp-stream-datepicker', $this->plugin->locations['url'] . 'ui/css/datepicker.' . $min . 'css', array(), $this->plugin->get_version() );
 		wp_register_style( 'wp-stream-icons', $this->plugin->locations['url'] . 'ui/stream-icons/style.css', array(), $this->plugin->get_version() );
 
 		// Make sure we're working off a clean version.
