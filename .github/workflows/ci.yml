@@ -51,6 +51,9 @@ jobs:
       - name: Install Composer dependencies
         run: composer install
 
+      - name: Build
+        run: npm run build
+
       - name: Lint
         run: npm run lint
 
@@ -59,6 +62,3 @@ jobs:
 
       - name: Test
         run: npm run test
-
-      - name: Build
-        run: npm run build
