@@ -169,7 +169,7 @@ class Admin {
 				'plugin_action_links',
 			),
 			10,
-			2,
+			2
 		);
 
 		// Load admin scripts and styles.
@@ -178,7 +178,7 @@ class Admin {
 			array(
 				$this,
 				'admin_enqueue_scripts',
-			),
+			)
 		);
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_menu_css' ) );
 
@@ -188,7 +188,7 @@ class Admin {
 			array(
 				$this,
 				'wp_ajax_reset',
-			),
+			)
 		);
 
 		// Auto purge setup.
@@ -198,7 +198,7 @@ class Admin {
 			array(
 				$this,
 				'purge_scheduled_action',
-			),
+			)
 		);
 
 		// Ajax users list.
@@ -207,7 +207,7 @@ class Admin {
 			array(
 				$this,
 				'ajax_filters',
-			),
+			)
 		);
 	}
 
@@ -340,7 +340,7 @@ class Admin {
 			$this->records_page_slug,
 			array( $this, 'render_list_table' ),
 			'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDI0IDEwMjQiIGZpbGw9IjAwMCI+Cgk8cGF0aCBkPSJNOTAzLjExNSA1MTUuNDEzYy00OS4zOTIgMC05MS40NzQgMzEuMzM3LTEwNy40NiA3NS4yMDNsLTEyNC40MTEtMS41MzJjLTExLjM3Ny0uMzQ2LTIyLjc1MS0uNjg5LTM0LjEyOS0uOTk4bC0uMjQxLjU3NC0yMi40MzYtLjI3OC0uMTUzLS45Mi0xNS4wNTYtODIuOTMzLTIwLjE0Ni0xMDguNDA1LTIwLjU0NC0xMDguMzM3TDUwMy45ODIgMGwtNTMuMTQxIDQyOS4wMTMtMTYuMjE0IDEzNy45MzUtMTIuMDE2IDEwNi45MjQtMTE3LjI4Ni0yODUuMjItMTguMzUzIDIwMi44MWMtNDIuNTYyIDEuNDU0LTg1LjEyNyAyLjkzNC0xMjcuNjg4IDQuNzM4LTUzLjA5NyAyLjI5Mi0xMDYuMTg3IDQuNDczLTE1OS4yODQgNy41MzZ2NDIuMDQyYzUzLjA5NyAzLjA2IDEwNi4xODcgNS4yNDcgMTU5LjI4NCA3LjUzMyA1My4wOTMgMi4yNDUgMTA2LjE4IDQuMTk0IDE1OS4yNzMgNS45MDNsMTQuMjQuNDY1IDE3LjM1MSA0OC4zOWMxOC44NDIgNTEuODc0IDM3LjU0MiAxMDMuODA2IDU2Ljc2NSAxNTUuNTQxTDQ2Ni41MiAxMDI0bDQxLjUxMi0zMDguMjkzIDE3LjYzMy0xMzYuNjg1IDEwLjc3NiA1MC4zMjkgNTQuODE1IDI0OC41NDQgNzIuNTE2LTIxNy4yMTdoMTI5LjI2MWMxMy40OTMgNDguMTIxIDU3LjY1NSA4My40MjkgMTEwLjA3NSA4My40MjkgNjMuMTYgMCAxMTQuMzUyLTUxLjIwNSAxMTQuMzUyLTExNC4zNDggMC02My4xMzktNTEuMTg5LTExNC4zNDUtMTE0LjM0OS0xMTQuMzQ1bC4wMDQtLjAwMVoiIC8+Cjwvc3ZnPgo=',
-			$main_menu_position,
+			$main_menu_position
 		);
 
 		/**
@@ -364,7 +364,7 @@ class Admin {
 			esc_html__( 'Settings', 'stream' ),
 			$this->settings_cap,
 			$this->settings_page_slug,
-			array( $this, 'render_settings_page' ),
+			array( $this, 'render_settings_page' )
 		);
 
 		if ( isset( $this->screen_id['main'] ) ) {
@@ -381,7 +381,7 @@ class Admin {
 				array(
 					$this,
 					'register_list_table',
-				),
+				)
 			);
 		}
 	}
@@ -410,14 +410,14 @@ class Admin {
 					),
 					'locale'     => strtolower( substr( get_locale(), 0, 2 ) ),
 					'gmt_offset' => get_option( 'gmt_offset' ),
-				),
+				)
 			);
 
 			$this->plugin->enqueue_asset(
 				'admin-exclude',
 				array(
 					$this->plugin->with_select2(),
-				),
+				)
 			);
 
 			$this->plugin->enqueue_asset(
@@ -431,7 +431,7 @@ class Admin {
 						: 'desc',
 					'current_query'       => wp_json_encode( $_GET ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					'current_query_count' => count( $_GET ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				),
+				)
 			);
 		}
 
@@ -461,7 +461,7 @@ class Admin {
 					'threshold' => absint( $bulk_actions_threshold ),
 				),
 				'plugins_screen_url' => self_admin_url( 'plugins.php#stream' ),
-			),
+			)
 		);
 	}
 
@@ -569,7 +569,7 @@ class Admin {
 
 		if ( ! current_user_can( $this->settings_cap ) ) {
 			wp_die(
-				esc_html__( "You don't have sufficient privileges to do this action.", 'stream' ),
+				esc_html__( "You don't have sufficient privileges to do this action.", 'stream' )
 			);
 		}
 
@@ -585,8 +585,8 @@ class Admin {
 					'page'    => is_network_admin() ? $this->network->network_settings_page_slug : $this->settings_page_slug,
 					'message' => 'data_erased',
 				),
-				self_admin_url( $this->admin_parent_page ),
-			),
+				self_admin_url( $this->admin_parent_page )
+			)
 		);
 
 		exit;
@@ -703,14 +703,14 @@ class Admin {
 				array(
 					'page' => $this->network->network_settings_page_slug,
 				),
-				network_admin_url( $this->admin_parent_page ),
+				network_admin_url( $this->admin_parent_page )
 			);
 		} else {
 			$admin_page_url = add_query_arg(
 				array(
 					'page' => $this->settings_page_slug,
 				),
-				admin_url( $this->admin_parent_page ),
+				admin_url( $this->admin_parent_page )
 			);
 		}
 
@@ -751,7 +751,7 @@ class Admin {
 				'i18n' => array(
 					'confirm_purge' => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
 				),
-			),
+			)
 		);
 		?>
 		<div class="wrap">
@@ -808,7 +808,7 @@ class Admin {
 			$this->plugin,
 			array(
 				'screen' => $this->screen_id['main'],
-			),
+			)
 		);
 	}
 
@@ -853,9 +853,9 @@ class Admin {
 				$user->roles,
 				array_filter(
 					array_keys( $user->caps ),
-					array( $_wp_roles, 'is_role' ),
-				),
-			),
+					array( $_wp_roles, 'is_role' )
+				)
+			)
 		);
 
 		$stream_view_caps = array( $this->view_cap );
@@ -916,7 +916,7 @@ class Admin {
 							'display_name' => 'WP-CLI',
 						),
 					),
-					get_users(),
+					get_users()
 				);
 
 				$search = wp_stream_filter_input( INPUT_GET, 'q' );
@@ -926,7 +926,7 @@ class Admin {
 						$users,
 						function ( $user ) use ( $search ) {
 							return false !== mb_strpos( mb_strtolower( $user->display_name ), mb_strtolower( $search ) );
-						},
+						}
 					);
 				}
 

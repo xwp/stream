@@ -313,7 +313,7 @@ class Alert_Type_Highlight extends Alert_Type {
 				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
 				'removeAction' => self::REMOVE_ACTION,
 				'security'     => wp_create_nonce( self::REMOVE_ACTION_NONCE ),
-			),
+			)
 		);
 	}
 

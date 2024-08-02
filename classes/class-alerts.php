@@ -319,7 +319,7 @@ class Alerts {
 			array(
 				'any'        => __( 'Any', 'stream' ),
 				'anyContext' => __( 'Any Context', 'stream' ),
-			),
+			)
 		);
 	}
 

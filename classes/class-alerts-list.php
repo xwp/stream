@@ -340,7 +340,7 @@ class Alerts_List {
 
 		$this->plugin->enqueue_asset(
 			'alerts-list',
-			array( 'wp-stream-alerts' ),
+			array( 'wp-stream-alerts' )
 		);
 	}
 
