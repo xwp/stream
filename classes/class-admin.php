@@ -396,45 +396,13 @@ class Admin {
 	 * @return void
 	 */
 	public function admin_enqueue_scripts( $hook ) {
-		wp_register_script( 'wp-stream-select2', $this->plugin->locations['url'] . 'ui/lib/select2/js/select2.full.min.js', array( 'jquery' ), '4.0.13', true );
-		wp_register_style( 'wp-stream-select2', $this->plugin->locations['url'] . 'ui/lib/select2/css/select2.min.css', array(), '4.0.13' );
-		wp_register_script( 'wp-stream-timeago', $this->plugin->locations['url'] . 'ui/lib/timeago/jquery.timeago.js', array(), '1.4.1', true );
-
-		$locale    = strtolower( substr( get_locale(), 0, 2 ) );
-		$file_tmpl = 'ui/lib/timeago/locales/jquery.timeago.%s.js';
-
-		if ( file_exists( $this->plugin->locations['dir'] . sprintf( $file_tmpl, $locale ) ) ) {
-			wp_register_script(
-				'wp-stream-timeago-locale',
-				$this->plugin->locations['url'] . sprintf( $file_tmpl, $locale ),
-				array( 'wp-stream-timeago' ),
-				'1',
-				false,
-			);
-		} else {
-			wp_register_script(
-				'wp-stream-timeago-locale',
-				$this->plugin->locations['url'] . sprintf( $file_tmpl, 'en' ),
-				array( 'wp-stream-timeago' ),
-				'1',
-				false,
-			);
-		}
-
-		$min = wp_stream_min_suffix();
-
-		$script_screens = array( 'plugins.php' );
-
-		if ( in_array( $hook, $this->screen_id, true ) || in_array( $hook, $script_screens, true ) ) {
-			wp_enqueue_script( 'wp-stream-select2' );
-			wp_enqueue_style( 'wp-stream-select2' );
-
-			wp_enqueue_script( 'wp-stream-timeago' );
-			wp_enqueue_script( 'wp-stream-timeago-locale' );
-
+		if ( in_array( $hook, $this->screen_id, true ) ) {
 			$this->plugin->enqueue_asset(
 				'admin',
-				array(),
+				array(
+					$this->plugin->with_select2(),
+					$this->plugin->with_jquery_timeago(),
+				),
 				array(
 					'i18n'       => array(
 						'confirm_purge'    => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
@@ -447,7 +415,9 @@ class Admin {
 
 			$this->plugin->enqueue_asset(
 				'admin-exclude',
-				array( 'wp-stream-select2' ),
+				array(
+					$this->plugin->with_select2(),
+				),
 			);
 
 			$this->plugin->enqueue_asset(

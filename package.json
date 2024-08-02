@@ -29,6 +29,7 @@
     "@wordpress/e2e-test-utils-playwright": "^1.4.0",
     "@wordpress/eslint-plugin": "^20.1.0",
     "@wordpress/scripts": "^28.4.0",
+    "copy-webpack-plugin": "^12.0.2",
     "eslint": "^8.57.0",
     "jquery": "3.7.1",
     "npm-run-all2": "^6.2.2",
@@ -64,5 +65,9 @@
     "logs": "docker compose logs --follow",
     "cli": "docker compose run --rm --user $(id -u) wordpress --",
     "install-wordpress": "npm run cli wp core multisite-install"
+  },
+  "dependencies": {
+    "select2": "^4.0.13",
+    "timeago": "^1.6.7"
   }
 }

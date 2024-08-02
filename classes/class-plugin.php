@@ -137,7 +137,7 @@ class Plugin {
 		if ( $error ) {
 			wp_die(
 				esc_html( $error ),
-				esc_html__( 'Stream DB Error', 'stream' )
+				esc_html__( 'Stream DB Error', 'stream' ),
 			);
 		}
 
@@ -347,6 +347,11 @@ class Plugin {
 	 * @return void
 	 */
 	public function enqueue_asset( $handle, $additional_dependencies = array(), $data = array() ): void {
+		// If is enqueued already, bail out.
+		if ( wp_script_is( $handle ) ) {
+			return;
+		}
+
 		$path = untrailingslashit( $this->locations['dir'] );
 		$url  = untrailingslashit( $this->locations['url'] );
 
@@ -385,5 +390,107 @@ class Plugin {
 				'before',
 			);
 		}
+	}
+
+	/**
+	 * Enqueue select2 script and locale file if exists.
+	 *
+	 * @return string Script handle.
+	 */
+	public function with_select2() {
+		$handle = 'wp-stream-select2';
+
+		// If is enqueued already, bail out.
+		if ( wp_script_is( $handle ) ) {
+			return $handle;
+		}
+
+		$path = untrailingslashit( $this->locations['dir'] );
+		$url  = untrailingslashit( $this->locations['url'] );
+
+		wp_enqueue_script(
+			$handle,
+			"$url/build/select2/js/select2.full.min.js",
+			array( 'jquery' ),
+			filemtime( "$path/build/select2/js/select2.full.min.js" ),
+			true,
+		);
+		wp_enqueue_style(
+			$handle,
+			"$url/build/select2/css/select2.min.css",
+			array(),
+			filemtime( "$path/build/select2/css/select2.min.css" ),
+		);
+
+		$locale       = get_locale();
+		$lang         = substr( $locale, 0, 2 );
+		$search_files = [
+			$locale,
+			$lang,
+			'en',
+		];
+
+		foreach ( $search_files as $search_file ) {
+			if ( file_exists( "$path/build/select2/js/i18n/$search_file.js" ) ) {
+				wp_enqueue_script(
+					sanitize_title("wp-stream-$search_file" ),
+					"$url/build/select2/js/i18n/$search_file.js",
+					array( $handle ),
+					filemtime( "$path/build/select2/js/i18n/$search_file.js" ),
+					true,
+				);
+				break;
+			}
+		}
+
+		return $handle;
+	}
+
+	/**
+	 * Enqueue jquery.timeago script and locale file if exists.
+	 *
+	 * @return string Script handle.
+	 */
+	public function with_jquery_timeago() {
+		$handle = 'wp-stream-jquery-timeago';
+
+		// If is enqueued already, bail out.
+		if ( wp_script_is( $handle ) ) {
+			return $handle;
+		}
+
+		$path = untrailingslashit( $this->locations['dir'] );
+		$url  = untrailingslashit( $this->locations['url'] );
+
+		wp_enqueue_script(
+			$handle,
+			"$url/build/timeago/js/jquery.timeago.js",
+			array( 'jquery' ),
+			filemtime( "$path/build/timeago/js/jquery.timeago.js" ),
+			true,
+		);
+
+		$locale       = get_locale();
+		$lang         = substr( $locale, 0, 2 );
+		$search_files = [
+			"jquery.timeago.$locale",
+			"jquery.timeago.$lang",
+			"jquery.timeago.en",
+		];
+
+		foreach ( $search_files as $search_file ) {
+			if ( file_exists( "$path/build/timeago/js/locales/$search_file.js" ) ) {
+				wp_enqueue_script(
+					sanitize_title("wp-stream-$search_file" ),
+					"$url/build/timeago/js/locales/$search_file.js",
+					array( $handle ),
+					filemtime( "$path/build/timeago/js/locales/$search_file.js" ),
+					true,
+				);
+				break;
+			}
+		}
+
+		return $handle;
 	}
 }

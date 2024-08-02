@@ -313,7 +313,7 @@ class Alerts {
 		$this->plugin->enqueue_asset(
 			'alerts',
 			array(
-				'wp-stream-select2',
+				$this->plugin->with_select2(),
 				'inline-edit-post',
 			),
 			array(
