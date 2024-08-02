@@ -1,26 +1,26 @@
-/* globals ajaxurl */
+/* eslint-disable camelcase */
 /**
- * External dependencies.
+ * External dependencies
  */
 import $ from 'jquery';
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
-import wp_stream_regenerate_alt_rows from './utils/wp-stream-regenerate-alt-rows'
+import wp_stream_regenerate_alt_rows from './utils/wp-stream-regenerate-alt-rows';
 
-var $excludeRows = $( '.stream-exclude-list tbody tr:not(.hidden)' );
-var $placeholderRow = $( '.stream-exclude-list tr.helper' );
+const $excludeRows = $( '.stream-exclude-list tbody tr:not(.hidden)' );
+const $placeholderRow = $( '.stream-exclude-list tr.helper' );
 
-var initSettingsSelect2 = function( $rowsWithSelect2 ) {
-	var $input_user;
+const initSettingsSelect2 = function( $rowsWithSelect2 ) {
+	let $input_user;
 
 	$( 'select.select2-select.connector_or_context', $rowsWithSelect2 ).each(
 		function( k, el ) {
 			$( el ).select2(
 				{
 					allowClear: true,
-					templateResult: function( item ) {
+					templateResult( item ) {
 						if ( typeof item.id === 'undefined' ) {
 							return item.text;
 						}
@@ -29,14 +29,14 @@ var initSettingsSelect2 = function( $rowsWithSelect2 ) {
 						}
 						return $( '<span class="child">' + item.text + '</span>' );
 					},
-					matcher: function( params, data ) {
-						var match = $.extend( true, {}, data );
+					matcher( params, data ) {
+						const match = $.extend( true, {}, data );
 
 						if ( null === params.term || $.trim( params.term ) === '' ) {
 							return match;
 						}
 
-						var term = params.term.toLowerCase();
+						const term = params.term.toLowerCase();
 
 						match.id = match.id.replace( 'blogs', 'sites' );
 						if ( match.id.toLowerCase().indexOf( term ) >= 0 ) {
@@ -44,8 +44,8 @@ var initSettingsSelect2 = function( $rowsWithSelect2 ) {
 						}
 
 						if ( match.children ) {
-							for ( var i = match.children.length - 1; i >= 0; i-- ) {
-								var child = match.children[i];
+							for ( let i = match.children.length - 1; i >= 0; i-- ) {
+								const child = match.children[ i ];
 
 								// Remove term from results if it doesn't match.
 								if ( child.id.toLowerCase().indexOf( term ) === -1 ) {
@@ -63,11 +63,11 @@ var initSettingsSelect2 = function( $rowsWithSelect2 ) {
 				}
 			).on(
 				'change', function() {
-					var row = $( this ).closest( 'tr' ),
-						connector = $( this ).val();
+					const row = $( this ).closest( 'tr' );
+					let connector = $( this ).val();
 					if ( connector && 0 < connector.indexOf( '-' ) ) {
-						var connector_split = connector.split( '-' );
-						connector = connector_split[0];
+						const connector_split = connector.split( '-' );
+						connector = connector_split[ 0 ];
 					}
 					getActions( row, connector );
 				}
@@ -93,10 +93,10 @@ var initSettingsSelect2 = function( $rowsWithSelect2 ) {
 				{
 					ajax: {
 						type: 'POST',
-						url: ajaxurl,
+						url: window.ajaxurl,
 						dataType: 'json',
 						quietMillis: 500,
-						data: function( term, page ) {
+						data( term, page ) {
 							return {
 								find: term,
 								limit: 10,
@@ -105,8 +105,8 @@ var initSettingsSelect2 = function( $rowsWithSelect2 ) {
 								nonce: $input_user.data( 'nonce' ),
 							};
 						},
-						processResults: function( response ) {
-							var answer = {
+						processResults( response ) {
+							const answer = {
 								results: [
 									{ text: '', id: '' },
 									{ text: 'Roles', children: [] },
@@ -122,14 +122,14 @@ var initSettingsSelect2 = function( $rowsWithSelect2 ) {
 								return answer;
 							}
 
-							var roles = [];
+							const roles = [];
 
 							$.each(
 								response.data.roles, function( id, text ) {
 									roles.push(
 										{
-											id: id,
-											text: text,
+											id,
+											text,
 										}
 									);
 								}
@@ -142,8 +142,8 @@ var initSettingsSelect2 = function( $rowsWithSelect2 ) {
 							return answer;
 						},
 					},
-					templateResult: function( object ) {
-						var $result = $( '<div>' ).text( object.text );
+					templateResult( object ) {
+						const $result = $( '<div>' ).text( object.text );
 
 						if ( 'undefined' !== typeof object.icon && object.icon ) {
 							$result.prepend( $( '<img src="' + object.icon + '" class="wp-stream-select2-icon">' ) );
@@ -161,8 +161,8 @@ var initSettingsSelect2 = function( $rowsWithSelect2 ) {
 
 						return $result;
 					},
-					templateSelection: function( object ) {
-						var $result = $( '<div>' ).text( object.text );
+					templateSelection( object ) {
+						const $result = $( '<div>' ).text( object.text );
 
 						if ( $.isNumeric( object.id ) && object.text.indexOf( 'icon-users' ) < 0 ) {
 							$result.append( $( '<i class="icon16 icon-users"></i>' ) );
@@ -175,7 +175,7 @@ var initSettingsSelect2 = function( $rowsWithSelect2 ) {
 				}
 			).on(
 				'change', function() {
-					var value = $( this ).select2( 'data' );
+					const value = $( this ).select2( 'data' );
 
 					$( this ).data( 'selected-id', value.id );
 					$( this ).data( 'selected-text', value.text );
@@ -186,17 +186,17 @@ var initSettingsSelect2 = function( $rowsWithSelect2 ) {
 
 	$( 'select.select2-select.ip_address', $rowsWithSelect2 ).each(
 		function( k, el ) {
-			var $input_ip = $( el ),
-				searchTerm = '';
+			const $input_ip = $( el );
+			let searchTerm = '';
 
 			$input_ip.select2(
 				{
 					ajax: {
 						type: 'POST',
-						url: ajaxurl,
+						url: window.ajaxurl,
 						dataType: 'json',
 						quietMillis: 500,
-						data: function( term ) {
+						data( term ) {
 							searchTerm = term.term;
 							return {
 								find: term,
@@ -205,9 +205,9 @@ var initSettingsSelect2 = function( $rowsWithSelect2 ) {
 								nonce: $input_ip.data( 'nonce' ),
 							};
 						},
-						processResults: function( response ) {
-							var answer = { results: [] },
-								ip_chunks = [];
+						processResults( response ) {
+							const answer = { results: [] };
+							let ip_chunks = [];
 
 							if ( true === response.success && undefined !== response.data ) {
 								$.each(
@@ -238,7 +238,7 @@ var initSettingsSelect2 = function( $rowsWithSelect2 ) {
 							ip_chunks = $.grep(
 								ip_chunks,
 								function( chunk ) {
-									var numeric = parseInt( chunk, 10 );
+									const numeric = parseInt( chunk, 10 );
 									return numeric <= 255 && numeric.toString() === chunk;
 								}
 							);
@@ -271,7 +271,7 @@ var initSettingsSelect2 = function( $rowsWithSelect2 ) {
 
 	$( 'ul.select2-choices, ul.select2-choices li, input.select2-input', '.stream-exclude-list tr:not(.hidden) .ip_address' ).on(
 		'mousedown click focus', function() {
-			var $container = $( this ).closest( '.select2-container' ),
+			const $container = $( this ).closest( '.select2-container' ),
 				$input = $container.find( 'input.select2-input' ),
 				value = $container.select2( 'data' );
 
@@ -284,7 +284,7 @@ var initSettingsSelect2 = function( $rowsWithSelect2 ) {
 
 	$( '.exclude_rules_remove_rule_row', $rowsWithSelect2 ).on(
 		'click', function( e ) {
-			var $thisRow = $( this ).closest( 'tr' );
+			const $thisRow = $( this ).closest( 'tr' );
 
 			$thisRow.remove();
 
@@ -300,18 +300,18 @@ initSettingsSelect2( $excludeRows );
 
 $( 'select.select2-select.author_or_role', $excludeRows ).each(
 	function() {
-		var $option = $( '<option selected>' + $( this ).data( 'selected-text' ) + '</option>' ).val( $( this ).data( 'selected-id' ) );
+		const $option = $( '<option selected>' + $( this ).data( 'selected-text' ) + '</option>' ).val( $( this ).data( 'selected-id' ) );
 		$( this ).append( $option ).trigger( 'change' );
 	}
 );
 
 $( 'select.select2-select.connector_or_context', $excludeRows ).each(
 	function() {
-		var parts = [
+		const parts = [
 			$( this ).siblings( '.connector' ).val(),
 			$( this ).siblings( '.context' ).val(),
 		];
-		if ( parts[1] === '' ) {
+		if ( parts[ 1 ] === '' ) {
 			parts.splice( 1, 1 );
 		}
 		$( this ).val( parts.join( '-' ) ).trigger( 'change' );
@@ -320,7 +320,7 @@ $( 'select.select2-select.connector_or_context', $excludeRows ).each(
 
 $( '#exclude_rules_new_rule' ).on(
 	'click', function() {
-		var $newRow = $placeholderRow.clone();
+		const $newRow = $placeholderRow.clone();
 
 		$newRow.removeAttr( 'class' );
 		$newRow.insertBefore( $placeholderRow );
@@ -333,7 +333,7 @@ $( '#exclude_rules_new_rule' ).on(
 
 $( '#exclude_rules_remove_rules' ).on(
 	'click', function() {
-		var $excludeList = $( 'table.stream-exclude-list' ),
+		const $excludeList = $( 'table.stream-exclude-list' ),
 			selectedRows = $( 'tbody input.cb-select:checked', $excludeList ).closest( 'tr' );
 
 		if ( ( $( 'tbody tr', $excludeList ).length - selectedRows.length ) >= 2 ) {
@@ -360,15 +360,15 @@ $( '.stream-exclude-list' ).closest( 'form' ).submit(
 		);
 		$( '.stream-exclude-list tbody tr:not(.hidden) select.select2-select.connector_or_context', this ).each(
 			function() {
-				var parts = $( this ).val().split( '-' );
-				$( this ).siblings( '.connector' ).val( parts[0] );
+				const parts = $( this ).val().split( '-' );
+				$( this ).siblings( '.connector' ).val( parts[ 0 ] );
 				$( this ).siblings( '.context' ).val( parts.slice( 1 ).join( '-' ) );
 				$( this ).removeAttr( 'name' );
 			}
 		);
 		$( '.stream-exclude-list tbody tr:not(.hidden) select.select2-select.ip_address', this ).each(
 			function() {
-				var firstSelected = $( 'option:selected', this ).first();
+				const firstSelected = $( 'option:selected', this ).first();
 
 				// Ugly hack to ensure we always pass an empty value or the order of rows gets messed up.
 				if ( ! firstSelected.length ) {
@@ -395,31 +395,31 @@ $( 'table.stream-exclude-list' ).on(
 );
 
 function getActions( row, connector ) {
-	var trigger_action = $( '.select2-select.action', row ),
+	const trigger_action = $( '.select2-select.action', row ),
 		action_value = trigger_action.val();
 
 	trigger_action.empty();
 	trigger_action.prop( 'disabled', true );
 
-	var placeholder = $( '<option/>', { value: '', text: '' } );
+	const placeholder = $( '<option/>', { value: '', text: '' } );
 	trigger_action.append( placeholder );
 
-	var data = {
+	const data = {
 		action: 'get_actions',
-		connector: connector,
+		connector,
 	};
 
 	$.post(
 		window.ajaxurl, data, function( response ) {
-			var success = response.success,
+			const success = response.success,
 				actions = response.data;
 			if ( ! success ) {
 				return;
 			}
-			for ( var key in actions ) {
+			for ( const key in actions ) {
 				if ( actions.hasOwnProperty( key ) ) {
-					var value = actions[key];
-					var option = $( '<option/>', { value: key, text: value } );
+					const value = actions[ key ];
+					const option = $( '<option/>', { value: key, text: value } );
 					trigger_action.append( option );
 				}
 			}
@@ -431,7 +431,7 @@ function getActions( row, connector ) {
 }
 
 function recalculate_rules_selected() {
-	var $selectedRows = $( 'table.stream-exclude-list tbody tr:not( .hidden ) input.cb-select:checked' ),
+	const $selectedRows = $( 'table.stream-exclude-list tbody tr:not( .hidden ) input.cb-select:checked' ),
 		$deleteButton = $( '#exclude_rules_remove_rules' );
 
 	if ( 0 === $selectedRows.length ) {
@@ -442,7 +442,7 @@ function recalculate_rules_selected() {
 }
 
 function recalculate_rules_found() {
-	var $allRows = $( 'table.stream-exclude-list tbody tr:not( .hidden )' ),
+	const $allRows = $( 'table.stream-exclude-list tbody tr:not( .hidden )' ),
 		$noRulesFound = $( 'table.stream-exclude-list tbody tr.no-items' ),
 		$selectAll = $( '.check-column.manage-column input.cb-select' ),
 		$deleteButton = $( '#exclude_rules_remove_rules' );

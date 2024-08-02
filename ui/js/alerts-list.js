@@ -1,10 +1,10 @@
 /**
- * External dependencies.
+ * External dependencies
  */
 import $ from 'jquery';
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
 import '../css/alerts-list.css';
 

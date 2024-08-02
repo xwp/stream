@@ -1,44 +1,44 @@
-/* globals wp */
+/* eslint-disable camelcase */
 /**
- * External dependencies.
+ * External dependencies
  */
 import $ from 'jquery';
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
-import wp_stream_regenerate_alt_rows from './utils/wp-stream-regenerate-alt-rows'
+import wp_stream_regenerate_alt_rows from './utils/wp-stream-regenerate-alt-rows';
 
 $( document ).ready(
 	function() {
 		// Only run on wp_stream when page is 1 and the order is desc
-		if ( 'toplevel_page_wp_stream' !== window['wp-stream-live-updates'].current_screen || '1' !== window['wp-stream-live-updates'].current_page || 'asc' === window['wp-stream-live-updates'].current_order ) {
+		if ( 'toplevel_page_wp_stream' !== window[ 'wp-stream-live-updates' ].current_screen || '1' !== window[ 'wp-stream-live-updates' ].current_page || 'asc' === window[ 'wp-stream-live-updates' ].current_order ) {
 			return;
 		}
 
 		// Do not run if there are filters in use
-		if ( parseInt( window['wp-stream-live-updates'].current_query_count, 10 ) > 1 ) {
+		if ( parseInt( window[ 'wp-stream-live-updates' ].current_query_count, 10 ) > 1 ) {
 			return;
 		}
 
-		var list_sel = '.toplevel_page_wp_stream #the-list';
+		const list_sel = '.toplevel_page_wp_stream #the-list';
 
 		// Set initial beat to fast. WP is designed to slow this to 15 seconds after 2.5 minutes.
 		wp.heartbeat.interval( 'fast' );
 
 		$( document ).on(
 			'heartbeat-send.stream', function( e, data ) {
-				data['wp-stream-heartbeat'] = 'live-update';
+				data[ 'wp-stream-heartbeat' ] = 'live-update';
 
-				var last_item = $( list_sel + ' tr:first .column-date time' ),
-					last_time = 1;
+				const last_item = $( list_sel + ' tr:first .column-date time' );
+				let last_time = 1;
 
 				if ( 0 !== last_item.length ) {
 					last_time = ( '' === last_item.attr( 'datetime' ) ) ? 1 : last_item.attr( 'datetime' );
 				}
 
-				data['wp-stream-heartbeat-last-time'] = last_time;
-				data['wp-stream-heartbeat-query'] = window['wp-stream-live-updates'].current_query;
+				data[ 'wp-stream-heartbeat-last-time' ] = last_time;
+				data[ 'wp-stream-heartbeat-query' ] = window[ 'wp-stream-live-updates' ].current_query;
 			}
 		);
 
@@ -46,25 +46,25 @@ $( document ).ready(
 		$( document ).on(
 			'heartbeat-tick.stream', function( e, data ) {
 				// If this no rows return then we kill the script
-				if ( ! data['wp-stream-heartbeat'] || 0 === data['wp-stream-heartbeat'].length ) {
+				if ( ! data[ 'wp-stream-heartbeat' ] || 0 === data[ 'wp-stream-heartbeat' ].length ) {
 					return;
 				}
 
-				var show_on_screen = $( '#edit_stream_per_page' ).val(),
+				const show_on_screen = $( '#edit_stream_per_page' ).val(),
 					$current_items = $( list_sel + ' tr' ),
-					$new_items = $( data['wp-stream-heartbeat'] );
+					$new_items = $( data[ 'wp-stream-heartbeat' ] );
 
 				// Remove all default classes and add class to highlight new rows
 				$new_items.addClass( 'new-row' );
 
 				// Check if first tr has the alternate class
-				var has_class = ( $current_items.first().hasClass( 'alternate' ) );
+				const has_class = ( $current_items.first().hasClass( 'alternate' ) );
 
 				// Apply the good class to the list
 				if ( 1 === $new_items.length && ! has_class ) {
 					$new_items.addClass( 'alternate' );
 				} else {
-					var even_or_odd = ( 0 === $new_items.length % 2 && ! has_class ) ? 'even' : 'odd';
+					const even_or_odd = ( 0 === $new_items.length % 2 && ! has_class ) ? 'even' : 'odd';
 					// Add class to nth child because there is more than one element
 					$new_items.filter( ':nth-child(' + even_or_odd + ')' ).addClass( 'alternate' );
 				}
@@ -75,14 +75,14 @@ $( document ).ready(
 				$( '.metabox-prefs input' ).each(
 					function() {
 						if ( true !== $( this ).prop( 'checked' ) ) {
-							var label = $( this ).val();
+							const label = $( this ).val();
 							$( 'td.column-' + label ).hide();
 						}
 					}
 				);
 
 				// Remove the number of element added to the end of the list table
-				var slice_rows = show_on_screen - ( $new_items.length + $current_items.length );
+				const slice_rows = show_on_screen - ( $new_items.length + $current_items.length );
 
 				if ( slice_rows < 0 ) {
 					$( list_sel + ' tr' ).slice( slice_rows ).remove();
@@ -92,7 +92,7 @@ $( document ).ready(
 				$( list_sel + ' tr.no-items' ).remove();
 
 				// Update pagination
-				var total_items_i18n = data.total_items_i18n || '';
+				const total_items_i18n = data.total_items_i18n || '';
 
 				if ( total_items_i18n ) {
 					$( '.displaying-num' ).text( total_items_i18n );

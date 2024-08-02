@@ -1,9 +1,9 @@
 /**
- * External dependencies.
+ * External dependencies
  */
 import $ from 'jquery';
 
-var highlight, input, tab;
+let highlight, input, tab;
 
 if ( window.location.hash.includes( 'stream-highlight-' ) ) {
 	highlight = window.location.hash.replace( 'stream-highlight-', '' );

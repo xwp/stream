@@ -1,5 +1,5 @@
 /**
- * External dependencies.
+ * External dependencies
  */
 import $ from 'jquery';
 
@@ -10,28 +10,28 @@ $( document ).ready(
 		 */
 		$( '.alert-highlight .action-link[href="#"]' ).each(
 			function() {
-				var actionLink = $( this );
+				const actionLink = $( this );
 
 				/**
 				 * Ajax call to remove the highlight.
 				 *
-				 * @return void.
+				 * @return void
 				 */
 				actionLink.click(
 					function( e ) {
-						var recordId, data;
+						let recordId;
 						e.preventDefault();
 						recordId = actionLink.parents( '.alert-highlight' ).attr( 'class' ).match( /record\-id\-[\w-]*\b/ );
-						recordId = recordId[0].replace( 'record-id-', '' );
+						recordId = recordId[ 0 ].replace( 'record-id-', '' );
 
-						data = {
-							action: window['wp-stream-alert-type-highlight'].removeAction,
-							security: window['wp-stream-alert-type-highlight'].security,
+						const data = {
+							action: window[ 'wp-stream-alert-type-highlight' ].removeAction,
+							security: window[ 'wp-stream-alert-type-highlight' ].security,
 							recordId,
 						};
 
 						$.post(
-							window['wp-stream-alert-type-highlight'].ajaxUrl, data, function( response ) {
+							window[ 'wp-stream-alert-type-highlight' ].ajaxUrl, data, function( response ) {
 								if ( true === response.success ) {
 									ajaxDone();
 								}
@@ -42,7 +42,7 @@ $( document ).ready(
 						 * Fires when Ajax complete.
 						 */
 						function ajaxDone() {
-							var row = actionLink.parents( '.alert-highlight' ),
+							const row = actionLink.parents( '.alert-highlight' ),
 								odd = $( '.striped > tbody > :nth-child( odd )' );
 							if ( row.is( odd ) ) {
 								row.animate(
