@@ -19,14 +19,13 @@
   "keywords": [
     "wp",
     "stream",
-    "stream",
     "activity",
     "logs",
     "track"
   ],
   "devDependencies": {
     "@playwright/test": "^1.45.3",
-    "@types/node": "^22.0.0",
+    "@types/node": "^22.0.3",
     "@wordpress/e2e-test-utils-playwright": "^1.4.0",
     "@wordpress/eslint-plugin": "^20.1.0",
     "@wordpress/scripts": "^28.4.0",
@@ -48,7 +47,8 @@
     "test": "npm-run-all test:*",
     "test:php": "npm run cli -- composer test --working-dir=wp-content/plugins/stream-src",
     "test:php-multisite": "npm run cli -- composer test-multisite --working-dir=wp-content/plugins/stream-src",
-    "test-e2e": "npx playwright test",
+    "test-e2e": "wp-scripts test-playwright",
+    "test-e2e-debug": "wp-scripts test-playwright --debug",
     "test-xdebug": "npm run cli -- composer test-xdebug --working-dir=wp-content/plugins/stream-src",
     "test-one": "npm run cli -- composer test-one --working-dir=wp-content/plugins/stream-src --",
     "test-report": "npm run cli -- composer test-report --working-dir=wp-content/plugins/stream-src",
