@@ -20,6 +20,7 @@ ui/css/*.min.css
 alerts/js/*.min.js
 
 # Generated test data
+/artifacts/
 tests/data/tmp/*
 /test-results/
 /playwright-report/
