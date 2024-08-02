@@ -59,6 +59,6 @@ class Test_Alerts_List extends WP_StreamTestCase {
 		global $current_screen;
 		$current_screen->id = 'edit-wp_stream_alerts';
 		$alerts_list->enqueue_scripts( '' );
-		$this->assertTrue( wp_script_is( 'wp-stream-alerts-list-js', 'registered' ) );
+		$this->assertTrue( wp_script_is( 'wp-stream-alerts-list' ) );
 	}
 }

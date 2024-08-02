@@ -433,7 +433,7 @@ class Plugin {
 		foreach ( $search_files as $search_file ) {
 			if ( file_exists( "$path/build/select2/js/i18n/$search_file.js" ) ) {
 				wp_enqueue_script(
-					sanitize_title("wp-stream-$search_file" ),
+					sanitize_title("$handle-$search_file" ),
 					"$url/build/select2/js/i18n/$search_file.js",
 					array( $handle ),
 					filemtime( "$path/build/select2/js/i18n/$search_file.js" ),
@@ -473,18 +473,18 @@ class Plugin {
 		$locale       = get_locale();
 		$lang         = substr( $locale, 0, 2 );
 		$search_files = [
-			"jquery.timeago.$locale",
-			"jquery.timeago.$lang",
-			"jquery.timeago.en",
+			$locale,
+			$lang,
+			'en',
 		];
 
 		foreach ( $search_files as $search_file ) {
-			if ( file_exists( "$path/build/timeago/js/locales/$search_file.js" ) ) {
+			if ( file_exists( "$path/build/timeago/js/locales/jquery.timeago.$search_file.js" ) ) {
 				wp_enqueue_script(
-					sanitize_title("wp-stream-$search_file" ),
-					"$url/build/timeago/js/locales/$search_file.js",
+					sanitize_title("$handle-$search_file" ),
+					"$url/build/timeago/js/locales/jquery.timeago.$search_file.js",
 					array( $handle ),
-					filemtime( "$path/build/timeago/js/locales/$search_file.js" ),
+					filemtime( "$path/build/timeago/js/locales/jquery.timeago.$search_file.js" ),
 					true,
 				);
 				break;
