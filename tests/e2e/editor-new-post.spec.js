@@ -1,5 +1,12 @@
-import { test, expect } from '@wordpress/e2e-test-utils-playwright';
+/**
+ * External dependencies
+ */
 import { v4 as uuidv4 } from 'uuid';
+
+/**
+ * WordPress dependencies
+ */
+import { test, expect } from '@wordpress/e2e-test-utils-playwright';
 
 test.describe( 'Editor: saving a new post', () => {
 	let page, postTitle, postId;

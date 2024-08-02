@@ -15,8 +15,4 @@ module.exports = {
 		'jsdoc/require-param-type': 'off',
 		'jsdoc/check-param-names': 'off',
 	},
-	ignorePatterns: [
-		'tests/e2e/*',
-		'playwright.config.js',
-	],
 };
