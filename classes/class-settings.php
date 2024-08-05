@@ -512,7 +512,7 @@ class Settings {
 		return $has_scheduled_action ?
 			__( 'Currently deleting records. Please be patient, this can take a while.', 'stream' )
 			:
-			__( 'Warning: This will delete all activity records from the database for this site currently in the database. If any are added while this is running, they will not be deleted.', 'stream' );
+			__( 'Warning: This will delete all activity records from the database for this site. If any are added while this is running, they will not be deleted.', 'stream' );
 	}
 
 	/**
