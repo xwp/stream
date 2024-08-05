@@ -114,7 +114,7 @@ class Plugin {
 		spl_autoload_register( array( $this, 'autoload' ) );
 
 		// Load Action Scheduler.
-		require_once( $this->locations['dir'] . '/vendor/woocommerce/action-scheduler/action-scheduler.php' );
+		require_once $this->locations['dir'] . '/vendor/woocommerce/action-scheduler/action-scheduler.php';
 
 		// Load helper functions.
 		require_once $this->locations['inc_dir'] . 'functions.php';
@@ -362,6 +362,6 @@ class Plugin {
 	 * @return bool Whether or not this should be considered large.
 	 */
 	public function is_large_records_table( int $record_number ): bool {
-		return apply_filters( 'wp_stream_is_large_records_table', $record_number > Admin::WP_STREAM_LARGE_RECORDS, $record_number );
+		return apply_filters( 'wp_stream_is_large_records_table', $record_number > 1000000, $record_number );
 	}
 }

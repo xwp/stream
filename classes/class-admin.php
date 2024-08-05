@@ -18,14 +18,24 @@ use WP_Roles;
  */
 class Admin {
 
-	const WP_STREAM_LARGE_RECORDS = 1000000;
-
+	/**
+	 * Used to check if it's a single site, not multisite.
+	 */
 	const WP_STREAM_SINGLE_SITE = 'single';
 
+	/**
+	 * Used to check if it's a multisite with the plugin network enabled.
+	 */
 	const WP_STREAM_MULTI_NETWORK = 'multisite-network';
 
+	/**
+	 * Used to check if it's a multisite with the plugin not network enabled.
+	 */
 	const WP_STREAM_MULTI_NOT_NETWORK = 'multisite-not-network';
 
+	/**
+	 * The async deletion action for large sites.
+	 */
 	const WP_STREAM_ASYNC_DELETION_ACTION = 'stream_erase_large_records_action';
 
 	/**
@@ -228,7 +238,7 @@ class Admin {
 			self::WP_STREAM_ASYNC_DELETION_ACTION,
 			array(
 				$this,
-				'erase_large_records'
+				'erase_large_records',
 			),
 			10,
 			4
@@ -746,7 +756,7 @@ class Admin {
 	 *
 	 * @return void
 	 */
-	private function erase_stream_records(): void {
+	private function erase_stream_records() {
 		global $wpdb;
 
 		// If this is a multisite and it's not networked activated,
@@ -788,7 +798,7 @@ class Admin {
 	 * @param int $log_size The number of rows which will be affected.
 	 * @return void
 	 */
-	private function schedule_erase_large_records( int $log_size ): void {
+	private function schedule_erase_large_records( int $log_size ) {
 		global $wpdb;
 
 		$last_entry = $wpdb->get_var(
@@ -806,12 +816,12 @@ class Admin {
 		// We are going to delete this many and this many only.
 		// This is to avoid the situation where rows keep getting added
 		// between the Action Scheduler runs and they never stop.
-		$args = [
+		$args = array(
 			'total'      => (int) $log_size,
 			'done'       => 0,
 			'last_entry' => (int) $last_entry,
 			'blog_id'    => (int) get_current_blog_id(),
-		];
+		);
 
 		as_enqueue_async_action( self::WP_STREAM_ASYNC_DELETION_ACTION, $args );
 	}
@@ -839,7 +849,7 @@ class Admin {
 	 * @param int $blog_id    The ID of the blog for which the records should be deleted.
 	 * @return void
 	 */
-	public function erase_large_records( int $total, int $done, int $last_entry, int $blog_id ): void {
+	public function erase_large_records( int $total, int $done, int $last_entry, int $blog_id ) {
 		global $wpdb;
 
 		$start_from = $wpdb->get_var(
@@ -880,12 +890,12 @@ class Admin {
 
 		as_enqueue_async_action(
 			self::WP_STREAM_ASYNC_DELETION_ACTION,
-			[
+			array(
 				'total'      => (int) $total,
 				'done'       => (int) $done,
 				'last_entry' => (int) $start_from - $batch_size, // The last ID checked.
-				'blog_id'    => (int) $blog_id
-			]
+				'blog_id'    => (int) $blog_id,
+			)
 		);
 	}
 

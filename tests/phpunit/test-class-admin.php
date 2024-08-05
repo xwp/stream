@@ -282,6 +282,93 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->assertEmpty( $meta_results );
 	}
 
+	/**
+	 * Also tests private method erase_stream_records
+	 */
+	public function test_wp_ajax_reset_large_records_blog() {
+
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'This test requires multisite.' );
+		}
+
+		global $wpdb;
+
+		$_REQUEST['wp_stream_nonce']       = wp_create_nonce( 'stream_nonce' );
+		$_REQUEST['wp_stream_nonce_reset'] = wp_create_nonce( 'stream_nonce_reset' );
+
+		add_filter( 'wp_stream_is_large_records_table', '__return_true' );
+		add_filter( 'wp_stream_is_network_activated', '__return_false' );
+
+		$stream_data = $this->dummy_stream_data();
+		$wpdb->insert( $wpdb->stream, $stream_data );
+		$stream_id = $wpdb->insert_id;
+		$this->assertNotFalse( $stream_id );
+
+		$meta_data = $this->dummy_meta_data( $stream_id );
+		$wpdb->insert( $wpdb->streammeta, $meta_data );
+		$meta_id = $wpdb->insert_id;
+		$this->assertNotFalse( $meta_id );
+
+		$stream_data_2 = $this->dummy_stream_data_other_blog();
+		$wpdb->insert( $wpdb->stream, $stream_data_2 );
+		$stream_id_2 = $wpdb->insert_id;
+		$this->assertNotFalse( $stream_id_2 );
+
+		$meta_data = $this->dummy_meta_data( $stream_id_2 );
+		$wpdb->insert( $wpdb->streammeta, $meta_data );
+		$meta_id_2 = $wpdb->insert_id;
+		$this->assertNotFalse( $meta_id_2 );
+
+		// Clear records and meta
+		$reset = $this->admin->wp_ajax_reset();
+		$this->assertTrue( $reset );
+
+		$current_blog = (int) get_current_blog_id();
+
+		// Assert the scheduled action has been set.
+		$this->assertTrue(
+			as_has_scheduled_action(
+				Admin::WP_STREAM_ASYNC_DELETION_ACTION
+			)
+		);
+
+		// Check that records have not been cleared yet.
+		$stream_results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM {$wpdb->stream} WHERE blog_id=%d",
+				$current_blog
+			)
+		);
+		$this->assertNotEmpty( $stream_results );
+
+		$this->admin->erase_large_records( 1, 0, $meta_id, $current_blog );
+
+		// Check that records have been cleared.
+		$stream_results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM {$wpdb->stream} WHERE blog_id=%d",
+				$current_blog
+			)
+		);
+		$this->assertEmpty( $stream_results );
+
+		// Check that records of the other blog have not been cleared.
+		$stream_results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM {$wpdb->stream} WHERE blog_id=%d",
+				$current_blog + 1
+			)
+		);
+		$this->assertNotEmpty( $stream_results );
+
+		// Check that one meta has been cleared
+		$meta_results = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->streammeta}" );
+		$this->assertEquals( 1, $meta_results );
+
+		remove_filter( 'wp_stream_is_large_records_table', '__return_true' );
+		remove_filter( 'wp_stream_is_network_activated', '__return_false' );
+	}
+
 	public function test_purge_schedule_setup() {
 		wp_clear_scheduled_hook( 'wp_stream_auto_purge' );
 		$this->assertFalse( wp_next_scheduled( 'wp_stream_auto_purge' ) );
@@ -480,6 +567,22 @@ class Test_Admin extends WP_StreamTestCase {
 			'object_id' => null,
 			'site_id'   => '1',
 			'blog_id'   => get_current_blog_id(),
+			'user_id'   => '1',
+			'user_role' => 'administrator',
+			'created'   => gmdate( 'Y-m-d H:i:s' ),
+			'summary'   => '"Hello Dave" plugin activated',
+			'ip'        => '192.168.0.1',
+			'connector' => 'installer',
+			'context'   => 'plugins',
+			'action'    => 'activated',
+		);
+	}
+
+	private function dummy_stream_data_other_blog() {
+		return array(
+			'object_id' => null,
+			'site_id'   => '1',
+			'blog_id'   => (int) get_current_blog_id() + 1,
 			'user_id'   => '1',
 			'user_role' => 'administrator',
 			'created'   => gmdate( 'Y-m-d H:i:s' ),
