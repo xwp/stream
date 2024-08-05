@@ -24,7 +24,8 @@ class Connector_Posts extends Connector {
 	 * @var array
 	 */
 	public $actions = array(
-		'transition_post_status',
+		'post_updated',
+		'save_post',
 		'deleted_post',
 	);
 
@@ -150,17 +151,49 @@ class Connector_Posts extends Connector {
 	}
 
 	/**
-	 * Log all post status changes ( creating / updating / trashing )
+	 * Prepare log data for new posts.
 	 *
-	 * @action transition_post_status
+	 * @action save_post
 	 *
-	 * @param mixed    $new_status New status.
-	 * @param mixed    $old_status Old status.
-	 * @param \WP_Post $post       Post object.
+	 * @param int      $post_id Post ID.
+	 * @param \WP_Post $post    Post object.
+	 * @param bool     $update  Whether this is an existing post being updated.
+	 *
+	 * @return void
 	 */
-	public function callback_transition_post_status( $new_status, $old_status, $post ) {
+	public function callback_save_post( $post_id, $post, $update ) {
+		// Post update is handled in `callback_post_updated`.
+		if ( $update ) {
+			return;
+		}
 
-		if ( in_array( $post->post_type, $this->get_excluded_post_types(), true ) ) {
+		$this->callback_transition_post_status( $post, $post );
+	}
+
+	/**
+	 * Prepare log data for updated posts.
+	 *
+	 * @action post_updated
+	 *
+	 * @param int      $post_id     Post ID.
+	 * @param \WP_Post $post_after  Post object following the update.
+	 * @param \WP_Post $post_before Post object before the update.
+	 *
+	 * @return void
+	 */
+	public function callback_post_updated( $post_id, $post_after, $post_before ) {
+		$this->callback_transition_post_status( $post_after, $post_before );
+	}
+
+	/**
+	 * Log post changes
+	 *
+	 * @param \WP_Post $post_after Post object following the update.
+	 * @param \WP_Post $post_before Post object before the update.
+	 */
+	public function callback_transition_post_status( $post_after, $post_before ) {
+
+		if ( in_array( $post_after->post_type, $this->get_excluded_post_types(), true ) ) {
 			return;
 		}
 
@@ -170,18 +203,18 @@ class Connector_Posts extends Connector {
 		}
 
 		$start_statuses = array( 'auto-draft', 'inherit', 'new' );
-		if ( in_array( $new_status, $start_statuses, true ) ) {
+		if ( in_array( $post_after->post_status, $start_statuses, true ) ) {
 			return;
 		} elseif ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
-		} elseif ( 'draft' === $new_status && 'publish' === $old_status ) {
+		} elseif ( 'draft' === $post_after->post_status && 'publish' === $post_before->post_status ) {
 			/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post") */
 			$summary = _x(
 				'"%1$s" %2$s unpublished',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-		} elseif ( 'trash' === $old_status && 'trash' !== $new_status ) {
+		} elseif ( 'trash' === $post_before->post_status && 'trash' !== $post_after->post_status ) {
 			/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post") */
 			$summary = _x(
 				'"%1$s" %2$s restored from trash',
@@ -189,56 +222,56 @@ class Connector_Posts extends Connector {
 				'stream'
 			);
 			$action  = 'untrashed';
-		} elseif ( 'draft' === $new_status && 'draft' === $old_status ) {
+		} elseif ( 'draft' === $post_after->post_status && 'draft' === $post_before->post_status ) {
 			/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post") */
 			$summary = _x(
 				'"%1$s" %2$s draft saved',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-		} elseif ( 'publish' === $new_status && ! in_array( $old_status, array( 'future', 'publish' ), true ) ) {
+		} elseif ( 'publish' === $post_after->post_status && ! in_array( $post_before->post_status, array( 'future', 'publish' ), true ) ) {
 			/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post") */
 			$summary = _x(
 				'"%1$s" %2$s published',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-		} elseif ( 'draft' === $new_status ) {
+		} elseif ( 'draft' === $post_after->post_status && 'draft' !== $post_before->post_status ) {
 			/* translators: %1$s: a post title, %2$s a post type singular name (e.g. "Hello World", "Post") */
 			$summary = _x(
 				'"%1$s" %2$s drafted',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-		} elseif ( 'pending' === $new_status ) {
+		} elseif ( 'pending' === $post_after->post_status && 'pending' !== $post_before->post_status ) {
 			/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post") */
 			$summary = _x(
 				'"%1$s" %2$s pending review',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-		} elseif ( 'future' === $new_status ) {
+		} elseif ( 'future' === $post_after->post_status && 'future' !== $post_before->post_status ) {
 			/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post") */
 			$summary = _x(
 				'"%1$s" %2$s scheduled for %3$s',
 				'1: Post title, 2: Post type singular name, 3: Scheduled post date',
 				'stream'
 			);
-		} elseif ( 'future' === $old_status && 'publish' === $new_status ) {
+		} elseif ( 'future' === $post_before->post_status && 'publish' === $post_after->post_status ) {
 			/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post") */
 			$summary = _x(
 				'"%1$s" scheduled %2$s published',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-		} elseif ( 'private' === $new_status ) {
+		} elseif ( 'private' === $post_after->post_status && 'private' !== $post_before->post_status ) {
 			/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post") */
 			$summary = _x(
 				'"%1$s" %2$s privately published',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-		} elseif ( 'trash' === $new_status ) {
+		} elseif ( 'trash' === $post_after->post_status && 'trash' !== $post_before->post_status ) {
 			/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post") */
 			$summary = _x(
 				'"%1$s" %2$s trashed',
@@ -246,6 +279,13 @@ class Connector_Posts extends Connector {
 				'stream'
 			);
 			$action  = 'trashed';
+		} elseif ( $post_after->post_author !== $post_before->post_author ) {
+			/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post"), %8$s: new author name */
+			$summary = _x(
+				'"%1$s" %2$s author changed to "%8$s"',
+				'1: Post title, 2: Post type singular name, 8: New author name',
+				'stream'
+			);
 		} else {
 			/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post") */
 			$summary = _x(
@@ -255,7 +295,7 @@ class Connector_Posts extends Connector {
 			);
 		}
 
-		if ( in_array( $old_status, $start_statuses, true ) && ! in_array( $new_status, $start_statuses, true ) ) {
+		if ( in_array( $post_before->post_status, $start_statuses, true ) && ! in_array( $post_after->post_status, $start_statuses, true ) ) {
 			$action = 'created';
 		}
 
@@ -265,12 +305,12 @@ class Connector_Posts extends Connector {
 
 		$revision_id = null;
 
-		if ( wp_revisions_enabled( $post ) ) {
+		if ( wp_revisions_enabled( $post_after ) ) {
 			$revision = get_children(
 				array(
 					'post_type'      => 'revision',
 					'post_status'    => 'inherit',
-					'post_parent'    => $post->ID,
+					'post_parent'    => $post_after->ID,
 					'posts_per_page' => 1, // VIP safe.
 					'orderby'        => 'post_date',
 					'order'          => 'DESC',
@@ -283,21 +323,22 @@ class Connector_Posts extends Connector {
 			}
 		}
 
-		$post_type_name = strtolower( $this->get_post_type_name( $post->post_type ) );
+		$post_type_name = strtolower( $this->get_post_type_name( $post_after->post_type ) );
 
 		$this->log(
 			$summary,
 			array(
-				'post_title'    => $post->post_title,
+				'post_title'    => $post_after->post_title,
 				'singular_name' => $post_type_name,
-				'post_date'     => $post->post_date,
-				'post_date_gmt' => $post->post_date_gmt,
-				'new_status'    => $new_status,
-				'old_status'    => $old_status,
+				'post_date'     => $post_after->post_date,
+				'post_date_gmt' => $post_after->post_date_gmt,
+				'new_status'    => $post_after->post_status,
+				'old_status'    => $post_before->post_status,
 				'revision_id'   => $revision_id,
+				'post_author'   => get_the_author_meta( 'display_name', $post_after->post_author )
 			),
-			$post->ID,
-			$post->post_type,
+			$post_after->ID,
+			$post_after->post_type,
 			$action
 		);
 	}
