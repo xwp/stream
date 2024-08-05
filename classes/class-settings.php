@@ -358,7 +358,7 @@ class Settings {
 					array(
 						'name'    => 'delete_all_records',
 						'title'   => esc_html__( 'Reset Stream Database', 'stream' ),
-						'type'    => 'link',
+						'type'    => Admin::is_running_async_deletion() ? 'none' : 'link',
 						'href'    => add_query_arg(
 							array(
 								'action'                => 'wp_stream_reset',
@@ -367,7 +367,7 @@ class Settings {
 							admin_url( 'admin-ajax.php' )
 						),
 						'class'   => 'warning',
-						'desc'    => esc_html__( 'Warning: This will delete all activity records from the database.', 'stream' ),
+						'desc'    => esc_html( $this->get_deletion_warning() ),
 						'default' => 0,
 						'sticky'  => 'bottom',
 					),
@@ -469,6 +469,50 @@ class Settings {
 		}
 
 		return (array) $defaults;
+	}
+
+	/**
+	 * Retrieves the deletion warning message based on the site type
+	 * and whether or not there is currently a process running to delete the tables.
+	 *
+	 * @return string The deletion warning message.
+	 */
+	public function get_deletion_warning(): string {
+		$site_type = $this->plugin->get_site_type();
+
+		switch ( $site_type ) {
+			case Admin::WP_STREAM_MULTI_NETWORK:
+				$warning = __( 'Warning: This will delete all activity records from the database for all sites.', 'stream' );
+				break;
+			case Admin::WP_STREAM_MULTI_NOT_NETWORK:
+				$warning = $this->plugin->is_large_records_table( Admin::get_blog_record_table_size() ) ?
+						$this->get_async_deletion_warning() :
+						__( 'Warning: This will delete all activity records from the database for this site.', 'stream' );
+				break;
+			default:
+				$warning = __( 'Warning: This will delete all activity records from the database.', 'stream' );
+				break;
+		}
+
+		return $warning;
+	}
+
+	/**
+	 * Retrieves the warning message for asynchronous deletion.
+	 *
+	 * This method checks if there is an action scheduler event running already deleting things
+	 * and returns an appropriate message.
+	 *
+	 * @return string The warning message.
+	 */
+	private function get_async_deletion_warning() {
+		// Check if there is an action scheduler event running already deleting things.
+		$has_scheduled_action = Admin::is_running_async_deletion();
+
+		return $has_scheduled_action ?
+			__( 'Currently deleting records. Please be patient, this can take a while.', 'stream' )
+			:
+			__( 'Warning: This will delete all activity records from the database for this site currently in the database. If any are added while this is running, they will not be deleted.', 'stream' );
 	}
 
 	/**

@@ -18,6 +18,16 @@ use WP_Roles;
  */
 class Admin {
 
+	const WP_STREAM_LARGE_RECORDS = 1000000;
+
+	const WP_STREAM_SINGLE_SITE = 'single';
+
+	const WP_STREAM_MULTI_NETWORK = 'multisite-network';
+
+	const WP_STREAM_MULTI_NOT_NETWORK = 'multisite-not-network';
+
+	const WP_STREAM_ASYNC_DELETION_ACTION = 'stream_erase_large_records_action';
+
 	/**
 	 * Holds Instance of plugin object
 	 *
@@ -142,7 +152,7 @@ class Admin {
 		add_filter( 'user_has_cap', array( $this, 'filter_user_caps' ), 10, 4 );
 		add_filter( 'role_has_cap', array( $this, 'filter_role_caps' ), 10, 3 );
 
-		if ( is_multisite() && $plugin->is_network_activated() && ! is_network_admin() ) {
+		if ( self::WP_STREAM_MULTI_NETWORK === $this->plugin->get_site_type() && ! is_network_admin() ) {
 			$options = (array) get_site_option( 'wp_stream_network', array() );
 			$option  = isset( $options['general_site_access'] ) ? absint( $options['general_site_access'] ) : 1;
 
@@ -208,6 +218,17 @@ class Admin {
 				$this,
 				'ajax_filters',
 			)
+		);
+
+		// Async action for erasing large log tables.
+		add_action(
+			self::WP_STREAM_ASYNC_DELETION_ACTION,
+			array(
+				$this,
+				'erase_large_records'
+			),
+			10,
+			4
 		);
 	}
 
@@ -702,22 +723,168 @@ class Admin {
 	 *
 	 * @return void
 	 */
-	private function erase_stream_records() {
+	private function erase_stream_records(): void {
 		global $wpdb;
 
-		$where = '';
+		// If this is a multisite and it's not networked activated,
+		// only delete the entries from the blog which made the request.
+		if ( self::WP_STREAM_MULTI_NOT_NETWORK === $this->plugin->get_site_type() ) {
 
-		if ( is_multisite() && ! $this->plugin->is_network_activated() ) {
-			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
+			// First check the log size.
+			$stream_log_size = self::get_blog_record_table_size();
+
+			// If this is a large log and we need to delete only the entries
+			// pertaining to an individual site, we will need to do those in batches.
+			if ( $this->plugin->is_large_records_table( (int) $stream_log_size ) ) {
+				$this->schedule_erase_large_records( $stream_log_size );
+				return;
+			}
+
+			$wpdb->query(
+				$wpdb->prepare(
+					"DELETE `stream`, `meta`
+					FROM {$wpdb->stream} AS `stream`
+					LEFT JOIN {$wpdb->streammeta} AS `meta`
+					ON `meta`.`record_id` = `stream`.`ID`
+					WHERE 1=1 AND `blog_id`=%d;",
+					get_current_blog_id()
+				)
+			);
+		} else {
+			// If we are deleting all the entries, we can truncate the tables.
+			$wpdb->query( "TRUNCATE {$wpdb->streammeta};" );
+			$wpdb->query( "TRUNCATE {$wpdb->stream};" );
+			// Tidy up any meta which may have been added in between the two truncations.
+			$this->delete_orphaned_meta();
+		}
+	}
+
+	/**
+	 * Schedule the initial event to start erasing the logs from now.
+	 *
+	 * @param int $log_size The number of rows which will be affected.
+	 * @return void
+	 */
+	private function schedule_erase_large_records( int $log_size ): void {
+		global $wpdb;
+
+		$last_entry = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT ID FROM {$wpdb->stream} WHERE `blog_id`=%d ORDER BY ID DESC LIMIT 1",
+				get_current_blog_id()
+			)
+		);
+
+		// If there are no entries to erase, don't try to erase them.
+		if ( empty( $last_entry ) ) {
+			return;
 		}
 
-		$wpdb->query(
-			"DELETE `stream`, `meta`
-			FROM {$wpdb->stream} AS `stream`
-			LEFT JOIN {$wpdb->streammeta} AS `meta`
-			ON `meta`.`record_id` = `stream`.`ID`
-			WHERE 1=1 {$where};" // @codingStandardsIgnoreLine $where already prepared
+		// We are going to delete this many and this many only.
+		// This is to avoid the situation where rows keep getting added
+		// between the Action Scheduler runs and they never stop.
+		$args = [
+			'total'      => (int) $log_size,
+			'done'       => 0,
+			'last_entry' => (int) $last_entry,
+			'blog_id'    => (int) get_current_blog_id(),
+		];
+
+		as_enqueue_async_action( self::WP_STREAM_ASYNC_DELETION_ACTION, $args );
+	}
+
+	/**
+	 * Checks if the async deletion process is running.
+	 *
+	 * @return bool True if the async deletion process is running, false otherwise.
+	 */
+	public static function is_running_async_deletion() {
+		return as_has_scheduled_action( self::WP_STREAM_ASYNC_DELETION_ACTION );
+	}
+
+	/**
+	 * Erases large records from the stream table.
+	 *
+	 * This function deletes records from the stream table in batches, starting from a given entry ID.
+	 * It deletes records in reverse chronological order, starting from the largest ID and going back.
+	 * The number of records deleted in each batch is determined by the batch size, which can be filtered
+	 * using the 'wp_stream_batch_size' hook.
+	 *
+	 * @param int $total      The total number of records to be deleted.
+	 * @param int $done       The number of records that have already been deleted.
+	 * @param int $last_entry The ID of the last entry that was deleted.
+	 * @param int $blog_id    The ID of the blog for which the records should be deleted.
+	 * @return void
+	 */
+	public function erase_large_records( int $total, int $done, int $last_entry, int $blog_id ): void {
+		global $wpdb;
+
+		$start_from = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT ID FROM {$wpdb->stream} WHERE ID < %d AND `blog_id`=%d ORDER BY ID DESC LIMIT 1",
+				$last_entry + 1, // A tweak to get it correct the first time through.
+				get_current_blog_id()
+			)
 		);
+
+		if ( empty( $start_from ) ) {
+			return;
+		}
+
+		// We will do at most 500000 at a time.
+		$batch_size = apply_filters( 'wp_stream_batch_size', 250000 );
+
+		// This will tend to erase them in reverse chronological order,
+		// ie it will start from the largest ID and go back from there.
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE `stream`, `meta`
+				FROM {$wpdb->stream} AS `stream`
+				LEFT JOIN {$wpdb->streammeta} AS `meta`
+				ON `meta`.`record_id` = `stream`.`ID`
+				WHERE ID <= %d AND ID >= %d AND `blog_id`=%d;",
+				$start_from,
+				$start_from - $batch_size,
+				get_current_blog_id()
+			)
+		);
+
+		$remaining = $wpdb->get_var(
+			$wpdb->prepare( "SELECT COUNT(ID) FROM {$wpdb->stream} WHERE `blog_id`=%d", $blog_id )
+		);
+
+		$done = $total - $remaining;
+
+		as_enqueue_async_action(
+			self::WP_STREAM_ASYNC_DELETION_ACTION,
+			[
+				'total'      => (int) $total,
+				'done'       => (int) $done,
+				'last_entry' => (int) $start_from - $batch_size, // The last ID checked.
+				'blog_id'    => (int) $blog_id
+			]
+		);
+	}
+
+	/**
+	 * Retrieves the size of the blog record table for a specific blog.
+	 *
+	 * @param int|null $blog_id The ID of the blog. If not provided, the current blog ID will be used.
+	 * @return int The size of the blog record table.
+	 */
+	public static function get_blog_record_table_size( $blog_id = null ): int {
+		global $wpdb;
+
+		$blog_id = empty( $blog_id ) ? get_current_blog_id() : $blog_id;
+
+		$blog_size = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(ID) FROM {$wpdb->stream} WHERE `blog_id`=%d",
+				$blog_id
+			)
+		);
+
+		return (int) $blog_size;
 	}
 
 	/**
@@ -732,6 +899,22 @@ class Admin {
 	}
 
 	/**
+	 * Deletes orphaned meta records from the database.
+	 *
+	 * Deletes meta records from the stream meta table where the corresponding
+	 * stream record no longer exists.
+	 *
+	 * @global wpdb $wpdb The WordPress database object.
+	 */
+	private function delete_orphaned_meta() {
+		global $wpdb;
+
+		$wpdb->query(
+			"DELETE `meta` FROM {$wpdb->streammeta} as `meta` LEFT JOIN {$wpdb->stream} as `stream` ON `stream`.`ID`=`meta`.`record_id` WHERE `stream`.`ID` IS NULL"
+		);
+	}
+
+	/**
 	 * Executes a scheduled purge
 	 *
 	 * @return void
@@ -741,17 +924,15 @@ class Admin {
 
 		// Don't purge when in Network Admin unless Stream is network activated.
 		if (
-			is_multisite()
+			self::WP_STREAM_MULTI_NOT_NETWORK === $this->plugin->get_site_type()
 			&&
 			is_network_admin()
-			&&
-			! $this->plugin->is_network_activated()
 		) {
 			return;
 		}
 
 		$defaults = $this->plugin->settings->get_defaults();
-		if ( is_multisite() && $this->plugin->is_network_activated() ) {
+		if ( self::WP_STREAM_MULTI_NETWORK === $this->plugin->get_site_type() ) {
 			$options = (array) get_site_option( 'wp_stream_network', $defaults );
 		} else {
 			$options = (array) get_option( 'wp_stream', $defaults );
@@ -770,7 +951,7 @@ class Admin {
 		$where = $wpdb->prepare( ' AND `stream`.`created` < %s', $date->format( 'Y-m-d H:i:s' ) );
 
 		// Multisite but NOT network activated, only purge the current blog.
-		if ( is_multisite() && ! $this->plugin->is_network_activated() ) {
+		if ( self::WP_STREAM_MULTI_NOT_NETWORK === $this->plugin->get_site_type() ) {
 			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
 		}
 
@@ -799,7 +980,7 @@ class Admin {
 		}
 
 		// Also don't show links in Network Admin if Stream isn't network enabled.
-		if ( is_network_admin() && is_multisite() && ! $this->plugin->is_network_activated() ) {
+		if ( is_network_admin() && self::WP_STREAM_MULTI_NOT_NETWORK === $this->plugin->get_site_type() ) {
 			return $links;
 		}
 

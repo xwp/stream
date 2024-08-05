@@ -113,6 +113,9 @@ class Plugin {
 
 		spl_autoload_register( array( $this, 'autoload' ) );
 
+		// Load Action Scheduler.
+		require_once( $this->locations['dir'] . '/vendor/woocommerce/action-scheduler/action-scheduler.php' );
+
 		// Load helper functions.
 		require_once $this->locations['inc_dir'] . 'functions.php';
 
@@ -332,5 +335,33 @@ class Plugin {
 	 */
 	public function get_client_ip_address() {
 		return apply_filters( 'wp_stream_client_ip_address', $this->client_ip_address );
+	}
+
+	/**
+	 * Get the site type.
+	 *
+	 * This function determines the type of site based on whether it is a single site or a multisite.
+	 * If it is a multisite, it also checks if it is network activated or not.
+	 *
+	 * @return string The site type
+	 */
+	public function get_site_type(): string {
+
+		// If it's a multisite, is it network activated or not?
+		if ( is_multisite() ) {
+			return $this->is_network_activated() ? Admin::WP_STREAM_MULTI_NETWORK : Admin::WP_STREAM_MULTI_NOT_NETWORK;
+		}
+
+		return Admin::WP_STREAM_SINGLE_SITE;
+	}
+
+	/**
+	 * Should the number of records which need to be processed be considered "large"?
+	 *
+	 * @param int $record_number The number of rows in the {$wpdb->prefix}_stream table to be processed.
+	 * @return bool Whether or not this should be considered large.
+	 */
+	public function is_large_records_table( int $record_number ): bool {
+		return apply_filters( 'wp_stream_is_large_records_table', $record_number > Admin::WP_STREAM_LARGE_RECORDS, $record_number );
 	}
 }
