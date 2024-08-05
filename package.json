@@ -25,24 +25,30 @@
     "track"
   ],
   "devDependencies": {
+    "@playwright/test": "^1.45.3",
+    "@types/node": "^22.1.0",
+    "@wordpress/e2e-test-utils-playwright": "^1.4.0",
     "@wordpress/eslint-plugin": "^20.1.0",
     "eslint": "^8.57.0",
     "grunt": "^1.6.1",
     "grunt-contrib-clean": "^2.0.1",
     "grunt-contrib-cssmin": "^5.0.0",
     "grunt-contrib-uglify": "^5.2.2",
-    "npm-run-all2": "^6.2.2"
+    "npm-run-all2": "^6.2.2",
+    "uuid": "^10.0.0"
   },
   "scripts": {
     "build": "grunt",
     "lint": "npm-run-all lint:*",
     "lint:js": "eslint .",
+    "lint:js-playwright": "DEBUG=eslint:cli-engine eslint tests/e2e/** --config .eslintrc.playwright.json --no-ignore",
     "lint:php": "composer lint",
     "lint:php-tests": "composer lint-tests",
     "format": "composer format",
     "test": "npm-run-all test:*",
     "test:php": "npm run cli -- composer test --working-dir=wp-content/plugins/stream-src",
     "test:php-multisite": "npm run cli -- composer test-multisite --working-dir=wp-content/plugins/stream-src",
+    "test-e2e": "npx playwright test",
     "test-xdebug": "npm run cli -- composer test-xdebug --working-dir=wp-content/plugins/stream-src",
     "test-one": "npm run cli -- composer test-one --working-dir=wp-content/plugins/stream-src --",
     "test-report": "npm run cli -- composer test-report --working-dir=wp-content/plugins/stream-src",
