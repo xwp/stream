@@ -168,6 +168,9 @@ class Admin {
 		add_action( 'admin_notices', array( $this, 'prepare_admin_notices' ) );
 		add_action( 'shutdown', array( $this, 'admin_notices' ) );
 
+		// Feature request notice.
+		add_action( 'admin_notices', array( $this, 'display_feature_request_notice' ) );
+
 		// Add admin body class.
 		add_filter( 'admin_body_class', array( $this, 'admin_body_class' ) );
 
@@ -321,6 +324,26 @@ class Admin {
 
 			echo wp_kses( $html_message, $allowed_html );
 		}
+	}
+
+	/**
+	 * Display a feature request notice.
+	 *
+	 * @return void
+	 */
+	public function display_feature_request_notice() {
+		$screen = get_current_screen();
+
+		// Display the notice only on the Stream settings page.
+		if ( empty( $this->screen_id['settings'] ) || $this->screen_id['settings'] !== $screen->id ) {
+			return;
+		}
+
+		printf(
+			'<div class="notice notice-info notice-stream-feature-request"><p>%1$s <a href="https://github.com/xwp/stream/issues/new/choose" target="_blank">%2$s <span class="dashicons dashicons-external"></span></a></p></div>',
+			esc_html__( 'Have suggestions or found a bug?', 'stream' ),
+			esc_html__( 'Click here to let us know!', 'stream' )
+		);
 	}
 
 	/**
