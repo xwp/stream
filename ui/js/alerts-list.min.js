@@ -1,0 +1,1 @@
+!function(e){e(document).ready(function(){e(".inline-edit-col-left, .inline-edit-col-right, #major-publishing-actions",".edit-php.post-type-wp_stream_alerts").each(function(){e(this).remove()}),e(".select2-container",".inline-edit-col").css({width:"100%"})})}(jQuery);

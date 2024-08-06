@@ -306,33 +306,21 @@ class Alerts {
 	 */
 	public function register_scripts() {
 		$screen = get_current_screen();
-		if ( 'edit-wp_stream_alerts' === $screen->id ) {
-
-			$min = wp_stream_min_suffix();
-
-			wp_register_script(
-				'wp-stream-alerts',
-				$this->plugin->locations['url'] . 'ui/js/alerts.' . $min . 'js',
-				array(
-					'wp-stream-select2',
-					'jquery',
-					'inline-edit-post',
-				),
-				$this->plugin->get_version(),
-				false
-			);
-
-			wp_localize_script(
-				'wp-stream-alerts',
-				'streamAlerts',
-				array(
-					'any'        => __( 'Any', 'stream' ),
-					'anyContext' => __( 'Any Context', 'stream' ),
-				)
-			);
-			wp_enqueue_script( 'wp-stream-alerts' );
-			wp_enqueue_style( 'wp-stream-select2' );
+		if ( 'edit-wp_stream_alerts' !== $screen->id ) {
+			return;
 		}
+
+		$this->plugin->enqueue_asset(
+			'alerts',
+			array(
+				$this->plugin->with_select2(),
+				'inline-edit-post',
+			),
+			array(
+				'any'        => __( 'Any', 'stream' ),
+				'anyContext' => __( 'Any Context', 'stream' ),
+			)
+		);
 	}
 
 	/**

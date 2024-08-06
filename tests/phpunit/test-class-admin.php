@@ -165,39 +165,47 @@ class Test_Admin extends WP_StreamTestCase {
 	}
 
 	public function test_admin_enqueue_scripts() {
-		global $wp_styles;
 		global $wp_scripts;
 
 		// Non-Stream screen
 		$this->admin->admin_enqueue_scripts( 'edit.php' );
 
-		$this->assertArrayNotHasKey( 'wp-stream-admin', $wp_scripts->registered );
+		$this->assertFalse( wp_script_is( 'wp-stream-admin' ), 'wp-stream-admin script is not enqueued' );
+		$this->assertFalse( wp_style_is( 'wp-stream-admin' ), 'wp-stream-admin style is not enqueued' );
 
-		$this->assertArrayHasKey( 'wp-stream-admin', $wp_styles->registered );
-		$this->assertArrayHasKey( 'wp-stream-global', $wp_scripts->registered );
+		$this->assertTrue( wp_script_is( 'wp-stream-global' ), 'wp-stream-global script is enqueued' );
 
-		$dependency = $wp_scripts->registered['wp-stream-global'];
-		$this->assertArrayHasKey( 'data', $dependency->extra );
-		$this->assertNotFalse( strpos( $dependency->extra['data'], 'bulk_actions' ) );
+		$this->assertStringContainsString(
+			'bulk_actions',
+			$wp_scripts->get_inline_script_data( 'wp-stream-global', 'before' ),
+		);
 
 		// Stream screen
 		$this->admin->admin_enqueue_scripts( $this->plugin->admin->screen_id['main'] );
 
-		$this->assertArrayHasKey( 'wp-stream-select2', $wp_scripts->registered );
-		$this->assertArrayHasKey( 'wp-stream-timeago', $wp_scripts->registered );
-		$this->assertArrayHasKey( 'wp-stream-timeago-locale', $wp_scripts->registered );
+		$this->assertTrue( wp_style_is( 'wp-stream-admin' ), 'wp-stream-admin style is enqueued' );
 
-		$this->assertArrayHasKey( 'wp-stream-admin', $wp_scripts->registered );
-		$this->assertArrayHasKey( 'wp-stream-live-updates', $wp_scripts->registered );
+		$this->assertTrue( wp_script_is( 'wp-stream-select2' ), 'wp-stream-select2 script is enqueued' );
+		$this->assertTrue( wp_script_is( 'wp-stream-select2-en' ), 'wp-stream-select2-en script is enqueued' );
+		$this->assertTrue( wp_script_is( 'wp-stream-jquery-timeago' ), 'wp-stream-jquery-timeago script is enqueued' );
+		$this->assertTrue( wp_script_is( 'wp-stream-jquery-timeago-en' ), 'wp-stream-jquery-timeago-en script is enqueued' );
 
-		$dependency = $wp_scripts->registered['wp-stream-admin'];
-		$this->assertArrayHasKey( 'data', $dependency->extra );
-		$this->assertNotFalse( strpos( $dependency->extra['data'], 'wp_stream' ) );
+		$this->assertTrue( wp_script_is( 'wp-stream-admin' ), 'wp-stream-admin script is enqueued' );
+		$this->assertTrue( wp_script_is( 'wp-stream-live-updates' ), 'wp-stream-live-updates script is enqueued' );
 
-		$dependency = $wp_scripts->registered['wp-stream-live-updates'];
-		$this->assertArrayHasKey( 'data', $dependency->extra );
-		$this->assertNotFalse( strpos( $dependency->extra['data'], 'wp_stream_live_updates' ) );
-		$this->assertNotFalse( strpos( $dependency->extra['data'], $this->plugin->admin->screen_id['main'] ) );
+		$this->assertStringContainsString(
+			'i18n',
+			$wp_scripts->get_inline_script_data( 'wp-stream-admin', 'before' ),
+		);
+
+		$this->assertStringContainsString(
+			'current_screen',
+			$wp_scripts->get_inline_script_data( 'wp-stream-live-updates', 'before' ),
+		);
+		$this->assertStringContainsString(
+			$this->plugin->admin->screen_id['main'],
+			$wp_scripts->get_inline_script_data( 'wp-stream-live-updates', 'before' ),
+		);
 	}
 
 	public function test_is_stream_screen() {
@@ -231,13 +239,10 @@ class Test_Admin extends WP_StreamTestCase {
 
 		$this->admin->admin_menu_css();
 
-		$this->assertArrayHasKey( 'wp-stream-datepicker', $wp_styles->registered );
-		$this->assertArrayHasKey( 'wp-stream-icons', $wp_styles->registered );
-
 		$dependency = $wp_styles->registered['wp-admin'];
 		$this->assertArrayHasKey( 'after', $dependency->extra );
 		$this->assertNotEmpty( $dependency->extra['after'] );
-		$this->assertStringContainsString( "#toplevel_page_{$this->admin->records_page_slug}", $dependency->extra['after'][0] );
+		$this->assertStringContainsString( "body.{$this->admin->admin_body_class}", $dependency->extra['after'][0] );
 	}
 
 	/**
