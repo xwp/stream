@@ -755,7 +755,7 @@ class Admin {
 
 			// If this is a large log and we need to delete only the entries
 			// pertaining to an individual site, we will need to do those in batches.
-			if ( $this->plugin->is_large_records_table( (int) $stream_log_size ) ) {
+			if ( $this->plugin->is_large_records_table( $stream_log_size ) ) {
 				$this->schedule_erase_large_records( $stream_log_size );
 				return;
 			}
