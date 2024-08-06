@@ -26,6 +26,7 @@ class Connector_Posts extends Connector {
 	public $actions = array(
 		'transition_post_status',
 		'deleted_post',
+		'post_updated'
 	);
 
 	/**
@@ -81,7 +82,8 @@ class Connector_Posts extends Connector {
 	public function action_links( $links, $record ) {
 		$post = get_post( $record->object_id );
 
-		if ( $post && $post->post_status === $record->get_meta( 'new_status', true ) ) {
+		// Let's get action links for all posts.
+		if ( $post ) {
 			$post_type_name = $this->get_post_type_name( get_post_type( $post->ID ) );
 
 			if ( 'trash' === $post->post_status ) {
@@ -260,30 +262,14 @@ class Connector_Posts extends Connector {
 		}
 
 		if ( empty( $action ) ) {
-			$action = 'updated';
+			return; // We will use a separate callback for updated posts.
 		}
 
-		$revision_id = null;
-
-		if ( wp_revisions_enabled( $post ) ) {
-			$revision = get_children(
-				array(
-					'post_type'      => 'revision',
-					'post_status'    => 'inherit',
-					'post_parent'    => $post->ID,
-					'posts_per_page' => 1, // VIP safe.
-					'orderby'        => 'post_date',
-					'order'          => 'DESC',
-				)
-			);
-
-			if ( $revision ) {
-				$revision    = array_values( $revision );
-				$revision_id = $revision[0]->ID;
-			}
-		}
+		$revision_id = $this->get_revision_id( $post );
 
 		$post_type_name = strtolower( $this->get_post_type_name( $post->post_type ) );
+
+		add_filter( 'wp_stream_has_tracked_post_updated', '__return_true' );
 
 		$this->log(
 			$summary,
@@ -298,6 +284,76 @@ class Connector_Posts extends Connector {
 			),
 			$post->ID,
 			$post->post_type,
+			$action
+		);
+	}
+
+	public function callback_post_updated( $post_id, $post_after, $post_before ) {
+
+		// If we have already tracked this change, bail.
+		if ( apply_filters( 'wp_stream_has_tracked_post_updated', false ) ) {
+			return;
+		}
+
+		// We don't want the meta box update request either, just the post update.
+		if ( ! empty( wp_stream_filter_input( INPUT_GET, 'meta-box-loader' ) ) ) {
+			return;
+		}
+
+		$action         = 'updated';
+		$post_type_name = $this->get_post_type_name( $post_after->post_type );
+
+		$message        = '';
+		$fields_updated = '';
+
+		// Find out what was updated.
+		foreach ( $post_after as $field => $value ) {
+			if ( $value === $post_before->$field ) {
+				continue;
+			}
+
+			switch ( $field ) {
+				case 'post_author':
+					$fields_updated .= sprintf(
+						__( "<a href="/">post_author</a> updated from %s to %s", 'stream' ),
+						'hey',
+						'there'
+					);
+					break;
+				default:
+					$fields_updated .= sprintf(
+						__( "<a href='https://google.com'>%s updated</a> from %s to %s", 'stream' ),
+						esc_html( $field ),
+						'hey',
+						'there'
+					);
+					break;
+			}
+
+		}
+
+		// If it's not a post author, fall back to the default.
+
+		/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "HelloWorld", "Post") */
+		$summary = _x(
+			'"%1$s" %2$s updated:<br /> %3$s',
+			'1: Post title, 2: Post type singular name',
+			'stream'
+		);
+
+		$this->log(
+			$summary,
+			array(
+				'post_title'    => $post_after->post_title,
+				'singular_name' => $post_type_name,
+				'fields_updated' => $fields_updated,
+				'post_date'     => $post_after->post_date,
+				'post_date_gmt' => $post_after->post_date_gmt,
+				'status'        => $post_after->post_status,
+				'revision_id'   => $this->get_revision_id( $post_after ),
+			),
+			$post_after->ID,
+			$post_after->post_type,
 			$action
 		);
 	}
@@ -414,6 +470,37 @@ class Connector_Posts extends Connector {
 
 		if ( ! wp_is_post_revision( $revision_id ) ) {
 			return false;
+		}
+
+		return $revision_id;
+	}
+
+
+	/**
+	 * Retrieves the ID of the latest revision for a given post.
+	 *
+	 * @param WP_Post $post The post object.
+	 * @return int|null The ID of the latest revision, or null if revisions are not enabled for the post.
+	 */
+	public function get_revision_id( \WP_Post $post ) {
+		$revision_id = null;
+
+		if ( wp_revisions_enabled( $post ) ) {
+			$revision = get_children(
+				array(
+					'post_type'      => 'revision',
+					'post_status'    => 'inherit',
+					'post_parent'    => $post->ID,
+					'posts_per_page' => 1, // VIP safe.
+					'orderby'        => 'post_date',
+					'order'          => 'DESC',
+				)
+			);
+
+			if ( $revision ) {
+				$revision    = array_values( $revision );
+				$revision_id = $revision[0]->ID;
+			}
 		}
 
 		return $revision_id;
