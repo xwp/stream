@@ -851,7 +851,7 @@ class Admin {
 			return;
 		}
 
-		// We will do at most 500000 at a time.
+		// We will do at most 250000 at a time.
 		$batch_size = apply_filters( 'wp_stream_batch_size', 250000 );
 
 		// This will tend to erase them in reverse chronological order,
