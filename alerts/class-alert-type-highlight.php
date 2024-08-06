@@ -15,6 +15,13 @@ namespace WP_Stream;
 class Alert_Type_Highlight extends Alert_Type {
 
 	/**
+	 * Main JS file script handle.
+	 *
+	 * @deprecated 4.1.0 Constant is not used anymore and will be removed.
+	 */
+	const SCRIPT_HANDLE = 'wp-stream-alert-highlight-js';
+
+	/**
 	 * Remove Highlight Ajax action label.
 	 */
 	const REMOVE_ACTION = 'stream_remove_highlight';
