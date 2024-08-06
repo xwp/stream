@@ -746,7 +746,7 @@ class Admin {
 	private function erase_stream_records() {
 		global $wpdb;
 
-		// If this is a multisite and it's not networked activated,
+		// If this is a multisite and it's not network activated,
 		// only delete the entries from the blog which made the request.
 		if ( $this->plugin->is_multisite_not_network_activated() ) {
 
