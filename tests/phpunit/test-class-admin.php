@@ -328,7 +328,7 @@ class Test_Admin extends WP_StreamTestCase {
 		// Assert the scheduled action has been set.
 		$this->assertTrue(
 			as_has_scheduled_action(
-				Admin::WP_STREAM_ASYNC_DELETION_ACTION
+				Admin::ASYNC_DELETION_ACTION
 			)
 		);
 

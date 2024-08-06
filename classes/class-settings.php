@@ -481,10 +481,10 @@ class Settings {
 		$site_type = $this->plugin->get_site_type();
 
 		switch ( $site_type ) {
-			case Admin::WP_STREAM_MULTI_NETWORK:
+			case Plugin::MULTI_NETWORK:
 				$warning = __( 'Warning: This will delete all activity records from the database for all sites.', 'stream' );
 				break;
-			case Admin::WP_STREAM_MULTI_NOT_NETWORK:
+			case Plugin::MULTI_NOT_NETWORK:
 				$warning = $this->plugin->is_large_records_table( Admin::get_blog_record_table_size() ) ?
 						$this->get_async_deletion_warning() :
 						__( 'Warning: This will delete all activity records from the database for this site.', 'stream' );

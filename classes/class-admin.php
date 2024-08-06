@@ -19,24 +19,11 @@ use WP_Roles;
 class Admin {
 
 	/**
-	 * Used to check if it's a single site, not multisite.
-	 */
-	const WP_STREAM_SINGLE_SITE = 'single';
-
-	/**
-	 * Used to check if it's a multisite with the plugin network enabled.
-	 */
-	const WP_STREAM_MULTI_NETWORK = 'multisite-network';
-
-	/**
-	 * Used to check if it's a multisite with the plugin not network enabled.
-	 */
-	const WP_STREAM_MULTI_NOT_NETWORK = 'multisite-not-network';
-
-	/**
 	 * The async deletion action for large sites.
+	 *
+	 * @const string
 	 */
-	const WP_STREAM_ASYNC_DELETION_ACTION = 'stream_erase_large_records_action';
+	const ASYNC_DELETION_ACTION = 'stream_erase_large_records_action';
 
 	/**
 	 * Holds Instance of plugin object
@@ -162,7 +149,7 @@ class Admin {
 		add_filter( 'user_has_cap', array( $this, 'filter_user_caps' ), 10, 4 );
 		add_filter( 'role_has_cap', array( $this, 'filter_role_caps' ), 10, 3 );
 
-		if ( self::WP_STREAM_MULTI_NETWORK === $this->plugin->get_site_type() && ! is_network_admin() ) {
+		if ( $this->plugin->is_multisite_network_activated() && ! is_network_admin() ) {
 			$options = (array) get_site_option( 'wp_stream_network', array() );
 			$option  = isset( $options['general_site_access'] ) ? absint( $options['general_site_access'] ) : 1;
 
@@ -235,7 +222,7 @@ class Admin {
 
 		// Async action for erasing large log tables.
 		add_action(
-			self::WP_STREAM_ASYNC_DELETION_ACTION,
+			self::ASYNC_DELETION_ACTION,
 			array(
 				$this,
 				'erase_large_records',
@@ -761,7 +748,7 @@ class Admin {
 
 		// If this is a multisite and it's not networked activated,
 		// only delete the entries from the blog which made the request.
-		if ( self::WP_STREAM_MULTI_NOT_NETWORK === $this->plugin->get_site_type() ) {
+		if ( $this->plugin->is_multisite_not_network_activated() ) {
 
 			// First check the log size.
 			$stream_log_size = self::get_blog_record_table_size();
@@ -823,7 +810,7 @@ class Admin {
 			'blog_id'    => (int) get_current_blog_id(),
 		);
 
-		as_enqueue_async_action( self::WP_STREAM_ASYNC_DELETION_ACTION, $args );
+		as_enqueue_async_action( self::ASYNC_DELETION_ACTION, $args );
 	}
 
 	/**
@@ -832,7 +819,7 @@ class Admin {
 	 * @return bool True if the async deletion process is running, false otherwise.
 	 */
 	public static function is_running_async_deletion() {
-		return as_has_scheduled_action( self::WP_STREAM_ASYNC_DELETION_ACTION );
+		return as_has_scheduled_action( self::ASYNC_DELETION_ACTION );
 	}
 
 	/**
@@ -889,7 +876,7 @@ class Admin {
 		$done = $total - $remaining;
 
 		as_enqueue_async_action(
-			self::WP_STREAM_ASYNC_DELETION_ACTION,
+			self::ASYNC_DELETION_ACTION,
 			array(
 				'total'      => (int) $total,
 				'done'       => (int) $done,
@@ -957,7 +944,7 @@ class Admin {
 
 		// Don't purge when in Network Admin unless Stream is network activated.
 		if (
-			self::WP_STREAM_MULTI_NOT_NETWORK === $this->plugin->get_site_type()
+			$this->plugin->is_multisite_not_network_activated()
 			&&
 			is_network_admin()
 		) {
@@ -965,7 +952,7 @@ class Admin {
 		}
 
 		$defaults = $this->plugin->settings->get_defaults();
-		if ( self::WP_STREAM_MULTI_NETWORK === $this->plugin->get_site_type() ) {
+		if ( $this->plugin->is_multisite_network_activated() ) {
 			$options = (array) get_site_option( 'wp_stream_network', $defaults );
 		} else {
 			$options = (array) get_option( 'wp_stream', $defaults );
@@ -984,7 +971,7 @@ class Admin {
 		$where = $wpdb->prepare( ' AND `stream`.`created` < %s', $date->format( 'Y-m-d H:i:s' ) );
 
 		// Multisite but NOT network activated, only purge the current blog.
-		if ( self::WP_STREAM_MULTI_NOT_NETWORK === $this->plugin->get_site_type() ) {
+		if ( $this->plugin->is_multisite_not_network_activated() ) {
 			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
 		}
 
@@ -1013,7 +1000,7 @@ class Admin {
 		}
 
 		// Also don't show links in Network Admin if Stream isn't network enabled.
-		if ( is_network_admin() && self::WP_STREAM_MULTI_NOT_NETWORK === $this->plugin->get_site_type() ) {
+		if ( is_network_admin() && $this->plugin->is_multisite_not_network_activated() ) {
 			return $links;
 		}
 

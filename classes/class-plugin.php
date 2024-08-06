@@ -27,6 +27,28 @@ class Plugin {
 	 */
 	const WP_CLI_COMMAND = 'stream';
 
+
+	/**
+	 * Used to check if it's a single site, not multisite.
+	 *
+	 * @const string
+	 */
+	const SINGLE_SITE = 'single';
+
+	/**
+	 * Used to check if it's a multisite with the plugin network enabled.
+	 *
+	 * @const string
+	 */
+	const MULTI_NETWORK = 'multisite-network';
+
+	/**
+	 * Used to check if it's a multisite with the plugin not network enabled.
+	 *
+	 * @const string
+	 */
+	const MULTI_NOT_NETWORK = 'multisite-not-network';
+
 	/**
 	 * Holds and manages WordPress Admin configurations.
 	 *
@@ -349,10 +371,10 @@ class Plugin {
 
 		// If it's a multisite, is it network activated or not?
 		if ( is_multisite() ) {
-			return $this->is_network_activated() ? Admin::WP_STREAM_MULTI_NETWORK : Admin::WP_STREAM_MULTI_NOT_NETWORK;
+			return $this->is_network_activated() ? self::MULTI_NETWORK : self::MULTI_NOT_NETWORK;
 		}
 
-		return Admin::WP_STREAM_SINGLE_SITE;
+		return self::SINGLE_SITE;
 	}
 
 	/**
@@ -363,5 +385,32 @@ class Plugin {
 	 */
 	public function is_large_records_table( int $record_number ): bool {
 		return apply_filters( 'wp_stream_is_large_records_table', $record_number > 1000000, $record_number );
+	}
+
+	/**
+	 * Checks if the plugin is running on a single site installation.
+	 *
+	 * @return bool True if the plugin is running on a single site installation, false otherwise.
+	 */
+	public function is_single_site() {
+		return self::SINGLE_SITE === $this->get_site_type();
+	}
+
+	/**
+	 * Check if the plugin is activated on a multisite installation but not network activated.
+	 *
+	 * @return bool True if the plugin is activated on a multisite installation but not network activated, false otherwise.
+	 */
+	public function is_multisite_not_network_activated() {
+		return self::MULTI_NOT_NETWORK === $this->get_site_type();
+	}
+
+	/**
+	 * Check if the plugin is activated on a multisite network.
+	 *
+	 * @return bool True if the plugin is network activated on a multisite, false otherwise.
+	 */
+	public function is_multisite_network_activated() {
+		return self::MULTI_NETWORK === $this->get_site_type();
 	}
 }
