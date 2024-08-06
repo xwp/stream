@@ -851,7 +851,13 @@ class Admin {
 			return;
 		}
 
-		// We will do at most 250000 at a time.
+		/**
+		 * Filters the number of records in the {$wpdb->stream} table to do at a time.
+		 *
+		 * @since 4.1.0
+		 *
+		 * @param int $batch_size The batch size, default 250000.
+		 */
 		$batch_size = apply_filters( 'wp_stream_batch_size', 250000 );
 
 		// This will tend to erase them in reverse chronological order,

@@ -384,6 +384,14 @@ class Plugin {
 	 * @return bool Whether or not this should be considered large.
 	 */
 	public function is_large_records_table( int $record_number ): bool {
+		/**
+		 * Filters whether or not the number of records should be considered a large table.
+		 *
+		 * @since 4.1.0
+		 *
+		 * @param bool $is_large_table Whether or not the number of records should be considered large.
+		 * @param int  $record_number The number of records being checked.
+		 */
 		return apply_filters( 'wp_stream_is_large_records_table', $record_number > 1000000, $record_number );
 	}
 
