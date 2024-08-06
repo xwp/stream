@@ -21,6 +21,7 @@ We suggest using the [Homebrew package manager](https://brew.sh) on macOS to ins
 
 1. See the [Git Flow](#git-flow) section below for how to fork the repository.
 2. Run `npm install` and `composer install` to setup all project dependencies.
+3. Run `npm build` to build the assets.
 3. Run `npm start` to start the development environment.
 4. Run `npm run install-wordpress` to set up the WordPress multisite network.
 5. Visit [stream.wpenv.net](http://stream.wpenv.net) and login using `admin` / `password`.
@@ -53,11 +54,14 @@ We use npm as the canonical task runner for the project. The following commands 
 - `npm run stop` to stop the project's Docker containers.
 - `npm run stop-all` to stop _all_ Docker containers.
 - `npm run build` to build the plugin JS and CSS files.
+- `npm run dev` to watch and build the plugin assets continuously.
 - `npm run lint` to check JS and PHP files for syntax and style issues.
 - `npm run deploy` to deploy the plugin to the WordPress.org repository.
 - `npm run cli -- wp info` where `wp info` is the CLI command to run inside the WordPress container. For example, use `npm run cli -- ls -lah` to list all files in the root of the WordPress installation.
 - `npm run test` to run PHPunit tests inside the WordPress container.
 - `npm run test-xdebug` will run the PHPunit tests with Xdebug enabled.
+- `npm run test-e2e` will run the Playwright E2E tests.
+- `npm run test-e2e-debug` will run the Playwright E2E tests in a debug mode (with Chromium browser and dev tools open).
 - `npm run switch-to:php7.4` and `npm run switch-to:php8.2` will switch you to either PHP 7.4 or PHP 8.2
 - `npm run document:connectors` generates [connectors.md](connectors.md). This runs via your local php.
 - `npm run large-log-tables:generate` inserts ~1.6M rows to `wp_stream` and ~8.4M rows to `wp_streammeta` for testing

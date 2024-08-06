@@ -2,10 +2,10 @@
 .distignore
 .editorconfig
 .eslintignore
-.eslintrc.json
-.eslintrc.playwright.json
+.eslintrc.js
 .gitignore
 .nvmrc
+.phpunit.result.cache
 composer.lock
 docker-compose.build.yml
 docker-compose.yml
@@ -26,7 +26,11 @@ node_modules
 tests
 
 # Playwright generated files.
+/artifacts/
 /test-results/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# JS and SCSS source files.
+/src/

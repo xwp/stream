@@ -362,7 +362,7 @@ class Admin {
 			$this->view_cap,
 			$this->records_page_slug,
 			array( $this, 'render_list_table' ),
-			'div',
+			'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDI0IDEwMjQiIGZpbGw9IjAwMCI+Cgk8cGF0aCBkPSJNOTAzLjExNSA1MTUuNDEzYy00OS4zOTIgMC05MS40NzQgMzEuMzM3LTEwNy40NiA3NS4yMDNsLTEyNC40MTEtMS41MzJjLTExLjM3Ny0uMzQ2LTIyLjc1MS0uNjg5LTM0LjEyOS0uOTk4bC0uMjQxLjU3NC0yMi40MzYtLjI3OC0uMTUzLS45Mi0xNS4wNTYtODIuOTMzLTIwLjE0Ni0xMDguNDA1LTIwLjU0NC0xMDguMzM3TDUwMy45ODIgMGwtNTMuMTQxIDQyOS4wMTMtMTYuMjE0IDEzNy45MzUtMTIuMDE2IDEwNi45MjQtMTE3LjI4Ni0yODUuMjItMTguMzUzIDIwMi44MWMtNDIuNTYyIDEuNDU0LTg1LjEyNyAyLjkzNC0xMjcuNjg4IDQuNzM4LTUzLjA5NyAyLjI5Mi0xMDYuMTg3IDQuNDczLTE1OS4yODQgNy41MzZ2NDIuMDQyYzUzLjA5NyAzLjA2IDEwNi4xODcgNS4yNDcgMTU5LjI4NCA3LjUzMyA1My4wOTMgMi4yNDUgMTA2LjE4IDQuMTk0IDE1OS4yNzMgNS45MDNsMTQuMjQuNDY1IDE3LjM1MSA0OC4zOWMxOC44NDIgNTEuODc0IDM3LjU0MiAxMDMuODA2IDU2Ljc2NSAxNTUuNTQxTDQ2Ni41MiAxMDI0bDQxLjUxMi0zMDguMjkzIDE3LjYzMy0xMzYuNjg1IDEwLjc3NiA1MC4zMjkgNTQuODE1IDI0OC41NDQgNzIuNTE2LTIxNy4yMTdoMTI5LjI2MWMxMy40OTMgNDguMTIxIDU3LjY1NSA4My40MjkgMTEwLjA3NSA4My40MjkgNjMuMTYgMCAxMTQuMzUyLTUxLjIwNSAxMTQuMzUyLTExNC4zNDggMC02My4xMzktNTEuMTg5LTExNC4zNDUtMTE0LjM0OS0xMTQuMzQ1bC4wMDQtLjAwMVoiIC8+Cjwvc3ZnPgo=',
 			$main_menu_position
 		);
 
@@ -419,96 +419,37 @@ class Admin {
 	 * @return void
 	 */
 	public function admin_enqueue_scripts( $hook ) {
-		wp_register_script( 'wp-stream-select2', $this->plugin->locations['url'] . 'ui/lib/select2/js/select2.full.min.js', array( 'jquery' ), '4.0.13', true );
-		wp_register_style( 'wp-stream-select2', $this->plugin->locations['url'] . 'ui/lib/select2/css/select2.min.css', array(), '4.0.13' );
-		wp_register_script( 'wp-stream-timeago', $this->plugin->locations['url'] . 'ui/lib/timeago/jquery.timeago.js', array(), '1.4.1', true );
-
-		$locale    = strtolower( substr( get_locale(), 0, 2 ) );
-		$file_tmpl = 'ui/lib/timeago/locales/jquery.timeago.%s.js';
-
-		if ( file_exists( $this->plugin->locations['dir'] . sprintf( $file_tmpl, $locale ) ) ) {
-			wp_register_script(
-				'wp-stream-timeago-locale',
-				$this->plugin->locations['url'] . sprintf( $file_tmpl, $locale ),
-				array( 'wp-stream-timeago' ),
-				'1',
-				false
-			);
-		} else {
-			wp_register_script(
-				'wp-stream-timeago-locale',
-				$this->plugin->locations['url'] . sprintf( $file_tmpl, 'en' ),
-				array( 'wp-stream-timeago' ),
-				'1',
-				false
-			);
-		}
-
-		$min = wp_stream_min_suffix();
-		wp_enqueue_style( 'wp-stream-admin', $this->plugin->locations['url'] . 'ui/css/admin.' . $min . 'css', array(), $this->plugin->get_version() );
-
-		$script_screens = array( 'plugins.php' );
-
-		if ( in_array( $hook, $this->screen_id, true ) || in_array( $hook, $script_screens, true ) ) {
-			wp_enqueue_script( 'wp-stream-select2' );
-			wp_enqueue_style( 'wp-stream-select2' );
-
-			wp_enqueue_script( 'wp-stream-timeago' );
-			wp_enqueue_script( 'wp-stream-timeago-locale' );
-
-			wp_enqueue_script(
-				'wp-stream-admin',
-				$this->plugin->locations['url'] . 'ui/js/admin.' . $min . 'js',
+		if ( in_array( $hook, $this->screen_id, true ) ) {
+			$this->plugin->enqueue_asset(
+				'admin',
 				array(
-					'jquery',
-					'wp-stream-select2',
+					$this->plugin->with_select2(),
+					$this->plugin->with_jquery_timeago(),
 				),
-				$this->plugin->get_version(),
-				false
-			);
-			wp_enqueue_script(
-				'wp-stream-admin-exclude',
-				$this->plugin->locations['url'] . 'ui/js/exclude.' . $min . 'js',
-				array(
-					'jquery',
-					'wp-stream-select2',
-				),
-				$this->plugin->get_version(),
-				false
-			);
-			wp_enqueue_script(
-				'wp-stream-live-updates',
-				$this->plugin->locations['url'] . 'ui/js/live-updates.' . $min . 'js',
-				array(
-					'jquery',
-					'heartbeat',
-				),
-				$this->plugin->get_version(),
-				false
-			);
-
-			wp_localize_script(
-				'wp-stream-admin',
-				'wp_stream',
 				array(
 					'i18n'       => array(
-						'confirm_purge'    => esc_html__( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
-						'confirm_defaults' => esc_html__( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
+						'confirm_purge'    => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
+						'confirm_defaults' => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
 					),
-					'locale'     => esc_js( $locale ),
+					'locale'     => strtolower( substr( get_locale(), 0, 2 ) ),
 					'gmt_offset' => get_option( 'gmt_offset' ),
 				)
 			);
 
-			$order_types = array( 'asc', 'desc' );
+			$this->plugin->enqueue_asset(
+				'admin-exclude',
+				array(
+					$this->plugin->with_select2(),
+				)
+			);
 
-			wp_localize_script(
-				'wp-stream-live-updates',
-				'wp_stream_live_updates',
+			$this->plugin->enqueue_asset(
+				'live-updates',
+				array( 'heartbeat' ),
 				array(
 					'current_screen'      => $hook,
 					'current_page'        => isset( $_GET['paged'] ) ? absint( wp_unslash( $_GET['paged'] ) ) : '1', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-					'current_order'       => isset( $_GET['order'] ) && in_array( strtolower( $_GET['order'] ), $order_types, true ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					'current_order'       => isset( $_GET['order'] ) && in_array( strtolower( $_GET['order'] ), array( 'asc', 'desc' ), true ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						? esc_js( $_GET['order'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						: 'desc',
 					'current_query'       => wp_json_encode( $_GET ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -531,22 +472,14 @@ class Admin {
 		 */
 		$bulk_actions_threshold = apply_filters( 'wp_stream_bulk_actions_threshold', 100 );
 
-		wp_enqueue_script(
-			'wp-stream-global',
-			$this->plugin->locations['url'] . 'ui/js/global.' . $min . 'js',
-			array( 'jquery' ),
-			$this->plugin->get_version(),
-			false
-		);
-
-		wp_localize_script(
-			'wp-stream-global',
-			'wp_stream_global',
+		$this->plugin->enqueue_asset(
+			'global',
+			array(),
 			array(
 				'bulk_actions'       => array(
 					'i18n'      => array(
 						/* translators: %s: a number of items (e.g. "1,742") */
-						'confirm_action' => sprintf( esc_html__( 'Are you sure you want to perform bulk actions on over %s items? This process could take a while to complete.', 'stream' ), number_format( absint( $bulk_actions_threshold ) ) ),
+						'confirm_action' => sprintf( __( 'Are you sure you want to perform bulk actions on over %s items? This process could take a while to complete.', 'stream' ), number_format( absint( $bulk_actions_threshold ) ) ),
 					),
 					'threshold' => absint( $bulk_actions_threshold ),
 				),
@@ -611,17 +544,11 @@ class Admin {
 	}
 
 	/**
-	 * Add menu styles for various WP Admin skins
-	 *
-	 * @uses \wp_add_inline_style()
+	 * Add menu styles for various WP Admin skins.
 	 *
 	 * @action admin_enqueue_scripts
 	 */
 	public function admin_menu_css() {
-		$min = wp_stream_min_suffix();
-		wp_register_style( 'wp-stream-datepicker', $this->plugin->locations['url'] . 'ui/css/datepicker.' . $min . 'css', array(), $this->plugin->get_version() );
-		wp_register_style( 'wp-stream-icons', $this->plugin->locations['url'] . 'ui/stream-icons/style.css', array(), $this->plugin->get_version() );
-
 		// Make sure we're working off a clean version.
 		if ( ! file_exists( ABSPATH . WPINC . '/version.php' ) ) {
 			return;
@@ -632,59 +559,27 @@ class Admin {
 			return;
 		}
 
-		$body_class   = $this->admin_body_class;
-		$records_page = $this->records_page_slug;
-		$stream_url   = $this->plugin->locations['url'];
+		$css = "
+			body.{$this->admin_body_class} #wpbody-content .wrap h1:nth-child(1):before {
+				content: '';
+				display: inline-block;
+				width: 24px;
+				height: 24px;
+				margin-right: 8px;
+				vertical-align: text-bottom;
+				background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDI0IDEwMjQiIGZpbGw9ImN1cnJlbnRjb2xvciI+Cgk8cGF0aCBkPSJNOTAzLjExNSA1MTUuNDEzYy00OS4zOTIgMC05MS40NzQgMzEuMzM3LTEwNy40NiA3NS4yMDNsLTEyNC40MTEtMS41MzJjLTExLjM3Ny0uMzQ2LTIyLjc1MS0uNjg5LTM0LjEyOS0uOTk4bC0uMjQxLjU3NC0yMi40MzYtLjI3OC0uMTUzLS45Mi0xNS4wNTYtODIuOTMzLTIwLjE0Ni0xMDguNDA1LTIwLjU0NC0xMDguMzM3TDUwMy45ODIgMGwtNTMuMTQxIDQyOS4wMTMtMTYuMjE0IDEzNy45MzUtMTIuMDE2IDEwNi45MjQtMTE3LjI4Ni0yODUuMjItMTguMzUzIDIwMi44MWMtNDIuNTYyIDEuNDU0LTg1LjEyNyAyLjkzNC0xMjcuNjg4IDQuNzM4LTUzLjA5NyAyLjI5Mi0xMDYuMTg3IDQuNDczLTE1OS4yODQgNy41MzZ2NDIuMDQyYzUzLjA5NyAzLjA2IDEwNi4xODcgNS4yNDcgMTU5LjI4NCA3LjUzMyA1My4wOTMgMi4yNDUgMTA2LjE4IDQuMTk0IDE1OS4yNzMgNS45MDNsMTQuMjQuNDY1IDE3LjM1MSA0OC4zOWMxOC44NDIgNTEuODc0IDM3LjU0MiAxMDMuODA2IDU2Ljc2NSAxNTUuNTQxTDQ2Ni41MiAxMDI0bDQxLjUxMi0zMDguMjkzIDE3LjYzMy0xMzYuNjg1IDEwLjc3NiA1MC4zMjkgNTQuODE1IDI0OC41NDQgNzIuNTE2LTIxNy4yMTdoMTI5LjI2MWMxMy40OTMgNDguMTIxIDU3LjY1NSA4My40MjkgMTEwLjA3NSA4My40MjkgNjMuMTYgMCAxMTQuMzUyLTUxLjIwNSAxMTQuMzUyLTExNC4zNDggMC02My4xMzktNTEuMTg5LTExNC4zNDUtMTE0LjM0OS0xMTQuMzQ1bC4wMDQtLjAwMVoiIC8+Cjwvc3ZnPgo=');
+			}
+			#menu-posts-feedback .wp-menu-image:before {
+				font-family: dashicons !important;
+				content: '\\f175';
+			}
+			#adminmenu #menu-posts-feedback div.wp-menu-image {
+				background: none !important;
+				background-repeat: no-repeat;
+			}
+		";
 
-		if ( version_compare( $wp_version, '3.8-alpha', '>=' ) ) {
-			wp_enqueue_style( 'wp-stream-icons' );
-
-			$css = "
-				#toplevel_page_{$records_page} .wp-menu-image:before {
-					font-family: 'WP Stream' !important;
-					content: '\\73' !important;
-				}
-				#toplevel_page_{$records_page} .wp-menu-image {
-					background-repeat: no-repeat;
-				}
-				#menu-posts-feedback .wp-menu-image:before {
-					font-family: dashicons !important;
-					content: '\\f175';
-				}
-				#adminmenu #menu-posts-feedback div.wp-menu-image {
-					background: none !important;
-					background-repeat: no-repeat;
-				}
-				body.{$body_class} #wpbody-content .wrap h1:nth-child(1):before {
-					font-family: 'WP Stream' !important;
-					content: '\\73';
-					padding: 0 8px 0 0;
-				}
-			";
-		} else {
-			$css = "
-				#toplevel_page_{$records_page} .wp-menu-image {
-					background: url( {$stream_url}ui/stream-icons/menuicon-sprite.png ) 0 90% no-repeat;
-				}
-				/* Retina Stream Menu Icon */
-				@media  only screen and (-moz-min-device-pixel-ratio: 1.5),
-						only screen and (-o-min-device-pixel-ratio: 3/2),
-						only screen and (-webkit-min-device-pixel-ratio: 1.5),
-						only screen and (min-device-pixel-ratio: 1.5) {
-					#toplevel_page_{$records_page} .wp-menu-image {
-						background: url( {$stream_url}ui/stream-icons/menuicon-sprite-2x.png ) 0 90% no-repeat;
-						background-size:30px 64px;
-					}
-				}
-				#toplevel_page_{$records_page}.current .wp-menu-image,
-				#toplevel_page_{$records_page}.wp-has-current-submenu .wp-menu-image,
-				#toplevel_page_{$records_page}:hover .wp-menu-image {
-					background-position: top left;
-				}
-			";
-		}
-
-		\wp_add_inline_style( 'wp-admin', $css );
+		wp_add_inline_style( 'wp-admin', $css );
 	}
 
 	/**
@@ -739,7 +634,7 @@ class Admin {
 			FROM {$wpdb->stream} AS `stream`
 			LEFT JOIN {$wpdb->streammeta} AS `meta`
 			ON `meta`.`record_id` = `stream`.`ID`
-			WHERE 1=1 {$where};" // @codingStandardsIgnoreLine $where already prepared
+			WHERE 1=1 {$where};", // @codingStandardsIgnoreLine $where already prepared
 		);
 	}
 
@@ -802,7 +697,7 @@ class Admin {
 			FROM {$wpdb->stream} AS `stream`
 			LEFT JOIN {$wpdb->streammeta} AS `meta`
 			ON `meta`.`record_id` = `stream`.`ID`
-			WHERE 1=1 {$where};" // @codingStandardsIgnoreLine $where already prepared
+			WHERE 1=1 {$where};", // @codingStandardsIgnoreLine $where already prepared
 		);
 	}
 
@@ -871,8 +766,16 @@ class Admin {
 
 		$sections   = $this->plugin->settings->get_fields();
 		$active_tab = wp_stream_filter_input( INPUT_GET, 'tab' );
-		$min        = wp_stream_min_suffix();
-		wp_enqueue_script( 'wp-stream-settings', $this->plugin->locations['url'] . 'ui/js/settings.' . $min . 'js', array( 'jquery' ), $this->plugin->get_version(), true );
+
+		$this->plugin->enqueue_asset(
+			'settings',
+			array(),
+			array(
+				'i18n' => array(
+					'confirm_purge' => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
+				),
+			)
+		);
 		?>
 		<div class="wrap">
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>

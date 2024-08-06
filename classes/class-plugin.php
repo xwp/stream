@@ -7,6 +7,8 @@
 
 namespace WP_Stream;
 
+use RuntimeException;
+
 /**
  * Class Plugin
  */
@@ -332,5 +334,155 @@ class Plugin {
 	 */
 	public function get_client_ip_address() {
 		return apply_filters( 'wp_stream_client_ip_address', $this->client_ip_address );
+	}
+
+	/**
+	 * Enqueue a script along with a stylesheet if it exists.
+	 *
+	 * @param string $handle                  Script handle.
+	 * @param array  $additional_dependencies Additional dependencies.
+	 * @param array  $data                    Data to pass to the script.
+	 *
+	 * @throws RuntimeException If built JavaScript assets are not found.
+	 * @return void
+	 */
+	public function enqueue_asset( $handle, $additional_dependencies = array(), $data = array() ) {
+		// If is enqueued already, bail out.
+		if ( wp_script_is( $handle ) ) {
+			return;
+		}
+
+		$path = untrailingslashit( $this->locations['dir'] );
+		$url  = untrailingslashit( $this->locations['url'] );
+
+		$script_asset_path = "$path/build/$handle.asset.php";
+
+		if ( ! file_exists( $script_asset_path ) ) {
+			throw new RuntimeException( 'Built JavaScript assets not found. Please run `npm run build`' );
+		}
+
+		$script_asset = require $script_asset_path; // phpcs:disable WPThemeReview.CoreFunctionality.FileInclude.FileIncludeFound
+
+		wp_enqueue_script(
+			"wp-stream-$handle",
+			"$url/build/$handle.js",
+			array_merge(
+				$script_asset['dependencies'],
+				(array) $additional_dependencies
+			),
+			$script_asset['version'],
+			true
+		);
+
+		if ( file_exists( "$path/build/$handle.css" ) ) {
+			wp_enqueue_style(
+				"wp-stream-$handle",
+				"$url/build/$handle.css",
+				array(),
+				$script_asset['version']
+			);
+		}
+
+		if ( ! empty( $data ) ) {
+			wp_add_inline_script(
+				"wp-stream-$handle",
+				sprintf( 'window["%s"] = %s;', esc_attr( "wp-stream-$handle" ), wp_json_encode( $data ) ),
+				'before'
+			);
+		}
+	}
+
+	/**
+	 * Enqueue select2 script and locale file if exists.
+	 *
+	 * @return string Script handle.
+	 */
+	public function with_select2() {
+		$handle = 'wp-stream-select2';
+
+		// If is enqueued already, bail out.
+		if ( wp_script_is( $handle ) ) {
+			return $handle;
+		}
+
+		$path = untrailingslashit( $this->locations['dir'] );
+		$url  = untrailingslashit( $this->locations['url'] );
+
+		wp_enqueue_script(
+			$handle,
+			"$url/build/select2/js/select2.full.min.js",
+			array( 'jquery' ),
+			filemtime( "$path/build/select2/js/select2.full.min.js" ),
+			true
+		);
+		wp_enqueue_style(
+			$handle,
+			"$url/build/select2/css/select2.min.css",
+			array(),
+			filemtime( "$path/build/select2/css/select2.min.css" )
+		);
+
+		$locale       = get_locale();
+		$lang         = substr( $locale, 0, 2 );
+		$search_files = array( $locale, $lang, 'en' );
+
+		foreach ( $search_files as $search_file ) {
+			if ( file_exists( "$path/build/select2/js/i18n/$search_file.js" ) ) {
+				wp_enqueue_script(
+					sanitize_title( "$handle-$search_file" ),
+					"$url/build/select2/js/i18n/$search_file.js",
+					array( $handle ),
+					filemtime( "$path/build/select2/js/i18n/$search_file.js" ),
+					true
+				);
+				break;
+			}
+		}
+
+		return $handle;
+	}
+
+	/**
+	 * Enqueue jquery.timeago script and locale file if exists.
+	 *
+	 * @return string Script handle.
+	 */
+	public function with_jquery_timeago() {
+		$handle = 'wp-stream-jquery-timeago';
+
+		// If is enqueued already, bail out.
+		if ( wp_script_is( $handle ) ) {
+			return $handle;
+		}
+
+		$path = untrailingslashit( $this->locations['dir'] );
+		$url  = untrailingslashit( $this->locations['url'] );
+
+		wp_enqueue_script(
+			$handle,
+			"$url/build/timeago/js/jquery.timeago.js",
+			array( 'jquery' ),
+			filemtime( "$path/build/timeago/js/jquery.timeago.js" ),
+			true
+		);
+
+		$locale       = get_locale();
+		$lang         = substr( $locale, 0, 2 );
+		$search_files = array( $locale, $lang, 'en' );
+
+		foreach ( $search_files as $search_file ) {
+			if ( file_exists( "$path/build/timeago/js/locales/jquery.timeago.$search_file.js" ) ) {
+				wp_enqueue_script(
+					sanitize_title( "$handle-$search_file" ),
+					"$url/build/timeago/js/locales/jquery.timeago.$search_file.js",
+					array( $handle ),
+					filemtime( "$path/build/timeago/js/locales/jquery.timeago.$search_file.js" ),
+					true
+				);
+				break;
+			}
+		}
+
+		return $handle;
 	}
 }

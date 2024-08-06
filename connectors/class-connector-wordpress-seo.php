@@ -223,15 +223,7 @@ class Connector_WordPress_SEO extends Connector {
 	 */
 	public function admin_enqueue_scripts( $hook ) {
 		if ( 0 === strpos( $hook, 'seo_page_' ) ) {
-			$stream = wp_stream_get_instance();
-			$src    = $stream->locations['url'] . '/ui/js/wpseo-admin.js';
-			wp_enqueue_script(
-				'stream-connector-wpseo',
-				$src,
-				array( 'jquery' ),
-				$stream->get_version(),
-				false
-			);
+			wp_stream_get_instance()->enqueue_asset( 'wpseo-admin' );
 		}
 	}
 
