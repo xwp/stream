@@ -478,41 +478,26 @@ class Settings {
 	 * @return string The deletion warning message.
 	 */
 	public function get_deletion_warning(): string {
-		$site_type = $this->plugin->get_site_type();
 
-		switch ( $site_type ) {
-			case Plugin::MULTI_NETWORK:
-				$warning = __( 'Warning: This will delete all activity records from the database for all sites.', 'stream' );
-				break;
-			case Plugin::MULTI_NOT_NETWORK:
-				$warning = $this->plugin->is_large_records_table( Admin::get_blog_record_table_size() ) ?
-						$this->get_async_deletion_warning() :
-						__( 'Warning: This will delete all activity records from the database for this site.', 'stream' );
-				break;
-			default:
-				$warning = __( 'Warning: This will delete all activity records from the database.', 'stream' );
-				break;
+		// Check if there is an action scheduler event running already deleting things.
+		if ( Admin::is_running_async_deletion() ) {
+
+			$warning = __( 'Currently deleting records. Please be patient, this can take a while.', 'stream' );
+
+		} elseif ( $this->plugin->is_multisite_network_activated() ) {
+
+			$warning = __( 'Warning: This will delete all activity records from the database for all sites.', 'stream' );
+
+		} elseif ( $this->plugin->is_multisite_not_network_activated() ) {
+
+			$warning = __( 'Warning: This will delete all activity records from the database for this site.', 'stream' );
+
+		} else {
+
+			$warning = __( 'Warning: This will delete all activity records from the database.', 'stream' );
 		}
 
 		return $warning;
-	}
-
-	/**
-	 * Retrieves the warning message for asynchronous deletion.
-	 *
-	 * This method checks if there is an action scheduler event running already deleting things
-	 * and returns an appropriate message.
-	 *
-	 * @return string The warning message.
-	 */
-	private function get_async_deletion_warning() {
-		// Check if there is an action scheduler event running already deleting things.
-		$has_scheduled_action = Admin::is_running_async_deletion();
-
-		return $has_scheduled_action ?
-			__( 'Currently deleting records. Please be patient, this can take a while.', 'stream' )
-			:
-			__( 'Warning: This will delete all activity records from the database for this site. If any are added while this is running, they will not be deleted.', 'stream' );
 	}
 
 	/**
