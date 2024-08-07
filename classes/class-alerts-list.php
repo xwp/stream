@@ -338,29 +338,10 @@ class Alerts_List {
 			return;
 		}
 
-		$min = wp_stream_min_suffix();
-
-		wp_register_script(
-			'wp-stream-alerts-list-js',
-			$this->plugin->locations['url'] . 'ui/js/alerts-list.' . $min . 'js',
-			array(
-				'wp-stream-alerts',
-				'jquery',
-			),
-			$this->plugin->get_version(),
-			false
+		$this->plugin->enqueue_asset(
+			'alerts-list',
+			array( 'wp-stream-alerts' )
 		);
-
-		wp_register_style(
-			'wp-stream-alerts-list-css',
-			$this->plugin->locations['url'] . 'ui/css/alerts-list.' . $min . 'css',
-			array(),
-			$this->plugin->get_version()
-		);
-
-		wp_enqueue_script( 'wp-stream-alerts-list-js' );
-		wp_enqueue_style( 'wp-stream-alerts-list-css' );
-		wp_enqueue_style( 'wp-stream-select2' );
 	}
 
 	/**
