@@ -64,9 +64,9 @@ We use npm as the canonical task runner for the project. The following commands 
 - `npm run test-e2e-debug` will run the Playwright E2E tests in a debug mode (with Chromium browser and dev tools open).
 - `npm run switch-to:php7.4` and `npm run switch-to:php8.2` will switch you to either PHP 7.4 or PHP 8.2
 - `npm run document:connectors` generates [connectors.md](connectors.md). This runs via your local php.
-- `npm run large-log-tables:generate` inserts ~1.6M rows to `wp_stream` and ~8.4M rows to `wp_streammeta` for testing
-- `npm run large-log-tables:remove` removes the test data only
-- `npm run large-log-tables:show` shows how much test data is in the tables, this does not include non-test entries
+- `npm run large-records-generate` inserts ~1.6M rows to `wp_stream` and ~8.4M rows to `wp_streammeta` for testing
+- `npm run large-records-remove` removes the test data only
+- `npm run large-records-show` shows how much test data is in the tables, this does not include non-test entries
 
 By default, tests have `WP_DEBUG` as false. You can override this if necessary by setting `WP_STREAM_TEST_DEBUG` to "yes".
 
