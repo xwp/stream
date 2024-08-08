@@ -184,8 +184,11 @@ class Connector_Posts extends Connector {
 		$taxonomy = get_taxonomy( $tax_slug );
 		$tax_name = is_a( $taxonomy, 'WP_Taxonomy' ) ? $taxonomy->labels->singular_name : $tax_slug;
 
-		$removed = array_diff( $old_tt_ids, $tt_ids );
-		$added   = array_diff( $tt_ids, $old_tt_ids );
+		$old_tt_int_ids = array_map( 'intval', $old_tt_ids );
+		$tt_int_ids     = array_map( 'intval', $tt_ids );
+
+		$removed = array_diff( $old_tt_int_ids, $tt_int_ids );
+		$added   = array_diff( $tt_int_ids, $old_tt_int_ids );
 
 		if ( empty( $removed ) && empty( $added ) ) {
 			return;
@@ -229,9 +232,11 @@ class Connector_Posts extends Connector {
 				'singular_name' => $this->get_post_type_name( $object->post_type ),
 				'taxonomy_name' => $tax_name,
 				'taxonomy'      => $tax_slug,
-				'terms_updated' => array(
-					'added'   => $added,
-					'removed' => $removed,
+				'terms_updated' => wp_json_encode(
+					array(
+						'added'   => $added,
+						'removed' => $removed,
+					)
 				),
 				'post_date'     => $object->post_date,
 				'post_date_gmt' => $object->post_date_gmt,
@@ -278,8 +283,8 @@ class Connector_Posts extends Connector {
 	 *
 	 * @action transition_post_status
 	 *
-	 * @param mixed    $new_status New status.
-	 * @param mixed    $old_status Old status.
+	 * @param mixed   $new_status New status.
+	 * @param mixed   $old_status Old status.
 	 * @param WP_Post $post       Post object.
 	 */
 	public function log_transition_post_status( $new_status, $old_status, $post ) {
@@ -412,8 +417,8 @@ class Connector_Posts extends Connector {
 	 * This currently only looks at the posts table.
 	 *
 	 * @param int|string $post_id The post id.
-	 * @param WP_Post   $post_after The post object of the final post.
-	 * @param WP_Post   $post_before The post object before it was updated.
+	 * @param WP_Post    $post_after The post object of the final post.
+	 * @param WP_Post    $post_before The post object before it was updated.
 	 * @return void
 	 */
 	public function callback_post_updated( $post_id, $post_after, $post_before ) {
@@ -508,7 +513,7 @@ class Connector_Posts extends Connector {
 			array(
 				'post_title'     => $post_after->post_title,
 				'singular_name'  => $post_type_name,
-				'fields_updated' => $fields_updated,
+				'fields_updated' => wp_json_encode( $fields_updated ),
 				'post_date'      => $post_after->post_date,
 				'post_date_gmt'  => $post_after->post_date_gmt,
 				'revision_id'    => $this->get_revision_id( $post_after ),
