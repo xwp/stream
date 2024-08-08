@@ -289,15 +289,6 @@ class Connector_Posts extends Connector {
 	 */
 	public function log_transition_post_status( $new_status, $old_status, $post ) {
 
-		if ( in_array( $post->post_type, $this->get_excluded_post_types(), true ) ) {
-			return;
-		}
-
-		// We don't want the meta box update request, just the post update.
-		if ( ! empty( wp_stream_filter_input( INPUT_GET, 'meta-box-loader' ) ) ) {
-			return;
-		}
-
 		$start_statuses = array( 'auto-draft', 'inherit', 'new' );
 		if ( in_array( $new_status, $start_statuses, true ) ) {
 			return;
@@ -389,7 +380,7 @@ class Connector_Posts extends Connector {
 		}
 
 		if ( empty( $action ) ) {
-			return; // We will use a separate callback for updated posts.
+			$action = 'updated'; // We will use a separate callback for updated posts.
 		}
 
 		$revision_id = $this->get_revision_id( $post );
@@ -425,11 +416,6 @@ class Connector_Posts extends Connector {
 
 		// Don't log the non-included post types.
 		if ( in_array( $post_after->post_type, $this->get_excluded_post_types(), true ) ) {
-			return;
-		}
-
-		// If we have already tracked this change, bail.
-		if ( apply_filters( 'wp_stream_has_tracked_post_updated', false ) ) {
 			return;
 		}
 
