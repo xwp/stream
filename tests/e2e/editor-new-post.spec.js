@@ -21,10 +21,7 @@ test.describe( 'Editor: saving a new post', () => {
 		console.log( `New post ${ postTitle }` );
 
 		// Even though we're using WP's npm package, it's more straightforward to do it this way, at least for me in this environment.
-		await page.goto( 'http://stream.wpenv.net/wp-login.php?redirect_to=http://stream.wpenv.net/wp-admin/post-new.php%2F&reauth=1' );
-		await page.getByLabel( 'Username or Email Address' ).fill( 'admin' );
-		await page.getByLabel( 'Password', { exact: true } ).fill( 'password' );
-		await page.getByRole( 'button', { name: 'Log In' } ).click();
+		await page.goto( 'http://stream.wpenv.net/wp-admin/post-new.php' );
 		await page.getByLabel( 'Add title' ).click();
 		await page.getByLabel( 'Add title' ).fill( postTitle );
 		await page.getByLabel( 'Add title' ).press( 'Tab' );

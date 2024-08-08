@@ -283,7 +283,7 @@ class Plugin {
 		$dir_url         = trailingslashit( plugins_url( '', __DIR__ ) );
 		$dir_path        = plugin_dir_path( __DIR__ );
 		$dir_basename    = basename( $dir_path );
-		$plugin_basename = trailingslashit( $dir_basename ) . $dir_basename . '.php';
+		$plugin_basename = trailingslashit( $dir_basename ) . 'stream.php';
 
 		return compact( 'dir_url', 'dir_path', 'dir_basename', 'plugin_basename' );
 	}
