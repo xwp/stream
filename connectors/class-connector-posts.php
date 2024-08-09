@@ -32,6 +32,35 @@ class Connector_Posts extends Connector {
 	);
 
 	/**
+	 * Adds an action to retrieve previous post data before updating a post.
+	 */
+	public function register() {
+		parent::register();
+		add_action( 'pre_post_update', array( $this, 'get_previous_post_data' ), 10, 2 );
+	}
+
+	/**
+	 * Get the previous post versions terms.
+	 *
+	 * @param int|string] $post_id
+	 * @return void
+	 */
+	public function get_previous_post_data( $post_id ) {
+
+		$terms = [];
+		foreach( $this->get_included_taxonomies( $post_id ) as $tax ) {
+			$tax_terms = wp_list_pluck( get_the_terms( $post_id, $tax ), 'term_taxonomy_id' );
+			if ( ! empty( $tax_terms ) && ! is_wp_error( $tax_terms ) ) {
+				$terms[ $tax ] = $tax_terms;
+			}
+		}
+
+		add_filter( "wp_stream_previous_{$post_id}_terms", static function () use ( $terms ) {
+			return $terms;
+		} );
+	}
+
+	/**
 	 * Return translated connector label
 	 *
 	 * @return string Translated connector label
@@ -467,19 +496,78 @@ class Connector_Posts extends Connector {
 			}
 		}
 
-		// If none of the post fields were updated, there should be a log somewhere else.
-		if ( empty( $fields_updated ) ) {
+		$updated_terms     = [];
+		$included_taxes    = $this->get_included_taxonomies( $post_after->ID );
+		$post_before_terms = apply_filters( "wp_stream_previous_{$post_id}_terms", false );
+
+		// Only do this if the filter is working.
+		if ( false !== $post_before_terms ) {
+
+			foreach( $included_taxes as $tax ) {
+
+				$tax_terms = wp_list_pluck( get_the_terms( $post_after->ID, $tax ), 'term_taxonomy_id' );
+
+				$added   = array_diff( $tax_terms, $post_before_terms[ $tax ] ?? [] );
+				$removed =  array_diff( $post_before_terms[ $tax ] ?? [], $tax_terms );
+
+				if ( ! empty( $added ) ) {
+					$updated_terms[ $tax ][ 'added' ] = $added;
+				}
+
+				if ( ! empty( $removed ) ) {
+					$updated_terms[ $tax ][ 'removed' ] = $removed;
+				}
+			}
+		}
+
+		// If none of the post fields or terms were updated, there should be a log somewhere else.
+		if ( empty( $fields_updated ) && empty( $updated_terms ) ) {
 			return;
 		}
 
-		// Creating a string for the summary. The array will be stored in the meta.
-		$fields_updated_list_items = array_reduce(
-			array_keys( $fields_updated ),
-			function ( $acc, $key ) use ( $fields_updated ) {
-				return $acc .= sprintf( '<li>%s: %s</li>', $key, $fields_updated[ $key ] );
-			},
-			''
-		);
+		$details = '';
+
+		if ( ! empty( $updated_terms ) ) {
+			foreach( $updated_terms as $tax => $term_updates ) {
+				$taxonomy = get_taxonomy( $tax );
+				$tax_name = is_a( $taxonomy, 'WP_Taxonomy' ) ? $taxonomy->labels->singular_name : $tax;
+				if ( ! empty( $term_updates['added'] ) ) {
+					$details .= sprintf(
+						/* Translators: %1$s is the taxonomy slug and %2$s is a linked list of the added terms. */
+						__( ' %1$s terms added: %2$s ', 'stream' ),
+						$tax_name,
+						$this->make_term_list( $term_updates['added'], $tax )
+					);
+				}
+
+				if ( ! empty( $term_updates['removed'] ) ) {
+					$removed_terms = sprintf(
+						/* Translators: %1$s is the taxonomy slug and %2$s is a linked list of the removed terms. */
+						__( ' %1$s terms added: %2$s ', 'stream' ),
+						$tax_name,
+						$this->make_term_list( $term_updates['removed'], $tax )
+					);
+
+					$details .= sprintf( '%s', $removed_terms );
+				}
+			}
+		}
+
+		if ( ! empty( $fields_updated ) ) {
+			// Creating a string for the summary. The array will be stored in the meta.
+			$details .= array_reduce(
+				array_keys( $fields_updated ),
+				function ( $acc, $key ) use ( $fields_updated ) {
+					return $acc .= sprintf( ' %s: %s, ', $key, $fields_updated[ $key ] );
+				},
+				''
+			);
+
+			$details = rtrim( $details, ', ' );
+		}
+
+
+
 
 		/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "HelloWorld", "Post") */
 		$summary = _x(
@@ -488,14 +576,10 @@ class Connector_Posts extends Connector {
 			'stream'
 		);
 
-		$summary_with_fields = sprintf(
-			'%s<br /><ul>%s</ul>',
-			$summary,
-			$fields_updated_list_items
-		);
+		$log_summary = apply_filters( 'wp_stream_post_updated_summary', "{$summary}<br />{$details}", $post_after, $post_before, $post_before_terms );
 
 		$this->log(
-			$summary_with_fields,
+			$log_summary,
 			array(
 				'post_title'     => $post_after->post_title,
 				'singular_name'  => $post_type_name,
