@@ -8,6 +8,7 @@
 namespace WP_Stream;
 
 use WP_Post;
+use WP_Taxonomy;
 
 /**
  * Class - Connector_Posts
@@ -28,6 +29,7 @@ class Connector_Posts extends Connector {
 	public $actions = array(
 		'deleted_post',
 		'post_updated',
+		'transition_post_status',
 		'set_object_terms',
 	);
 
@@ -36,27 +38,20 @@ class Connector_Posts extends Connector {
 	 */
 	public function register() {
 		parent::register();
-		add_action( 'pre_post_update', array( $this, 'get_previous_post_data' ), 10, 2 );
+		add_action( 'set_object_terms', array( $this, 'get_previous_post_terms' ), 10, 6 );
 	}
 
 	/**
-	 * Get the previous post versions terms.
+	 * Get the previous post version's terms.
 	 *
 	 * @param int|string] $post_id
 	 * @return void
 	 */
-	public function get_previous_post_data( $post_id ) {
+	public function get_previous_post_terms(  $object_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids ) {
 
-		$terms = [];
-		foreach( $this->get_included_taxonomies( $post_id ) as $tax ) {
-			$tax_terms = wp_list_pluck( get_the_terms( $post_id, $tax ), 'term_taxonomy_id' );
-			if ( ! empty( $tax_terms ) && ! is_wp_error( $tax_terms ) ) {
-				$terms[ $tax ] = $tax_terms;
-			}
-		}
-
-		add_filter( "wp_stream_previous_{$post_id}_terms", static function () use ( $terms ) {
-			return $terms;
+		$hey = $taxonomy;
+		add_filter( "wp_stream_previous_{$object_id}_{$taxonomy}_terms", static function () use ( $old_tt_ids ) {
+			return array( $old_tt_ids );
 		} );
 	}
 
@@ -82,6 +77,11 @@ class Connector_Posts extends Connector {
 			'untrashed' => esc_html__( 'Restored', 'stream' ),
 			'deleted'   => esc_html__( 'Deleted', 'stream' ),
 		);
+	}
+
+	public function callback_set_object_terms( $object_id, $terms, $tt_ids, $tax_slug, $append, $old_tt_ids ) {
+		$debug = wp_debug_backtrace_summary();
+		$hey = 'there';
 	}
 
 	/**
@@ -183,101 +183,6 @@ class Connector_Posts extends Connector {
 	}
 
 	/**
-	 * Log when post object terms are set.
-	 *
-	 * @param int    $object_id  Object ID.
-	 * @param array  $terms      An array of object term IDs or slugs.
-	 * @param array  $tt_ids     An array of term taxonomy IDs.
-	 * @param string $tax_slug   Taxonomy slug.
-	 * @param bool   $append     Whether to append new terms to the old terms.
-	 * @param array  $old_tt_ids Old array of term taxonomy IDs.
-	 * @return void
-	 */
-	public function callback_set_object_terms( $object_id, $terms, $tt_ids, $tax_slug, $append, $old_tt_ids ) {
-
-		$object = get_post( $object_id );
-
-		if (
-			! is_a( $object, 'WP_Post' )
-			||
-			in_array( $object->post_type, $this->get_excluded_post_types(), true )
-		) {
-			return;
-		}
-
-		// Only post_tags and categories are included by default.
-		if ( ! in_array( $tax_slug, $this->get_included_taxonomies( $object_id ), true ) ) {
-			return;
-		}
-
-		$taxonomy = get_taxonomy( $tax_slug );
-		$tax_name = is_a( $taxonomy, 'WP_Taxonomy' ) ? $taxonomy->labels->singular_name : $tax_slug;
-
-		$old_tt_int_ids = array_map( 'intval', $old_tt_ids );
-		$tt_int_ids     = array_map( 'intval', $tt_ids );
-
-		$removed = array_diff( $old_tt_int_ids, $tt_int_ids );
-		$added   = array_diff( $tt_int_ids, $old_tt_int_ids );
-
-		if ( empty( $removed ) && empty( $added ) ) {
-			return;
-		}
-
-		$terms_lists = '';
-
-		if ( ! empty( $added ) ) {
-			$added_terms = sprintf(
-				/* Translators: %s is a linked list of the added terms. */
-				__( 'added: %s', 'stream' ),
-				$this->make_term_list( $added, $tax_slug )
-			);
-
-			$terms_lists .= sprintf( '<li>%s</li>', $added_terms );
-		}
-
-		if ( ! empty( $removed ) ) {
-			$removed_terms = sprintf(
-				/* Translators: %s is a linked list of the removed terms. */
-				__( 'removed: %s', 'stream' ),
-				$this->make_term_list( $removed, $tax_slug )
-			);
-
-			$terms_lists .= sprintf( '<li>%s</li>', $removed_terms );
-		}
-
-		/* translators: %1$s: a post title, %2$s: a post type singular name (e.g."HelloWorld", "Post") */
-		$summary = _x(
-			'"%1$s" %2$s %3$s terms updated',
-			'1: Post title, 2: Post type singular name, 3: Taxonomy name',
-			'stream'
-		);
-
-		$summary = sprintf( '%s<ul>%s</ul>', $summary, $terms_lists );
-
-		$this->log(
-			$summary,
-			array(
-				'post_title'    => get_the_title( $object_id ),
-				'singular_name' => $this->get_post_type_name( $object->post_type ),
-				'taxonomy_name' => $tax_name,
-				'taxonomy'      => $tax_slug,
-				'terms_updated' => wp_json_encode(
-					array(
-						'added'   => $added,
-						'removed' => $removed,
-					)
-				),
-				'post_date'     => $object->post_date,
-				'post_date_gmt' => $object->post_date_gmt,
-				'revision_id'   => $this->get_revision_id( $object ),
-			),
-			$object->ID,
-			$object->post_type,
-			__( 'Updated Terms' )
-		);
-	}
-
-	/**
 	 * Generates a list of terms based on the provided term IDs and taxonomy.
 	 *
 	 * @param array  $updated   The array of term IDs to generate the list from.
@@ -316,7 +221,18 @@ class Connector_Posts extends Connector {
 	 * @param mixed   $old_status Old status.
 	 * @param WP_Post $post       Post object.
 	 */
-	public function log_transition_post_status( $new_status, $old_status, $post ) {
+	public function callback_transition_post_status( $new_status, $old_status, $post ) {
+
+
+		// Don't log the non-included post types.
+		if ( ! ( $post instanceof WP_Post ) || in_array( $post->post_type, $this->get_excluded_post_types(), true ) ) {
+			return;
+		}
+
+		// We don't want the meta box update request either, just the postupdate.
+		if ( ! empty( wp_stream_filter_input( INPUT_GET, 'meta-box-loader' ) ) ){
+			return;
+		}
 
 		$start_statuses = array( 'auto-draft', 'inherit', 'new' );
 		if ( in_array( $new_status, $start_statuses, true ) ) {
@@ -397,11 +313,11 @@ class Connector_Posts extends Connector {
 			$action  = 'trashed';
 		} else {
 			/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post") */
-			$summary = _x(
-				'"%1$s" %2$s updated',
-				'1: Post title, 2: Post type singular name',
-				'stream'
-			);
+			$summary = false;
+		}
+
+		if ( ! $summary ) {
+			return;
 		}
 
 		if ( in_array( $old_status, $start_statuses, true ) && ! in_array( $new_status, $start_statuses, true ) ) {
@@ -409,7 +325,7 @@ class Connector_Posts extends Connector {
 		}
 
 		if ( empty( $action ) ) {
-			$action = 'updated'; // We will use a separate callback for updated posts.
+			$action = 'updated';
 		}
 
 		$revision_id = $this->get_revision_id( $post );
@@ -456,7 +372,7 @@ class Connector_Posts extends Connector {
 		$action         = 'updated';
 		$post_type_name = $this->get_post_type_name( $post_after->post_type );
 
-		$fields_updated = array();
+		$updated_fields = array();
 
 		// Find out what was updated.
 		foreach ( $post_after as $field => $value ) {
@@ -466,27 +382,24 @@ class Connector_Posts extends Connector {
 
 			switch ( $field ) {
 				case 'post_author':
-					$fields_updated['post_author'] = sprintf(
+					$updated_fields['post_author'] = sprintf(
 						/* Translators: %1$s is the previous post author, %2$s is the current post author */
 						__( '%1$s to %2$s', 'stream' ),
 						$this->get_author_maybe_link( $post_before->post_author ),
 						$this->get_author_maybe_link( $post_after->post_author )
 					);
 					break;
+				// Not including these for now.
 				case 'post_modified':
 				case 'post_modified_gmt':
-					// Not including these for now.
+				// Handled in transition_post_status hook.
+				case 'post_status':
 					break;
 				case 'post_content':
-					$fields_updated['post_content'] = __( 'updated', 'stream' );
-					break;
-				case 'post_status':
-					// This is mainly for back compat, post status transitions will be logged in a separate entry.
-					// However they are all triggered here to account for the block editor flow.
-					$this->log_transition_post_status( $post_after->post_status, $post_before->post_status, $post_after );
+					$updated_fields['post_content'] = __( 'updated', 'stream' );
 					break;
 				default:
-					$fields_updated[ $field ] = sprintf(
+					$updated_fields[ $field ] = sprintf(
 						/* Translators: %1$s is the previous value, %2$s is the current value */
 						__( '"%1$s" to "%2$s"', 'stream' ),
 						esc_html( $post_before->$field ),
@@ -498,17 +411,24 @@ class Connector_Posts extends Connector {
 
 		$updated_terms     = [];
 		$included_taxes    = $this->get_included_taxonomies( $post_after->ID );
-		$post_before_terms = apply_filters( "wp_stream_previous_{$post_id}_terms", false );
+		$post_before_terms = true;
 
 		// Only do this if the filter is working.
 		if ( false !== $post_before_terms ) {
 
 			foreach( $included_taxes as $tax ) {
 
+				$previous_terms = apply_filters( "wp_stream_previous_{$post_after->ID}_{$tax}_terms", false );
+
+				// Bail if the filter failed.
+				if ( false === $previous_terms ) {
+					continue;
+				}
+
 				$tax_terms = wp_list_pluck( get_the_terms( $post_after->ID, $tax ), 'term_taxonomy_id' );
 
-				$added   = array_diff( $tax_terms, $post_before_terms[ $tax ] ?? [] );
-				$removed =  array_diff( $post_before_terms[ $tax ] ?? [], $tax_terms );
+				$added   = array_diff( $tax_terms, $previous_terms );
+				$removed =  array_diff( $previous_terms, $tax_terms );
 
 				if ( ! empty( $added ) ) {
 					$updated_terms[ $tax ][ 'added' ] = $added;
@@ -521,7 +441,7 @@ class Connector_Posts extends Connector {
 		}
 
 		// If none of the post fields or terms were updated, there should be a log somewhere else.
-		if ( empty( $fields_updated ) && empty( $updated_terms ) ) {
+		if ( empty( $updated_fields ) && empty( $updated_terms ) ) {
 			return;
 		}
 
@@ -530,35 +450,37 @@ class Connector_Posts extends Connector {
 		if ( ! empty( $updated_terms ) ) {
 			foreach( $updated_terms as $tax => $term_updates ) {
 				$taxonomy = get_taxonomy( $tax );
-				$tax_name = is_a( $taxonomy, 'WP_Taxonomy' ) ? $taxonomy->labels->singular_name : $tax;
+				$tax_name = ( $taxonomy instanceof WP_Taxonomy ) ? $taxonomy->labels->singular_name : $tax;
 				if ( ! empty( $term_updates['added'] ) ) {
-					$details .= sprintf(
+					$added_terms = sprintf(
 						/* Translators: %1$s is the taxonomy slug and %2$s is a linked list of the added terms. */
 						__( ' %1$s terms added: %2$s ', 'stream' ),
 						$tax_name,
 						$this->make_term_list( $term_updates['added'], $tax )
 					);
+					$details .= sprintf( '%s<br />', $added_terms );
 				}
 
 				if ( ! empty( $term_updates['removed'] ) ) {
 					$removed_terms = sprintf(
 						/* Translators: %1$s is the taxonomy slug and %2$s is a linked list of the removed terms. */
-						__( ' %1$s terms added: %2$s ', 'stream' ),
+						__( ' %1$s terms removed: %2$s', 'stream' ),
 						$tax_name,
 						$this->make_term_list( $term_updates['removed'], $tax )
 					);
 
-					$details .= sprintf( '%s', $removed_terms );
+					$details .= sprintf( '%s<br />', $removed_terms );
 				}
 			}
 		}
 
-		if ( ! empty( $fields_updated ) ) {
+		if ( ! empty( $updated_fields ) ) {
+			$details .= __( 'Post updates: ', 'stream' );
 			// Creating a string for the summary. The array will be stored in the meta.
 			$details .= array_reduce(
-				array_keys( $fields_updated ),
-				function ( $acc, $key ) use ( $fields_updated ) {
-					return $acc .= sprintf( ' %s: %s, ', $key, $fields_updated[ $key ] );
+				array_keys( $updated_fields ),
+				function ( $acc, $key ) use ( $updated_fields ) {
+					return $acc .= sprintf( ' %s: %s, ', $key, $updated_fields[ $key ] );
 				},
 				''
 			);
@@ -583,7 +505,8 @@ class Connector_Posts extends Connector {
 			array(
 				'post_title'     => $post_after->post_title,
 				'singular_name'  => $post_type_name,
-				'fields_updated' => wp_json_encode( $fields_updated ),
+				'fields_updated' => wp_json_encode( $updated_fields ),
+				'terms_updated'  => wp_json_encode( $updated_terms ),
 				'post_date'      => $post_after->post_date,
 				'post_date_gmt'  => $post_after->post_date_gmt,
 				'revision_id'    => $this->get_revision_id( $post_after ),
