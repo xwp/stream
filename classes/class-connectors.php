@@ -109,8 +109,8 @@ class Connectors {
 			// Set fully qualified class name.
 			$class_name = sprintf( '\WP_Stream\Connector_%s', str_replace( '-', '_', $connector ) );
 
-			// Bail if no class loaded or it does not extend WP_Stream\Connector.
-			if ( ! class_exists( $class_name ) || ! is_subclass_of( $class_name, 'WP_Stream\Connector' ) ) {
+			// Bail if no class loaded.
+			if ( ! class_exists( $class_name ) ) {
 				continue;
 			}
 
