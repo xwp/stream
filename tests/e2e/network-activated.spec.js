@@ -37,7 +37,7 @@ test.describe( 'Network: shows network activated states', () => {
 	// We should not have an updated row. This times out which makes it fail.
 	test( 'does not have updated row', async () => {
 		await page.goto( 'http://stream.wpenv.net/wp-admin/network/plugins.php' );
-		const isActive = await page
+		const isInactive = await page
 			.getByLabel( 'Network Activate Stream' )
 			.isVisible();
 
