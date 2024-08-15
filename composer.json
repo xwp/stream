@@ -30,6 +30,7 @@
     "wp-coding-standards/wpcs": "^3.1",
     "wp-phpunit/wp-phpunit": "^6.6",
     "wpackagist-plugin/advanced-custom-fields": "6.3.4",
+    "wpackagist-plugin/buddypress": "14.0.0",
     "wpackagist-plugin/classic-editor": "1.6.4",
     "wpackagist-plugin/easy-digital-downloads": "3.3.1",
     "wpackagist-plugin/jetpack": "13.6",
