@@ -41,7 +41,7 @@ test.describe( 'Network: shows network activated states', () => {
 			.getByLabel( 'Network Activate Stream' )
 			.isVisible();
 
-		if ( isActive ) {
+		if ( isInactive ) {
 			// eslint-disable-next-line no-console
 			console.log( 'Activating Stream for next tests.' );
 			await page.getByLabel( 'Network Activate Stream' ).click();
