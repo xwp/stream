@@ -116,7 +116,7 @@ class Connectors {
 			}
 
 			// Initialize connector.
-			$class = new $class_name();
+			$class                   = new $class_name();
 			$classes[ $class->name ] = $class;
 		}
 

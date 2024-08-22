@@ -1,7 +1,10 @@
 <?php
 /**
  * Connector for Two Factor
+ *
+ * @package WP_Stream
  */
+
 namespace WP_Stream;
 
 /**
@@ -21,13 +24,12 @@ class Connector_Two_Factor extends Connector {
 	 * @var array
 	 */
 	public $actions = array(
-		// Triggers "callback_{name}" funcs.
 		'update_user_meta', // Before user meta changes.
 		'updated_user_meta', // After user meta changes.
 		'added_user_meta', // After user meta is added.
 
-		'two_factor_user_authenticated', // Authenticatd via 2FA
-		'wp_login_failed', // Failed login
+		'two_factor_user_authenticated', // Authenticatd via 2FA.
+		'wp_login_failed', // Failed login.
 	);
 
 	/**
@@ -91,7 +93,7 @@ class Connector_Two_Factor extends Connector {
 	public function get_context_labels() {
 		return array(
 			'user-settings' => esc_html_x( 'User Settings', 'two-factor', 'stream' ),
-			'auth'          => esc_html_x( 'Authentications', 'two-factor', 'stream' ),
+			'auth'          => esc_html_x( 'Authenticated', 'two-factor', 'stream' ),
 		);
 	}
 
@@ -101,7 +103,7 @@ class Connector_Two_Factor extends Connector {
 	public function register() {
 		parent::register();
 
-		add_filter( 'wp_stream_log_data', [ $this, 'log_override' ] );
+		add_filter( 'wp_stream_log_data', array( $this, 'log_override' ) );
 	}
 
 	/**
@@ -122,7 +124,6 @@ class Connector_Two_Factor extends Connector {
 			'sessions' === $data['context'] &&
 			'login' === $data['action'] &&
 			\Two_Factor_Core::is_user_using_two_factor( $data['user_id'] ) &&
-			'set_logged_in_cookie' === current_filter() &&
 			has_filter( 'send_auth_cookies', '__return_false' )
 		) {
 			$data = false;
@@ -153,7 +154,7 @@ class Connector_Two_Factor extends Connector {
 	/**
 	 * Callback to watch for failed logins with Two Factor errors.
 	 *
-	 * @param string   $user_login User login.
+	 * @param string    $user_login User login.
 	 * @param \WP_Error $error WP_Error object.
 	 */
 	public function callback_wp_login_failed( $user_login, $error ) {
@@ -192,7 +193,7 @@ class Connector_Two_Factor extends Connector {
 		unset( $meta_id );
 		unset( $new_meta_value );
 
-		switch( $meta_key ) {
+		switch ( $meta_key ) {
 			case '_two_factor_backup_codes':
 			case '_two_factor_totp_key':
 			case '_two_factor_enabled_providers':
@@ -215,7 +216,7 @@ class Connector_Two_Factor extends Connector {
 		$old_meta_value = $this->user_meta[ $user_id ][ $meta_key ] ?? null;
 		unset( $this->user_meta[ $user_id ][ $meta_key ] );
 
-		switch( $meta_key ) {
+		switch ( $meta_key ) {
 			case '_two_factor_backup_codes':
 				$this->log(
 					esc_html__( 'Updated backup codes', 'stream' ),
@@ -235,8 +236,8 @@ class Connector_Two_Factor extends Connector {
 				);
 				break;
 			case '_two_factor_enabled_providers':
-				$old_providers = $old_meta_value ?? [];
-				$new_providers = $new_meta_value ?? [];
+				$old_providers = $old_meta_value ?? array();
+				$new_providers = $new_meta_value ?? array();
 
 				$enabled_providers  = array_diff( $new_providers, $old_providers );
 				$disabled_providers = array_diff( $old_providers, $new_providers );
@@ -277,10 +278,10 @@ class Connector_Two_Factor extends Connector {
 	 * @param string $meta_key       Meta key.
 	 * @param mixed  $meta_value     Meta value.
 	 */
-	public function callback_added_user_meta(  $meta_id, $user_id, $meta_key, $meta_value ) {
+	public function callback_added_user_meta( $meta_id, $user_id, $meta_key, $meta_value ) {
 		unset( $meta_id );
 
-		switch( $meta_key ) {
+		switch ( $meta_key ) {
 			case '_two_factor_backup_codes':
 				$this->log(
 					esc_html__( 'Added backup codes', 'stream' ),
