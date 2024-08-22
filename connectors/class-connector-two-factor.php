@@ -269,7 +269,14 @@ class Connector_Two_Factor extends Connector {
 				break;
 		}
 	}
-
+	/**
+	 * Callback to watch for user_meta changes AFTER it's added.
+	 *
+	 * @param int    $meta_id        Meta ID.
+	 * @param int    $user_id        User ID.
+	 * @param string $meta_key       Meta key.
+	 * @param mixed  $meta_value     Meta value.
+	 */
 	public function callback_added_user_meta(  $meta_id, $user_id, $meta_key, $meta_value ) {
 		unset( $meta_id );
 
@@ -280,16 +287,16 @@ class Connector_Two_Factor extends Connector {
 					array(),
 					$user_id,
 					'user-settings',
-					'updated'
+					'added'
 				);
 				break;
 			case '_two_factor_totp_key':
 				$this->log(
-					esc_html__( 'Set TOTP secret key' ),
+					esc_html__( 'Added TOTP secret key' ),
 					array(),
 					$user_id,
 					'user-settings',
-					'updated'
+					'added'
 				);
 				break;
 			case '_two_factor_enabled_providers':

@@ -182,7 +182,7 @@ class Connector_Users extends Connector {
 	 * @param int      $user_id   Registered user ID.
 	 * @param \WP_User $user      Registered user object.
 	 */
-	public function callback_profile_update( $user_id, $user ) {
+	public function callback_profile_update( $user_id, $user, $new_userdata ) {
 		unset( $user_id );
 
 		$this->log(
