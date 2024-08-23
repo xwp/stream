@@ -545,33 +545,48 @@ class Settings {
 					continue;
 				}
 
-				// Sanitize depending on the type of field.
-				switch ( $type ) {
-					case 'number':
-						$output[ $name ] = is_numeric( $input[ $name ] ) ? intval( trim( $input[ $name ] ) ) : '';
-						break;
-					case 'checkbox':
-						$output[ $name ] = is_numeric( $input[ $name ] ) ? absint( trim( $input[ $name ] ) ) : '';
-						break;
-					default:
-						if ( is_array( $input[ $name ] ) ) {
-							$output[ $name ] = $input[ $name ];
-
-							// Support all values in multidimentional arrays too.
-							array_walk_recursive(
-								$output[ $name ],
-								function ( &$v ) {
-									$v = sanitize_text_field( trim( $v ) );
-								}
-							);
-						} else {
-							$output[ $name ] = sanitize_text_field( trim( $input[ $name ] ) );
-						}
-				}
+				$output[ $name ] = $this->sanitize_setting_by_field_type( $input[ $name ], $type );
 			}
 		}
 
 		return $output;
+	}
+
+	/**
+	 * Sanitizes a setting value based on the field type.
+	 *
+	 * @param mixed  $value      The value to be sanitized.
+	 * @param string $field_type The type of field.
+	 *
+	 * @return mixed The sanitized value.
+	 */
+	public function sanitize_setting_by_field_type( $value, $field_type ) {
+
+		// Sanitize depending on the type of field.
+		switch ( $field_type ) {
+			case 'number':
+				$sanitized_value = is_numeric( $value ) ? intval( trim( $value ) ) : '';
+				break;
+			case 'checkbox':
+				$sanitized_value = is_numeric( $value ) ? absint( trim( $value ) ) : '';
+				break;
+			default:
+				if ( is_array( $value ) ) {
+					$sanitized_value = $value;
+
+					// Support all values in multidimentional arrays too.
+					array_walk_recursive(
+						$sanitized_value,
+						function ( &$v ) {
+							$v = sanitize_text_field( trim( $v ) );
+						}
+					);
+				} else {
+					$sanitized_value = sanitize_text_field( trim( $value ) );
+				}
+		}
+
+		return $sanitized_value;
 	}
 
 	/**
