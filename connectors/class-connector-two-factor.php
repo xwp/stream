@@ -139,8 +139,15 @@ class Connector_Two_Factor extends Connector {
 	 * @param object   $provider The 2FA Provider used.
 	 */
 	public function callback_two_factor_user_authenticated( $user, $provider ) {
-		$this->log(
+
+		/* Translators: %s is the Two Factor provider. */
+		$message = __(
 			'Authenticated via %s',
+			'stream'
+		);
+
+		$this->log(
+			$message,
 			array(
 				'provider' => $provider->get_key(),
 			),
@@ -167,10 +174,16 @@ class Connector_Two_Factor extends Connector {
 			$user = get_user_by( 'email', $user_login );
 		}
 
+		/* Translators: %1$s is the user display name, %2$s is the error code, %3$s is the error message. */
+		$message = __(
+			'%1$s Failed 2FA: %2$s %3$s',
+			'stream'
+		);
+
 		$this->log(
-			'%s Failed 2FA: %s %s',
+			$message,
 			array(
-				'display_name' => $user->display_name,
+				'display_name' => $this->escape_percentages( $user->display_name ),
 				'code'         => $error->get_error_code(),
 				'error'        => $error->get_error_message(),
 			),
@@ -219,7 +232,7 @@ class Connector_Two_Factor extends Connector {
 		switch ( $meta_key ) {
 			case '_two_factor_backup_codes':
 				$this->log(
-					esc_html__( 'Updated backup codes', 'stream' ),
+					__( 'Updated backup codes', 'stream' ),
 					array(),
 					$user_id,
 					'user-settings',
@@ -228,7 +241,7 @@ class Connector_Two_Factor extends Connector {
 				break;
 			case '_two_factor_totp_key':
 				$this->log(
-					esc_html__( 'Set TOTP secret key' ),
+					__( 'Set TOTP secret key', 'stream' ),
 					array(),
 					$user_id,
 					'user-settings',
@@ -243,9 +256,15 @@ class Connector_Two_Factor extends Connector {
 				$disabled_providers = array_diff( $old_providers, $new_providers );
 
 				foreach ( $enabled_providers as $provider ) {
+
+					/* Translators: %s is the Two Factor provider. */
+					$message = __(
+						'Enabled provider: %s',
+						'stream'
+					);
+
 					$this->log(
-						/* Translators: %s is the provider */
-						esc_html__( 'Enabled provider: %s', 'stream' ),
+						$message,
 						array(
 							'provider' => $provider,
 						),
@@ -256,9 +275,15 @@ class Connector_Two_Factor extends Connector {
 				}
 
 				foreach ( $disabled_providers as $provider ) {
+
+					/* Translators: %s is the Two Factor provider. */
+					$message = __(
+						'Disabled provider: %s',
+						'stream'
+					);
+
 					$this->log(
-						/* Translators: %s is the provider */
-						esc_html__( 'Disabled provider: %s', 'stream' ),
+						$message,
 						array(
 							'provider' => $provider,
 						),
@@ -284,7 +309,7 @@ class Connector_Two_Factor extends Connector {
 		switch ( $meta_key ) {
 			case '_two_factor_backup_codes':
 				$this->log(
-					esc_html__( 'Added backup codes', 'stream' ),
+					__( 'Added backup codes', 'stream' ),
 					array(),
 					$user_id,
 					'user-settings',
@@ -293,7 +318,7 @@ class Connector_Two_Factor extends Connector {
 				break;
 			case '_two_factor_totp_key':
 				$this->log(
-					esc_html__( 'Added TOTP secret key' ),
+					__( 'Added TOTP secret key', 'stream' ),
 					array(),
 					$user_id,
 					'user-settings',
@@ -302,9 +327,15 @@ class Connector_Two_Factor extends Connector {
 				break;
 			case '_two_factor_enabled_providers':
 				foreach ( $meta_value as $provider ) {
+
+					/* Translators: %s is the Two Factor provider. */
+					$message = __(
+						'Enabled provider: %s',
+						'stream'
+					);
+
 					$this->log(
-						/* Translators: %s is the provider */
-						esc_html__( 'Enabled provider: %s', 'stream' ),
+						$message,
 						array(
 							'provider' => $provider,
 						),
