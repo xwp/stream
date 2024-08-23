@@ -34,7 +34,7 @@ jobs:
         run: npm run lint
 
       - name: Pull Docker Images
-        run: docker-compose pull wordpress
+        run: docker compose pull wordpress
 
       - name: Test PHP
         run: npm run phpunit
