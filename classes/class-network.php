@@ -371,23 +371,23 @@ class Network {
 
 		$option = ! empty( $_POST['option_page'] ) ? $_POST['option_page'] : false;
 
-		if ( $option && $this->network_settings_option === $option ){
+		if ( $option && $this->network_settings_option === $option ) {
 			$value    = array();
 			$sections = $this->plugin->settings->get_fields();
 
-				foreach ( $sections as $section_name => $section ) {
-					foreach ( $section['fields'] as $field_idx => $field ) {
-						$option_key = $section_name . '_' . $field['name'];
+			foreach ( $sections as $section_name => $section ) {
+				foreach ( $section['fields'] as $field_idx => $field ) {
+					$option_key = $section_name . '_' . $field['name'];
 
-						if ( isset( $_POST[ $option ][ $option_key ] ) ) {
-							$value[ $option_key ] = $this->plugin->settings->sanitize_setting_by_field_type( $_POST[ $option ][ $option_key ], $field['type'] );
-						} else {
-							$value[ $option_key ] = false;
-						}
+					if ( isset( $_POST[ $option ][ $option_key ] ) ) {
+						$value[ $option_key ] = $this->plugin->settings->sanitize_setting_by_field_type( $_POST[ $option ][ $option_key ], $field['type'] );
+					} else {
+						$value[ $option_key ] = false;
 					}
 				}
+			}
 
-				update_site_option( $this->network_settings_option, $value );
+			update_site_option( $this->network_settings_option, $value );
 		}
 
 		if ( ! count( get_settings_errors() ) ) {
