@@ -11,10 +11,14 @@ jobs:
       packages: read
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Push to xwp/stream-dist
         run: |
           set -ex
           
+          cd $GITHUB_WORKSPACE
           # Set up the environment.
           ROOT_DIR="$(git rev-parse --show-toplevel)"
           WORKING_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
