@@ -45,6 +45,9 @@ jobs:
           # Use the release bundle as the work tree.
           export GIT_WORK_TREE="$SRC_DIR"
           
+          git config --global user.name "XWP Deploy Bot"
+          git config --global user.email "technology@xwp.co"
+          
           git add --all
           git commit --allow-empty --message "$COMMIT_MESSAGE"
           
