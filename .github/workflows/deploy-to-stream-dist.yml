@@ -31,20 +31,33 @@ jobs:
           DIST_TAG="${GITHUB_REF#refs/tags/}"
           COMMIT_MESSAGE="$(git log -1 --oneline)"
           
-          export GIT_DIR="$DIST_DIR/.git"
-          export GIT_WORK_TREE="$DIST_DIR"
-          
+          echo "ROOT_DIR=$ROOT_DIR" >> $GITHUB_ENV
+          echo "WORKING_BRANCH=$WORKING_BRANCH" >> $GITHUB_ENV
+          echo "SRC_DIR=$SRC_DIR" >> $GITHUB_ENV
+          echo "DIST_DIR=$DIST_DIR" >> $GITHUB_ENV
+          echo "DIST_REPO=$DIST_REPO" >> $GITHUB_ENV
+          echo "DIST_BRANCH=$DIST_BRANCH" >> $GITHUB_ENV
+          echo "DIST_TAG=$DIST_TAG" >> $GITHUB_ENV
+          echo "COMMIT_MESSAGE=$COMMIT_MESSAGE" >> $GITHUB_ENV
+
+      - name: Sync files locally
+        run: |
           rm -rf "$SRC_DIR"
           rm -rf "$DIST_DIR"
           
           mkdir -p "$SRC_DIR"
-
-      - name: Sync files locally
-        run: |
+          
           rsync -av --exclude-from=.distignore "$ROOT_DIR/" "$SRC_DIR/"
+        env:
+          ROOT_DIR: ${{ env.ROOT_DIR }}
+          SRC_DIR: ${{ env.SRC_DIR }}
+          DIST_DIR: ${{ env.DIST_DIR }}
 
       - name: Deploy to xwp/stream-dist
         run: |
+          export GIT_DIR="$DIST_DIR/.git"
+          export GIT_WORK_TREE="$DIST_DIR"
+          
           git clone --progress --verbose "$DIST_REPO" "$DIST_DIR/.git"
           git checkout -B "$DIST_BRANCH"
           
@@ -53,3 +66,8 @@ jobs:
           
           git add --all
           git commit --allow-empty --message "$COMMIT_MESSAGE"
+        env:
+          DIST_DIR: ${{ env.DIST_DIR }}
+          DIST_REPO: ${{ env.DIST_REPO }}
+          DIST_BRANCH: ${{ env.DIST_BRANCH }}
+          COMMIT_MESSAGE: ${{ env.COMMIT_MESSAGE }}
