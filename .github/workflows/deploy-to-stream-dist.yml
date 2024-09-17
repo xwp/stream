@@ -66,8 +66,17 @@ jobs:
           
           git add --all
           git commit --allow-empty --message "$COMMIT_MESSAGE"
+          
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "Tagging a release: $DIST_TAG"
+            git tag --force "$DIST_TAG"
+            git push --force --tags origin "$DIST_BRANCH"
+          else
+            git push --force origin "$DIST_BRANCH"
+          fi
         env:
           DIST_DIR: ${{ env.DIST_DIR }}
           DIST_REPO: ${{ env.DIST_REPO }}
           DIST_BRANCH: ${{ env.DIST_BRANCH }}
+          DIST_TAG: ${{ env.DIST_TAG }}
           COMMIT_MESSAGE: ${{ env.COMMIT_MESSAGE }}
