@@ -36,7 +36,6 @@ jobs:
           rm -rf "$DIST_DIR"
           
           mkdir -p "$SRC_DIR"
-          mkdir -p "$DIST_DIR"
           
           rsync -av --exclude-from=.distignore "$ROOT_DIR/" "$SRC_DIR/"
           
