@@ -48,10 +48,11 @@ jobs:
           git config --global user.name "XWP Deploy Bot"
           git config --global user.email "technology@xwp.co"
           
+          git status
           git add --all
           git commit --allow-empty --message "$COMMIT_MESSAGE"
           
           # Debug
-          git status
+          git log --oneline
           ls -al "$SRC_DIR"
           ls -al "$DIST_DIR"
