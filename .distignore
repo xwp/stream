@@ -17,8 +17,11 @@ phpunit-multisite.xml
 renovate.json
 .git
 .github
+.idea
 .vscode
 .wordpress-org
+build
+dist
 local
 node_modules
 tests
