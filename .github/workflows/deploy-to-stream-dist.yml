@@ -1,6 +1,9 @@
 name: Deploy to xwp/stream-dist Repository
 
-on: push
+on:
+  release:
+    types:
+      - released
 
 jobs:
   lint_and_test:
