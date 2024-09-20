@@ -3,6 +3,9 @@ name: Deploy to xwp/stream-dist Repository
 on: push
 
 jobs:
+  lint_and_test:
+    uses: ./.github/workflows/lint-and-test.yml
+
   deploy_to_stream_dist:
     name: Deploy to xwp/stream-dist
     runs-on: ubuntu-22.04
