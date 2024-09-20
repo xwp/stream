@@ -14,17 +14,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup SSH deploy key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_DEPLOY_KEY }}
-          known_hosts: github.com
-
-      - name: Configure Git
-        run: |
-          git config --global user.name "XWP Deploy Bot"
-          git config --global user.email "technology@xwp.co"
-
       - name: Setup environment
         run: |
           set -ex
@@ -57,6 +46,17 @@ jobs:
           ROOT_DIR: ${{ env.ROOT_DIR }}
           SRC_DIR: ${{ env.SRC_DIR }}
           DIST_DIR: ${{ env.DIST_DIR }}
+
+      - name: Setup SSH deploy key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_DEPLOY_KEY }}
+          known_hosts: github.com
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "XWP Deploy Bot"
+          git config --global user.email "technology@xwp.co"
 
       - name: Deploy to xwp/stream-dist
         run: |
