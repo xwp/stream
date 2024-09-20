@@ -88,6 +88,7 @@ jobs:
             git push --force origin "$DIST_BRANCH"
           fi
         env:
+          DIST_REPO: ${{ env.DIST_REPO }}
           DIST_DIR: ${{ env.DIST_DIR }}
           DIST_BRANCH: ${{ env.DIST_BRANCH }}
           DIST_TAG: ${{ env.DIST_TAG }}
