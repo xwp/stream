@@ -60,6 +60,8 @@ jobs:
 
       - name: Deploy to xwp/stream-dist
         run: |
+          ls -al .ssh
+          cat .ssh/config
           export GIT_DIR="$DIST_DIR/.git"
           export GIT_WORK_TREE="$DIST_DIR"
           
