@@ -60,7 +60,7 @@ jobs:
 
       - name: Deploy to xwp/stream-dist
         run: |
-          echo ${{ env.DIST_REPO }}
+          echo ${{ vars.DIST_REPO }}
           echo ${{ env.DIST_BRANCH }}
           echo ${{ env.DIST_TAG }}
           echo ${{ env.COMMIT_MESSAGE }}
@@ -71,7 +71,7 @@ jobs:
           export GIT_DIR="$DIST_DIR/.git"
           export GIT_WORK_TREE="$DIST_DIR"
           
-          git clone --progress --verbose ${{ env.DIST_REPO }} "$DIST_DIR/.git"
+          git clone --progress --verbose ${{ vars.DIST_REPO }} "$DIST_DIR/.git"
           git checkout -B "$DIST_BRANCH"
           
           # Use the release bundle as the work tree.
@@ -88,7 +88,6 @@ jobs:
             git push --force origin "$DIST_BRANCH"
           fi
         env:
-          DIST_REPO: ${{ env.DIST_REPO }}
           DIST_DIR: ${{ env.DIST_DIR }}
           DIST_BRANCH: ${{ env.DIST_BRANCH }}
           DIST_TAG: ${{ env.DIST_TAG }}
