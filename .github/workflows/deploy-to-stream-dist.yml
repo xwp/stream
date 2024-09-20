@@ -60,14 +60,6 @@ jobs:
 
       - name: Deploy to xwp/stream-dist
         run: |
-          echo ${{ vars.DIST_REPO }}
-          echo ${{ env.DIST_BRANCH }}
-          echo ${{ env.DIST_TAG }}
-          echo ${{ env.COMMIT_MESSAGE }}
-          echo ${{ env.DIST_DIR }}
-          
-          ls -al
-          
           export GIT_DIR="$DIST_DIR/.git"
           export GIT_WORK_TREE="$DIST_DIR"
           
