@@ -4,6 +4,7 @@ on:
   release:
     types:
       - released
+      - prereleased
 
 jobs:
   lint_and_test:
