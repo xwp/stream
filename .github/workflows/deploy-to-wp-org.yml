@@ -13,8 +13,11 @@ on:
       - prereleased
 
 jobs:
+  lint_and_test:
+    uses: ./.github/workflows/lint-and-test.yml
 
   deploy_to_wp_repository:
+    needs: lint_and_test
     name: Deploy to WP.org
     runs-on: ubuntu-22.04
     permissions:
