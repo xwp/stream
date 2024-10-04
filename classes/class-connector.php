@@ -158,6 +158,13 @@ abstract class Connector {
 	public function log( $message, $args, $object_id, $context, $action, $user_id = null ) {
 		$connector = $this->name;
 
+		/**
+		 * Override the data logged. Returning false to this filter will stop the data from being logged.
+		 * Examples of this filter in use can be found in some of the custom connectors.
+		 * @see Connector_ACF::log_override()
+		 *
+		 * @return array|false An array of the data to be logged or false if it should not be logged.
+		 */
 		$data = apply_filters(
 			'wp_stream_log_data',
 			compact( 'connector', 'message', 'args', 'object_id', 'context', 'action', 'user_id' )
