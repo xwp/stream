@@ -89,6 +89,23 @@ class Test_Export extends WP_StreamTestCase {
 	}
 
 	/**
+	 * Test pagination limit filter
+	 */
+	public function test_export_limit_filter() {
+		add_filter(
+			'wp_stream_export_limit',
+			static function () {
+				return 5;
+			}
+		);
+
+		$filtered_limit = $this->export->disable_paginate();
+		$this->assertEquals( $filtered_limit, 5 );
+
+		remove_all_filters( 'wp_stream_export_limit' );
+	}
+
+	/**
 	 * Test for present columns returning
 	 */
 	public function test_expand_columns() {
