@@ -176,7 +176,7 @@ class Connector_BuddyPress extends Connector {
 
 		// Check we have access to BuddyPress on this blog and that the user will have access to the links.
 		if ( ! $this->is_dependency_satisfied() || ! bp_current_user_can_moderate() ) {
-			return;
+			return [];
 		}
 
 		// In the links, we also need to check the functions themselves as they're dependent on the BuddyPress module being enabled.
