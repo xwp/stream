@@ -1,8 +1,8 @@
 <?php
 /**
- * WP Integration Test w/ Advanced Custom Fields
+ * WP Integration Test w/ Two Factor
  *
- * Tests for ACF connector class callbacks.
+ * Tests for Two Factor connector class callbacks.
  *
  * @package WP_Stream
  */
