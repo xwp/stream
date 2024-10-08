@@ -28,7 +28,7 @@ class Connector_Two_Factor extends Connector {
 		'updated_user_meta', // After user meta changes.
 		'added_user_meta', // After user meta is added.
 
-		'two_factor_user_authenticated', // Authenticatd via 2FA.
+		'two_factor_user_authenticated', // Authenticate via 2FA.
 		'wp_login_failed', // Failed login.
 	);
 
