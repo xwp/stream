@@ -93,6 +93,7 @@ class Connectors {
 			'gravityforms',
 			'jetpack',
 			'mercator',
+			'two-factor',
 			'user-switching',
 			'woocommerce',
 			'wordpress-seo',
