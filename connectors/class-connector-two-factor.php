@@ -133,68 +133,6 @@ class Connector_Two_Factor extends Connector {
 	}
 
 	/**
-	 * Callback to watch for 2FA authenticated actions.
-	 *
-	 * @param \WP_User $user     Authenticated user.
-	 * @param object   $provider The 2FA Provider used.
-	 */
-	public function callback_two_factor_user_authenticated( $user, $provider ) {
-
-		/* Translators: %s is the Two Factor provider. */
-		$message = __(
-			'Authenticated via %s',
-			'stream'
-		);
-
-		$this->log(
-			$message,
-			array(
-				'provider' => $provider->get_key(),
-			),
-			$user->ID,
-			'auth',
-			'authenticated',
-			$user->ID
-		);
-	}
-
-	/**
-	 * Callback to watch for failed logins with Two Factor errors.
-	 *
-	 * @param string    $user_login User login.
-	 * @param \WP_Error $error WP_Error object.
-	 */
-	public function callback_wp_login_failed( $user_login, $error ) {
-		if ( ! str_starts_with( $error->get_error_code(), 'two_factor_' ) ) {
-			return;
-		}
-
-		$user = get_user_by( 'login', $user_login );
-		if ( ! $user && is_email( $user_login ) ) {
-			$user = get_user_by( 'email', $user_login );
-		}
-
-		/* Translators: %1$s is the user display name, %2$s is the error code, %3$s is the error message. */
-		$message = __(
-			'%1$s Failed 2FA: %2$s %3$s',
-			'stream'
-		);
-
-		$this->log(
-			$message,
-			array(
-				'display_name' => $this->escape_percentages( $user->display_name ),
-				'code'         => $error->get_error_code(),
-				'error'        => $error->get_error_message(),
-			),
-			$user->ID,
-			'auth',
-			'failed',
-			$user->ID
-		);
-	}
-
-	/**
 	 * Callback to watch for user_meta changes BEFORE it's made.
 	 *
 	 * @param int    $meta_id        Meta ID.
@@ -295,6 +233,7 @@ class Connector_Two_Factor extends Connector {
 				break;
 		}
 	}
+
 	/**
 	 * Callback to watch for user_meta changes AFTER it's added.
 	 *
@@ -346,5 +285,67 @@ class Connector_Two_Factor extends Connector {
 				}
 				break;
 		}
+	}
+
+	/**
+	 * Callback to watch for 2FA authenticated actions.
+	 *
+	 * @param \WP_User $user     Authenticated user.
+	 * @param object   $provider The 2FA Provider used.
+	 */
+	public function callback_two_factor_user_authenticated( $user, $provider ) {
+
+		/* Translators: %s is the Two Factor provider. */
+		$message = __(
+			'Authenticated via %s',
+			'stream'
+		);
+
+		$this->log(
+			$message,
+			array(
+				'provider' => $provider->get_key(),
+			),
+			$user->ID,
+			'auth',
+			'authenticated',
+			$user->ID
+		);
+	}
+
+	/**
+	 * Callback to watch for failed logins with Two Factor errors.
+	 *
+	 * @param string    $user_login User login.
+	 * @param \WP_Error $error WP_Error object.
+	 */
+	public function callback_wp_login_failed( $user_login, $error ) {
+		if ( ! str_starts_with( $error->get_error_code(), 'two_factor_' ) ) {
+			return;
+		}
+
+		$user = get_user_by( 'login', $user_login );
+		if ( ! $user && is_email( $user_login ) ) {
+			$user = get_user_by( 'email', $user_login );
+		}
+
+		/* Translators: %1$s is the user display name, %2$s is the error code, %3$s is the error message. */
+		$message = __(
+			'%1$s Failed 2FA: %2$s %3$s',
+			'stream'
+		);
+
+		$this->log(
+			$message,
+			array(
+				'display_name' => $this->escape_percentages( $user->display_name ),
+				'code'         => $error->get_error_code(),
+				'error'        => $error->get_error_message(),
+			),
+			$user->ID,
+			'auth',
+			'failed',
+			$user->ID
+		);
 	}
 }
