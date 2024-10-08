@@ -1,6 +1,6 @@
 name: Lint and Test
 
-on: push
+on: [push, workflow_call]
 
 jobs:
 

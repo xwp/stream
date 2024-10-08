@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2722abeae3b9ae8df5667b69b758c00c",
+    "content-hash": "8238a49e6491e7a1369be939e9e43b83",
     "packages": [
         {
             "name": "composer/installers",
@@ -8469,6 +8469,24 @@
             "homepage": "https://wordpress.org/plugins/advanced-custom-fields/"
         },
         {
+            "name": "wpackagist-plugin/buddypress",
+            "version": "14.0.0",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/buddypress/",
+                "reference": "tags/14.0.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/buddypress.14.0.0.zip"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/buddypress/"
+        },
+        {
             "name": "wpackagist-plugin/classic-editor",
             "version": "1.6.4",
             "source": {
@@ -8521,24 +8539,6 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/jetpack/"
-        },
-        {
-            "name": "wpackagist-plugin/two-factor",
-            "version": "0.9.1",
-            "source": {
-                "type": "svn",
-                "url": "https://plugins.svn.wordpress.org/two-factor/",
-                "reference": "tags/0.9.1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/two-factor.0.9.1.zip"
-            },
-            "require": {
-                "composer/installers": "^1.0 || ^2.0"
-            },
-            "type": "wordpress-plugin",
-            "homepage": "https://wordpress.org/plugins/two-factor/"
         },
         {
             "name": "wpackagist-plugin/user-switching",

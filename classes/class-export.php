@@ -162,7 +162,14 @@ class Export {
 	 * @return int
 	 */
 	public function disable_paginate() {
-		return 10000;
+
+		/**
+		 * Filter to change how many records are exported.
+		 * Increasing this too much could cause your export to time out.
+		 *
+		 * @return int The number of records to export.
+		 */
+		return apply_filters( 'wp_stream_export_limit', 10000 );
 	}
 
 	/**
