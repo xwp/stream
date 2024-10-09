@@ -27,7 +27,7 @@ class Alerts {
 	/**
 	 * Capability required to access alerts.
 	 */
-	const CAPABILITY = 'manage_options';
+	const CAPABILITY = WP_STREAM_SETTINGS_CAPABILITY;
 
 	/**
 	 * Holds Instance of plugin object

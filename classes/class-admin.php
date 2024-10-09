@@ -110,11 +110,11 @@ class Admin {
 	public $view_cap = 'view_stream';
 
 	/**
-	 * Capability name for viewing settings
+	 * Capability name for managing settings
 	 *
 	 * @var string
 	 */
-	public $settings_cap = 'manage_options';
+	public $settings_cap = WP_STREAM_SETTINGS_CAPABILITY;
 
 	/**
 	 * Total amount of authors to pre-load
