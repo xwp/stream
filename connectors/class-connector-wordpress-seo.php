@@ -385,7 +385,9 @@ class Connector_WordPress_SEO extends Connector {
 	private function meta( $object_id, $meta_key, $meta_value ) {
 		$prefix = \WPSEO_Meta::$meta_prefix;
 
-		\WPSEO_Metabox::translate_meta_boxes();
+		if ( defined( 'WPSEO_VERSION' ) && version_compare( WPSEO_VERSION, '23.5', '<' ) ) {
+			\WPSEO_Metabox::translate_meta_boxes();
+		}
 
 		if ( 0 !== strpos( $meta_key, $prefix ) ) {
 			return;
