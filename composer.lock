@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "da3052af4e98a524473b832a82ec0ce4",
+    "content-hash": "9a2e6ae98da6ae8b9423f961d9bcc3ae",
     "packages": [
         {
             "name": "composer/installers",
@@ -8539,6 +8539,24 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/jetpack/"
+        },
+        {
+            "name": "wpackagist-plugin/two-factor",
+            "version": "0.9.1",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/two-factor/",
+                "reference": "tags/0.9.1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/two-factor.0.9.1.zip"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/two-factor/"
         },
         {
             "name": "wpackagist-plugin/user-switching",
