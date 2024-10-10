@@ -125,8 +125,8 @@ class Query {
 					continue;
 				}
 
-				$field = str_replace( array( 'record_', '__in' ), '', $key );
-				$field = empty( $field ) ? 'ID' : $field;
+				$field = str_replace( '__in', '', $key );
+				$field = ( $field === 'record' ) ? 'ID' : $field;
 				$type  = is_numeric( array_shift( $value ) ) ? '%d' : '%s';
 
 				if ( ! empty( $value ) ) {
@@ -153,8 +153,8 @@ class Query {
 					continue;
 				}
 
-				$field = str_replace( array( 'record_', '__not_in' ), '', $key );
-				$field = empty( $field ) ? 'ID' : $field;
+				$field = str_replace( '__not_in', '', $key );
+				$field = ( $field === 'record' ) ? 'ID' : $field;
 				$type  = is_numeric( array_shift( $value ) ) ? '%d' : '%s';
 
 				if ( ! empty( $value ) ) {
