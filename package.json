@@ -28,7 +28,7 @@
     "@types/node": "^22.7.6",
     "@wordpress/e2e-test-utils-playwright": "^1.10.0",
     "@wordpress/eslint-plugin": "^21.3.0",
-    "@wordpress/scripts": "^30.2.0",
+    "@wordpress/scripts": "^30.3.0",
     "copy-webpack-plugin": "^12.0.2",
     "eslint": "^9.12.0",
     "jquery": "3.7.1",
