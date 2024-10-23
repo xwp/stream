@@ -1,5 +1,42 @@
 # Stream Changelog
 
+## 4.1.0 - October 23, 2024
+
+### New features & Enhancements
+- Add object ID and user ID to exports [#1532](https://github.com/xwp/stream/pull/1532)
+- Include timezone in logs for clarity [#1534](https://github.com/xwp/stream/pull/1534)
+- Display feature request notice on Settings screen [#1542](https://github.com/xwp/stream/pull/1542)
+- Improve connector registration logic [#1546](https://github.com/xwp/stream/pull/1546)
+- Add filter to allow more records in exports [#1558](https://github.com/xwp/stream/pull/1558)
+- Add Two Factor connector [#1567](https://github.com/xwp/stream/pull/1567)
+
+### Bug fixes
+- Remove duplicate logs when saving posts [#1530](https://github.com/xwp/stream/pull/1530)
+- Allow commas in CSV exporter fields [#1531](https://github.com/xwp/stream/pull/1531)
+- Use scheduled action for resetting large record and meta tables [#1543](https://github.com/xwp/stream/pull/1543)
+- Fix BuddyPress Action links [#1557](https://github.com/xwp/stream/pull/1557)
+- Fix broken assets' paths on multisite setup [#1595](https://github.com/xwp/stream/pull/1595)
+- Use Yoast deprecated method conditionally [#1603](https://github.com/xwp/stream/pull/1603)
+
+### Documentation
+- Add documentation to wp_stream_log_data filter [#1559](https://github.com/xwp/stream/pull/1559)
+- Update documentation, separate out full changelog [#1568](https://github.com/xwp/stream/pull/1568)
+
+### Development
+- Add Playwright testing framework and initial tests [#1529](https://github.com/xwp/stream/pull/1529)
+- Replace Grunt with `@wordpress/scripts` [#1541](https://github.com/xwp/stream/pull/1541)
+- Update required Node.js version to ^20.18.0 [#1596](https://github.com/xwp/stream/pull/1596)
+- Remove ESLint on the project level, use the one from `@wordpress/scripts` [#1616](https://github.com/xwp/stream/pull/1616)
+- Add new dependency `eslint-plugin-react-hooks` [#1616](https://github.com/xwp/stream/pull/1616)
+- Dependencies
+  - `@wordpress/e2e-test-utils-playwright` to 1.10.0 [#1606](https://github.com/xwp/stream/pull/1606)
+  - `@wordpress/eslint-plugin` to 21.3.0 [#1606](https://github.com/xwp/stream/pull/1606)
+  - `@wordpress/scripts` to 30.3.0 [#1608](https://github.com/xwp/stream/pull/1608)
+  - `npm-run-all2` to 7.0.0 [#1614](https://github.com/xwp/stream/pull/1614)
+  - `@types/node` to 22.7.9 [#1617](https://github.com/xwp/stream/pull/1617)
+
+Props to all contributors: [@tharsheblows](https://github.com/tharsheblows), [@delawski](https://github.com/delawski), [@tharsheblows](https://github.com/tharsheblows)
+
 ## 4.0.2 - August 22, 2024
 
 ### Security update
