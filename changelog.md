@@ -42,7 +42,11 @@
   - `npm-run-all2` to 7.0.0 [#1614](https://github.com/xwp/stream/pull/1614)
   - `@types/node` to 22.7.9 [#1617](https://github.com/xwp/stream/pull/1617)
 
-Props to all contributors: [@tharsheblows](https://github.com/tharsheblows), [@delawski](https://github.com/delawski), [@tharsheblows](https://github.com/tharsheblows)
+Contributors: 
+- [@tharsheblows](https://github.com/tharsheblows), 
+- [@delawski](https://github.com/delawski), 
+- [@spenserhale](https://github.com/spenserhale)
+- [@marcinkrzeminski](https://github.com/marcinkrzeminski)
 
 ## 4.0.2 - August 22, 2024
 
