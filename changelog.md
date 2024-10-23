@@ -9,6 +9,7 @@
 - Improve connector registration logic [#1546](https://github.com/xwp/stream/pull/1546)
 - Add filter to allow more records in exports [#1558](https://github.com/xwp/stream/pull/1558)
 - Add Two Factor connector [#1567](https://github.com/xwp/stream/pull/1567)
+- Feature: allow defining of settings capability for more granular access control [#1599](https://github.com/xwp/stream/pull/1599), props to [@spenserhale](https://github.com/spenserhale)
 
 ### Bug fixes
 - Remove duplicate logs when saving posts [#1530](https://github.com/xwp/stream/pull/1530)
@@ -19,13 +20,19 @@
 - Use Yoast deprecated method conditionally [#1603](https://github.com/xwp/stream/pull/1603)
 
 ### Documentation
-- Add documentation to wp_stream_log_data filter [#1559](https://github.com/xwp/stream/pull/1559)
+- Add documentation to `wp_stream_log_data` filter [#1559](https://github.com/xwp/stream/pull/1559)
 - Update documentation, separate out full changelog [#1568](https://github.com/xwp/stream/pull/1568)
 
 ### Development
 - Add Playwright testing framework and initial tests [#1529](https://github.com/xwp/stream/pull/1529)
+- add port so we can see the database [#1533](https://github.com/xwp/stream/pull/1533)
+- add files to generate and remove test data [#1538](https://github.com/xwp/stream/pull/1538)
 - Replace Grunt with `@wordpress/scripts` [#1541](https://github.com/xwp/stream/pull/1541)
+- Fix local environment path [#1547](https://github.com/xwp/stream/pull/1547)
+- remove duplicate ports added in merge from master [#1566](https://github.com/xwp/stream/pull/1566)
+- Reintroduce deployment to packagist.org [#1587](https://github.com/xwp/stream/pull/1587)
 - Update required Node.js version to ^20.18.0 [#1596](https://github.com/xwp/stream/pull/1596)
+- Update composer.lock with Two Factor plugin entry [#1604](https://github.com/xwp/stream/pull/1604)
 - Remove ESLint on the project level, use the one from `@wordpress/scripts` [#1616](https://github.com/xwp/stream/pull/1616)
 - Add new dependency `eslint-plugin-react-hooks` [#1616](https://github.com/xwp/stream/pull/1616)
 - Dependencies
