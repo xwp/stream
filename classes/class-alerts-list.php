@@ -374,8 +374,8 @@ class Alerts_List {
 		$trigger_author                      = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_author' );
 		$trigger_connector_and_context       = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_connector_or_context' );
 		$trigger_connector_and_context_split = explode( '-', $trigger_connector_and_context );
-		$trigger_connector                   = $trigger_connector_and_context_split[0];
-		$trigger_context                     = $trigger_connector_and_context_split[1];
+		$trigger_connector                   = array_shift( $trigger_connector_and_context_split ) ?? '';
+		$trigger_context                     = array_shift( $trigger_connector_and_context_split ) ?? '';
 
 		$trigger_action      = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_action' );
 		$alert_type          = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_type' );
