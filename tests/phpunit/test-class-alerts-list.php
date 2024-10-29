@@ -61,4 +61,58 @@ class Test_Alerts_List extends WP_StreamTestCase {
 		$alerts_list->enqueue_scripts( '' );
 		$this->assertTrue( wp_script_is( 'wp-stream-alerts-list' ) );
 	}
+
+	/**
+	 * Test save_alert_inline_edit method.
+	 */
+	public function test_save_alert_inline_edit() {
+		$alerts_list = new Alerts_List( $this->plugin );
+		$post_id     = wp_insert_post(
+			[
+				'post_type' => Alerts::POST_TYPE,
+			]
+		);
+		$postarr     = [
+			'ID'        => $post_id,
+			'post_type' => Alerts::POST_TYPE,
+		];
+		$data        = [];
+
+		// Create and authenticate user.
+		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$_POST['post_type']                              = Alerts::POST_TYPE;
+		$_POST['wp_stream_trigger_author']               = 'author';
+		$_POST['wp_stream_trigger_connector_or_context'] = 'connector-context';
+		$_POST['wp_stream_trigger_action']               = 'action';
+		$_POST['wp_stream_alert_type']                   = 'type';
+		$_POST['wp_stream_alert_status']                 = 'status';
+		$_POST[ Alerts::POST_TYPE . '_edit_nonce' ]      = wp_create_nonce( 'stream-src/classes/class-alerts-list.php' );
+
+		$alerts_list->save_alert_inline_edit( $data, $postarr );
+
+		$alert_meta = get_post_meta( $post_id, 'alert_meta', true );
+		$this->assertEquals( 'type', get_post_meta( $post_id, 'alert_type', true ), 'Alert type not saved' );
+		$this->assertEquals( 'author', $alert_meta['trigger_author'], 'Trigger author not saved' );
+		$this->assertEquals( 'connector', $alert_meta['trigger_connector'], 'Trigger connector not saved' );
+		$this->assertEquals( 'context', $alert_meta['trigger_context'], 'Trigger context not saved' );
+		$this->assertEquals( 'action', $alert_meta['trigger_action'], 'Trigger action not saved' );
+
+		// Test case with just a connector data.
+		$_POST['wp_stream_trigger_connector_or_context'] = 'connector';
+
+		$alerts_list->save_alert_inline_edit( $data, $postarr );
+		$alert_meta = get_post_meta( $post_id, 'alert_meta', true );
+		$this->assertEquals( 'connector', $alert_meta['trigger_connector'], 'Trigger connector not saved' );
+		$this->assertEmpty( $alert_meta['trigger_context'], 'Trigger context not saved empty' );
+
+		// Test case with no connector or context data.
+		$_POST['wp_stream_trigger_connector_or_context'] = '';
+
+		$alerts_list->save_alert_inline_edit( $data, $postarr );
+		$alert_meta = get_post_meta( $post_id, 'alert_meta', true );
+		$this->assertEmpty( $alert_meta['trigger_connector'], 'Trigger connector not saved empty' );
+		$this->assertEmpty( $alert_meta['trigger_context'], 'Trigger context not saved empty' );
+	}
 }
