@@ -33,7 +33,7 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "jquery": "3.7.1",
     "npm-run-all2": "^7.0.1",
-    "uuid": "^10.0.0"
+    "uuid": "^11.0.3"
   },
   "scripts": {
     "build": "wp-scripts build",
