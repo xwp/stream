@@ -52,8 +52,10 @@ class Test_WP_Stream_Connector_WordPress_SEO extends WP_StreamTestCase {
 	 */
 	public function test_callback_added_post_meta() {
 
+		$expects = defined( 'WPSEO_VERSION' ) && version_compare( WPSEO_VERSION, '23.5', '<' ) ? $ths->once() : $this->never();
+
 		// Set expected calls for the Mock.
-		$this->mock->expects( $this->once() )
+		$this->mock->expects( $expects )
 			->method( 'log' )
 			->with(
 				$this->equalTo(
