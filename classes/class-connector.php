@@ -161,6 +161,7 @@ abstract class Connector {
 		/**
 		 * Override the data logged. Returning false to this filter will stop the data from being logged.
 		 * Examples of this filter in use can be found in some of the custom connectors.
+		 *
 		 * @see Connector_ACF::log_override()
 		 *
 		 * @return array|false An array of the data to be logged or false if it should not be logged.
