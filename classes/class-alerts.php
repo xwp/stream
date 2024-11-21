@@ -610,6 +610,24 @@ class Alerts {
 		echo '<label>' . esc_html__( 'Alert me when', 'stream' ) . '</label>';
 		$form->render_fields();
 		wp_nonce_field( 'save_alert', 'wp_stream_alerts_nonce' );
+
+		if ( $post instanceof \WP_Post ) :
+			/**
+			 * These fields are required for the post to be saved, as the Admin AJAX inline_save action is fired.
+			 *
+			 * @see get_inline_data()
+			 * @see wp_ajax_inline_save()
+			 */
+			?>
+			<input type="hidden" name="_status" value="<?php echo esc_attr( get_post_status( $post->ID ) ); ?>" />
+			<input type="hidden" name="jj" value="<?php echo esc_attr( mysql2date( 'd', $post->post_date, false ) ); ?>" />
+			<input type="hidden" name="mm" value="<?php echo esc_attr( mysql2date( 'm', $post->post_date, false ) ); ?>" />
+			<input type="hidden" name="aa" value="<?php echo esc_attr( mysql2date( 'Y', $post->post_date, false ) ); ?>" />
+			<input type="hidden" name="hh" value="<?php echo esc_attr( mysql2date( 'H', $post->post_date, false ) ); ?>" />
+			<input type="hidden" name="mn" value="<?php echo esc_attr( mysql2date( 'i', $post->post_date, false ) ); ?>" />
+			<input type="hidden" name="ss" value="<?php echo esc_attr( mysql2date( 's', $post->post_date, false ) ); ?>" />
+			<?php
+		endif;
 	}
 
 	/**
