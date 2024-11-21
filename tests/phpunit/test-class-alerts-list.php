@@ -68,15 +68,15 @@ class Test_Alerts_List extends WP_StreamTestCase {
 	public function test_save_alert_inline_edit() {
 		$alerts_list = new Alerts_List( $this->plugin );
 		$post_id     = wp_insert_post(
-			[
+			array(
 				'post_type' => Alerts::POST_TYPE,
-			]
+			)
 		);
-		$postarr     = [
+		$postarr     = array(
 			'ID'        => $post_id,
 			'post_type' => Alerts::POST_TYPE,
-		];
-		$data        = [];
+		);
+		$data        = array();
 
 		// Create and authenticate user.
 		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
