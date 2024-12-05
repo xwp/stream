@@ -30,7 +30,7 @@
     "@wordpress/eslint-plugin": "^21.6.0",
     "@wordpress/scripts": "^30.6.0",
     "copy-webpack-plugin": "^12.0.2",
-    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
     "jquery": "3.7.1",
     "npm-run-all2": "^7.0.1",
     "uuid": "^11.0.3"
