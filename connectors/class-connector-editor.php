@@ -48,7 +48,6 @@ class Connector_Editor extends Connector {
 		parent::register();
 
 		add_action( 'wp_ajax_edit-theme-plugin-file', array( $this, 'get_edition_data' ), 1 );
-		add_filter( 'wp_redirect', array( $this, 'log_changes' ) );
 	}
 
 	/**
@@ -213,6 +212,8 @@ class Connector_Editor extends Connector {
 			$location          = 'plugin-editor.php';
 			$this->edited_file = $this->get_plugin_data( $plugin_slug );
 		}
+
+		$this->log_changes( $location );
 	}
 
 	/**
@@ -297,14 +298,12 @@ class Connector_Editor extends Connector {
 	/**
 	 * Logs changes
 	 *
-	 * @filter wp_redirect
-	 *
 	 * @param string $location Location.
 	 */
 	public function log_changes( $location ) {
 		if ( ! empty( $this->edited_file ) ) {
 			// TODO: phpcs fix.
-			if ( md5_file( $this->edited_file['file_path'] ) !== $this->edited_file['file_md5'] ) {
+			if ( md5_file( $this->edited_file['file_path'] ) === $this->edited_file['file_md5'] ) {
 				$context = $this->get_context( $location );
 
 				switch ( $context ) {
