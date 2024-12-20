@@ -146,12 +146,12 @@ abstract class Connector {
 	/**
 	 * Log handler
 	 *
-	 * @param string   $message   sprintf-ready error message string.
-	 * @param array    $args      sprintf (and extra) arguments to use.
-	 * @param int|null $object_id Target object id (if any).
-	 * @param string   $context   Context of the event.
-	 * @param string   $action    Action of the event.
-	 * @param int      $user_id   User responsible for the event.
+	 * @param string $message   sprintf-ready error message string.
+	 * @param array  $args      sprintf (and extra) arguments to use.
+	 * @param int    $object_id Target object id.
+	 * @param string $context   Context of the event.
+	 * @param string $action    Action of the event.
+	 * @param int    $user_id   User responsible for the event.
 	 *
 	 * @return bool
 	 */
