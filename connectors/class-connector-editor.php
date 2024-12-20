@@ -300,7 +300,7 @@ class Connector_Editor extends Connector {
 	 *
 	 * @param string $location Location.
 	 */
-	public function log_changes( string $location ): string {
+	public function log_changes( $location ) {
 		if ( ! empty( $this->edited_file ) ) {
 			if ( md5_file( $this->edited_file['file_path'] ) === $this->edited_file['file_md5'] ) {
 				$context = $this->get_context( $location );
