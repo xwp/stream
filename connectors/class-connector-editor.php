@@ -302,6 +302,7 @@ class Connector_Editor extends Connector {
 	 */
 	public function log_changes( $location ) {
 		if ( ! empty( $this->edited_file ) ) {
+			// TODO: phpcs fix.
 			if ( md5_file( $this->edited_file['file_path'] ) === $this->edited_file['file_md5'] ) {
 				$context = $this->get_context( $location );
 
