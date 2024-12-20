@@ -46,8 +46,8 @@ class Connector_Editor extends Connector {
 	 */
 	public function register() {
 		parent::register();
-
-		add_action( 'wp_ajax_edit-theme-plugin-file', array( $this, 'get_edition_data' ), 1 );
+		add_action( 'load-theme-editor.php', array( $this, 'get_edition_data' ) );
+		add_action( 'load-plugin-editor.php', array( $this, 'get_edition_data' ) );
 		add_filter( 'wp_redirect', array( $this, 'log_changes' ) );
 	}
 
@@ -187,30 +187,31 @@ class Connector_Editor extends Connector {
 	}
 
 	/**
-	 * Retrieves data submitted on the screen, prepares it for the appropriate context type and logs the changes
+	 * Retrieves data submitted on the screen, and prepares it for the appropriate context type
 	 *
-	 * @action wp_ajax_edit-theme-plugin-file
+	 * @action load-theme-editor.php
+	 * @action load-plugin-editor.php
 	 */
 	public function get_edition_data() {
-		$action         = wp_stream_filter_input( INPUT_POST, 'action' );
-		$request_method = wp_stream_filter_input( INPUT_SERVER, 'REQUEST_METHOD' );
-
-		if ( ( isset( $request_method ) && 'POST' !== $request_method ) || ( 'edit-theme-plugin-file' !== $action ) ) {
+		if (
+			(
+				isset( $_SERVER['REQUEST_METHOD'] )
+				&&
+				'POST' !== sanitize_text_field( $_SERVER['REQUEST_METHOD'] )
+			)
+			||
+			'update' !== wp_stream_filter_input( INPUT_POST, 'action' )
+		) {
 			return;
 		}
 
-		$location   = null;
 		$theme_slug = wp_stream_filter_input( INPUT_POST, 'theme' );
-
 		if ( $theme_slug ) {
-			$location          = 'theme-editor.php';
 			$this->edited_file = $this->get_theme_data( $theme_slug );
 		}
 
 		$plugin_slug = wp_stream_filter_input( INPUT_POST, 'plugin' );
-
 		if ( $plugin_slug ) {
-			$location          = 'plugin-editor.php';
 			$this->edited_file = $this->get_plugin_data( $plugin_slug );
 		}
 	}
