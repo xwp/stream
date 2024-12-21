@@ -413,7 +413,10 @@ class Connector_WordPress_SEO extends Connector {
 		}
 
 		$post            = get_post( $object_id );
-		$post_type_label = get_post_type_labels( get_post_type_object( $post->post_type ) )->singular_name;
+		$post_type_obj   = get_post_type_object( $post->post_type );
+		$post_type_label = is_object( $post_type_obj ) && isset( $post_type_obj->labels->singular_name )
+			? $post_type_obj->labels->singular_name
+			: $post->post_type;
 
 		$this->log(
 			sprintf(
