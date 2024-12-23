@@ -213,6 +213,10 @@ class Connector_Editor extends Connector {
 			$this->edited_file = $this->get_plugin_data( $plugin_slug );
 		}
 
+		if ( ! $location ) {
+			return;
+		}
+
 		$this->log_changes( $location );
 	}
 
