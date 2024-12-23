@@ -191,6 +191,10 @@ class Connector_Editor extends Connector {
 	 * @action wp_ajax_edit-theme-plugin-file
 	 */
 	public function get_edition_data() {
+		if ( ! current_user_can( 'edit_theme_options' ) ) {
+			return;
+		}
+
 		$action         = wp_stream_filter_input( INPUT_POST, 'action' );
 		$request_method = wp_stream_filter_input( INPUT_SERVER, 'REQUEST_METHOD' );
 
