@@ -197,20 +197,28 @@ class Connector_Editor extends Connector {
 
 		$action         = wp_stream_filter_input( INPUT_POST, 'action' );
 		$request_method = wp_stream_filter_input( INPUT_SERVER, 'REQUEST_METHOD' );
+		$theme_slug     = wp_stream_filter_input( INPUT_POST, 'theme' );
+		$plugin_slug    = wp_stream_filter_input( INPUT_POST, 'plugin' );
+		$relative_file  = wp_stream_filter_input( INPUT_POST, 'file' );
+
+		if ( ! empty( $theme_slug ) && ! check_admin_referer( 'edit-theme_' . $theme_slug . '_' . $relative_file, 'nonce' ) ) {
+			return;
+		}
+
+		if ( ! empty( $plugin_slug ) && ! check_admin_referer( 'edit-plugin_' . $relative_file, 'nonce' ) ) {
+			return;
+		}
 
 		if ( ( isset( $request_method ) && 'POST' !== $request_method ) || ( 'edit-theme-plugin-file' !== $action ) ) {
 			return;
 		}
 
 		$location   = null;
-		$theme_slug = wp_stream_filter_input( INPUT_POST, 'theme' );
 
 		if ( $theme_slug ) {
 			$location          = 'theme-editor.php';
 			$this->edited_file = $this->get_theme_data( $theme_slug );
 		}
-
-		$plugin_slug = wp_stream_filter_input( INPUT_POST, 'plugin' );
 
 		if ( $plugin_slug ) {
 			$location          = 'plugin-editor.php';
