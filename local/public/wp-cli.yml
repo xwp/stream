@@ -1,6 +1,12 @@
 url: stream.wpenv.net
 path: wp
 
+core install:
+  title: Stream Development
+  admin_user: admin
+  admin_password: password
+  admin_email: admin@example.com
+
 # Define the default multisite install config.
 core multisite-install:
   title: Stream Development

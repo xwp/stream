@@ -15,7 +15,7 @@ define( 'DB_COLLATE', '' );
 
 // Enable a subdirectory multisite for testing purposes.
 define( 'WP_ALLOW_MULTISITE', true );
-define( 'MULTISITE', true );
+define( 'MULTISITE', false );
 define( 'SUBDOMAIN_INSTALL', false );
 define( 'PATH_CURRENT_SITE', '/' );
 define( 'SITE_ID_CURRENT_SITE', 1 );
@@ -26,6 +26,7 @@ $table_prefix = 'wp_';
 
 define( 'WP_DEBUG', true );
 define( 'WP_DEBUG_LOG', true );
+define( 'SCRIPT_DEBUG', true );
 define( 'JETPACK_DEV_DEBUG', true );
 
 // Keep the wp-contents outside of WP core directory.
