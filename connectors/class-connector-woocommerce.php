@@ -396,8 +396,8 @@ class Connector_Woocommerce extends Connector {
 			$action = 'updated';
 		}
 
-		$order           = new \WC_Order( $post->ID );
-		$order_title     = esc_html__( 'Order number', 'stream' ) . ' ' . esc_html( $order->get_order_number() );
+		$order_id        = \WC_Order_Factory::get_order_id( $post->ID );
+		$order_title     = esc_html__( 'Order number', 'stream' ) . ' ' . esc_html( $order_id );
 		$order_type_name = esc_html__( 'order', 'stream' );
 
 		$this->log(
@@ -437,8 +437,8 @@ class Connector_Woocommerce extends Connector {
 			return;
 		}
 
-		$order           = new \WC_Order( $post->ID );
-		$order_title     = esc_html__( 'Order number', 'stream' ) . ' ' . esc_html( $order->get_order_number() );
+		$order_id        = \WC_Order_Factory::get_order_id( $post->ID );
+		$order_title     = esc_html__( 'Order number', 'stream' ) . ' ' . esc_html( $order_id );
 		$order_type_name = esc_html__( 'order', 'stream' );
 
 		$this->log(
@@ -495,8 +495,8 @@ class Connector_Woocommerce extends Connector {
 			'stream'
 		);
 
-		$order           = new \WC_Order( $order_id );
-		$order_title     = esc_html__( 'Order number', 'stream' ) . ' ' . esc_html( $order->get_order_number() );
+		$order_id        = \WC_Order_Factory::get_order( $order_id );
+		$order_title     = esc_html__( 'Order number', 'stream' ) . ' ' . esc_html( $order_id );
 		$order_type_name = esc_html__( 'order', 'stream' );
 
 		$this->log(
