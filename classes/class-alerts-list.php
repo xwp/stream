@@ -338,12 +338,6 @@ class Alerts_List {
 			return;
 		}
 
-		/**
-		 * Remove the WP core tags - suggest script on the alerts list screen.
-		 * This is not needed, but more importantly it was breaking the select all functionality.
-		 */
-		wp_deregister_script( 'tags-suggest' );
-
 		$min = wp_stream_min_suffix();
 
 		wp_register_script(
