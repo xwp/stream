@@ -31,6 +31,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+/**
+ * Configuration Constants
+ */
+if ( ! defined( 'WP_STREAM_SETTINGS_CAPABILITY' ) ) {
+	define( 'WP_STREAM_SETTINGS_CAPABILITY', 'manage_options' );
+}
+
 const WP_STREAM_MIN_PHP_VERSION = '7.0';
 
 if ( version_compare( PHP_VERSION, WP_STREAM_MIN_PHP_VERSION, '<' ) ) {
