@@ -213,7 +213,7 @@ class Connector_Editor extends Connector {
 			return;
 		}
 
-		$location   = null;
+		$location = null;
 
 		if ( $theme_slug ) {
 			$location          = 'theme-editor.php';
