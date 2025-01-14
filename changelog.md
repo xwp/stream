@@ -28,6 +28,7 @@
 - Fix Use preferred WC_Order_Factory to get the order ID (in [#1656](https://github.com/xwp/stream/pull/1656))
 - Fix Theme files changes are tracked as expected (in [#1658](https://github.com/xwp/stream/pull/1658))
 - Update the `Test_WP_Stream_Connector_Editor::test_log_changes` test case to reflect the recent changes (in [#1676](https://github.com/xwp/stream/pull/1676))
+- Update the release event types (in [#1678](https://github.com/xwp/stream/pull/1678))
 
 ### Documentation
 
