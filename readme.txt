@@ -134,7 +134,72 @@ Use only `$_SERVER['REMOTE_ADDR']` as the client IP address for event logs witho
 
 == Changelog ==
 
-= 4.1.0 - August 22, 2024 =
+= 4.1.0 - January 14, 2025 =
+
+**New features & Enhancements**
+
+- Add object ID and user ID to exports (in [#1532](https://github.com/xwp/stream/pull/1532))
+- Include timezone in logs for clarity (in [#1534](https://github.com/xwp/stream/pull/1534))
+- Display feature request notice on Settings screen (in [#1542](https://github.com/xwp/stream/pull/1542))
+- Improve connector registration logic (in [#1546](https://github.com/xwp/stream/pull/1546))
+- Add filter to allow more records in exports (in [#1558](https://github.com/xwp/stream/pull/1558))
+- Add Two Factor connector (in [#1567](https://github.com/xwp/stream/pull/1567))
+- Feature: allow defining of settings capability for more granular access control (in [#1599](https://github.com/xwp/stream/pull/1599)), props to [@spenserhale](https://github.com/spenserhale)
+
+**Bug fixes**
+
+- Remove duplicate logs when saving posts (in [#1530](https://github.com/xwp/stream/pull/1530))
+- Allow commas in CSV exporter fields (in [#1531](https://github.com/xwp/stream/pull/1531))
+- Use scheduled action for resetting large record and meta tables (in [#1543](https://github.com/xwp/stream/pull/1543))
+- Fix BuddyPress Action links (in [#1557](https://github.com/xwp/stream/pull/1557))
+- Fix broken assets' paths on multisite setup (in [#1595](https://github.com/xwp/stream/pull/1595))
+- Use Yoast deprecated method conditionally (in [#1603](https://github.com/xwp/stream/pull/1603))
+- Fix saving inline alerts (in [#1620](https://github.com/xwp/stream/pull/1620))
+- Fix Yoast connector test (in [#1625](https://github.com/xwp/stream/pull/1625))
+- Fix Allow only safe URLs for Slack alerts (in [#1652](https://github.com/xwp/stream/pull/1652)) - thanks @francescocarlucci for reporting this
+- Fix Use Woo built in method `\WC_Tax::get_rate_label()` to get the tax label (in [#1654](https://github.com/xwp/stream/pull/1654))
+- Fix Improve Yoast SEO logs reliability (in [#1655](https://github.com/xwp/stream/pull/1663))
+- Fix Use preferred WC_Order_Factory to get the order ID (in [#1656](https://github.com/xwp/stream/pull/1656))
+- Fix Theme files changes are tracked as expected (in [#1658](https://github.com/xwp/stream/pull/1658))
+- Update the `Test_WP_Stream_Connector_Editor::test_log_changes` test case to reflect the recent changes (in [#1676](https://github.com/xwp/stream/pull/1676))
+
+**Documentation**
+
+- Add documentation to `wp_stream_log_data` filter (in [#1559](https://github.com/xwp/stream/pull/1559))
+- Update documentation, separate out full changelog (in [#1568](https://github.com/xwp/stream/pull/1568))
+
+**Development**
+
+- Add Playwright testing framework and initial tests (in [#1529](https://github.com/xwp/stream/pull/1529))
+- Add port so we can see the database (in [#1533](https://github.com/xwp/stream/pull/1533))
+- Add files to generate and remove test data (in [#1538](https://github.com/xwp/stream/pull/1538))
+- Replace Grunt with `@wordpress/scripts` (in [#1541](https://github.com/xwp/stream/pull/1541))
+- Fix local environment path (in [#1547](https://github.com/xwp/stream/pull/1547))
+- Remove duplicate ports added in merge from master (in [#1566](https://github.com/xwp/stream/pull/1566))
+- Reintroduce deployment to packagist.org (in [#1587](https://github.com/xwp/stream/pull/1587))
+- Update required Node.js version to ^20.18.0 (in [#1596](https://github.com/xwp/stream/pull/1596))
+- Update composer.lock with Two Factor plugin entry (in [#1604](https://github.com/xwp/stream/pull/1604))
+- Remove ESLint on the project level, use the one from `@wordpress/scripts` (in [#1616](https://github.com/xwp/stream/pull/1616))
+- Add new dependency `eslint-plugin-react-hooks` (in [#1616](https://github.com/xwp/stream/pull/1616))
+- Dependencies:
+  - `body-parser` to 1.20.3 (in [#1579](https://github.com/xwp/stream/pull/1579))
+  - `serve-static` to 1.16.2 (in [#1580](https://github.com/xwp/stream/pull/1580))
+  - `send` to 0.19.0 (in [#1580](https://github.com/xwp/stream/pull/1580))
+  - `uuid` to 11.0.4 (in [#1672](https://github.com/xwp/stream/pull/1672))
+  - `symfony/process` to 5.4.46 (in [#1628](https://github.com/xwp/stream/pull/1628))
+  - `node.js` to 22.12.0 (in [#1641](https://github.com/xwp/stream/pull/1641))
+  - `eslint-plugin-react-hooks` to 5.1.0 (in [#1642](https://github.com/xwp/stream/pull/1653))
+  - `@playwright/test` to 1.49.1 (in [#1643](https://github.com/xwp/stream/pull/1643))
+  - `@types/node` to 22.10.2 (in [#1644](https://github.com/xwp/stream/pull/1644))
+  - `@wordpress/eslint-plugin` to 22.1.1 (in [#1671](https://github.com/xwp/stream/pull/1671))
+  - `npm-run-all2` to 7.0.2 (in [#1647](https://github.com/xwp/stream/pull/1647))
+  - `express` to 4.21.2 (in [#1648](https://github.com/xwp/stream/pull/1648))
+  - `cookie` to 0.7.1 (in [#1648](https://github.com/xwp/stream/pull/1648))
+  - `@wordpress/e2e-test-utils-playwright` to 1.15.0 (in [#1671](https://github.com/xwp/stream/pull/1671))
+  - `@wordpress/scripts` to 30.8.1 (in [#1671](https://github.com/xwp/stream/pull/1671))
+  - `@types/node` to 22.10.6 (in [#1675](https://github.com/xwp/stream/pull/1675))
+
+= 4.0.2 - August 22, 2024 =
 
 **Security update**
 
