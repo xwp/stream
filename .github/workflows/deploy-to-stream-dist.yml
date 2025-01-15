@@ -8,11 +8,11 @@ on:
       - fix/build-process
 
 jobs:
-#  lint_and_test:
-#    uses: ./.github/workflows/lint-and-test.yml
+  lint_and_test:
+    uses: ./.github/workflows/lint-and-test.yml
 
   deploy_to_stream_dist:
-#    needs: lint_and_test
+    needs: lint_and_test
     name: Deploy to xwp/stream-dist
     runs-on: ubuntu-22.04
     permissions:
@@ -114,19 +114,16 @@ jobs:
           # Use the release bundle as the work tree.
           export GIT_WORK_TREE="$SRC_DIR"
 
-          # TMP - TESTING.
-          git status
+          git add --all
+          git commit --allow-empty --message "$COMMIT_MESSAGE"
 
-#          git add --all
-#          git commit --allow-empty --message "$COMMIT_MESSAGE"
-
-#          if [ "${{ github.event_name }}" = "release" ]; then
-#            echo "Tagging a release: $DIST_TAG"
-#            git tag --force "$DIST_TAG"
-#            git push --force --tags origin "$DIST_BRANCH"
-#          else
-#            git push --force origin "$DIST_BRANCH"
-#          fi
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "Tagging a release: $DIST_TAG"
+            git tag --force "$DIST_TAG"
+            git push --force --tags origin "$DIST_BRANCH"
+          else
+            git push --force origin "$DIST_BRANCH"
+          fi
         env:
           DIST_DIR: ${{ env.DIST_DIR }}
           DIST_BRANCH: ${{ env.DIST_BRANCH }}
