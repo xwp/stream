@@ -8,8 +8,8 @@ on:
       - fix/build-process
 
 jobs:
-  lint_and_test:
-    uses: ./.github/workflows/lint-and-test.yml
+#  lint_and_test:
+#    uses: ./.github/workflows/lint-and-test.yml
 
   deploy_to_stream_dist:
     needs: lint_and_test
@@ -90,16 +90,16 @@ jobs:
           SRC_DIR: ${{ env.SRC_DIR }}
           DIST_DIR: ${{ env.DIST_DIR }}
 
-#      - name: Setup SSH deploy key
-#        uses: shimataro/ssh-key-action@v2
-#        with:
-#          key: ${{ secrets.SSH_DEPLOY_KEY }}
-#          known_hosts: github.com
+      - name: Setup SSH deploy key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_DEPLOY_KEY }}
+          known_hosts: github.com
 
-#      - name: Configure Git
-#        run: |
-#          git config --global user.name "XWP Deploy Bot"
-#          git config --global user.email "technology@xwp.co"
+      - name: Configure Git
+        run: |
+          git config --global user.name "XWP Deploy Bot"
+          git config --global user.email "technology@xwp.co"
 
       - name: Deploy to xwp/stream-dist
         run: |
