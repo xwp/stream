@@ -61,7 +61,7 @@ jobs:
 
           ROOT_DIR="$(git rev-parse --show-toplevel)"
           WORKING_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-          SRC_DIR="$ROOT_DIR/build"
+          SRC_DIR="$ROOT_DIR/source"
           DIST_DIR="$ROOT_DIR/dist"
           DIST_BRANCH="${GITHUB_REF#refs/heads/}"
           DIST_TAG="${GITHUB_REF#refs/tags/}"
