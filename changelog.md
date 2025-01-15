@@ -1,6 +1,6 @@
 # Stream Changelog
 
-## 4.1.0 - January 14, 2025
+## 4.1.0 - January 15, 2025
 
 ### New features & Enhancements
 
