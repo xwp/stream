@@ -22,7 +22,6 @@ renovate.json
 .idea
 .vscode
 .wordpress-org
-build
 dist
 local
 node_modules
