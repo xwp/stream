@@ -29,6 +29,7 @@
 - Fix Theme files changes are tracked as expected (in [#1658](https://github.com/xwp/stream/pull/1658))
 - Update the `Test_WP_Stream_Connector_Editor::test_log_changes` test case to reflect the recent changes (in [#1676](https://github.com/xwp/stream/pull/1676))
 - Update the release event types (in [#1678](https://github.com/xwp/stream/pull/1678))
+- Fix the build process (in [#1680](https://github.com/xwp/stream/pull/1680))
 
 ### Documentation
 
@@ -58,13 +59,13 @@
   - `eslint-plugin-react-hooks` to 5.1.0 (in [#1642](https://github.com/xwp/stream/pull/1653))
   - `@playwright/test` to 1.49.1 (in [#1643](https://github.com/xwp/stream/pull/1643))
   - `@types/node` to 22.10.2 (in [#1644](https://github.com/xwp/stream/pull/1644))
-  - `@wordpress/eslint-plugin` to 22.1.1 (in [#1671](https://github.com/xwp/stream/pull/1671))
+  - `@wordpress/eslint-plugin` to 22.2.0 (in [#1679](https://github.com/xwp/stream/pull/1679))
   - `npm-run-all2` to 7.0.2 (in [#1647](https://github.com/xwp/stream/pull/1647))
   - `express` to 4.21.2 (in [#1648](https://github.com/xwp/stream/pull/1648))
   - `cookie` to 0.7.1 (in [#1648](https://github.com/xwp/stream/pull/1648))
-  - `@wordpress/e2e-test-utils-playwright` to 1.15.0 (in [#1671](https://github.com/xwp/stream/pull/1671))
-  - `@wordpress/scripts` to 30.8.1 (in [#1671](https://github.com/xwp/stream/pull/1671))
-  - `@types/node` to 22.10.6 (in [#1675](https://github.com/xwp/stream/pull/1675))
+  - `@wordpress/e2e-test-utils-playwright` to 1.16.0 (in [#1679](https://github.com/xwp/stream/pull/1679))
+  - `@wordpress/scripts` to 30.9.0 (in [#1679](https://github.com/xwp/stream/pull/1679))
+  - `@types/node` to 22.10.7 (in [#1681](https://github.com/xwp/stream/pull/1681))
 
 Contributors:
 
