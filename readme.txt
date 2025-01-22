@@ -3,7 +3,7 @@ Contributors: xwp
 Tags: wp stream, stream, activity, logs, track
 Requires at least: 4.6
 Tested up to: 6.6
-Stable tag: 4.0.2
+Stable tag: 4.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -134,84 +134,40 @@ Use only `$_SERVER['REMOTE_ADDR']` as the client IP address for event logs witho
 
 == Changelog ==
 
+= 4.1.0 - January 20, 2025 =
+
+See: [https://github.com/xwp/stream/blob/develop/changelog.md##410---january-15-2025](https://github.com/xwp/stream/blob/develop/changelog.md##410---january-15-2025)
+
 = 4.0.2 - August 22, 2024 =
 
-**Security update**
-
-- Fix vulnerability which allowed logged in users to update some site options in certain configurations. Props to [@sybrew](https://github.com/sybrew) for responsibly disclosing this issue.
+See: [https://github.com/xwp/stream/blob/develop/changelog.md#402---august-22-2024](https://github.com/xwp/stream/blob/develop/changelog.md#402---august-22-2024)
 
 = 4.0.1 - July 30, 2024 =
 
-**Bug fixes**
-
-- Fix PHP Type error in CLI (in [#1475](https://github.com/xwp/stream/pull/1475)) props [@Soean](https://github.com/Soean)
-- Fix Uncaught ValueError in Gravity Forms and WordPress SEO connectors (in [#1508](https://github.com/xwp/stream/pull/1508)) props [@krokodok](https://github.com/krokodok)
-- Fix dynamic callback method detection for custom connectors (in [#1469](https://github.com/xwp/stream/pull/1469)) props [@shadyvb](https://github.com/shadyvb)
-- Fix PHP warning in PHP 8 by adjusting exclude rules filtering to avoid passing null to `strlen()` (in [#1513](https://github.com/xwp/stream/pull/1513)) props [@ocean90](https://github.com/ocean90)
-- Fix adding multiple columns to the stream table using filters only displays the last column correctly (in [#1519](https://github.com/xwp/stream/pull/1519)) props [@thefrosty](https://github.com/thefrosty)
-- Fix offset warning in Slack alert when there is no custom logo (in [#1522](https://github.com/xwp/stream/pull/1522)) props [@benerd](https://github.com/benerd)
-- Fix BuddyPress Connector, check for BuddyPress dependencies before using (in [#1517](https://github.com/xwp/stream/pull/1517)) props [@dd32](https://github.com/dd32)
-- Fix [Security] Update `select2` to `4.0.13` (in [#1495](https://github.com/xwp/stream/pull/1495))
-
-**Development**
-
-- Update local development environment to use Docker (in [#1423](https://github.com/xwp/stream/pull/1423))
-- Update `wp-coding-standards/wpcs` and fix all linting issues
-- Require PHP ≥ 7.0 and WordPress ≥ 4.6
-- Allow switching between PHP 7.4 and PHP 8.2
-- Document Connectors (in [#1518](https://github.com/xwp/stream/pull/1518))
-- Update dependencies
-  - `eslint` to `^8.57.0` (in [#1480](https://github.com/xwp/stream/pull/1480))
-  - `@babel/traverse` from `7.20.10` to `7.23.2` (in [#1463](https://github.com/xwp/stream/pull/1463))
-  - `braces` from `3.0.2` to `3.0.3` (in [#1487](https://github.com/xwp/stream/pull/1487))
-  - `composer/composer` from `2.2.21` to `2.2.24` (in [#1488](https://github.com/xwp/stream/pull/1488))
-  - `@wordpress/eslint-plugin` to `v19` (in [#1452](https://github.com/xwp/stream/pull/1452))
-  - `@wordpress/eslint-plugin` to `^19.2.0` (in [#1490](https://github.com/xwp/stream/pull/1490))
-
-**Deprecations**
-
-- Deprecate PHP 5.6 (in [#1499](https://github.com/xwp/stream/issues/1499))
-- Deprecate `wp_stream_register_column_defaults` filter (in [#1519](https://github.com/xwp/stream/pull/1519))
+See: [https://github.com/xwp/stream/blob/develop/changelog.md#401---july-30-2024](https://github.com/xwp/stream/blob/develop/changelog.md#401---july-30-2024)
 
 = 4.0.0 - January 9, 2024 =
 
-- Fix: Use only `$_SERVER['REMOTE_ADDR']` as the reliable client IP address for event logs. This might cause incorrectly reported event log IP addresses on environments where PHP is behind a proxy server or CDN. Use the `wp_stream_client_ip_address` filter to set the correct client IP address (see `readme.txt` for instructions) or configure the hosting environment to report the correct IP address in `$_SERVER['REMOTE_ADDR']` (issue [#1456](https://github.com/xwp/stream/issues/1456), props [@calvinalkan](https://github.com/calvinalkan)).
-- Tweak: fix typos in message strings and code comments (fixed in [#1461](https://github.com/xwp/stream/pull/1461) by [@szepeviktor](https://github.com/szepeviktor)).
-- Development: use Composer v2 during CI runs (fixed in [#1465](https://github.com/xwp/stream/pull/1465) by [@szepeviktor](https://github.com/szepeviktor)).
+See: [https://github.com/xwp/stream/blob/develop/changelog.md#400---january-9-2024](https://github.com/xwp/stream/blob/develop/changelog.md#400---january-9-2024)
 
 = 3.10.0 - October 9, 2023 =
 
-- Fix: Improve PHP 8.1 compatibility by updating `filter_*()` calls referencing `FILTER_SANITIZE_STRING` (issue [#1422](https://github.com/xwp/stream/pull/1422)).
-- Fix: prevent PHP deprecation warning when checking for the Stream settings page requests (issue [#1440](https://github.com/xwp/stream/pull/1440)).
-- Fix: Add the associated post title to comment events (issue [#1430](https://github.com/xwp/stream/pull/1430)).
-- Fix: Use the user associated with a comment instead of the current logged-in user when logging comments (issue [#1429](https://github.com/xwp/stream/pull/1429)).
-- Fix: Prevent PHP warnings when no Lead ID present for a Gravity Forms submission (issue [#1447](https://github.com/xwp/stream/pull/1447)).
-- Fix: Remove support for legacy WordPress VIP user attribute helpers `get_user_attributes()`, `delete_user_attributes()` and `update_user_attributes()` (issue [#1425](https://github.com/xwp/stream/pull/1425)).
-- Development: Document the process for reporting security vulnerabilities (issue [#1433](https://github.com/xwp/stream/pull/1433)).
-- Development: Mark as tested with WordPress version 6.3.
+See: [https://github.com/xwp/stream/blob/develop/changelog.md#3100---october-9-2023](https://github.com/xwp/stream/blob/develop/changelog.md#3100---october-9-2023)
 
 = 3.9.3 - April 25, 2023 =
 
-- Fix: [Security] CVE-2022-43490: Temporarily remove uninstall flow to avoid inadvertent uninstallation of the plugin, props [@Lucisu](https://github.com/Lucisu) via [Patchstack](https://patchstack.com/).
-- Fix: [Security] CVE-2022-43450: Check for capabilities in 'wp_ajax_load_alerts_settings' AJAX action before loading alert settings, props [@Lucisu](https://github.com/Lucisu) via [Patchstack](https://patchstack.com/).
-- Development: Mark as tested with the latest version 6.2 of WordPress.
+See: [https://github.com/xwp/stream/blob/develop/changelog.md#393---april-25-2023](https://github.com/xwp/stream/blob/develop/changelog.md#393---april-25-2023)
 
 = 3.9.2 - January 10, 2023 =
 
-- Fix: [Security] Check authorization on 'save_new_alert' AJAX action [#1391](https://github.com/xwp/stream/pull/1391), props [marcS0H](https://github.com/marcS0H) (WPScan)
-- Development: Mark as tested with the latest version 6.1 of WordPress.
-- Development: Update development dependencies.
+See: [https://github.com/xwp/stream/blob/develop/changelog.md#392---january-10-2023](https://github.com/xwp/stream/blob/develop/changelog.md#392---january-10-2023)
 
 = 3.9.1 - August 23, 2022 =
 
-- Fix: PHP 8 compatibility for widget connector [#1294](https://github.com/xwp/stream/pull/1355), props [@ParhamG](https://github.com/ParhamG)
-- Development: Mark as tested with the latest version 6.0 of WordPress.
-- Development: Update development dependencies.
+See: [https://github.com/xwp/stream/blob/develop/changelog.md#391---august-23-2022](https://github.com/xwp/stream/blob/develop/changelog.md#391---august-23-2022)
 
 = 3.9.0 - March 8, 2022 =
 
-- Fix: Track changes to posts when using the block editor by making the Posts connector to run on both frontend and backend requests since block editor changes happen over the REST API [#1264](https://github.com/xwp/stream/pull/1264), props [@coreymckrill](https://github.com/coreymckrill).
-- Fix: Don't store empty log event parameters [#1307](https://github.com/xwp/stream/pull/1307), props [@lkraav](https://github.com/lkraav).
-- Development: Adjust the local development environment to use MariaDB containers for ARM processor compatibility.
+See: [https://github.com/xwp/stream/blob/develop/changelog.md#390---march-8-2022](https://github.com/xwp/stream/blob/develop/changelog.md#390---march-8-2022)
 
 [See the full changelog here.](https://github.com/xwp/stream/blob/master/changelog.md)
