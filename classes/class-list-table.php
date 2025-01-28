@@ -571,8 +571,8 @@ class List_Table extends \WP_List_Table {
 			}
 
 			$users = array_map(
-				function ( $user_id ) {
-					return new Author( $user_id );
+				function ( $user ) {
+					return new Author( $user->ID );
 				},
 				get_users(
 					array(
