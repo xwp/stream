@@ -1,5 +1,11 @@
 # Stream Changelog
 
+## 4.1.1 - February 3, 2025
+
+### Bug fixes
+
+- Fix Two Factor connector issue (in [#1692](https://github.com/xwp/stream/pull/1692))
+
 ## 4.1.0 - January 20, 2025
 
 ### New features & Enhancements
