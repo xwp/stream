@@ -291,9 +291,9 @@ class Connector_Two_Factor extends Connector {
 	 * Callback to watch for 2FA authenticated actions.
 	 *
 	 * @param \WP_User $user     Authenticated user.
-	 * @param object   $provider The 2FA Provider used.
+	 * @param ?object  $provider The 2FA Provider used, null if unknown (this might happen if using older Two Factor plugin version).
 	 */
-	public function callback_two_factor_user_authenticated( $user, $provider ) {
+	public function callback_two_factor_user_authenticated( $user, $provider = null ) {
 
 		/* Translators: %s is the Two Factor provider. */
 		$message = __(
@@ -301,10 +301,15 @@ class Connector_Two_Factor extends Connector {
 			'stream'
 		);
 
+		// Get the provider key.
+		$provider_key = null === $provider
+			? __( 'unknown Two Factor method', 'stream' )
+			: $provider->get_key();
+
 		$this->log(
 			$message,
 			array(
-				'provider' => $provider->get_key(),
+				'provider' => $provider_key,
 			),
 			$user->ID,
 			'auth',
