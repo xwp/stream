@@ -26,9 +26,9 @@
   "devDependencies": {
     "@playwright/test": "^1.51.1",
     "@types/node": "^22.13.14",
-    "@wordpress/e2e-test-utils-playwright": "^1.20.0",
-    "@wordpress/eslint-plugin": "^22.6.0",
-    "@wordpress/scripts": "^30.13.0",
+    "@wordpress/e2e-test-utils-playwright": "^1.21.0",
+    "@wordpress/eslint-plugin": "^22.7.0",
+    "@wordpress/scripts": "^30.14.0",
     "copy-webpack-plugin": "^12.0.2",
     "eslint-plugin-react-hooks": "^5.2.0",
     "jquery": "3.7.1",
