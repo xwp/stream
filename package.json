@@ -6,7 +6,7 @@
   "author": "XWP",
   "license": "GPLv2+",
   "engines": {
-    "node": "^22.15.0"
+    "node": "^22.15.1"
   },
   "repository": {
     "type": "git",
