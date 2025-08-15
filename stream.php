@@ -9,6 +9,7 @@
  * License: GPLv2+
  * Text Domain: stream
  * Domain Path: /languages
+ * Requires PHP: 7.1
  *
  * @package WP_Stream
  */
@@ -38,7 +39,7 @@ if ( ! defined( 'WP_STREAM_SETTINGS_CAPABILITY' ) ) {
 	define( 'WP_STREAM_SETTINGS_CAPABILITY', 'manage_options' );
 }
 
-const WP_STREAM_MIN_PHP_VERSION = '7.0';
+const WP_STREAM_MIN_PHP_VERSION = '7.1';
 
 if ( version_compare( PHP_VERSION, WP_STREAM_MIN_PHP_VERSION, '<' ) ) {
 	add_action( 'shutdown', 'wp_stream_fail_php_version' );
