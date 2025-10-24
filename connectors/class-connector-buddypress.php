@@ -175,7 +175,12 @@ class Connector_BuddyPress extends Connector {
 	public function action_links( $links, $record ) {
 
 		// Check we have access to BuddyPress on this blog and that the user will have access to the links.
-		if ( ! $this->is_dependency_satisfied() || ! bp_current_user_can_moderate() ) {
+		if ( ! $this->is_dependency_satisfied() ) {
+			return array();
+		}
+
+		// Check if user has moderation capabilities (use function_exists to avoid fatal errors).
+		if ( function_exists( 'bp_current_user_can' ) && ! bp_current_user_can( 'bp_moderate' ) ) {
 			return array();
 		}
 
@@ -591,16 +596,14 @@ class Connector_BuddyPress extends Connector {
 		if ( 1 === count( $activities_ids ) && isset( $this->deleted_activity ) ) { // Single activity deletion.
 			$activity = $this->deleted_activity;
 			$this->log(
-				sprintf(
-					/* translators: %s: an activity title (e.g. "Update") */
-					__( '"%s" activity deleted', 'stream' ),
-					wp_strip_all_tags( $activity->action )
-				),
+				/* translators: %s: an activity title (e.g. "Update") */
+				__( '"%s" activity deleted', 'stream' ),
 				array(
-					'id'      => $activity->id,
-					'item_id' => $activity->item_id,
-					'type'    => $activity->type,
-					'author'  => $activity->user_id,
+					'activity_action' => wp_strip_all_tags( $activity->action ),
+					'id'              => $activity->id,
+					'item_id'         => $activity->item_id,
+					'type'            => $activity->type,
+					'author'          => $activity->user_id,
 				),
 				$activity->id,
 				$activity->component,
@@ -618,11 +621,8 @@ class Connector_BuddyPress extends Connector {
 				return;
 			}
 			$this->log(
-				sprintf(
-					/* translators: %s: an activity title (e.g. "Update") */
-					__( '"%s" activities were deleted', 'stream' ),
-					count( $activities_ids )
-				),
+				/* translators: %s: number of activities */
+				__( '%s activities were deleted', 'stream' ),
 				array(
 					'count' => count( $activities_ids ),
 					'args'  => $this->delete_activity_args,
@@ -647,16 +647,14 @@ class Connector_BuddyPress extends Connector {
 		unset( $by );
 
 		$this->log(
-			sprintf(
-				/* translators: %s an activity title (e.g. "Update") */
-				__( 'Marked activity "%s" as spam', 'stream' ),
-				wp_strip_all_tags( $activity->action )
-			),
+			/* translators: %s: an activity title (e.g. "Update") */
+			__( 'Marked activity "%s" as spam', 'stream' ),
 			array(
-				'id'      => $activity->id,
-				'item_id' => $activity->item_id,
-				'type'    => $activity->type,
-				'author'  => $activity->user_id,
+				'activity_action' => wp_strip_all_tags( $activity->action ),
+				'id'              => $activity->id,
+				'item_id'         => $activity->item_id,
+				'type'            => $activity->type,
+				'author'          => $activity->user_id,
 			),
 			$activity->id,
 			$activity->component,
@@ -676,16 +674,14 @@ class Connector_BuddyPress extends Connector {
 		unset( $by );
 
 		$this->log(
-			sprintf(
-				/* translators: %s: an activity title (e.g. "Update") */
-				__( 'Unmarked activity "%s" as spam', 'stream' ),
-				wp_strip_all_tags( $activity->action )
-			),
+			/* translators: %s: an activity title (e.g. "Update") */
+			__( 'Unmarked activity "%s" as spam', 'stream' ),
 			array(
-				'id'      => $activity->id,
-				'item_id' => $activity->item_id,
-				'type'    => $activity->type,
-				'author'  => $activity->user_id,
+				'activity_action' => wp_strip_all_tags( $activity->action ),
+				'id'              => $activity->id,
+				'item_id'         => $activity->item_id,
+				'type'            => $activity->type,
+				'author'          => $activity->user_id,
 			),
 			$activity->id,
 			$activity->component,
@@ -705,13 +701,11 @@ class Connector_BuddyPress extends Connector {
 		unset( $error );
 
 		$this->log(
-			sprintf(
-				/* translators: %s: an activity title (e.g. "Update") */
-				__( '"%s" activity updated', 'stream' ),
-				wp_strip_all_tags( $activity->action )
-			),
+			/* translators: %s: an activity title (e.g. "Update") */
+			__( '"%s" activity updated', 'stream' ),
 			array(
-				'id'      => $activity->id,
+				'activity_action' => wp_strip_all_tags( $activity->action ),
+				'id'              => $activity->id,
 				'item_id' => $activity->item_id,
 				'type'    => $activity->type,
 				'author'  => $activity->user_id,
