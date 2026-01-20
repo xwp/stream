@@ -92,6 +92,9 @@ class Log {
 		if ( 'wp_cli' === $agent && function_exists( 'posix_getuid' ) ) {
 			$uid       = posix_getuid();
 			$user_info = posix_getpwuid( $uid );
+			if( ! is_array( $user_info ) ) {
+				$user_info = array( 'name' => 'unknown' );
+			}
 
 			$user_meta['system_user_id']   = (int) $uid;
 			$user_meta['system_user_name'] = (string) $user_info['name'];
