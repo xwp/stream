@@ -31,7 +31,7 @@
     "@wordpress/scripts": "^30.27.0",
     "copy-webpack-plugin": "^12.0.2",
     "eslint-plugin-react-hooks": "^5.2.0",
-    "jquery": "3.7.1",
+    "jquery": "4.0.0",
     "npm-run-all2": "^7.0.2",
     "uuid": "^11.1.0"
   },
