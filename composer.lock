@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ab29e0d95149435921472699e79178ad",
+    "content-hash": "1722ffe23b8e9b94e6c3e54fbec2a350",
     "packages": [
         {
             "name": "composer/installers",
@@ -8449,15 +8449,15 @@
         },
         {
             "name": "wpackagist-plugin/advanced-custom-fields",
-            "version": "6.3.4",
+            "version": "6.7.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/advanced-custom-fields/",
-                "reference": "tags/6.3.4"
+                "reference": "tags/6.7.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/advanced-custom-fields.6.3.4.zip"
+                "url": "https://downloads.wordpress.org/plugin/advanced-custom-fields.6.7.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -8467,15 +8467,15 @@
         },
         {
             "name": "wpackagist-plugin/buddypress",
-            "version": "14.0.0",
+            "version": "14.4.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/buddypress/",
-                "reference": "tags/14.0.0"
+                "reference": "tags/14.4.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/buddypress.14.0.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/buddypress.14.4.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -8485,15 +8485,15 @@
         },
         {
             "name": "wpackagist-plugin/classic-editor",
-            "version": "1.6.4",
+            "version": "1.6.7",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/classic-editor/",
-                "reference": "tags/1.6.4"
+                "reference": "tags/1.6.7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/classic-editor.1.6.4.zip"
+                "url": "https://downloads.wordpress.org/plugin/classic-editor.1.6.7.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -8503,15 +8503,15 @@
         },
         {
             "name": "wpackagist-plugin/easy-digital-downloads",
-            "version": "3.3.1",
+            "version": "3.6.5",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/easy-digital-downloads/",
-                "reference": "tags/3.3.1"
+                "reference": "tags/3.6.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/easy-digital-downloads.3.3.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/easy-digital-downloads.3.6.5.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -8521,15 +8521,15 @@
         },
         {
             "name": "wpackagist-plugin/jetpack",
-            "version": "13.6",
+            "version": "15.5",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/jetpack/",
-                "reference": "tags/13.6"
+                "reference": "tags/15.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/jetpack.13.6.zip"
+                "url": "https://downloads.wordpress.org/plugin/jetpack.15.5.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -8557,15 +8557,15 @@
         },
         {
             "name": "wpackagist-plugin/user-switching",
-            "version": "1.8.0",
+            "version": "1.11.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/user-switching/",
-                "reference": "tags/1.8.0"
+                "reference": "tags/1.11.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/user-switching.1.8.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/user-switching.1.11.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -8575,15 +8575,15 @@
         },
         {
             "name": "wpackagist-plugin/wordpress-seo",
-            "version": "23.6",
+            "version": "27.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wordpress-seo/",
-                "reference": "tags/23.6"
+                "reference": "tags/27.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wordpress-seo.23.6.zip"
+                "url": "https://downloads.wordpress.org/plugin/wordpress-seo.27.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -8593,15 +8593,15 @@
         },
         {
             "name": "wpackagist-plugin/wp-crontrol",
-            "version": "1.17.0",
+            "version": "1.21.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wp-crontrol/",
-                "reference": "tags/1.17.0"
+                "reference": "tags/1.21.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wp-crontrol.1.17.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/wp-crontrol.1.21.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -8611,15 +8611,15 @@
         },
         {
             "name": "wpackagist-theme/twentytwentythree",
-            "version": "1.5",
+            "version": "1.6",
             "source": {
                 "type": "svn",
                 "url": "https://themes.svn.wordpress.org/twentytwentythree/",
-                "reference": "1.5"
+                "reference": "1.6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/theme/twentytwentythree.1.5.zip"
+                "url": "https://downloads.wordpress.org/theme/twentytwentythree.1.6.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
