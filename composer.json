@@ -11,10 +11,10 @@
     }
   ],
   "require": {
-    "php": ">=7.0",
+    "php": ">=7.2",
     "ext-json": "*",
     "composer/installers": "~1.0",
-    "woocommerce/action-scheduler": "^3.8"
+    "woocommerce/action-scheduler": "^3.9"
   },
   "require-dev": {
     "automattic/vipwpcs": "^3.0",
@@ -25,10 +25,10 @@
     "phpcompatibility/php-compatibility": "dev-develop as 9.99.99",
     "phpcompatibility/phpcompatibility-wp": "^2.1",
     "phpunit/phpunit": "^9.6",
-    "roots/wordpress": "^6.6",
+    "roots/wordpress": "^6.9",
     "wp-cli/wp-cli-bundle": "^2.6",
     "wp-coding-standards/wpcs": "^3.1",
-    "wp-phpunit/wp-phpunit": "^6.6",
+    "wp-phpunit/wp-phpunit": "^6.9",
     "wpackagist-plugin/advanced-custom-fields": "6.3.4",
     "wpackagist-plugin/buddypress": "14.0.0",
     "wpackagist-plugin/classic-editor": "1.6.4",
