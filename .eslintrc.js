@@ -6,6 +6,14 @@ module.exports = {
 		browser: true,
 		es6: true,
 	},
+	settings: {
+		// Use node resolver to avoid "typescript with invalid interface" from eslint-import-resolver-typescript.
+		'import/resolver': {
+			node: {
+				extensions: [ '.js', '.jsx', '.mjs', '.scss' ],
+			},
+		},
+	},
 	rules: {
 		'@wordpress/no-global-event-listener': 'off',
 		'jsdoc/check-indentation': 'error',

@@ -549,8 +549,12 @@ class Connector_Widgets extends Connector {
 		if ( $is_multi ) {
 			$widget_id_format = "$widget_id_base-%d";
 
-			unset( $new_value['_multiwidget'] );
-			unset( $old_value['_multiwidget'] );
+			if ( is_array( $new_value ) && isset( $new_value['_multiwidget'] ) ) {
+				unset( $new_value['_multiwidget'] );
+			}
+			if ( is_array( $old_value ) && isset( $old_value['_multiwidget'] ) ) {
+				unset( $old_value['_multiwidget'] );
+			}
 
 			/**
 			 * Created widgets
