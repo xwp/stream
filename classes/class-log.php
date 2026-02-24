@@ -93,8 +93,13 @@ class Log {
 			$uid       = posix_getuid();
 			$user_info = posix_getpwuid( $uid );
 
+			// Normalize the user info to an array if it's not already.
+			if ( ! is_array( $user_info ) ) {
+				$user_info = array( 'name' => 'unknown' );
+			}
+
 			$user_meta['system_user_id']   = (int) $uid;
-			$user_meta['system_user_name'] = (string) $user_info['name'];
+			$user_meta['system_user_name'] = (string) ( $user_info['name'] ?? 'unknown' );
 		}
 
 		// Prevent any meta with null values from being logged.

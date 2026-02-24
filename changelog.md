@@ -1,5 +1,15 @@
 # Stream Changelog
 
+## 4.1.2 - February 19, 2026
+
+### Bug Fixes
+
+- Fix handling the output of posix_getpwuid() (in [#1828](https://github.com/xwp/stream/pull/1828), [#1810](https://github.com/xwp/stream/pull/1810))
+
+### Enhancements
+
+- Implement BuddyPress Connection improvements (in [#1810](https://github.com/xwp/stream/pull/1810))
+
 ## 4.1.1 - February 3, 2025
 
 ### Bug fixes
