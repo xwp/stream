@@ -194,10 +194,12 @@ class Connector_Comments extends Connector {
 			$user_name = isset( $user->display_name ) ? $user->display_name : $comment->comment_author;
 		}
 
-		if ( $req_user_login && isset( $comment->user_id ) ) {
-			$user      = get_user_by( 'id', $comment->user_id );
-			$user_id   = $user->ID;
-			$user_name = $user->display_name;
+		if ( $req_user_login && ! empty( $comment->user_id ) ) {
+			$user = get_user_by( 'id', $comment->user_id );
+			if ( $user ) {
+				$user_id   = $user->ID;
+				$user_name = $user->display_name;
+			}
 		}
 
 		if ( 'id' === $field ) {
