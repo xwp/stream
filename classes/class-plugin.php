@@ -73,6 +73,13 @@ class Plugin {
 	public $alerts_list;
 
 	/**
+	 * Holds and manages WordPress Abilities API integration.
+	 *
+	 * @var Abilities
+	 */
+	public $abilities;
+
+	/**
 	 * Holds and manages connectors
 	 *
 	 * @var Connectors
@@ -246,6 +253,7 @@ class Plugin {
 		$this->connectors  = new Connectors( $this );
 		$this->alerts      = new Alerts( $this );
 		$this->alerts_list = new Alerts_List( $this );
+		$this->abilities   = new Abilities( $this );
 	}
 
 	/**
