@@ -7,10 +7,14 @@
 
 namespace WP_Stream;
 
+require_once __DIR__ . '/trait-view-stream-permission.php';
+
 /**
  * Class - Ability_Get_Connectors
  */
 class Ability_Get_Connectors extends Ability {
+
+	use Trait_View_Stream_Permission;
 
 	/**
 	 * {@inheritDoc}
@@ -42,17 +46,6 @@ class Ability_Get_Connectors extends Ability {
 			'idempotent'   => true,
 			'instructions' => __( 'Use to discover the valid connector / context / action values for filters in stream/get-records and stream/create-exclusion-rule. Connector slugs are stable identifiers, so cache the result if you call abilities repeatedly.', 'stream' ),
 		);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * Read abilities use Stream's view capability so editors / other allowed
-	 * roles can call them, matching the admin UI's record-viewing permissions.
-	 */
-	public function permission_callback( $input = array() ) {
-		unset( $input );
-		return current_user_can( 'view_stream' );
 	}
 
 	/**

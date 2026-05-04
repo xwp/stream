@@ -7,10 +7,14 @@
 
 namespace WP_Stream;
 
+require_once __DIR__ . '/trait-view-stream-permission.php';
+
 /**
  * Class - Ability_Get_Alerts
  */
 class Ability_Get_Alerts extends Ability {
+
+	use Trait_View_Stream_Permission;
 
 	/**
 	 * {@inheritDoc}
@@ -42,17 +46,6 @@ class Ability_Get_Alerts extends Ability {
 			'idempotent'   => true,
 			'instructions' => __( 'Use to enumerate existing alert rules before creating new ones (stream/create-alert) or removing them (stream/delete-alert). Pass status="enabled" to see only active alerts.', 'stream' ),
 		);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * Read abilities use Stream's view capability so editors / other allowed
-	 * roles can call them, matching the admin UI's record-viewing permissions.
-	 */
-	public function permission_callback( $input = array() ) {
-		unset( $input );
-		return current_user_can( 'view_stream' );
 	}
 
 	/**

@@ -7,10 +7,14 @@
 
 namespace WP_Stream;
 
+require_once __DIR__ . '/trait-view-stream-permission.php';
+
 /**
  * Class - Ability_Get_Records
  */
 class Ability_Get_Records extends Ability {
+
+	use Trait_View_Stream_Permission;
 
 	/**
 	 * Maximum records returned in a single call.
@@ -56,17 +60,6 @@ class Ability_Get_Records extends Ability {
 			'idempotent'   => true,
 			'instructions' => __( 'Use to investigate site activity. Always pass narrow filters (date range, user, connector) where possible: the activity log can be very large, and unfiltered queries are paginated to records_per_page (default 20). Combine with stream/get-record when you need full metadata for a specific event.', 'stream' ),
 		);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * Read abilities use Stream's view capability so editors / other allowed
-	 * roles can call them, matching the admin UI's record-viewing permissions.
-	 */
-	public function permission_callback( $input = array() ) {
-		unset( $input );
-		return current_user_can( 'view_stream' );
 	}
 
 	/**

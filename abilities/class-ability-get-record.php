@@ -7,10 +7,14 @@
 
 namespace WP_Stream;
 
+require_once __DIR__ . '/trait-view-stream-permission.php';
+
 /**
  * Class - Ability_Get_Record
  */
 class Ability_Get_Record extends Ability {
+
+	use Trait_View_Stream_Permission;
 
 	/**
 	 * {@inheritDoc}
@@ -42,17 +46,6 @@ class Ability_Get_Record extends Ability {
 			'idempotent'   => true,
 			'instructions' => __( 'Use after stream/get-records to fetch the full record plus its metadata for a specific log entry, when summary fields from the list response are not enough. Pass the integer ID returned by stream/get-records.', 'stream' ),
 		);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * Read abilities use Stream's view capability so editors / other allowed
-	 * roles can call them, matching the admin UI's record-viewing permissions.
-	 */
-	public function permission_callback( $input = array() ) {
-		unset( $input );
-		return current_user_can( 'view_stream' );
 	}
 
 	/**
