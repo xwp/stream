@@ -137,8 +137,11 @@ class Ability_Create_Exclusion_Rule extends Ability {
 			$sanitized[ $column ] = sanitize_text_field( $raw );
 		}
 
-		// JSON Schema's format:ip is a hint, not enforced by rest_validate_value_from_schema.
-		// Validate explicitly so bogus IPs never reach storage.
+		// WP REST enforces format:ip via rest_is_ip_address() before this method
+		// runs (see wp-includes/rest-api.php), so bogus IPs are normally
+		// rejected at the schema layer with ability_invalid_input. The check
+		// below is defense-in-depth for direct PHP callers who invoke
+		// $ability->execute() outside the REST stack and skip schema validation.
 		if ( '' !== $sanitized['ip_address'] && ! filter_var( $sanitized['ip_address'], FILTER_VALIDATE_IP ) ) {
 			return new \WP_Error(
 				'stream_invalid_ip',
