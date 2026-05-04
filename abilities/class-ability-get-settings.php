@@ -65,7 +65,7 @@ class Ability_Get_Settings extends Ability {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function execute( $input ) {
+	public function execute( $input = null ) {
 		unset( $input );
 
 		return (array) $this->plugin->settings->options;

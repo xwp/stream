@@ -80,7 +80,7 @@ class Ability_Delete_Alert extends Ability {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function execute( $input ) {
+	public function execute( $input = null ) {
 		$id   = isset( $input['id'] ) ? (int) $input['id'] : 0;
 		$post = $id > 0 ? get_post( $id ) : null;
 

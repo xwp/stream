@@ -82,7 +82,7 @@ class Fake_Ability_For_Test extends Ability {
 	 * @param array $input Input matching get_input_schema().
 	 * @return string
 	 */
-	public function execute( $input ) {
+	public function execute( $input = null ) {
 		$this->last_input = $input;
 		return 'ok';
 	}

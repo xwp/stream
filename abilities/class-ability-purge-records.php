@@ -102,7 +102,7 @@ class Ability_Purge_Records extends Ability {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function execute( $input ) {
+	public function execute( $input = null ) {
 		global $wpdb;
 
 		if ( empty( $input['confirm'] ) ) {

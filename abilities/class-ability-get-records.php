@@ -192,7 +192,7 @@ class Ability_Get_Records extends Ability {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function execute( $input ) {
+	public function execute( $input = null ) {
 		$input = (array) $input;
 
 		$allowed_keys = array(

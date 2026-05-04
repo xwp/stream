@@ -92,7 +92,7 @@ class Ability_Get_Alerts extends Ability {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function execute( $input ) {
+	public function execute( $input = null ) {
 		$requested = isset( $input['status'] ) ? $input['status'] : 'any';
 
 		switch ( $requested ) {

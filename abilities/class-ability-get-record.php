@@ -93,7 +93,7 @@ class Ability_Get_Record extends Ability {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function execute( $input ) {
+	public function execute( $input = null ) {
 		global $wpdb;
 
 		$id = isset( $input['id'] ) ? (int) $input['id'] : 0;

@@ -71,10 +71,17 @@ abstract class Ability {
 	/**
 	 * Execute the ability.
 	 *
-	 * @param array $input Validated input matching get_input_schema().
+	 * The default value is `null` to match WP core's invoke_callback() contract:
+	 * when an ability has no input_schema, core calls the callback with zero
+	 * arguments. PHP's ArgumentCountError would otherwise fatal here. Subclasses
+	 * that declare a non-empty input_schema can rely on $input being a parsed
+	 * array (core enforces this via rest_validate_value_from_schema()).
+	 *
+	 * @param mixed $input Validated input matching get_input_schema(), or null
+	 *                     when the ability declares no input_schema.
 	 * @return mixed|\WP_Error Result conforming to get_output_schema(), or WP_Error.
 	 */
-	abstract public function execute( $input );
+	abstract public function execute( $input = null );
 
 	/**
 	 * Permission check. Defaults to manage_options; override per ability.

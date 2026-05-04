@@ -88,7 +88,7 @@ class Ability_Get_Connectors extends Ability {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function execute( $input ) {
+	public function execute( $input = null ) {
 		unset( $input );
 
 		$out        = array();

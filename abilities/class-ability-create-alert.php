@@ -109,7 +109,7 @@ class Ability_Create_Alert extends Ability {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function execute( $input ) {
+	public function execute( $input = null ) {
 		$status = isset( $input['status'] ) ? $input['status'] : 'wp_stream_enabled';
 
 		$post_id = wp_insert_post(

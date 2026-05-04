@@ -68,7 +68,7 @@ class Ability_Get_Exclusion_Rules extends Ability {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function execute( $input ) {
+	public function execute( $input = null ) {
 		unset( $input );
 
 		$options = (array) $this->plugin->settings->options;

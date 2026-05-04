@@ -77,7 +77,7 @@ class Ability_Update_Settings extends Ability {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function execute( $input ) {
+	public function execute( $input = null ) {
 		$option_key = $this->plugin->settings->option_key;
 		$current    = (array) get_option( $option_key, array() );
 		$updates    = isset( $input['settings'] ) ? (array) $input['settings'] : array();

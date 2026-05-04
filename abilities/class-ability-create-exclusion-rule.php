@@ -119,7 +119,7 @@ class Ability_Create_Exclusion_Rule extends Ability {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function execute( $input ) {
+	public function execute( $input = null ) {
 		$option_key = $this->plugin->settings->option_key;
 		$options    = (array) get_option( $option_key, array() );
 
