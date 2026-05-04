@@ -105,7 +105,7 @@ class Test_Abilities extends WP_StreamTestCase {
 			} else {
 				update_site_option( $network_key, $original_network );
 			}
-		}
+		}//end try
 	}
 
 	/**
@@ -141,7 +141,7 @@ class Test_Abilities extends WP_StreamTestCase {
 			} else {
 				update_site_option( $network_key, $original_network );
 			}
-		}
+		}//end try
 	}
 
 	public function test_constructor_does_not_hook_when_setting_disabled() {

@@ -121,9 +121,10 @@ class Test_Ability_Create_Alert extends Abilities_TestCase {
 	public function test_rejects_unknown_alert_type() {
 		wp_set_current_user( $this->admin_user_id );
 
+		// 'sms' is not a registered notifier; the ability should reject before insert.
 		$result = $this->ability->execute(
 			array(
-				'alert_type'      => 'sms', // Not a registered notifier.
+				'alert_type'      => 'sms',
 				'trigger_author'  => 'any',
 				'trigger_context' => 'posts',
 				'trigger_action'  => 'updated',
