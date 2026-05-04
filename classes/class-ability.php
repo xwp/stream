@@ -84,14 +84,16 @@ abstract class Ability {
 	abstract public function execute( $input = null );
 
 	/**
-	 * Permission check. Defaults to manage_options; override per ability.
+	 * Permission check. Defaults to the Stream settings capability so write
+	 * abilities are safe by default; read-only abilities should override with
+	 * the view capability (e.g. 'view_stream') to follow least-privilege.
 	 *
 	 * @param array $input Input that will be passed to execute().
 	 * @return bool|\WP_Error
 	 */
 	public function permission_callback( $input = array() ) {
 		unset( $input );
-		return current_user_can( 'manage_options' );
+		return current_user_can( WP_STREAM_SETTINGS_CAPABILITY );
 	}
 
 	/**

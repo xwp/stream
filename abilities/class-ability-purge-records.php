@@ -144,23 +144,30 @@ class Ability_Purge_Records extends Ability {
 
 		$where_sql = implode( ' AND ', $where );
 
-		// Count first so the response is meaningful even if the cascade DELETE returns the
-		// combined affected rows from both tables. By the time we reach this point at least
-		// one filter has been added (the count( $where ) === 1 guard above ensures $params
-		// is non-empty), so $wpdb->prepare() is always called with placeholders.
+		// Delete stream rows first and capture rows_affected so the response reflects
+		// the actual count (rather than a stale pre-DELETE COUNT). $params is guaranteed
+		// non-empty here by the count( $where ) === 1 guard above. MySQL requires the
+		// "DELETE alias FROM tbl AS alias" form when the WHERE references an alias.
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery
-		$count_sql = "SELECT COUNT(*) FROM {$wpdb->stream} AS stream WHERE {$where_sql}";
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$deleted = (int) $wpdb->get_var( $wpdb->prepare( $count_sql, $params ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$delete_sql = "DELETE stream FROM {$wpdb->stream} AS stream WHERE {$where_sql}";
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
+		$wpdb->query( $wpdb->prepare( $delete_sql, $params ) );
+		$deleted = (int) $wpdb->rows_affected;
 
 		if ( 0 === $deleted ) {
 			return array( 'deleted' => 0 );
 		}
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery
-		$delete_sql = "DELETE stream, meta FROM {$wpdb->stream} AS stream LEFT JOIN {$wpdb->streammeta} AS meta ON meta.record_id = stream.ID WHERE {$where_sql}";
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$wpdb->query( $wpdb->prepare( $delete_sql, $params ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// Sweep orphaned meta rows whose parent record was just deleted. Idempotent
+		// and safe to run unconditionally; the LEFT JOIN scopes the cleanup to
+		// orphans across the whole streammeta table, which also catches any prior
+		// orphans without growing this query's blast radius beyond a single sweep.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
+		$wpdb->query(
+			"DELETE meta FROM {$wpdb->streammeta} AS meta
+			 LEFT JOIN {$wpdb->stream} AS stream ON stream.ID = meta.record_id
+			 WHERE stream.ID IS NULL"
+		);
 
 		return array( 'deleted' => $deleted );
 	}

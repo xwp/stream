@@ -55,7 +55,7 @@ class Ability_Update_Settings extends Ability {
 			'properties'           => array(
 				'settings' => array(
 					'type'                 => 'object',
-					'description'          => 'Partial settings map keyed by {section}_{field}. Values overwrite existing entries; omitted keys are preserved.',
+					'description'          => 'Partial settings map keyed by {section}_{field} (e.g. general_records_ttl). Unknown keys are rejected; values are normalized through Stream\'s settings sanitizer. Omitted keys are preserved.',
 					'additionalProperties' => true,
 					'minProperties'        => 1,
 				),
@@ -82,7 +82,35 @@ class Ability_Update_Settings extends Ability {
 		$current    = (array) get_option( $option_key, array() );
 		$updates    = isset( $input['settings'] ) ? (array) $input['settings'] : array();
 
-		$merged = array_merge( $current, $updates );
+		// Build allowlist of {section}_{field} keys from registered settings.
+		$valid_keys = array();
+		foreach ( $this->plugin->settings->get_fields() as $section => $section_data ) {
+			if ( empty( $section_data['fields'] ) || ! is_array( $section_data['fields'] ) ) {
+				continue;
+			}
+			foreach ( $section_data['fields'] as $field ) {
+				if ( ! empty( $field['name'] ) ) {
+					$valid_keys[] = $section . '_' . $field['name'];
+				}
+			}
+		}
+
+		// Drop unknown keys before sanitization so callers fail fast.
+		$filtered = array_intersect_key( $updates, array_flip( $valid_keys ) );
+		if ( empty( $filtered ) ) {
+			return new \WP_Error(
+				'stream_no_valid_settings',
+				__( 'No recognized setting keys were provided. Setting keys follow the {section}_{field} convention.', 'stream' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		// Run only the incoming keys through Stream's sanitize pipeline so
+		// values are normalized to their declared field type, then merge over
+		// the existing options so unrelated keys are preserved.
+		$sanitized = $this->plugin->settings->sanitize_settings( $filtered );
+		$merged    = array_merge( $current, $sanitized );
+
 		update_option( $option_key, $merged );
 
 		// Refresh in-memory copy so subsequent abilities see the change.

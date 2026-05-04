@@ -81,10 +81,45 @@ class Test_Ability_Update_Settings extends Abilities_TestCase {
 
 		$this->ability->execute(
 			array(
-				'settings' => array( 'custom_marker' => 'updated' ),
+				'settings' => array( 'general_records_ttl' => 60 ),
 			)
 		);
 
-		$this->assertSame( 'updated', $this->plugin->settings->options['custom_marker'] );
+		$this->assertSame( 60, $this->plugin->settings->options['general_records_ttl'] );
+	}
+
+	public function test_rejects_unknown_setting_keys() {
+		wp_set_current_user( $this->admin_user_id );
+
+		$result = $this->ability->execute(
+			array(
+				'settings' => array( 'totally_made_up_key' => 'value' ),
+			)
+		);
+
+		$this->assertWPError( $result );
+		$this->assertSame( 'stream_no_valid_settings', $result->get_error_code() );
+	}
+
+	public function test_unknown_keys_are_dropped_when_mixed_with_valid() {
+		wp_set_current_user( $this->admin_user_id );
+
+		$option_key = $this->plugin->settings->option_key;
+
+		$result = $this->ability->execute(
+			array(
+				'settings' => array(
+					'general_records_ttl' => 45,
+					'malicious_key'       => '<script>alert(1)</script>',
+				),
+			)
+		);
+
+		$this->assertIsArray( $result );
+		$this->assertSame( 45, $result['general_records_ttl'] );
+		$this->assertArrayNotHasKey( 'malicious_key', $result );
+
+		$stored = (array) get_option( $option_key );
+		$this->assertArrayNotHasKey( 'malicious_key', $stored );
 	}
 }

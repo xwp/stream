@@ -94,4 +94,48 @@ class Test_Ability_Create_Exclusion_Rule extends Abilities_TestCase {
 		$result = rest_validate_value_from_schema( array(), $this->ability->get_input_schema() );
 		$this->assertWPError( $result );
 	}
+
+	public function test_rejects_invalid_ip_address() {
+		wp_set_current_user( $this->admin_user_id );
+
+		$result = $this->ability->execute( array( 'ip_address' => 'not-an-ip' ) );
+
+		$this->assertWPError( $result );
+		$this->assertSame( 'stream_invalid_ip', $result->get_error_code() );
+	}
+
+	public function test_rejects_unknown_connector() {
+		wp_set_current_user( $this->admin_user_id );
+
+		$result = $this->ability->execute( array( 'connector' => 'definitely-not-a-real-connector' ) );
+
+		$this->assertWPError( $result );
+		$this->assertSame( 'stream_unknown_connector', $result->get_error_code() );
+	}
+
+	public function test_rejects_all_empty_values() {
+		wp_set_current_user( $this->admin_user_id );
+
+		// minProperties:1 in the schema is satisfied by the key being present,
+		// but execute() must reject when every filter is the empty string.
+		$result = $this->ability->execute( array( 'author_or_role' => '' ) );
+
+		$this->assertWPError( $result );
+		$this->assertSame( 'stream_empty_rule', $result->get_error_code() );
+	}
+
+	public function test_sanitizes_text_input() {
+		wp_set_current_user( $this->admin_user_id );
+
+		$result = $this->ability->execute(
+			array(
+				'author_or_role' => "evil\nmultiline<script>alert(1)</script>",
+			)
+		);
+
+		$this->assertIsArray( $result );
+		// sanitize_text_field strips tags and normalizes whitespace.
+		$this->assertStringNotContainsString( '<script>', $result['rule']['author_or_role'] );
+		$this->assertStringNotContainsString( "\n", $result['rule']['author_or_role'] );
+	}
 }

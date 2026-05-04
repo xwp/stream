@@ -65,6 +65,67 @@ class Abilities {
 
 		add_action( 'wp_abilities_api_categories_init', array( $this, 'register_category' ) );
 		add_action( 'wp_abilities_api_init', array( $this, 'register_abilities' ) );
+
+		// REST requests don't load Admin, so the dynamic view_stream cap filter
+		// isn't registered. Register an equivalent here so read abilities can
+		// authorize editors / other allowed roles consistently with the admin UI.
+		if ( ! isset( $this->plugin->admin ) ) {
+			add_filter( 'user_has_cap', array( $this, 'filter_user_caps' ), 10, 4 );
+		}
+	}
+
+	/**
+	 * Grant the dynamic view_stream cap to users whose role appears in
+	 * general_role_access. Mirrors Admin::filter_user_caps() for REST contexts
+	 * where Admin isn't instantiated.
+	 *
+	 * @param array    $allcaps All capabilities.
+	 * @param array    $caps    Required caps.
+	 * @param array    $args    Unused.
+	 * @param \WP_User $user    User.
+	 * @return array
+	 */
+	public function filter_user_caps( $allcaps, $caps, $args, $user = null ) {
+		unset( $args );
+
+		if ( ! in_array( 'view_stream', (array) $caps, true ) ) {
+			return $allcaps;
+		}
+
+		$role_access = isset( $this->plugin->settings->options['general_role_access'] )
+			? (array) $this->plugin->settings->options['general_role_access']
+			: array();
+
+		if ( empty( $role_access ) ) {
+			return $allcaps;
+		}
+
+		$user = is_a( $user, '\WP_User' ) ? $user : wp_get_current_user();
+		if ( ! $user || ! $user->exists() ) {
+			return $allcaps;
+		}
+
+		global $wp_roles;
+		$_wp_roles = isset( $wp_roles ) ? $wp_roles : new \WP_Roles();
+
+		$roles = array_unique(
+			array_merge(
+				$user->roles,
+				array_filter(
+					array_keys( $user->caps ),
+					array( $_wp_roles, 'is_role' )
+				)
+			)
+		);
+
+		foreach ( $roles as $role ) {
+			if ( in_array( $role, $role_access, true ) ) {
+				$allcaps['view_stream'] = true;
+				break;
+			}
+		}
+
+		return $allcaps;
 	}
 
 	/**

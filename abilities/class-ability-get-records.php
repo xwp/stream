@@ -60,6 +60,17 @@ class Ability_Get_Records extends Ability {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * Read abilities use Stream's view capability so editors / other allowed
+	 * roles can call them, matching the admin UI's record-viewing permissions.
+	 */
+	public function permission_callback( $input = array() ) {
+		unset( $input );
+		return current_user_can( 'view_stream' );
+	}
+
+	/**
+	 * {@inheritDoc}
 	 */
 	public function get_input_schema() {
 		return array(

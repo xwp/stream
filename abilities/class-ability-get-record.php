@@ -46,6 +46,17 @@ class Ability_Get_Record extends Ability {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * Read abilities use Stream's view capability so editors / other allowed
+	 * roles can call them, matching the admin UI's record-viewing permissions.
+	 */
+	public function permission_callback( $input = array() ) {
+		unset( $input );
+		return current_user_can( 'view_stream' );
+	}
+
+	/**
+	 * {@inheritDoc}
 	 */
 	public function get_input_schema() {
 		return array(
@@ -98,12 +109,25 @@ class Ability_Get_Record extends Ability {
 
 		$id = isset( $input['id'] ) ? (int) $input['id'] : 0;
 
-		// Stream's Query class doesn't expose a single-ID filter, so query the table directly.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$row = $wpdb->get_row(
-			$wpdb->prepare( "SELECT * FROM {$wpdb->stream} WHERE ID = %d", $id ),
-			ARRAY_A
-		);
+		// Stream's Query class doesn't expose a single-ID filter (record__in
+		// is broken for one-element arrays due to array_shift() in
+		// Query::query()), so query the table directly. We add an explicit
+		// blog_id filter on multisite so the response can never leak a record
+		// from another site on a network install — the admin records page is
+		// scoped per-site and abilities must match.
+		$where    = '';
+		$prepared = array( $id );
+		if ( is_multisite() && ! $this->plugin->is_network_activated() ) {
+			$where      = ' AND blog_id = %d';
+			$prepared[] = get_current_blog_id();
+		}
+
+		// $wpdb->stream and {$where} are constructed from string literals in this
+		// method (no user input), and $prepared holds only an int id and (on
+		// multisite) the integer blog id from get_current_blog_id().
+		$sql = "SELECT * FROM {$wpdb->stream} WHERE ID = %d{$where}";
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared
+		$row = $wpdb->get_row( $wpdb->prepare( $sql, $prepared ), ARRAY_A );
 
 		if ( empty( $row ) ) {
 			return new \WP_Error(

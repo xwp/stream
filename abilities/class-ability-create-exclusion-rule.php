@@ -67,23 +67,29 @@ class Ability_Create_Exclusion_Rule extends Ability {
 			'properties'           => array(
 				'author_or_role' => array(
 					'type'        => 'string',
-					'description' => 'User ID or role slug. Empty string matches anything.',
+					'description' => 'User ID or role slug.',
+					'maxLength'   => 100,
 				),
 				'connector'      => array(
 					'type'        => 'string',
-					'description' => 'Connector slug (e.g. "posts", "users").',
+					'description' => 'Connector slug (e.g. "posts", "users"). Validated against registered connectors.',
+					'maxLength'   => 100,
 				),
 				'context'        => array(
 					'type'        => 'string',
 					'description' => 'Context slug under the connector.',
+					'maxLength'   => 100,
 				),
 				'action'         => array(
 					'type'        => 'string',
 					'description' => 'Action slug (e.g. "updated", "deleted").',
+					'maxLength'   => 100,
 				),
 				'ip_address'     => array(
 					'type'        => 'string',
 					'description' => 'Client IP address (IPv4 or IPv6).',
+					'format'      => 'ip',
+					'maxLength'   => 45,
 				),
 			),
 		);
@@ -120,6 +126,60 @@ class Ability_Create_Exclusion_Rule extends Ability {
 	 * {@inheritDoc}
 	 */
 	public function execute( $input = null ) {
+		$input = (array) $input;
+
+		// Sanitize each incoming value; reject all-empty payloads so we never
+		// store a no-op rule that would silently match nothing (or, depending
+		// on Log::record_excluded() semantics, everything).
+		$sanitized = array();
+		foreach ( self::RULE_COLUMNS as $column ) {
+			$raw                  = isset( $input[ $column ] ) ? (string) $input[ $column ] : '';
+			$sanitized[ $column ] = sanitize_text_field( $raw );
+		}
+
+		// JSON Schema's format:ip is a hint, not enforced by rest_validate_value_from_schema.
+		// Validate explicitly so bogus IPs never reach storage.
+		if ( '' !== $sanitized['ip_address'] && ! filter_var( $sanitized['ip_address'], FILTER_VALIDATE_IP ) ) {
+			return new \WP_Error(
+				'stream_invalid_ip',
+				__( 'ip_address must be a valid IPv4 or IPv6 address.', 'stream' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		// Validate connector against registered connectors when provided.
+		if ( '' !== $sanitized['connector'] ) {
+			$known = isset( $this->plugin->connectors->connectors )
+				? array_keys( (array) $this->plugin->connectors->connectors )
+				: array();
+			if ( ! empty( $known ) && ! in_array( $sanitized['connector'], $known, true ) ) {
+				return new \WP_Error(
+					'stream_unknown_connector',
+					/* translators: %s: connector slug */
+					sprintf( __( 'Unknown connector: %s. Use stream/get-connectors to list valid slugs.', 'stream' ), $sanitized['connector'] ),
+					array( 'status' => 400 )
+				);
+			}
+		}
+
+		// Reject payloads where every filter is empty after sanitization. The
+		// JSON Schema minProperties:1 only ensures *a* key was supplied; this
+		// guards against {"author_or_role": ""}.
+		$has_value = false;
+		foreach ( $sanitized as $value ) {
+			if ( '' !== $value ) {
+				$has_value = true;
+				break;
+			}
+		}
+		if ( ! $has_value ) {
+			return new \WP_Error(
+				'stream_empty_rule',
+				__( 'At least one filter value must be non-empty.', 'stream' ),
+				array( 'status' => 400 )
+			);
+		}
+
 		$option_key = $this->plugin->settings->option_key;
 		$options    = (array) get_option( $option_key, array() );
 
@@ -142,7 +202,7 @@ class Ability_Create_Exclusion_Rule extends Ability {
 
 		$rule = array();
 		foreach ( self::RULE_COLUMNS as $column ) {
-			$value                      = isset( $input[ $column ] ) ? (string) $input[ $column ] : '';
+			$value                      = $sanitized[ $column ];
 			$rules[ $column ][ $index ] = $value;
 			$rule[ $column ]            = '' === $value ? null : $value;
 		}
