@@ -159,11 +159,32 @@ class Abilities {
 	/**
 	 * Whether the integration is enabled in Stream settings.
 	 *
+	 * Reads the network-level option directly when Stream is network-activated,
+	 * because Settings::get_options() only loads from get_site_option() inside
+	 * is_network_admin() screens. In REST and frontend contexts on a
+	 * network-activated install, $plugin->settings->options reflects the
+	 * (typically empty) per-site option, which would silently keep the
+	 * Abilities API disabled regardless of the network admin's setting.
+	 *
 	 * @return bool
 	 */
 	public function is_enabled() {
-		$key     = 'advanced_' . self::SETTING_NAME;
-		$options = isset( $this->plugin->settings ) ? (array) $this->plugin->settings->options : array();
+		$key = 'advanced_' . self::SETTING_NAME;
+
+		if (
+			is_multisite()
+			&& isset( $this->plugin->settings )
+			&& $this->plugin->is_network_activated()
+		) {
+			$options = (array) get_site_option(
+				$this->plugin->settings->network_options_key,
+				array()
+			);
+		} else {
+			$options = isset( $this->plugin->settings )
+				? (array) $this->plugin->settings->options
+				: array();
+		}
 
 		return ! empty( $options[ $key ] );
 	}

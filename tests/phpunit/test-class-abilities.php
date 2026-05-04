@@ -52,6 +52,98 @@ class Test_Abilities extends WP_StreamTestCase {
 		$this->assertTrue( $abilities->is_enabled() );
 	}
 
+	/**
+	 * On a network-activated multisite install, the toggle is stored in the
+	 * network option (wp_stream_network) but Settings::get_options() only
+	 * loads from get_site_option() inside is_network_admin(). REST and
+	 * frontend contexts therefore see the (typically empty) per-site option
+	 * via $plugin->settings->options. is_enabled() must read directly from
+	 * the network option in that case.
+	 *
+	 * @group ms-required
+	 */
+	public function test_is_enabled_reads_network_option_when_network_activated() {
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'Requires multisite.' );
+		}
+
+		$network_key = $this->plugin->settings->network_options_key;
+
+		// Snapshot whatever's in the network option so we can restore.
+		$original_network = get_site_option( $network_key, false );
+
+		// Force network-activated state and ensure the in-memory per-site
+		// options do NOT have the toggle set, so a passing assertion proves
+		// is_enabled() consulted the network option (not the in-memory copy).
+		add_filter( 'wp_stream_is_network_activated', '__return_true' );
+		$this->plugin->settings->options['advanced_enable_abilities_api'] = 0;
+
+		try {
+			$abilities = new Abilities( $this->plugin );
+
+			update_site_option(
+				$network_key,
+				array( 'advanced_enable_abilities_api' => 0 )
+			);
+			$this->assertFalse(
+				$abilities->is_enabled(),
+				'Network option disabled -> is_enabled() must be false even if in-memory options were ignored.'
+			);
+
+			update_site_option(
+				$network_key,
+				array( 'advanced_enable_abilities_api' => 1 )
+			);
+			$this->assertTrue(
+				$abilities->is_enabled(),
+				'Network option enabled -> is_enabled() must be true even though in-memory options say disabled.'
+			);
+		} finally {
+			remove_filter( 'wp_stream_is_network_activated', '__return_true' );
+			if ( false === $original_network ) {
+				delete_site_option( $network_key );
+			} else {
+				update_site_option( $network_key, $original_network );
+			}
+		}
+	}
+
+	/**
+	 * Inverse of the above: on a non-network-activated install (which
+	 * includes single-site and per-site activation on multisite), is_enabled()
+	 * must continue to read the in-memory per-site options, not the network
+	 * option.
+	 */
+	public function test_is_enabled_reads_per_site_options_when_not_network_activated() {
+		add_filter( 'wp_stream_is_network_activated', '__return_false' );
+
+		$network_key      = $this->plugin->settings->network_options_key;
+		$original_network = get_site_option( $network_key, false );
+
+		try {
+			$abilities = new Abilities( $this->plugin );
+
+			// Network option set to enabled, but plugin is NOT network-activated:
+			// the network option must be ignored.
+			update_site_option(
+				$network_key,
+				array( 'advanced_enable_abilities_api' => 1 )
+			);
+			$this->plugin->settings->options['advanced_enable_abilities_api'] = 0;
+			$this->assertFalse( $abilities->is_enabled() );
+
+			$this->plugin->settings->options['advanced_enable_abilities_api'] = 1;
+			$this->assertTrue( $abilities->is_enabled() );
+		} finally {
+			remove_filter( 'wp_stream_is_network_activated', '__return_false' );
+			if ( false === $original_network ) {
+				delete_site_option( $network_key );
+			} else {
+				update_site_option( $network_key, $original_network );
+			}
+		}
+	}
+
 	public function test_constructor_does_not_hook_when_setting_disabled() {
 		$this->plugin->settings->options['advanced_enable_abilities_api'] = 0;
 
