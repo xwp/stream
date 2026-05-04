@@ -50,7 +50,6 @@ class Test_Ability_Get_Records extends Abilities_TestCase {
 	public function test_meta_marks_readonly_idempotent_and_rest_exposed() {
 		$meta = $this->ability->get_meta();
 		$this->assertTrue( $meta['show_in_rest'] );
-		$this->assertSame( 'stream', $meta['category'] );
 		$this->assertTrue( $meta['annotations']['readonly'] );
 		$this->assertTrue( $meta['annotations']['idempotent'] );
 	}

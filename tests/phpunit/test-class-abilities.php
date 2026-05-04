@@ -107,15 +107,33 @@ class Test_Abilities extends WP_StreamTestCase {
 		}
 	}
 
-	public function test_register_abilities_is_idempotent_about_loading() {
+	public function test_load_abilities_populates_all_slugs() {
 		$abilities = new Abilities( $this->plugin );
 
-		// First call loads and registers.
-		$abilities->register_abilities();
-		$count_after_first = count( $abilities->abilities );
+		$abilities->load_abilities();
 
-		// Second call must not re-load (the load_abilities() guard checks the property).
-		$abilities->register_abilities();
-		$this->assertSame( $count_after_first, count( $abilities->abilities ) );
+		$this->assertCount( 11, $abilities->abilities );
+		foreach ( $abilities->get_ability_slugs() as $slug ) {
+			$this->assertArrayHasKey( 'stream/' . $slug, $abilities->abilities );
+		}
+	}
+
+	public function test_register_abilities_loads_and_registers_when_action_fires() {
+		if ( ! class_exists( '\WP_Ability' ) ) {
+			$this->markTestSkipped( 'Requires WordPress 6.9+ (Abilities API).' );
+		}
+
+		// Enable the setting so the constructor wires both category + abilities hooks.
+		$this->plugin->settings->options['advanced_enable_abilities_api'] = 1;
+		remove_all_actions( 'wp_abilities_api_categories_init' );
+		remove_all_actions( 'wp_abilities_api_init' );
+
+		$abilities = new Abilities( $this->plugin );
+
+		// wp_get_ability() lazily fires both init actions.
+		$retrieved = wp_get_ability( 'stream/get-records' );
+
+		$this->assertNotNull( $retrieved );
+		$this->assertCount( 11, $abilities->abilities );
 	}
 }

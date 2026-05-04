@@ -29,9 +29,8 @@ class Test_Ability extends WP_StreamTestCase {
 		$this->ability = new Fake_Ability_For_Test( $this->plugin );
 	}
 
-	public function test_get_meta_includes_category_and_rest_exposure() {
+	public function test_get_meta_exposes_in_rest_without_annotations_by_default() {
 		$meta = $this->ability->get_meta();
-		$this->assertSame( Abilities::CATEGORY_SLUG, $meta['category'] );
 		$this->assertTrue( $meta['show_in_rest'] );
 		$this->assertArrayNotHasKey( 'annotations', $meta );
 	}
@@ -78,7 +77,34 @@ class Test_Ability extends WP_StreamTestCase {
 			$this->markTestSkipped( 'Requires WordPress 6.9+ (Abilities API).' );
 		}
 
-		$this->ability->register();
+		// Both wp_register_ability_category() and wp_register_ability() are gated on
+		// doing_action(...); fire each action manually with our callbacks hooked. This
+		// also works after another test in the suite has already booted the registry,
+		// because the doing_action() check just looks at the current action stack.
+		add_action(
+			'wp_abilities_api_categories_init',
+			static function () {
+				if ( null === wp_get_ability_category( Abilities::CATEGORY_SLUG ) ) {
+					wp_register_ability_category(
+						Abilities::CATEGORY_SLUG,
+						array(
+							'label'       => 'Stream',
+							'description' => 'Stream test category.',
+						)
+					);
+				}
+			}
+		);
+		do_action( 'wp_abilities_api_categories_init' );
+
+		$ability = $this->ability;
+		add_action(
+			'wp_abilities_api_init',
+			static function () use ( $ability ) {
+				$ability->register();
+			}
+		);
+		do_action( 'wp_abilities_api_init' );
 
 		$registered = wp_get_ability( 'stream/fake' );
 		$this->assertNotNull( $registered );

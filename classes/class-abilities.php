@@ -63,7 +63,27 @@ class Abilities {
 			return;
 		}
 
+		add_action( 'wp_abilities_api_categories_init', array( $this, 'register_category' ) );
 		add_action( 'wp_abilities_api_init', array( $this, 'register_abilities' ) );
+	}
+
+	/**
+	 * Hooked to wp_abilities_api_categories_init. Registers the "stream" ability category.
+	 *
+	 * @return void
+	 */
+	public function register_category() {
+		if ( ! function_exists( 'wp_register_ability_category' ) ) {
+			return;
+		}
+
+		wp_register_ability_category(
+			self::CATEGORY_SLUG,
+			array(
+				'label'       => __( 'Stream', 'stream' ),
+				'description' => __( 'Abilities that read or modify Stream activity logs and configuration.', 'stream' ),
+			)
+		);
 	}
 
 	/**

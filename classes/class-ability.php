@@ -97,13 +97,12 @@ abstract class Ability {
 	}
 
 	/**
-	 * Meta passed to wp_register_ability(). Sets category and REST exposure.
+	 * Meta passed to wp_register_ability(). Sets REST exposure and (optionally) annotations.
 	 *
 	 * @return array
 	 */
 	public function get_meta() {
 		$meta = array(
-			'category'     => Abilities::CATEGORY_SLUG,
 			'show_in_rest' => true,
 		);
 
@@ -128,6 +127,7 @@ abstract class Ability {
 		$args = array(
 			'label'               => $this->get_label(),
 			'description'         => $this->get_description(),
+			'category'            => Abilities::CATEGORY_SLUG,
 			'output_schema'       => $this->get_output_schema(),
 			'execute_callback'    => array( $this, 'execute' ),
 			'permission_callback' => array( $this, 'permission_callback' ),

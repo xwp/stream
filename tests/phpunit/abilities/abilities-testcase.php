@@ -32,6 +32,13 @@ abstract class Abilities_TestCase extends WP_StreamTestCase {
 	protected $subscriber_user_id;
 
 	/**
+	 * Snapshot of $plugin->settings->options at setUp() time, restored in tearDown().
+	 *
+	 * @var array
+	 */
+	private $options_snapshot = array();
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function setUp(): void {
@@ -43,6 +50,24 @@ abstract class Abilities_TestCase extends WP_StreamTestCase {
 
 		$this->admin_user_id      = self::factory()->user->create( array( 'role' => 'administrator' ) );
 		$this->subscriber_user_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+
+		// Snapshot the in-memory options so write abilities can mutate them in a test
+		// without leaking state into the next test (the underlying wp_options DB row is
+		// rolled back by the WP test framework, but the singleton $plugin->settings->options
+		// array survives between tests in the same process).
+		$this->options_snapshot = isset( $this->plugin->settings->options )
+			? (array) $this->plugin->settings->options
+			: array();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function tearDown(): void {
+		if ( isset( $this->plugin->settings ) ) {
+			$this->plugin->settings->options = $this->options_snapshot;
+		}
+		parent::tearDown();
 	}
 
 	/**

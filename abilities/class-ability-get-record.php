@@ -93,11 +93,18 @@ class Ability_Get_Record extends Ability {
 	 * {@inheritDoc}
 	 */
 	public function execute( $input ) {
+		global $wpdb;
+
 		$id = isset( $input['id'] ) ? (int) $input['id'] : 0;
 
-		$records = $this->plugin->db->get_records( array( 'record' => $id ) );
+		// Stream's Query class doesn't expose a single-ID filter, so query the table directly.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$row = $wpdb->get_row(
+			$wpdb->prepare( "SELECT * FROM {$wpdb->stream} WHERE ID = %d", $id ),
+			ARRAY_A
+		);
 
-		if ( empty( $records ) ) {
+		if ( empty( $row ) ) {
 			return new \WP_Error(
 				'stream_record_not_found',
 				__( 'Record not found.', 'stream' ),
@@ -105,9 +112,8 @@ class Ability_Get_Record extends Ability {
 			);
 		}
 
-		$record         = (array) $records[0];
-		$record['meta'] = (array) get_metadata( 'record', $record['ID'] );
+		$row['meta'] = (array) get_metadata( 'record', $row['ID'] );
 
-		return $record;
+		return $row;
 	}
 }
