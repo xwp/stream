@@ -112,11 +112,65 @@ class Ability_Create_Alert extends Ability {
 	public function execute( $input = null ) {
 		$status = isset( $input['status'] ) ? $input['status'] : 'wp_stream_enabled';
 
+		// Validate alert_type against the registered notifier slugs. The schema
+		// can't enum these because alert types are extensible via the
+		// wp_stream_alert_types filter -- a hardcoded enum would lock out
+		// 3rd-party notifiers. Validate at execute() time instead.
+		$registered_types = isset( $this->plugin->alerts->alert_types )
+			? array_keys( (array) $this->plugin->alerts->alert_types )
+			: array();
+		if ( ! empty( $registered_types ) && ! in_array( $input['alert_type'], $registered_types, true ) ) {
+			return new \WP_Error(
+				'stream_unknown_alert_type',
+				sprintf(
+					/* translators: 1: alert_type slug supplied by caller, 2: comma-separated list of registered alert type slugs */
+					__( 'Unknown alert_type "%1$s". Registered types: %2$s.', 'stream' ),
+					(string) $input['alert_type'],
+					implode( ', ', $registered_types )
+				),
+				array( 'status' => 400 )
+			);
+		}
+
+		// Mirror the admin form's connector-context split so Alert::get_title()
+		// and Alert_Trigger_Context::check_record() see the same data shape
+		// they see when an admin creates the alert through the UI.
+		$trigger_context_raw = (string) $input['trigger_context'];
+		if ( false !== strpos( $trigger_context_raw, '-' ) ) {
+			list( $trigger_connector, $trigger_context ) = explode( '-', $trigger_context_raw, 2 );
+		} else {
+			$trigger_connector = $trigger_context_raw;
+			$trigger_context   = '';
+		}
+
+		$extra_meta = isset( $input['alert_meta'] ) ? (array) $input['alert_meta'] : array();
+		$alert_meta = array_merge(
+			$extra_meta,
+			array(
+				'trigger_author'    => $input['trigger_author'],
+				'trigger_connector' => $trigger_connector,
+				'trigger_context'   => $trigger_context,
+				'trigger_action'    => $input['trigger_action'],
+			)
+		);
+
+		// Build an Alert model so we can reuse Stream's title-generation logic
+		// (otherwise wp_insert_post stores 'Auto Draft' for empty post_title).
+		$alert_model = new Alert(
+			(object) array(
+				'alert_type' => $input['alert_type'],
+				'alert_meta' => $alert_meta,
+				'status'     => $status,
+			),
+			$this->plugin
+		);
+		$post_title  = $alert_model->get_title();
+
 		$post_id = wp_insert_post(
 			array(
 				'post_type'   => Alerts::POST_TYPE,
 				'post_status' => $status,
-				'post_title'  => '',
+				'post_title'  => $post_title,
 			),
 			true
 		);
@@ -124,16 +178,6 @@ class Ability_Create_Alert extends Ability {
 		if ( is_wp_error( $post_id ) ) {
 			return $post_id;
 		}
-
-		$extra_meta = isset( $input['alert_meta'] ) ? (array) $input['alert_meta'] : array();
-		$alert_meta = array_merge(
-			$extra_meta,
-			array(
-				'trigger_author'  => $input['trigger_author'],
-				'trigger_context' => $input['trigger_context'],
-				'trigger_action'  => $input['trigger_action'],
-			)
-		);
 
 		update_post_meta( $post_id, 'alert_type', $input['alert_type'] );
 		update_post_meta( $post_id, 'alert_meta', $alert_meta );
