@@ -73,40 +73,45 @@ class Test_Ability extends WP_StreamTestCase {
 	}
 
 	public function test_register_makes_ability_retrievable() {
-		if ( ! function_exists( 'wp_register_ability' ) || ! function_exists( 'wp_get_ability' ) ) {
+		if ( ! function_exists( 'wp_register_ability' ) || ! function_exists( 'wp_has_ability' ) ) {
 			$this->markTestSkipped( 'Requires WordPress 6.9+ (Abilities API).' );
 		}
 
-		// Both wp_register_ability_category() and wp_register_ability() are gated on
-		// doing_action(...); fire each action manually with our callbacks hooked. This
-		// also works after another test in the suite has already booted the registry,
-		// because the doing_action() check just looks at the current action stack.
-		add_action(
-			'wp_abilities_api_categories_init',
-			static function () {
-				if ( null === wp_get_ability_category( Abilities::CATEGORY_SLUG ) ) {
-					wp_register_ability_category(
-						Abilities::CATEGORY_SLUG,
-						array(
-							'label'       => 'Stream',
-							'description' => 'Stream test category.',
-						)
-					);
-				}
-			}
-		);
-		do_action( 'wp_abilities_api_categories_init' );
+		// WP 6.9 gates wp_register_ability() and wp_register_ability_category() on
+		// doing_action(); manipulate $wp_current_filter directly to satisfy the guard
+		// without polluting the global hook registry. Same pattern WP core uses in
+		// tests/phpunit/tests/rest-api/wpRestAbilitiesV1RunController.php.
+		global $wp_current_filter;
 
-		$ability = $this->ability;
-		add_action(
-			'wp_abilities_api_init',
-			static function () use ( $ability ) {
-				$ability->register();
-			}
-		);
-		do_action( 'wp_abilities_api_init' );
+		if ( ! wp_has_ability_category( Abilities::CATEGORY_SLUG ) ) {
+			$wp_current_filter[] = 'wp_abilities_api_categories_init'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+			wp_register_ability_category(
+				Abilities::CATEGORY_SLUG,
+				array(
+					'label'       => 'Stream',
+					'description' => 'Stream test category.',
+				)
+			);
+			array_pop( $wp_current_filter );
+		}
 
-		$registered = wp_get_ability( 'stream/fake' );
-		$this->assertNotNull( $registered );
+		if ( ! wp_has_ability( 'stream/fake' ) ) {
+			$wp_current_filter[] = 'wp_abilities_api_init'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+			$this->ability->register();
+			array_pop( $wp_current_filter );
+		}
+
+		$this->assertTrue( wp_has_ability( 'stream/fake' ) );
+		$this->assertInstanceOf( '\WP_Ability', wp_get_ability( 'stream/fake' ) );
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function tearDown(): void {
+		if ( function_exists( 'wp_has_ability' ) && wp_has_ability( 'stream/fake' ) ) {
+			wp_unregister_ability( 'stream/fake' );
+		}
+		parent::tearDown();
 	}
 }

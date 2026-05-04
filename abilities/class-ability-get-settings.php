@@ -38,8 +38,9 @@ class Ability_Get_Settings extends Ability {
 	 */
 	public function get_annotations() {
 		return array(
-			'readonly'   => true,
-			'idempotent' => true,
+			'readonly'     => true,
+			'idempotent'   => true,
+			'instructions' => __( 'Call before stream/update-settings to read the current configuration so you can present a diff to the user. Setting keys follow the {section}_{field} convention (e.g. general_records_ttl).', 'stream' ),
 		);
 	}
 

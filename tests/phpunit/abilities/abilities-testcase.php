@@ -71,6 +71,84 @@ abstract class Abilities_TestCase extends WP_StreamTestCase {
 	}
 
 	/**
+	 * Run a callback with the given action name pushed onto $wp_current_filter.
+	 *
+	 * WordPress 6.9 gates wp_register_ability() and wp_register_ability_category()
+	 * behind a doing_action() check. Outside the natural wp_abilities_api_init /
+	 * wp_abilities_api_categories_init action callbacks, registration triggers
+	 * _doing_it_wrong. WP core's own tests work around this by manipulating
+	 * $wp_current_filter directly; that's both faster and less polluting than
+	 * round-tripping through add_action() + do_action().
+	 *
+	 * @param string   $action_name Action name to fake doing.
+	 * @param callable $callback    Callable to run inside the faked action.
+	 * @return mixed Whatever $callback returns.
+	 */
+	protected function with_doing_action( $action_name, callable $callback ) {
+		global $wp_current_filter;
+		$wp_current_filter[] = $action_name; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		try {
+			return $callback();
+		} finally {
+			array_pop( $wp_current_filter );
+		}
+	}
+
+	/**
+	 * Ensure the "stream" ability category is registered without going through
+	 * the lazy registry-init action (which fires only once per process).
+	 *
+	 * @return void
+	 */
+	protected function ensure_stream_category_registered() {
+		if ( ! function_exists( 'wp_has_ability_category' ) || ! function_exists( 'wp_register_ability_category' ) ) {
+			return;
+		}
+		if ( wp_has_ability_category( Abilities::CATEGORY_SLUG ) ) {
+			return;
+		}
+		$this->with_doing_action(
+			'wp_abilities_api_categories_init',
+			static function () {
+				wp_register_ability_category(
+					Abilities::CATEGORY_SLUG,
+					array(
+						'label'       => 'Stream',
+						'description' => 'Stream test category.',
+					)
+				);
+			}
+		);
+	}
+
+	/**
+	 * Register a Stream ability instance via wp_register_ability(), faking the
+	 * required action context. Idempotent: returns silently if the ability is
+	 * already registered (so tests can run in any order within a process).
+	 *
+	 * @param Ability $ability Ability instance to register.
+	 * @return void
+	 */
+	protected function register_ability_in_test( Ability $ability ) {
+		$this->ensure_stream_category_registered();
+
+		if ( ! function_exists( 'wp_has_ability' ) ) {
+			return;
+		}
+
+		if ( wp_has_ability( $ability->get_name() ) ) {
+			return;
+		}
+
+		$this->with_doing_action(
+			'wp_abilities_api_init',
+			static function () use ( $ability ) {
+				$ability->register();
+			}
+		);
+	}
+
+	/**
 	 * Validate a value against a JSON Schema using WP's REST validator.
 	 *
 	 * Asserts no validation errors. Returns the validation result (true on success).

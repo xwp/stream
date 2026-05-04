@@ -38,8 +38,12 @@ class Ability_Purge_Records extends Ability {
 	 */
 	public function get_annotations() {
 		return array(
-			'readonly'    => false,
-			'destructive' => true,
+			'readonly'     => false,
+			'destructive'  => true,
+			// HTTP-idempotent: applying the same purge twice ends in the same state.
+			// WP REST router requires destructive AND idempotent to route to DELETE.
+			'idempotent'   => true,
+			'instructions' => __( 'Permanently deletes log records matching the filters. ALWAYS run stream/get-records with the same filters first to show the user how many records will be removed, and require explicit confirmation. The ability also requires confirm=true in the input. There is no undo.', 'stream' ),
 		);
 	}
 

@@ -51,7 +51,8 @@ class Ability_Create_Exclusion_Rule extends Ability {
 	 */
 	public function get_annotations() {
 		return array(
-			'readonly' => false,
+			'readonly'     => false,
+			'instructions' => __( 'Add a rule that prevents matching activity from ever being logged. Confirm intent with the user before calling: excluded events cannot be recovered later. Validate filter values with stream/get-connectors when in doubt.', 'stream' ),
 		);
 	}
 

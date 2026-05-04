@@ -38,8 +38,9 @@ class Ability_Get_Exclusion_Rules extends Ability {
 	 */
 	public function get_annotations() {
 		return array(
-			'readonly'   => true,
-			'idempotent' => true,
+			'readonly'     => true,
+			'idempotent'   => true,
+			'instructions' => __( 'Use to inspect which activity is being silently dropped before it reaches the log. Run before stream/create-exclusion-rule so you can avoid duplicate rules.', 'stream' ),
 		);
 	}
 

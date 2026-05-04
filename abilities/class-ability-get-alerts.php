@@ -38,8 +38,9 @@ class Ability_Get_Alerts extends Ability {
 	 */
 	public function get_annotations() {
 		return array(
-			'readonly'   => true,
-			'idempotent' => true,
+			'readonly'     => true,
+			'idempotent'   => true,
+			'instructions' => __( 'Use to enumerate existing alert rules before creating new ones (stream/create-alert) or removing them (stream/delete-alert). Pass status="enabled" to see only active alerts.', 'stream' ),
 		);
 	}
 

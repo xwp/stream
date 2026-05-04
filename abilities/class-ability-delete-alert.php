@@ -38,9 +38,10 @@ class Ability_Delete_Alert extends Ability {
 	 */
 	public function get_annotations() {
 		return array(
-			'readonly'    => false,
-			'destructive' => true,
-			'idempotent'  => true,
+			'readonly'     => false,
+			'destructive'  => true,
+			'idempotent'   => true,
+			'instructions' => __( 'Permanently deletes an alert by ID. Run stream/get-alerts first to confirm the alert exists and to show the user which rule will be removed. Idempotent: deleting an already-deleted alert returns 404, not an error to retry.', 'stream' ),
 		);
 	}
 

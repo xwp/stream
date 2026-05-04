@@ -38,8 +38,9 @@ class Ability_Get_Connectors extends Ability {
 	 */
 	public function get_annotations() {
 		return array(
-			'readonly'   => true,
-			'idempotent' => true,
+			'readonly'     => true,
+			'idempotent'   => true,
+			'instructions' => __( 'Use to discover the valid connector / context / action values for filters in stream/get-records and stream/create-exclusion-rule. Connector slugs are stable identifiers, so cache the result if you call abilities repeatedly.', 'stream' ),
 		);
 	}
 

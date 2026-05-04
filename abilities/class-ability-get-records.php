@@ -52,8 +52,9 @@ class Ability_Get_Records extends Ability {
 	 */
 	public function get_annotations() {
 		return array(
-			'readonly'   => true,
-			'idempotent' => true,
+			'readonly'     => true,
+			'idempotent'   => true,
+			'instructions' => __( 'Use to investigate site activity. Always pass narrow filters (date range, user, connector) where possible: the activity log can be very large, and unfiltered queries are paginated to records_per_page (default 20). Combine with stream/get-record when you need full metadata for a specific event.', 'stream' ),
 		);
 	}
 

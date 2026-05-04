@@ -38,7 +38,8 @@ class Ability_Create_Alert extends Ability {
 	 */
 	public function get_annotations() {
 		return array(
-			'readonly' => false,
+			'readonly'     => false,
+			'instructions' => __( 'Create an alert that fires whenever a record matches the supplied filters. Validate the connector/context/action with stream/get-connectors first, and confirm with the user before creating the alert because it changes site behavior.', 'stream' ),
 		);
 	}
 

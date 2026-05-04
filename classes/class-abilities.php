@@ -175,6 +175,12 @@ class Abilities {
 		}
 
 		foreach ( $this->abilities as $ability ) {
+			// Defensive: skip if another loader instance already registered this
+			// ability (e.g. duplicate plugin instances in tests, multisite hooks).
+			// Re-registering would emit a _doing_it_wrong notice from core.
+			if ( function_exists( 'wp_has_ability' ) && wp_has_ability( $ability->get_name() ) ) {
+				continue;
+			}
 			$ability->register();
 		}
 	}

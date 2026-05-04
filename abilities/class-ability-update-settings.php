@@ -38,8 +38,9 @@ class Ability_Update_Settings extends Ability {
 	 */
 	public function get_annotations() {
 		return array(
-			'readonly'   => false,
-			'idempotent' => true,
+			'readonly'     => false,
+			'idempotent'   => true,
+			'instructions' => __( 'Apply a partial update to Stream settings. Always call stream/get-settings first so you can show the user the existing values, and require confirmation before changing keys that affect data retention (e.g. general_records_ttl).', 'stream' ),
 		);
 	}
 

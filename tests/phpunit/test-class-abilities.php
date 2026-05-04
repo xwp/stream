@@ -125,15 +125,29 @@ class Test_Abilities extends WP_StreamTestCase {
 
 		// Enable the setting so the constructor wires both category + abilities hooks.
 		$this->plugin->settings->options['advanced_enable_abilities_api'] = 1;
-		remove_all_actions( 'wp_abilities_api_categories_init' );
-		remove_all_actions( 'wp_abilities_api_init' );
 
 		$abilities = new Abilities( $this->plugin );
 
-		// wp_get_ability() lazily fires both init actions.
-		$retrieved = wp_get_ability( 'stream/get-records' );
+		// The registry is a process-wide singleton; once the lazy init actions have
+		// already fired in a prior test, wp_get_ability() won't refire them. Drive
+		// each registration step explicitly via $wp_current_filter so this test is
+		// deterministic regardless of ordering.
+		global $wp_current_filter;
 
-		$this->assertNotNull( $retrieved );
+		if ( ! wp_has_ability_category( Abilities::CATEGORY_SLUG ) ) {
+			$wp_current_filter[] = 'wp_abilities_api_categories_init'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+			$abilities->register_category();
+			array_pop( $wp_current_filter );
+		}
+
+		// Always exercise register_abilities() so this loader instance's abilities
+		// array gets populated regardless of whether the global registry already
+		// has them registered (a prior test in the same process may have done so).
+		$wp_current_filter[] = 'wp_abilities_api_init'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$abilities->register_abilities();
+		array_pop( $wp_current_filter );
+
+		$this->assertTrue( wp_has_ability( 'stream/get-records' ) );
 		$this->assertCount( 11, $abilities->abilities );
 	}
 }

@@ -38,8 +38,9 @@ class Ability_Get_Record extends Ability {
 	 */
 	public function get_annotations() {
 		return array(
-			'readonly'   => true,
-			'idempotent' => true,
+			'readonly'     => true,
+			'idempotent'   => true,
+			'instructions' => __( 'Use after stream/get-records to fetch the full record plus its metadata for a specific log entry, when summary fields from the list response are not enough. Pass the integer ID returned by stream/get-records.', 'stream' ),
 		);
 	}
 
