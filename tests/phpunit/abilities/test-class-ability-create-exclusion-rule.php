@@ -78,7 +78,13 @@ class Test_Ability_Create_Exclusion_Rule extends Abilities_TestCase {
 		$this->assertSame( 1, $second['index'] );
 
 		$stored = (array) get_option( $option_key );
-		$this->assertSame( array( 0 => '', 1 => '' ), $stored['exclude_rules']['exclude_row'] );
+		$this->assertSame(
+			array(
+				0 => '',
+				1 => '',
+			),
+			$stored['exclude_rules']['exclude_row']
+		);
 		$this->assertSame( 'posts', $stored['exclude_rules']['connector'][0] );
 		$this->assertSame( '', $stored['exclude_rules']['connector'][1] );
 		$this->assertSame( '127.0.0.1', $stored['exclude_rules']['ip_address'][1] );

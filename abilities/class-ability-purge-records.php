@@ -113,7 +113,7 @@ class Ability_Purge_Records extends Ability {
 		$params = array();
 
 		if ( ! empty( $input['older_than_days'] ) ) {
-			$where[]  = "stream.created < DATE_SUB(NOW(), INTERVAL %d DAY)";
+			$where[]  = 'stream.created < DATE_SUB(NOW(), INTERVAL %d DAY)';
 			$params[] = (int) $input['older_than_days'];
 		}
 		if ( ! empty( $input['connector'] ) ) {
@@ -141,13 +141,13 @@ class Ability_Purge_Records extends Ability {
 		$where_sql = implode( ' AND ', $where );
 
 		// Count first so the response is meaningful even if the cascade DELETE returns the
-		// combined affected rows from both tables.
+		// combined affected rows from both tables. By the time we reach this point at least
+		// one filter has been added (the count( $where ) === 1 guard above ensures $params
+		// is non-empty), so $wpdb->prepare() is always called with placeholders.
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery
 		$count_sql = "SELECT COUNT(*) FROM {$wpdb->stream} AS stream WHERE {$where_sql}";
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery
-		$prepared_count = empty( $params ) ? $count_sql : $wpdb->prepare( $count_sql, $params );
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$deleted = (int) $wpdb->get_var( $prepared_count );
+		$deleted = (int) $wpdb->get_var( $wpdb->prepare( $count_sql, $params ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		if ( 0 === $deleted ) {
 			return array( 'deleted' => 0 );
@@ -155,10 +155,8 @@ class Ability_Purge_Records extends Ability {
 
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery
 		$delete_sql = "DELETE stream, meta FROM {$wpdb->stream} AS stream LEFT JOIN {$wpdb->streammeta} AS meta ON meta.record_id = stream.ID WHERE {$where_sql}";
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery
-		$prepared_delete = empty( $params ) ? $delete_sql : $wpdb->prepare( $delete_sql, $params );
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$wpdb->query( $prepared_delete );
+		$wpdb->query( $wpdb->prepare( $delete_sql, $params ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		return array( 'deleted' => $deleted );
 	}

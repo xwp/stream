@@ -62,7 +62,13 @@ class Test_Ability_Delete_Alert extends Abilities_TestCase {
 
 		$result = $this->ability->execute( array( 'id' => $alert_id ) );
 
-		$this->assertSame( array( 'deleted' => true, 'id' => $alert_id ), $result );
+		$this->assertSame(
+			array(
+				'deleted' => true,
+				'id'      => $alert_id,
+			),
+			$result
+		);
 		$this->assertNull( get_post( $alert_id ) );
 
 		$this->assert_matches_schema( $result, $this->ability->get_output_schema() );
