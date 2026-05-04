@@ -96,7 +96,8 @@ class Ability_Get_Records extends Ability {
 				'user_id__in'      => array(
 					'type'        => 'array',
 					'items'       => array( 'type' => 'integer' ),
-					'description' => 'Match any of these user IDs.',
+					'maxItems'    => 100,
+					'description' => 'Match any of these user IDs (max 100).',
 				),
 				'user_role'        => array(
 					'type'        => 'string',
@@ -109,7 +110,8 @@ class Ability_Get_Records extends Ability {
 				'connector__in'    => array(
 					'type'        => 'array',
 					'items'       => array( 'type' => 'string' ),
-					'description' => 'Match any of these connector slugs.',
+					'maxItems'    => 100,
+					'description' => 'Match any of these connector slugs (max 100).',
 				),
 				'context'          => array(
 					'type'        => 'string',
@@ -148,8 +150,21 @@ class Ability_Get_Records extends Ability {
 				),
 				'orderby'          => array(
 					'type'        => 'string',
-					'description' => 'Column to order by.',
-					'default'     => 'date',
+					'description' => 'Column to order by. Must be one of Stream\'s sortable columns; unknown values fall back to ID in Query::query().',
+					'enum'        => array(
+						'ID',
+						'created',
+						'user_id',
+						'user_role',
+						'summary',
+						'connector',
+						'context',
+						'action',
+						'site_id',
+						'blog_id',
+						'object_id',
+					),
+					'default'     => 'created',
 				),
 			),
 		);
