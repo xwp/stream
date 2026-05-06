@@ -122,12 +122,20 @@ class Ability_Get_Alerts extends Ability {
 
 		$out = array();
 		foreach ( $posts as $post ) {
+			// get_post_meta() returns '' (string) when the key is missing; casting that
+			// to (array) yields a numerically-indexed array which JSON-encodes as a list
+			// and violates the declared object output schema. Only keep array values.
+			$alert_meta = get_post_meta( $post->ID, 'alert_meta', true );
+			if ( ! is_array( $alert_meta ) ) {
+				$alert_meta = array();
+			}
+
 			$out[] = array(
 				'id'         => (int) $post->ID,
 				'status'     => (string) $post->post_status,
 				'title'      => (string) $post->post_title,
 				'alert_type' => get_post_meta( $post->ID, 'alert_type', true ),
-				'alert_meta' => (array) get_post_meta( $post->ID, 'alert_meta', true ),
+				'alert_meta' => $alert_meta,
 			);
 		}
 

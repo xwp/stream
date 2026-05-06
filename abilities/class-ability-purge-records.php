@@ -115,33 +115,48 @@ class Ability_Purge_Records extends Ability {
 			);
 		}
 
-		$where  = array( '1=1' );
-		$params = array();
+		$where        = array( '1=1' );
+		$params       = array();
+		$filter_count = 0;
 
 		if ( ! empty( $input['older_than_days'] ) ) {
 			$where[]  = 'stream.created < DATE_SUB(NOW(), INTERVAL %d DAY)';
 			$params[] = (int) $input['older_than_days'];
+			++$filter_count;
 		}
 		if ( ! empty( $input['connector'] ) ) {
 			$where[]  = 'stream.connector = %s';
 			$params[] = (string) $input['connector'];
+			++$filter_count;
 		}
 		if ( ! empty( $input['context'] ) ) {
 			$where[]  = 'stream.context = %s';
 			$params[] = (string) $input['context'];
+			++$filter_count;
 		}
 		if ( ! empty( $input['action'] ) ) {
 			$where[]  = 'stream.action = %s';
 			$params[] = (string) $input['action'];
+			++$filter_count;
 		}
 
 		// Reject confirm-only payloads (no actual filter): refuse rather than truncate the table.
-		if ( count( $where ) === 1 ) {
+		if ( 0 === $filter_count ) {
 			return new \WP_Error(
 				'stream_purge_no_filter',
 				__( 'At least one filter (older_than_days, connector, context, action) must be supplied.', 'stream' ),
 				array( 'status' => 400 )
 			);
+		}
+
+		// On non-network-activated multisite the stream tables are shared and
+		// records are separated by blog_id. Without this guard a site admin
+		// could purge records belonging to other sites. Mirrors
+		// Admin::erase_stream_records() / Admin::erase_large_records(). Added
+		// after the no-filter check so a confirm-only payload is still rejected.
+		if ( is_multisite() && $this->plugin->is_multisite_not_network_activated() ) {
+			$where[]  = 'stream.blog_id = %d';
+			$params[] = get_current_blog_id();
 		}
 
 		$where_sql = implode( ' AND ', $where );

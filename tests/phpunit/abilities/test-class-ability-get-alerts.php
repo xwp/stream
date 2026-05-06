@@ -88,4 +88,35 @@ class Test_Ability_Get_Alerts extends Abilities_TestCase {
 		$this->assertSame( 'highlight', $enabled[0]['alert_type'] );
 		$this->assertSame( $disabled_id, $disabled[0]['id'] );
 	}
+
+	public function test_alert_meta_is_normalized_to_object_when_missing() {
+		wp_set_current_user( $this->admin_user_id );
+
+		// Alert with no alert_meta post meta at all. get_post_meta() returns ''
+		// in that case; the ability must coerce that to {} rather than [""], or
+		// the response will violate the declared object output schema.
+		$post_id = wp_insert_post(
+			array(
+				'post_type'   => Alerts::POST_TYPE,
+				'post_status' => 'wp_stream_enabled',
+				'post_title'  => 'Alert without meta',
+			)
+		);
+
+		$result = $this->ability->execute( array( 'status' => 'any' ) );
+		$row    = null;
+		foreach ( $result as $entry ) {
+			if ( $entry['id'] === $post_id ) {
+				$row = $entry;
+				break;
+			}
+		}
+
+		$this->assertNotNull( $row, 'Seeded alert missing from get-alerts output.' );
+		$this->assertIsArray( $row['alert_meta'] );
+		$this->assertSame( array(), $row['alert_meta'], 'Missing alert_meta must serialize as an empty object, not ["" ].' );
+
+		// Schema validates as well — exercises the live contract.
+		$this->assert_matches_schema( $result, $this->ability->get_output_schema() );
+	}
 }

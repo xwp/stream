@@ -406,7 +406,7 @@ class Settings {
 				'name'        => 'enable_abilities_api',
 				'title'       => esc_html__( 'Enable Abilities API', 'stream' ),
 				'type'        => 'checkbox',
-				'desc'        => esc_html__( 'Expose Stream operations via the WordPress Abilities API. Allows AI agents and automation tools to query records, manage alerts, and update settings through /wp-abilities/v1/stream/* REST endpoints. Requires WordPress 6.9 or newer.', 'stream' ),
+				'desc'        => esc_html__( 'Expose Stream operations via the WordPress Abilities API. Allows AI agents and automation tools to query records, manage alerts, and update settings through the Abilities API REST routes. Requires WordPress 6.9 or newer.', 'stream' ),
 				'after_field' => esc_html__( 'Enabled', 'stream' ),
 				'default'     => 0,
 			);

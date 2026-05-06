@@ -138,4 +138,80 @@ class Test_Ability_Purge_Records extends Abilities_TestCase {
 
 		$this->assertSame( array( 'deleted' => 0 ), $result );
 	}
+
+	public function test_purge_does_not_cross_blog_boundary_when_not_network_activated() {
+		global $wpdb;
+
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'This test requires multisite.' );
+		}
+		if ( $this->plugin->is_network_activated() ) {
+			$this->markTestSkipped( 'This regression only applies when Stream is per-site activated on multisite.' );
+		}
+
+		wp_set_current_user( $this->admin_user_id );
+
+		// Seed a record under a foreign blog id directly via the table so the
+		// purge running on the current blog must not touch it. We bypass the
+		// log API to control blog_id explicitly.
+		$current_blog_id = (int) get_current_blog_id();
+		$foreign_blog_id = $current_blog_id + 999;
+
+		$inserted_foreign = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->stream,
+			array(
+				'site_id'   => 1,
+				'blog_id'   => $foreign_blog_id,
+				'user_id'   => $this->admin_user_id,
+				'created'   => '2020-01-01 00:00:00',
+				'summary'   => 'Foreign-blog record that must survive the purge.',
+				'connector' => 'users',
+				'context'   => 'users',
+				'action'    => 'created',
+				'ip'        => '127.0.0.1',
+			)
+		);
+		$this->assertSame( 1, $inserted_foreign );
+
+		// Seed a current-blog record matching the same filter.
+		$this->plugin->log->log(
+			'users',
+			'Current-blog record (target)',
+			array(),
+			0,
+			'users',
+			'created'
+		);
+
+		$result = $this->ability->execute(
+			array(
+				'confirm'   => true,
+				'connector' => 'users',
+			)
+		);
+
+		$this->assertIsArray( $result );
+
+		// Foreign-blog row must remain.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$foreign_left = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM {$wpdb->stream} WHERE blog_id = %d AND connector = %s",
+				$foreign_blog_id,
+				'users'
+			)
+		);
+		$this->assertSame( 1, $foreign_left, 'Purge must not delete records belonging to other blogs.' );
+
+		// Current-blog rows are gone.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$current_left = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM {$wpdb->stream} WHERE blog_id = %d AND connector = %s",
+				$current_blog_id,
+				'users'
+			)
+		);
+		$this->assertSame( 0, $current_left );
+	}
 }

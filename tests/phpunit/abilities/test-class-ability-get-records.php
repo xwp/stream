@@ -159,43 +159,48 @@ class Test_Ability_Get_Records extends Abilities_TestCase {
 	public function test_orderby_created_actually_orders_by_created_not_id() {
 		wp_set_current_user( $this->admin_user_id );
 
-		// Insert two records with explicit, out-of-order timestamps so that
-		// ordering by ID (the silent-fallback bug) and ordering by created
-		// produce different results. Record A has the higher ID but the older
-		// created timestamp; record B has the lower ID but the newer timestamp.
-		// With order=DESC + orderby=created, B must come first.
-		$older = '2020-01-01 00:00:00';
+		// Make ID-order conflict with created-order so that an implementation
+		// silently falling back to ORDER BY ID would fail this test. We insert
+		// the *newer*-timestamp record FIRST (so it gets the lower ID) and the
+		// *older*-timestamp record SECOND (higher ID). Asking for orderby=created
+		// ASC must then place the higher-ID row before the lower-ID row, which
+		// is the opposite of ID ordering.
 		$newer = '2024-12-31 23:59:59';
+		$older = '2020-01-01 00:00:00';
 
-		$id_a = $this->plugin->db->insert(
+		$id_newer_first  = $this->plugin->db->insert(
 			array(
 				'site_id'   => 1,
 				'blog_id'   => get_current_blog_id(),
 				'user_id'   => $this->admin_user_id,
-				'created'   => $older,
-				'summary'   => 'older record (higher ID)',
+				'created'   => $newer,
+				'summary'   => 'newer timestamp, lower ID',
 				'connector' => 'users',
 				'context'   => 'users',
 				'action'    => 'created',
 				'ip'        => '127.0.0.1',
 			)
 		);
-		$id_b = $this->plugin->db->insert(
+		$id_older_second = $this->plugin->db->insert(
 			array(
 				'site_id'   => 1,
 				'blog_id'   => get_current_blog_id(),
 				'user_id'   => $this->admin_user_id,
-				'created'   => $newer,
-				'summary'   => 'newer record (lower ID would not happen, but timestamp is newer)',
+				'created'   => $older,
+				'summary'   => 'older timestamp, higher ID',
 				'connector' => 'users',
 				'context'   => 'users',
 				'action'    => 'updated',
 			)
 		);
 
-		$this->assertNotFalse( $id_a );
-		$this->assertNotFalse( $id_b );
-		$this->assertGreaterThan( $id_a, $id_b, 'Sanity: B was inserted after A.' );
+		$this->assertNotFalse( $id_newer_first );
+		$this->assertNotFalse( $id_older_second );
+		$this->assertGreaterThan(
+			$id_newer_first,
+			$id_older_second,
+			'Sanity: the older-timestamp row must have the higher ID so ID-order conflicts with created-order.'
+		);
 
 		$result = $this->ability->execute(
 			array(
@@ -213,11 +218,16 @@ class Test_Ability_Get_Records extends Abilities_TestCase {
 			$result['records']
 		);
 
-		// Find our two seeded records in the sequence and confirm older < newer.
 		$pos_older = array_search( $older, $created_seq, true );
 		$pos_newer = array_search( $newer, $created_seq, true );
 		$this->assertNotFalse( $pos_older, 'Seeded older record missing from result.' );
 		$this->assertNotFalse( $pos_newer, 'Seeded newer record missing from result.' );
-		$this->assertLessThan( $pos_newer, $pos_older, 'orderby=created ASC must place older before newer.' );
+		// The older-timestamp row was inserted SECOND (higher ID); ID-ASC would put it
+		// after the newer-timestamp row. orderby=created ASC must put it BEFORE.
+		$this->assertLessThan(
+			$pos_newer,
+			$pos_older,
+			'orderby=created ASC must place the older-timestamp record before the newer one, even though it has the higher ID.'
+		);
 	}
 }
