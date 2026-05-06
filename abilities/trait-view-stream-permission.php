@@ -16,6 +16,8 @@ trait Trait_View_Stream_Permission {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @param array $input Input that will be passed to execute().
 	 */
 	public function permission_callback( $input = array() ) {
 		unset( $input );

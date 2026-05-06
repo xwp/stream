@@ -76,6 +76,8 @@ class Ability_Update_Settings extends Ability {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @param mixed $input Validated input matching get_input_schema(), or null.
 	 */
 	public function execute( $input = null ) {
 		$option_key = $this->plugin->settings->option_key;

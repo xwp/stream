@@ -71,6 +71,8 @@ class Ability_Get_Exclusion_Rules extends Ability {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @param mixed $input Validated input matching get_input_schema(), or null.
 	 */
 	public function execute( $input = null ) {
 		unset( $input );

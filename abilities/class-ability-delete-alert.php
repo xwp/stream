@@ -79,6 +79,8 @@ class Ability_Delete_Alert extends Ability {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @param mixed $input Validated input matching get_input_schema(), or null.
 	 */
 	public function execute( $input = null ) {
 		$id   = isset( $input['id'] ) ? (int) $input['id'] : 0;

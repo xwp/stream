@@ -108,6 +108,8 @@ class Ability_Create_Alert extends Ability {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @param mixed $input Validated input matching get_input_schema(), or null.
 	 */
 	public function execute( $input = null ) {
 		$status = isset( $input['status'] ) ? $input['status'] : 'wp_stream_enabled';
