@@ -20,6 +20,15 @@ class Test_Abilities extends WP_StreamTestCase {
 	private $original_options;
 
 	/**
+	 * Snapshot of the wp_abilities_api_init filter to restore in tearDown().
+	 * Saved as a WP_Hook clone so all priority/callback bindings survive the
+	 * intentional remove_all_actions() calls inside individual tests.
+	 *
+	 * @var \WP_Hook|null
+	 */
+	private $original_abilities_init_hook;
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function setUp(): void {
@@ -27,6 +36,11 @@ class Test_Abilities extends WP_StreamTestCase {
 		$this->original_options = isset( $this->plugin->settings->options )
 			? (array) $this->plugin->settings->options
 			: array();
+
+		global $wp_filter;
+		$this->original_abilities_init_hook = isset( $wp_filter['wp_abilities_api_init'] )
+			? clone $wp_filter['wp_abilities_api_init']
+			: null;
 	}
 
 	/**
@@ -34,6 +48,16 @@ class Test_Abilities extends WP_StreamTestCase {
 	 */
 	public function tearDown(): void {
 		$this->plugin->settings->options = $this->original_options;
+
+		// Restore the wp_abilities_api_init hook registry so tests that mutate
+		// it (via remove_all_actions) don't bleed into subsequent tests.
+		global $wp_filter;
+		if ( null === $this->original_abilities_init_hook ) {
+			unset( $wp_filter['wp_abilities_api_init'] );
+		} else {
+			$wp_filter['wp_abilities_api_init'] = $this->original_abilities_init_hook; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		}
+
 		parent::tearDown();
 	}
 
@@ -208,6 +232,24 @@ class Test_Abilities extends WP_StreamTestCase {
 		foreach ( $abilities->get_ability_slugs() as $slug ) {
 			$this->assertArrayHasKey( 'stream/' . $slug, $abilities->abilities );
 		}
+	}
+
+	public function test_settings_field_visible_when_not_network_activated() {
+		if ( ! class_exists( '\WP_Ability' ) ) {
+			$this->markTestSkipped( 'Requires WordPress 6.9+ (Abilities API).' );
+		}
+		if ( $this->plugin->is_network_activated() ) {
+			$this->markTestSkipped( 'Test asserts the non-network-activated branch.' );
+		}
+
+		$fields               = $this->plugin->settings->get_fields();
+		$advanced_field_names = wp_list_pluck( $fields['advanced']['fields'], 'name' );
+
+		$this->assertContains(
+			'enable_abilities_api',
+			$advanced_field_names,
+			'Toggle must be visible on per-site settings when Stream is not network-activated.'
+		);
 	}
 
 	public function test_register_abilities_loads_and_registers_when_action_fires() {

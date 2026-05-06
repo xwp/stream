@@ -106,13 +106,17 @@ class Ability_Get_Record extends Ability {
 
 		// Stream's Query class doesn't expose a single-ID filter (record__in
 		// is broken for one-element arrays due to array_shift() in
-		// Query::query()), so query the table directly. We add an explicit
-		// blog_id filter on multisite so the response can never leak a record
-		// from another site on a network install — the admin records page is
-		// scoped per-site and abilities must match.
+		// Query::query()), so query the table directly. On any multisite
+		// install, scope reads to the current blog unless the request is
+		// running inside Network Admin — this mirrors Network::network_query_args()
+		// (default blog_id is get_current_blog_id() outside network admin) and
+		// applies the same protection in REST contexts, where is_network_admin()
+		// is always false. Without this guard, a user with view_stream on one
+		// site of a network-activated install could fetch records from other
+		// sites by guessing IDs.
 		$where    = '';
 		$prepared = array( $id );
-		if ( is_multisite() && ! $this->plugin->is_network_activated() ) {
+		if ( is_multisite() && ! is_network_admin() ) {
 			$where      = ' AND blog_id = %d';
 			$prepared[] = get_current_blog_id();
 		}

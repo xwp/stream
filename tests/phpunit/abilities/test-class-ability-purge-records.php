@@ -139,21 +139,73 @@ class Test_Ability_Purge_Records extends Abilities_TestCase {
 		$this->assertSame( array( 'deleted' => 0 ), $result );
 	}
 
-	public function test_purge_does_not_cross_blog_boundary_when_not_network_activated() {
+	public function test_older_than_days_uses_utc_cutoff_not_server_now() {
+		global $wpdb;
+
+		wp_set_current_user( $this->admin_user_id );
+
+		// Seed two rows with explicit UTC `created` values: one safely older than
+		// the cutoff (must be deleted), one safely newer (must be preserved).
+		// The values are chosen so any sane server timezone (UTC, UTC-12..UTC+14)
+		// still sorts them on the correct side of "now - 5 days" UTC.
+		$utc_now   = new \DateTime( 'now', new \DateTimeZone( 'UTC' ) );
+		$older     = clone $utc_now;
+		$newer     = clone $utc_now;
+		$older_utc = $older->modify( '-30 days' )->format( 'Y-m-d H:i:s' );
+		$newer_utc = $newer->modify( '-1 hour' )->format( 'Y-m-d H:i:s' );
+
+		$current_blog_id = is_multisite() ? (int) get_current_blog_id() : 0;
+
+		foreach ( array( $older_utc, $newer_utc ) as $created ) {
+			$inserted = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				$wpdb->stream,
+				array(
+					'site_id'   => 1,
+					'blog_id'   => $current_blog_id,
+					'user_id'   => $this->admin_user_id,
+					'created'   => $created,
+					'summary'   => 'utc-cutoff fixture (' . $created . ')',
+					'connector' => 'tz_test',
+					'context'   => 'tz_test',
+					'action'    => 'created',
+					'ip'        => '127.0.0.1',
+				)
+			);
+			$this->assertSame( 1, $inserted );
+		}
+
+		$result = $this->ability->execute(
+			array(
+				'confirm'         => true,
+				'connector'       => 'tz_test',
+				'older_than_days' => 5,
+			)
+		);
+
+		$this->assertIsArray( $result );
+		$this->assertSame( 1, $result['deleted'], 'Exactly the older row must be purged.' );
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$remaining = $wpdb->get_col(
+			$wpdb->prepare( "SELECT created FROM {$wpdb->stream} WHERE connector = %s ORDER BY created", 'tz_test' )
+		);
+		$this->assertSame( array( $newer_utc ), $remaining );
+	}
+
+	public function test_purge_does_not_cross_blog_boundary_on_multisite() {
 		global $wpdb;
 
 		if ( ! is_multisite() ) {
 			$this->markTestSkipped( 'This test requires multisite.' );
 		}
-		if ( $this->plugin->is_network_activated() ) {
-			$this->markTestSkipped( 'This regression only applies when Stream is per-site activated on multisite.' );
-		}
 
 		wp_set_current_user( $this->admin_user_id );
 
 		// Seed a record under a foreign blog id directly via the table so the
-		// purge running on the current blog must not touch it. We bypass the
-		// log API to control blog_id explicitly.
+		// purge running on the current blog must not touch it. The scoping
+		// applies on any multisite request that is not is_network_admin() —
+		// REST endpoints are never network-admin, so this is the relevant
+		// guard regardless of activation mode.
 		$current_blog_id = (int) get_current_blog_id();
 		$foreign_blog_id = $current_blog_id + 999;
 

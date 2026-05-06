@@ -79,4 +79,42 @@ class Test_Ability_Get_Record extends Abilities_TestCase {
 		$this->assertArrayHasKey( 'meta', $result );
 		$this->assertIsArray( $result['meta'] );
 	}
+
+	public function test_does_not_leak_records_from_other_blogs_on_multisite() {
+		global $wpdb;
+
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'This test requires multisite.' );
+		}
+
+		wp_set_current_user( $this->admin_user_id );
+
+		// Seed a record under a foreign blog id directly. Whether Stream is
+		// network-activated or not, a REST request from the current blog must
+		// not be able to fetch it (REST is never is_network_admin()).
+		$current_blog_id = (int) get_current_blog_id();
+		$foreign_blog_id = $current_blog_id + 4242;
+
+		$inserted = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->stream,
+			array(
+				'site_id'   => 1,
+				'blog_id'   => $foreign_blog_id,
+				'user_id'   => $this->admin_user_id,
+				'created'   => '2020-01-01 00:00:00',
+				'summary'   => 'Foreign-blog record that must not be readable.',
+				'connector' => 'users',
+				'context'   => 'users',
+				'action'    => 'created',
+				'ip'        => '127.0.0.1',
+			)
+		);
+		$this->assertSame( 1, $inserted );
+		$foreign_id = (int) $wpdb->insert_id;
+
+		$result = $this->ability->execute( array( 'id' => $foreign_id ) );
+
+		$this->assertInstanceOf( '\WP_Error', $result, 'get-record must not return another blog\'s record on multisite.' );
+		$this->assertSame( 'stream_record_not_found', $result->get_error_code() );
+	}
 }

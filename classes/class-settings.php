@@ -400,8 +400,17 @@ class Settings {
 
 		array_push( $fields['advanced']['fields'], $wp_cron_tracking );
 
-		// Abilities API toggle is only meaningful on WordPress 6.9+.
-		if ( class_exists( '\WP_Ability' ) ) {
+		// Abilities API toggle is only meaningful on WordPress 6.9+. On
+		// network-activated multisite, Abilities::is_enabled() reads the
+		// network option (wp_stream_network), so a per-site checkbox on the
+		// site's own settings screen would be a no-op and misleading. Only
+		// expose the field when it actually drives behavior: in network admin
+		// (where settings save to the network option), or on installs where
+		// the per-site option is authoritative.
+		if (
+			class_exists( '\WP_Ability' )
+			&& ( ! $this->plugin->is_network_activated() || is_network_admin() )
+		) {
 			$enable_abilities_api = array(
 				'name'        => 'enable_abilities_api',
 				'title'       => esc_html__( 'Enable Abilities API', 'stream' ),

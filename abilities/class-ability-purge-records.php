@@ -120,8 +120,17 @@ class Ability_Purge_Records extends Ability {
 		$filter_count = 0;
 
 		if ( ! empty( $input['older_than_days'] ) ) {
-			$where[]  = 'stream.created < DATE_SUB(NOW(), INTERVAL %d DAY)';
-			$params[] = (int) $input['older_than_days'];
+			// Stream stores `created` in UTC (Log::log() writes current_time('mysql', true)).
+			// MySQL's NOW() uses the server timezone, so comparing against it can
+			// delete too many or too few rows on hosts where the server is not UTC.
+			// Mirror Admin::purge_scheduled_action(): compute a UTC cutoff in PHP
+			// and bind it as a string.
+			$cutoff = ( new \DateTime( 'now', new \DateTimeZone( 'UTC' ) ) )
+				->sub( \DateInterval::createFromDateString( ( (int) $input['older_than_days'] ) . ' days' ) )
+				->format( 'Y-m-d H:i:s' );
+
+			$where[]  = 'stream.created < %s';
+			$params[] = $cutoff;
 			++$filter_count;
 		}
 		if ( ! empty( $input['connector'] ) ) {
@@ -149,12 +158,13 @@ class Ability_Purge_Records extends Ability {
 			);
 		}
 
-		// On non-network-activated multisite the stream tables are shared and
-		// records are separated by blog_id. Without this guard a site admin
-		// could purge records belonging to other sites. Mirrors
-		// Admin::erase_stream_records() / Admin::erase_large_records(). Added
-		// after the no-filter check so a confirm-only payload is still rejected.
-		if ( is_multisite() && $this->plugin->is_multisite_not_network_activated() ) {
+		// On any multisite install, scope the purge to the current blog whenever
+		// the request is not running inside Network Admin. REST is never
+		// is_network_admin(), so this also protects network-activated installs
+		// from a site admin (with the settings cap) wiping another site's records
+		// via the REST endpoint. Mirrors Network::network_query_args() defaults.
+		// Added after the no-filter check so a confirm-only payload is still rejected.
+		if ( is_multisite() && ! is_network_admin() ) {
 			$where[]  = 'stream.blog_id = %d';
 			$params[] = get_current_blog_id();
 		}
