@@ -91,6 +91,9 @@ class Test_Abilities_REST_Integration extends Abilities_TestCase {
 	// Read-only ability: stream/get-records (GET).
 	// -------------------------------------------------------------------
 
+	/**
+	 * GET on a readonly ability dispatches successfully for an admin.
+	 */
 	public function test_get_records_returns_200_for_admin() {
 		wp_set_current_user( $this->admin_user_id );
 
@@ -130,6 +133,9 @@ class Test_Abilities_REST_Integration extends Abilities_TestCase {
 	// Write ability: stream/create-alert (POST).
 	// -------------------------------------------------------------------
 
+	/**
+	 * POST on a write ability dispatches successfully for an admin.
+	 */
 	public function test_create_alert_returns_200_for_admin() {
 		wp_set_current_user( $this->admin_user_id );
 
@@ -193,6 +199,9 @@ class Test_Abilities_REST_Integration extends Abilities_TestCase {
 	// Destructive ability: stream/purge-records (DELETE).
 	// -------------------------------------------------------------------
 
+	/**
+	 * DELETE on a destructive+idempotent ability dispatches successfully.
+	 */
 	public function test_purge_records_returns_200_for_admin_with_filters() {
 		wp_set_current_user( $this->admin_user_id );
 
@@ -258,6 +267,8 @@ class Test_Abilities_REST_Integration extends Abilities_TestCase {
 	// -------------------------------------------------------------------
 
 	/**
+	 * Unknown ability slugs route to a 404 from the core run controller.
+	 *
 	 * @expectedIncorrectUsage WP_Abilities_Registry::get_registered
 	 */
 	public function test_unknown_ability_returns_404() {
