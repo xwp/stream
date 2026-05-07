@@ -113,8 +113,15 @@ class Test_Ability_Get_Alerts extends Abilities_TestCase {
 		}
 
 		$this->assertNotNull( $row, 'Seeded alert missing from get-alerts output.' );
-		$this->assertIsArray( $row['alert_meta'] );
-		$this->assertSame( array(), $row['alert_meta'], 'Missing alert_meta must serialize as an empty object, not ["" ].' );
+
+		// Must be a real object so wp_json_encode() emits {}. An empty PHP
+		// array() would JSON-encode as [] and violate the declared object
+		// output schema.
+		$this->assertInstanceOf( \stdClass::class, $row['alert_meta'] );
+
+		$encoded = wp_json_encode( $row );
+		$this->assertNotFalse( $encoded );
+		$this->assertStringContainsString( '"alert_meta":{}', $encoded, 'Missing alert_meta must serialize as {}, not [].' );
 
 		// Schema validates as well — exercises the live contract.
 		$this->assert_matches_schema( $result, $this->ability->get_output_schema() );
