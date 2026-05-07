@@ -150,7 +150,7 @@ class Ability_Get_Records extends Ability {
 				),
 				'orderby'          => array(
 					'type'        => 'string',
-					'description' => 'Column to order by. Must be one of Stream\'s sortable columns; unknown values fall back to ID in Query::query().',
+					'description' => 'Column to order by. Constrained to Stream\'s sortable columns by the schema enum; values outside the enum are rejected at REST validation.',
 					'enum'        => array(
 						'ID',
 						'created',

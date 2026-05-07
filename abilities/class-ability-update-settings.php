@@ -55,7 +55,7 @@ class Ability_Update_Settings extends Ability {
 			'properties'           => array(
 				'settings' => array(
 					'type'                 => 'object',
-					'description'          => 'Partial settings map keyed by {section}_{field} (e.g. general_records_ttl). Unknown keys are ignored (the request fails only when no key matches a registered setting); recognized values are normalized through Stream\'s settings sanitizer. Omitted keys are preserved.',
+					'description'          => 'Partial settings map keyed by {section}_{field} (e.g. general_records_ttl). Unknown keys are ignored (the request fails only when no key matches a registered setting); recognized values are normalized through Stream\'s settings sanitizer. Boolean values are accepted for checkbox keys and stored as 0/1. Omitted keys are preserved.',
 					'additionalProperties' => true,
 					'minProperties'        => 1,
 				),
@@ -84,15 +84,26 @@ class Ability_Update_Settings extends Ability {
 		$current    = (array) get_option( $option_key, array() );
 		$updates    = isset( $input['settings'] ) ? (array) $input['settings'] : array();
 
-		// Build allowlist of {section}_{field} keys from registered settings.
-		$valid_keys = array();
+		// Build allowlist of {section}_{field} keys from registered settings,
+		// and a parallel list of which keys correspond to checkbox fields.
+		// We need the latter because Settings::sanitize_setting_by_field_type()
+		// only accepts numeric values for checkboxes (is_numeric() rejects PHP
+		// booleans), so true/false from a JSON client would otherwise be
+		// silently coerced to '' instead of 0/1.
+		$valid_keys    = array();
+		$checkbox_keys = array();
 		foreach ( $this->plugin->settings->get_fields() as $section => $section_data ) {
 			if ( empty( $section_data['fields'] ) || ! is_array( $section_data['fields'] ) ) {
 				continue;
 			}
 			foreach ( $section_data['fields'] as $field ) {
-				if ( ! empty( $field['name'] ) ) {
-					$valid_keys[] = $section . '_' . $field['name'];
+				if ( empty( $field['name'] ) ) {
+					continue;
+				}
+				$key          = $section . '_' . $field['name'];
+				$valid_keys[] = $key;
+				if ( isset( $field['type'] ) && 'checkbox' === $field['type'] ) {
+					$checkbox_keys[] = $key;
 				}
 			}
 		}
@@ -105,6 +116,15 @@ class Ability_Update_Settings extends Ability {
 				__( 'No recognized setting keys were provided. Setting keys follow the {section}_{field} convention.', 'stream' ),
 				array( 'status' => 400 )
 			);
+		}
+
+		// Normalize PHP booleans on checkbox keys to 0/1 so the sanitizer
+		// (which uses is_numeric()) accepts them. JSON clients naturally send
+		// true/false for checkboxes; without this they would round-trip to ''.
+		foreach ( $checkbox_keys as $key ) {
+			if ( array_key_exists( $key, $filtered ) && is_bool( $filtered[ $key ] ) ) {
+				$filtered[ $key ] = $filtered[ $key ] ? 1 : 0;
+			}
 		}
 
 		// Run only the incoming keys through Stream's sanitize pipeline so

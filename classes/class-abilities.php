@@ -138,6 +138,14 @@ class Abilities {
 			return;
 		}
 
+		// Skip when the category is already registered. Without this guard,
+		// re-running the bootstrap (e.g. multiple loader instances in tests)
+		// triggers a core _doing_it_wrong notice. Mirrors the idempotency
+		// pattern in register_abilities().
+		if ( function_exists( 'wp_has_ability_category' ) && wp_has_ability_category( self::CATEGORY_SLUG ) ) {
+			return;
+		}
+
 		wp_register_ability_category(
 			self::CATEGORY_SLUG,
 			array(

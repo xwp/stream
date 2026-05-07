@@ -193,7 +193,23 @@ class Ability_Purge_Records extends Ability {
 			LEFT JOIN {$wpdb->streammeta} AS meta ON meta.record_id = stream.ID
 			WHERE {$where_sql}";
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
-		$wpdb->query( $wpdb->prepare( $delete_sql, $params ) );
+		$result = $wpdb->query( $wpdb->prepare( $delete_sql, $params ) );
+
+		// $wpdb->query() returns false on database error. Don't report a
+		// successful purge in that case: the COUNT we ran above said how many
+		// rows *would* be removed, but the DELETE may have aborted partway
+		// through (e.g. lock-wait timeout, deadlock). Surface the failure so
+		// callers can retry rather than believing the operation completed.
+		if ( false === $result ) {
+			return new \WP_Error(
+				'stream_purge_failed',
+				__( 'Failed to purge Stream records due to a database error.', 'stream' ),
+				array(
+					'status'        => 500,
+					'matched_count' => $deleted,
+				)
+			);
+		}
 
 		return array( 'deleted' => $deleted );
 	}

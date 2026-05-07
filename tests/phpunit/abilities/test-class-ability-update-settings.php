@@ -101,6 +101,35 @@ class Test_Ability_Update_Settings extends Abilities_TestCase {
 		$this->assertSame( 'stream_no_valid_settings', $result->get_error_code() );
 	}
 
+	public function test_boolean_values_for_checkbox_keys_are_normalized_to_one_zero() {
+		wp_set_current_user( $this->admin_user_id );
+
+		$option_key = $this->plugin->settings->option_key;
+
+		// JSON-native boolean true must round-trip to 1, not '' (which is what
+		// Settings::sanitize_setting_by_field_type() would produce for a
+		// raw bool because it gates on is_numeric()).
+		$result = $this->ability->execute(
+			array(
+				'settings' => array( 'advanced_wp_cron_tracking' => true ),
+			)
+		);
+
+		$this->assertIsArray( $result );
+		$this->assertSame( 1, $result['advanced_wp_cron_tracking'] );
+		$this->assertSame( 1, (int) get_option( $option_key )['advanced_wp_cron_tracking'] );
+
+		// And boolean false must round-trip to 0.
+		$result = $this->ability->execute(
+			array(
+				'settings' => array( 'advanced_wp_cron_tracking' => false ),
+			)
+		);
+
+		$this->assertSame( 0, $result['advanced_wp_cron_tracking'] );
+		$this->assertSame( 0, (int) get_option( $option_key )['advanced_wp_cron_tracking'] );
+	}
+
 	public function test_unknown_keys_are_dropped_when_mixed_with_valid() {
 		wp_set_current_user( $this->admin_user_id );
 
