@@ -58,7 +58,7 @@ class Ability_Get_Settings extends Ability {
 		return array(
 			'type'                 => 'object',
 			'additionalProperties' => true,
-			'description'          => 'Settings keyed by {section}_{field} (e.g. general_records_ttl, advanced_enable_abilities_api).',
+			'description'          => 'Settings keyed by {section}_{field} (e.g. general_records_ttl). Available keys depend on which settings fields are registered for the current context: e.g. advanced_enable_abilities_api is only present on WordPress 6.9+ and, on network-activated multisite, only when read from network admin.',
 		);
 	}
 

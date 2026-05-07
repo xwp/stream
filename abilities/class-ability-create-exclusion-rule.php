@@ -215,8 +215,10 @@ class Ability_Create_Exclusion_Rule extends Ability {
 		$options['exclude_rules'] = $rules;
 		update_option( $option_key, $options );
 
-		// Refresh in-memory copy.
-		$this->plugin->settings->options = $options;
+		// Refresh in-memory copy through get_options() so defaults are merged
+		// in (the raw option is sparse). Direct assignment of $options would
+		// leave default-only keys missing for the rest of the request.
+		$this->plugin->settings->options = $this->plugin->settings->get_options();
 
 		return array(
 			'index' => $index,

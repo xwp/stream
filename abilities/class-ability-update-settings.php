@@ -55,7 +55,7 @@ class Ability_Update_Settings extends Ability {
 			'properties'           => array(
 				'settings' => array(
 					'type'                 => 'object',
-					'description'          => 'Partial settings map keyed by {section}_{field} (e.g. general_records_ttl). Unknown keys are rejected; values are normalized through Stream\'s settings sanitizer. Omitted keys are preserved.',
+					'description'          => 'Partial settings map keyed by {section}_{field} (e.g. general_records_ttl). Unknown keys are ignored (the request fails only when no key matches a registered setting); recognized values are normalized through Stream\'s settings sanitizer. Omitted keys are preserved.',
 					'additionalProperties' => true,
 					'minProperties'        => 1,
 				),
@@ -115,9 +115,12 @@ class Ability_Update_Settings extends Ability {
 
 		update_option( $option_key, $merged );
 
-		// Refresh in-memory copy so subsequent abilities see the change.
-		$this->plugin->settings->options = $merged;
+		// Refresh in-memory copy through get_options() so defaults are merged
+		// in (the raw option is sparse). Subsequent abilities and any code
+		// that reads $plugin->settings->options in the same request need the
+		// fully-populated array to avoid undefined-index notices.
+		$this->plugin->settings->options = $this->plugin->settings->get_options();
 
-		return $merged;
+		return $this->plugin->settings->options;
 	}
 }
