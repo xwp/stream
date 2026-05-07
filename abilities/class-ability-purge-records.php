@@ -92,7 +92,7 @@ class Ability_Purge_Records extends Ability {
 			'properties'           => array(
 				'deleted' => array(
 					'type'        => 'integer',
-					'description' => 'Number of stream records deleted (meta rows are cascaded by record_id).',
+					'description' => 'Number of stream records deleted. Associated meta rows are removed in the same multi-table DELETE.',
 					'minimum'     => 0,
 				),
 			),
@@ -171,30 +171,29 @@ class Ability_Purge_Records extends Ability {
 
 		$where_sql = implode( ' AND ', $where );
 
-		// Delete stream rows first and capture rows_affected so the response reflects
-		// the actual count (rather than a stale pre-DELETE COUNT). $params is guaranteed
-		// non-empty here by the count( $where ) === 1 guard above. MySQL requires the
-		// "DELETE alias FROM tbl AS alias" form when the WHERE references an alias.
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery
-		$delete_sql = "DELETE stream FROM {$wpdb->stream} AS stream WHERE {$where_sql}";
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
-		$wpdb->query( $wpdb->prepare( $delete_sql, $params ) );
-		$deleted = (int) $wpdb->rows_affected;
+		// Count matching parent rows up-front so the response reports the number
+		// of *records* deleted, independent of how many meta rows were attached.
+		// $params is guaranteed non-empty here by the $filter_count > 0 guard above.
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$count_sql = "SELECT COUNT(*) FROM {$wpdb->stream} AS stream WHERE {$where_sql}";
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared
+		$deleted = (int) $wpdb->get_var( $wpdb->prepare( $count_sql, $params ) );
 
 		if ( 0 === $deleted ) {
 			return array( 'deleted' => 0 );
 		}
 
-		// Sweep orphaned meta rows whose parent record was just deleted. Idempotent
-		// and safe to run unconditionally; the LEFT JOIN scopes the cleanup to
-		// orphans across the whole streammeta table, which also catches any prior
-		// orphans without growing this query's blast radius beyond a single sweep.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
-		$wpdb->query(
-			"DELETE meta FROM {$wpdb->streammeta} AS meta
-			 LEFT JOIN {$wpdb->stream} AS stream ON stream.ID = meta.record_id
-			 WHERE stream.ID IS NULL"
-		);
+		// Delete matching stream rows AND their meta in a single multi-table DELETE,
+		// mirroring Admin::purge_scheduled_action(). Doing both sides in one statement
+		// avoids a follow-up full-table scan over $wpdb->streammeta to clean up
+		// orphans, which on busy sites could lock the meta table for a long time.
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery
+		$delete_sql = "DELETE stream, meta
+			FROM {$wpdb->stream} AS stream
+			LEFT JOIN {$wpdb->streammeta} AS meta ON meta.record_id = stream.ID
+			WHERE {$where_sql}";
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
+		$wpdb->query( $wpdb->prepare( $delete_sql, $params ) );
 
 		return array( 'deleted' => $deleted );
 	}
