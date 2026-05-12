@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1722ffe23b8e9b94e6c3e54fbec2a350",
+    "content-hash": "a075c37dc1895820dc1c61e7253793e9",
     "packages": [
         {
             "name": "composer/installers",
@@ -8448,7 +8448,7 @@
             "time": "2026-02-04T01:48:23+00:00"
         },
         {
-            "name": "wpackagist-plugin/advanced-custom-fields",
+            "name": "wp-plugin/advanced-custom-fields",
             "version": "6.7.0",
             "source": {
                 "type": "svn",
@@ -8460,13 +8460,26 @@
                 "url": "https://downloads.wordpress.org/plugin/advanced-custom-fields.6.7.0.zip"
             },
             "require": {
-                "composer/installers": "^1.0 || ^2.0"
+                "composer/installers": "~1.0|~2.0"
             },
             "type": "wordpress-plugin",
-            "homepage": "https://wordpress.org/plugins/advanced-custom-fields/"
+            "notification-url": "https://wp-packages.org/downloads",
+            "authors": [
+                {
+                    "name": "WP Engine"
+                }
+            ],
+            "description": "ACF helps customize WordPress with powerful, professional and intuitive fields. Proudly powering over 2 million sites, WordPress developers love ACF.",
+            "homepage": "https://www.advancedcustomfields.com",
+            "support": {
+                "changelog": "https://wordpress.org/plugins/advanced-custom-fields/#developers",
+                "issues": "https://wordpress.org/support/plugin/advanced-custom-fields",
+                "source": "https://plugins.svn.wordpress.org/advanced-custom-fields"
+            },
+            "time": "2026-04-09T17:15:45+00:00"
         },
         {
-            "name": "wpackagist-plugin/buddypress",
+            "name": "wp-plugin/buddypress",
             "version": "14.4.0",
             "source": {
                 "type": "svn",
@@ -8478,13 +8491,26 @@
                 "url": "https://downloads.wordpress.org/plugin/buddypress.14.4.0.zip"
             },
             "require": {
-                "composer/installers": "^1.0 || ^2.0"
+                "composer/installers": "~1.0|~2.0"
             },
             "type": "wordpress-plugin",
-            "homepage": "https://wordpress.org/plugins/buddypress/"
+            "notification-url": "https://wp-packages.org/downloads",
+            "authors": [
+                {
+                    "name": "BuddyPress"
+                }
+            ],
+            "description": "Get together safely, in your own way, in WordPress.",
+            "homepage": "https://buddypress.org",
+            "support": {
+                "changelog": "https://wordpress.org/plugins/buddypress/#developers",
+                "issues": "https://wordpress.org/support/plugin/buddypress",
+                "source": "https://plugins.svn.wordpress.org/buddypress"
+            },
+            "time": "2026-03-23T19:23:21+00:00"
         },
         {
-            "name": "wpackagist-plugin/classic-editor",
+            "name": "wp-plugin/classic-editor",
             "version": "1.6.7",
             "source": {
                 "type": "svn",
@@ -8496,13 +8522,26 @@
                 "url": "https://downloads.wordpress.org/plugin/classic-editor.1.6.7.zip"
             },
             "require": {
-                "composer/installers": "^1.0 || ^2.0"
+                "composer/installers": "~1.0|~2.0"
             },
             "type": "wordpress-plugin",
-            "homepage": "https://wordpress.org/plugins/classic-editor/"
+            "notification-url": "https://wp-packages.org/downloads",
+            "authors": [
+                {
+                    "name": "WordPress.org"
+                }
+            ],
+            "description": "Enables the previous \"classic\" editor and the old-style Edit Post screen with TinyMCE, Meta Boxes, etc. Supports all plugins that extend this screen.",
+            "homepage": "https://wordpress.org/plugins/classic-editor/",
+            "support": {
+                "changelog": "https://wordpress.org/plugins/classic-editor/#developers",
+                "issues": "https://wordpress.org/support/plugin/classic-editor",
+                "source": "https://plugins.svn.wordpress.org/classic-editor"
+            },
+            "time": "2026-03-23T19:23:21+00:00"
         },
         {
-            "name": "wpackagist-plugin/easy-digital-downloads",
+            "name": "wp-plugin/easy-digital-downloads",
             "version": "3.6.5",
             "source": {
                 "type": "svn",
@@ -8514,13 +8553,26 @@
                 "url": "https://downloads.wordpress.org/plugin/easy-digital-downloads.3.6.5.zip"
             },
             "require": {
-                "composer/installers": "^1.0 || ^2.0"
+                "composer/installers": "~1.0|~2.0"
             },
             "type": "wordpress-plugin",
-            "homepage": "https://wordpress.org/plugins/easy-digital-downloads/"
+            "notification-url": "https://wp-packages.org/downloads",
+            "authors": [
+                {
+                    "name": "Syed Balkhi"
+                }
+            ],
+            "description": "The #1 eCommerce plugin to sell digital products & subscriptions. Accept payments with Stripe & PayPal. Sell ebooks, software & more.",
+            "homepage": "https://easydigitaldownloads.com",
+            "support": {
+                "changelog": "https://wordpress.org/plugins/easy-digital-downloads/#developers",
+                "issues": "https://wordpress.org/support/plugin/easy-digital-downloads",
+                "source": "https://plugins.svn.wordpress.org/easy-digital-downloads"
+            },
+            "time": "2026-04-20T20:21:15+00:00"
         },
         {
-            "name": "wpackagist-plugin/jetpack",
+            "name": "wp-plugin/jetpack",
             "version": "15.5",
             "source": {
                 "type": "svn",
@@ -8532,13 +8584,26 @@
                 "url": "https://downloads.wordpress.org/plugin/jetpack.15.5.zip"
             },
             "require": {
-                "composer/installers": "^1.0 || ^2.0"
+                "composer/installers": "~1.0|~2.0"
             },
             "type": "wordpress-plugin",
-            "homepage": "https://wordpress.org/plugins/jetpack/"
+            "notification-url": "https://wp-packages.org/downloads",
+            "authors": [
+                {
+                    "name": "Automattic"
+                }
+            ],
+            "description": "Improve your WP security with powerful one-click tools like backup, WAF, and malware scan. Includes free tools like stats, CDN and social sharing.",
+            "homepage": "https://jetpack.com",
+            "support": {
+                "changelog": "https://wordpress.org/plugins/jetpack/#developers",
+                "issues": "https://wordpress.org/support/plugin/jetpack",
+                "source": "https://plugins.svn.wordpress.org/jetpack"
+            },
+            "time": "2026-04-27T16:20:50+00:00"
         },
         {
-            "name": "wpackagist-plugin/two-factor",
+            "name": "wp-plugin/two-factor",
             "version": "0.11.0",
             "source": {
                 "type": "svn",
@@ -8550,13 +8615,26 @@
                 "url": "https://downloads.wordpress.org/plugin/two-factor.0.11.0.zip"
             },
             "require": {
-                "composer/installers": "^1.0 || ^2.0"
+                "composer/installers": "~1.0|~2.0"
             },
             "type": "wordpress-plugin",
-            "homepage": "https://wordpress.org/plugins/two-factor/"
+            "notification-url": "https://wp-packages.org/downloads",
+            "authors": [
+                {
+                    "name": "WordPress.org"
+                }
+            ],
+            "description": "Enable Two-Factor Authentication (2FA) using time-based one-time passwords (TOTP), email, and backup verification codes.",
+            "homepage": "https://wordpress.org/plugins/two-factor/",
+            "support": {
+                "changelog": "https://wordpress.org/plugins/two-factor/#developers",
+                "issues": "https://wordpress.org/support/plugin/two-factor",
+                "source": "https://plugins.svn.wordpress.org/two-factor"
+            },
+            "time": "2026-03-27T17:26:10+00:00"
         },
         {
-            "name": "wpackagist-plugin/user-switching",
+            "name": "wp-plugin/user-switching",
             "version": "1.11.1",
             "source": {
                 "type": "svn",
@@ -8568,13 +8646,26 @@
                 "url": "https://downloads.wordpress.org/plugin/user-switching.1.11.1.zip"
             },
             "require": {
-                "composer/installers": "^1.0 || ^2.0"
+                "composer/installers": "~1.0|~2.0"
             },
             "type": "wordpress-plugin",
-            "homepage": "https://wordpress.org/plugins/user-switching/"
+            "notification-url": "https://wp-packages.org/downloads",
+            "authors": [
+                {
+                    "name": "John Blackbourn"
+                }
+            ],
+            "description": "Instant switching between user accounts in WordPress and WooCommerce.",
+            "homepage": "https://wordpress.org/plugins/user-switching/",
+            "support": {
+                "changelog": "https://wordpress.org/plugins/user-switching/#developers",
+                "issues": "https://wordpress.org/support/plugin/user-switching",
+                "source": "https://plugins.svn.wordpress.org/user-switching"
+            },
+            "time": "2026-03-23T19:23:21+00:00"
         },
         {
-            "name": "wpackagist-plugin/wordpress-seo",
+            "name": "wp-plugin/wordpress-seo",
             "version": "27.0",
             "source": {
                 "type": "svn",
@@ -8586,13 +8677,26 @@
                 "url": "https://downloads.wordpress.org/plugin/wordpress-seo.27.0.zip"
             },
             "require": {
-                "composer/installers": "^1.0 || ^2.0"
+                "composer/installers": "~1.0|~2.0"
             },
             "type": "wordpress-plugin",
-            "homepage": "https://wordpress.org/plugins/wordpress-seo/"
+            "notification-url": "https://wp-packages.org/downloads",
+            "authors": [
+                {
+                    "name": "Yoast"
+                }
+            ],
+            "description": "Improve your SEO with real-time feedback, schema, and clear guidance. Upgrade for AI tools, Google Docs integration, and 24/7 support, no hidden fees.",
+            "homepage": "https://yoa.st/1uj",
+            "support": {
+                "changelog": "https://wordpress.org/plugins/wordpress-seo/#developers",
+                "issues": "https://wordpress.org/support/plugin/wordpress-seo",
+                "source": "https://plugins.svn.wordpress.org/wordpress-seo"
+            },
+            "time": "2026-05-01T10:05:55+00:00"
         },
         {
-            "name": "wpackagist-plugin/wp-crontrol",
+            "name": "wp-plugin/wp-crontrol",
             "version": "1.21.0",
             "source": {
                 "type": "svn",
@@ -8604,13 +8708,26 @@
                 "url": "https://downloads.wordpress.org/plugin/wp-crontrol.1.21.0.zip"
             },
             "require": {
-                "composer/installers": "^1.0 || ^2.0"
+                "composer/installers": "~1.0|~2.0"
             },
             "type": "wordpress-plugin",
-            "homepage": "https://wordpress.org/plugins/wp-crontrol/"
+            "notification-url": "https://wp-packages.org/downloads",
+            "authors": [
+                {
+                    "name": "John Blackbourn"
+                }
+            ],
+            "description": "WP Crontrol enables you to take control of the cron events on your WordPress website.",
+            "homepage": "https://wp-crontrol.com",
+            "support": {
+                "changelog": "https://wordpress.org/plugins/wp-crontrol/#developers",
+                "issues": "https://wordpress.org/support/plugin/wp-crontrol",
+                "source": "https://plugins.svn.wordpress.org/wp-crontrol"
+            },
+            "time": "2026-03-23T19:23:21+00:00"
         },
         {
-            "name": "wpackagist-theme/twentytwentythree",
+            "name": "wp-theme/twentytwentythree",
             "version": "1.6",
             "source": {
                 "type": "svn",
@@ -8622,10 +8739,18 @@
                 "url": "https://downloads.wordpress.org/theme/twentytwentythree.1.6.zip"
             },
             "require": {
-                "composer/installers": "^1.0 || ^2.0"
+                "composer/installers": "~1.0|~2.0"
             },
             "type": "wordpress-theme",
-            "homepage": "https://wordpress.org/themes/twentytwentythree/"
+            "notification-url": "https://wp-packages.org/downloads",
+            "description": "Twenty Twenty-Three is designed to take advantage of the new design tools introduced in WordPress 6.1. With a clean, blank base as a starting point, this default theme includes ten diverse style variations created by members of the WordPress community. Whether you want to build a complex or incredibly simple website, you can do it quickly and intuitively through the bundled styles or dive into creation and full customization yourself.",
+            "homepage": "https://wordpress.org/themes/twentytwentythree/",
+            "support": {
+                "changelog": "https://wordpress.org/themes/twentytwentythree/#developers",
+                "issues": "https://wordpress.org/support/theme/twentytwentythree",
+                "source": "https://themes.svn.wordpress.org/twentytwentythree"
+            },
+            "time": "2026-03-23T19:23:21+00:00"
         },
         {
             "name": "xwp/wait-for",
@@ -8739,5 +8864,5 @@
     "platform-overrides": {
         "php": "7.4"
     },
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }

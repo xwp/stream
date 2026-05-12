@@ -7,7 +7,7 @@
   "repositories": [
     {
       "type": "composer",
-      "url": "https://wpackagist.org"
+      "url": "https://repo.wp-packages.org"
     }
   ],
   "require": {
@@ -29,16 +29,16 @@
     "wp-cli/wp-cli-bundle": "^2.6",
     "wp-coding-standards/wpcs": "^3.1",
     "wp-phpunit/wp-phpunit": "^6.9",
-    "wpackagist-plugin/advanced-custom-fields": "6.7.0",
-    "wpackagist-plugin/buddypress": "14.4.0",
-    "wpackagist-plugin/classic-editor": "1.6.7",
-    "wpackagist-plugin/easy-digital-downloads": "3.6.5",
-    "wpackagist-plugin/jetpack": "15.5",
-    "wpackagist-plugin/two-factor": "0.11.0",
-    "wpackagist-plugin/user-switching": "1.11.1",
-    "wpackagist-plugin/wordpress-seo": "27.0",
-    "wpackagist-plugin/wp-crontrol": "1.21.0",
-    "wpackagist-theme/twentytwentythree": "^1.0",
+    "wp-plugin/advanced-custom-fields": "6.7.0",
+    "wp-plugin/buddypress": "14.4.0",
+    "wp-plugin/classic-editor": "1.6.7",
+    "wp-plugin/easy-digital-downloads": "3.6.5",
+    "wp-plugin/jetpack": "15.5",
+    "wp-plugin/two-factor": "0.11.0",
+    "wp-plugin/user-switching": "1.11.1",
+    "wp-plugin/wordpress-seo": "27.0",
+    "wp-plugin/wp-crontrol": "1.21.0",
+    "wp-theme/twentytwentythree": "^1.0",
     "xwp/wait-for": "^0.0.1",
     "yoast/phpunit-polyfills": "^1.1"
   },
