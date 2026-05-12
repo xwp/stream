@@ -26,7 +26,7 @@
   "devDependencies": {
     "@playwright/test": "^1.60.0",
     "@types/node": "^22.19.19",
-    "@wordpress/e2e-test-utils-playwright": "^1.37.0",
+    "@wordpress/e2e-test-utils-playwright": "^1.45.0",
     "@wordpress/eslint-plugin": "^22.22.0",
     "@wordpress/scripts": "^30.27.0",
     "copy-webpack-plugin": "^14.0.0",
@@ -72,5 +72,10 @@
   "dependencies": {
     "select2": "^4.0.13",
     "timeago": "^1.6.7"
+  },
+  "overrides": {
+    "@wordpress/e2e-test-utils-playwright": {
+      "@types/node": "$@types/node"
+    }
   }
 }
