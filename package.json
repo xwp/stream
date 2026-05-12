@@ -6,7 +6,7 @@
   "author": "XWP",
   "license": "GPLv2+",
   "engines": {
-    "node": "^22.22.2"
+    "node": "^24.15.0"
   },
   "repository": {
     "type": "git",
@@ -25,7 +25,7 @@
   ],
   "devDependencies": {
     "@playwright/test": "^1.60.0",
-    "@types/node": "^22.19.19",
+    "@types/node": "^24.12.4",
     "@wordpress/e2e-test-utils-playwright": "^1.45.0",
     "@wordpress/eslint-plugin": "^22.22.0",
     "@wordpress/scripts": "^30.27.0",
