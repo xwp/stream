@@ -1,9 +1,4 @@
 /**
- * External dependencies
- */
-import { v4 as uuidv4 } from 'uuid';
-
-/**
  * WordPress dependencies
  */
 import { test, expect } from '@wordpress/e2e-test-utils-playwright';
@@ -14,8 +9,7 @@ test.describe( 'Editor: saving a new post', () => {
 	test.beforeAll( async ( { browser } ) => {
 		page = await browser.newPage();
 
-		const uuid = uuidv4();
-		postTitle = `Test Post ${ uuid }`; // Sometimes this runs more than once within a microsecond so it's a UUID.
+		postTitle = `Test Post ${ crypto.randomUUID() }`; // Sometimes this runs more than once within a microsecond so it's a UUID.
 
 		// eslint-disable-next-line no-console
 		console.log( `New post ${ postTitle }` );
