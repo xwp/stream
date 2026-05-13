@@ -62,3 +62,86 @@ jobs:
 
       - name: Test
         run: npm run test
+
+  e2e:
+    name: E2E
+    runs-on: ubuntu-22.04
+    needs: lint
+    permissions:
+      contents: read
+      packages: read
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Map stream.wpenv.net to localhost
+        run: echo "127.0.0.1 stream.wpenv.net" | sudo tee -a /etc/hosts
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install NPM dependencies
+        run: npm install
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Build
+        run: npm run build
+
+      - name: Pull custom Docker images
+        run: docker compose pull wordpress
+
+      - name: Start WordPress
+        run: npm run start
+
+      - name: Wait for MySQL
+        run: |
+          for i in {1..60}; do
+            if docker compose exec -T mysql mysqladmin ping -h localhost -ppassword --silent; then
+              echo "MySQL is up."
+              exit 0
+            fi
+            echo "Waiting for MySQL... ($i)"
+            sleep 2
+          done
+          echo "MySQL did not become ready in time." >&2
+          exit 1
+
+      - name: Wait for WordPress HTTP
+        run: |
+          for i in {1..60}; do
+            if curl --silent --output /dev/null --fail --resolve stream.wpenv.net:80:127.0.0.1 http://stream.wpenv.net/; then
+              echo "WordPress is reachable."
+              exit 0
+            fi
+            echo "Waiting for WordPress... ($i)"
+            sleep 2
+          done
+          echo "WordPress did not become reachable in time." >&2
+          exit 1
+
+      - name: Install WordPress multisite
+        run: npm run install-wordpress
+
+      - name: Run E2E tests
+        run: npm run test-e2e
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 7
