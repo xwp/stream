@@ -39,7 +39,7 @@ $( document ).ready(
 
 				data[ 'wp-stream-heartbeat-last-time' ] = last_time;
 				data[ 'wp-stream-heartbeat-query' ] = window[ 'wp-stream-live-updates' ].current_query;
-			}
+			},
 		);
 
 		// Listen for "heartbeat-tick" on $(document).
@@ -78,7 +78,7 @@ $( document ).ready(
 							const label = $( this ).val();
 							$( 'td.column-' + label ).hide();
 						}
-					}
+					},
 				);
 
 				// Remove the number of element added to the end of the list table
@@ -114,11 +114,11 @@ $( document ).ready(
 						setTimeout(
 							function() {
 								$( list_sel + ' tr' ).removeClass( 'new-row fadeout' );
-							}, 500
+							}, 500,
 						);
-					}, 3000
+					}, 3000,
 				);
-			}
+			},
 		);
-	}
+	},
 );

@@ -96,9 +96,9 @@ $( '.toplevel_page_wp_stream :input.chosen-select' ).each(
 									{
 										id: item.id,
 										text: item.label,
-									}
+									},
 								);
-							}
+							},
 						);
 						return {
 							results,
@@ -111,7 +111,7 @@ $( '.toplevel_page_wp_stream :input.chosen-select' ).each(
 		}
 
 		$( el ).select2( args );
-	}
+	},
 );
 
 const $queryVars = getQueryVars();
@@ -126,7 +126,7 @@ $( 'input[type=submit]', '#record-filter-form' ).click(
 	function() {
 		$( 'input[type=submit]', $( this ).parents( 'form' ) ).removeAttr( 'clicked' );
 		$( this ).attr( 'clicked', 'true' );
-	}
+	},
 );
 
 $( '#record-filter-form' ).submit(
@@ -147,14 +147,14 @@ $( '#record-filter-form' ).submit(
 		if ( 'level-1' === optionClass ) {
 			$option.val( '' );
 		}
-	}
+	},
 );
 
 $( window ).on(
 	'load',
 	function() {
 		$( '.toplevel_page_wp_stream input[type="search"]' ).off( 'mousedown' );
-	}
+	},
 );
 
 // Confirmation on some important actions
@@ -163,7 +163,7 @@ $( 'body' ).on(
 		if ( ! window.confirm( window[ 'wp-stream-admin' ].i18n.confirm_purge ) ) { // eslint-disable-line no-alert
 			e.preventDefault();
 		}
-	}
+	},
 );
 
 $( 'body' ).on(
@@ -171,7 +171,7 @@ $( 'body' ).on(
 		if ( ! window.confirm( window[ 'wp-stream-admin' ].i18n.confirm_defaults ) ) { // eslint-disable-line no-alert
 			e.preventDefault();
 		}
-	}
+	},
 );
 
 // Admin page tabs
@@ -210,7 +210,7 @@ $tabs.on(
 		syncFormAction( index );
 
 		return false;
-	}
+	},
 );
 
 $tabs.children().eq( currentHash ).trigger( 'click' );
@@ -258,9 +258,9 @@ $( document ).ready(
 								}
 							}
 						},
-					}
+					},
 				);
-			}
+			},
 		);
 
 		function toggle_filter_submit() {
@@ -279,7 +279,7 @@ $( document ).ready(
 						all_hidden = false;
 						return false;
 					}
-				}
+				},
 			);
 
 			if ( all_hidden ) {
@@ -306,7 +306,7 @@ $( document ).ready(
 				} else {
 					$( this ).prev( '.select2-container' ).hide();
 				}
-			}
+			},
 		);
 
 		toggle_filter_submit();
@@ -332,11 +332,11 @@ $( document ).ready(
 				}
 
 				toggle_filter_submit();
-			}
+			},
 		);
 
 		$( '#ui-datepicker-div' ).addClass( 'stream-datepicker' );
-	}
+	},
 );
 
 // Relative time
@@ -351,9 +351,9 @@ $( 'table.wp-list-table' ).on(
 					.prependTo( timeEl.parent().parent() )
 					.find( 'time.timeago' )
 					.timeago();
-			}
+			},
 		);
-	}
+	},
 ).trigger( 'updated' );
 
 const intervals = {
@@ -403,7 +403,7 @@ const intervals = {
 							onClose() {
 								$( this ).prop( 'disabled', false );
 							},
-						}
+						},
 					);
 
 					datepickers.datepicker( 'widget' ).addClass( 'stream-datepicker' );
@@ -412,7 +412,7 @@ const intervals = {
 				predefined.select2(
 					{
 						allowClear: true,
-					}
+					},
 				);
 
 				if ( '' !== from.val() ) {
@@ -465,7 +465,7 @@ const intervals = {
 								predefined.val( 'custom' ).trigger( 'change', [ true ] );
 							}
 						},
-					}
+					},
 				);
 
 				from.on(
@@ -482,7 +482,7 @@ const intervals = {
 						}
 
 						predefined.trigger( 'check_options' );
-					}
+					},
 				);
 
 				to.on(
@@ -499,7 +499,7 @@ const intervals = {
 						}
 
 						predefined.trigger( 'check_options' );
-					}
+					},
 				);
 
 				// Trigger change on load
@@ -508,9 +508,9 @@ const intervals = {
 				$( '' ).add( from_remove ).add( to_remove ).on(
 					'click', function() {
 						$( this ).next( 'input' ).val( '' ).trigger( 'change' );
-					}
+					},
 				);
-			}
+			},
 		);
 	},
 
@@ -526,7 +526,7 @@ const intervals = {
 
 				// Add params to URL
 				$( this ).attr( 'href', $( this ).attr( 'href' ) + '&' + $.param( data ) );
-			}
+			},
 		);
 	},
 };
@@ -546,13 +546,13 @@ $( document ).ready(
 							all_disabled = false;
 							return false;
 						}
-					}
+					},
 				);
 
 				if ( true === all_disabled ) {
 					$( this ).prop( 'disabled', true );
 				}
-			}
+			},
 		);
-	}
+	},
 );

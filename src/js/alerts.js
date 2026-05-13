@@ -54,7 +54,7 @@ function setupSelectTwo( id ) {
 
 						return null;
 					},
-				}
+				},
 			).change(
 				function() {
 					const value = $( this ).val();
@@ -63,7 +63,7 @@ function setupSelectTwo( id ) {
 						$( this ).siblings( '.connector' ).val( parts[ 0 ] );
 						$( this ).siblings( '.context' ).val( parts[ 1 ] );
 					}
-				}
+				},
 			);
 
 			const parts = [
@@ -74,7 +74,7 @@ function setupSelectTwo( id ) {
 				parts.splice( 1, 1 );
 			}
 			$( el ).val( parts.join( '-' ) ).trigger( 'change' );
-		}
+		},
 	);
 
 	$target.find( 'select.select2-select:not(.connector_or_context)' ).each(
@@ -86,9 +86,9 @@ function setupSelectTwo( id ) {
 				{
 					allowClear: true,
 					placeholder: window[ 'wp-stream-alerts' ].any + ' ' + select_name,
-				}
+				},
 			);
-		}
+		},
 	);
 }
 const $alertSettingSelect = $( '#wp_stream_alert_type' );
@@ -112,7 +112,7 @@ function loadAlertSettings( alert_type ) {
 			}
 			$alert_type_settings.html( response.data.html );
 			$alert_type_settings.show();
-		}
+		},
 	);
 }
 
@@ -126,7 +126,7 @@ $( '#the-list' ).on(
 			}
 			getActions( connector );
 		}
-	}
+	},
 );
 
 function getActions( connector ) {
@@ -158,14 +158,14 @@ function getActions( connector ) {
 			}
 			trigger_action.prop( 'disabled', false );
 			$( document ).trigger( 'alert-actions-updated' );
-		}
+		},
 	);
 }
 
 $alertSettingSelect.change(
 	function() {
 		loadAlertSettings( $( this ).val() );
-	}
+	},
 );
 
 $( '#wpbody-content' ).on(
@@ -193,26 +193,26 @@ $( '#wpbody-content' ).on(
 					setTimeout(
 						function() {
 							add_new_alert.css( 'background-color', current_bg_color );
-						}, 250
+						}, 250,
 					);
 
 					$( '#wp_stream_alert_type' ).change(
 						function() {
 							loadAlertSettings( $( this ).val() );
-						}
+						},
 					);
 					add_new_alert.on(
 						'click', '.button-secondary.cancel', function() {
 							$( '#add-new-alert' ).remove();
-						}
+						},
 					);
 					add_new_alert.on( 'click', '.button-primary.save', save_new_alert );
 
 					setupSelectTwo( '#add-new-alert' );
 				}
-			}
+			},
 		);
-	}
+	},
 );
 function save_new_alert( e ) {
 	e.preventDefault();
@@ -232,7 +232,7 @@ function save_new_alert( e ) {
 			if ( $( this ).val() ) {
 				data[ alert_type_data_id ] = $( this ).val();
 			}
-		}
+		},
 	);
 
 	$.post(
@@ -241,7 +241,7 @@ function save_new_alert( e ) {
 				$( '#add-new-alert' ).find( 'p.submit.inline-edit-save span.spinner' ).css( 'visibility', 'hidden' );
 				location.reload();
 			}
-		}
+		},
 	);
 }
 
@@ -282,7 +282,7 @@ window.inlineEditPost.edit = function( id ) {
 			'alert-actions-updated', function() {
 				$edit_row.find( 'input[name="wp_stream_trigger_action"]' ).attr( 'value', alert_trigger_action );
 				$edit_row.find( 'select[name="wp_stream_trigger_action"] option[value="' + alert_trigger_action + '"]' ).attr( 'selected', 'selected' ).trigger( 'change' );
-			}
+			},
 		);
 		$edit_row.find( 'select[name="wp_stream_alert_status"] option[value="' + alert_status + '"]' ).attr( 'selected', 'selected' );
 		setupSelectTwo( '#edit-' + post_id );
@@ -300,7 +300,7 @@ if ( window.location.hash ) {
 		$( 'html, body' ).animate(
 			{
 				scrollTop: scroll_to_position,
-			}, 1000
+			}, 1000,
 		);
 		$target_post_row.find( '.row-actions a.editinline' ).trigger( 'click' );
 	}

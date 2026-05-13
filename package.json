@@ -31,6 +31,7 @@
     "@wordpress/scripts": "^32.1.0",
     "copy-webpack-plugin": "^14.0.0",
     "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.6.0",
     "jquery": "3.7.1",
     "npm-run-all2": "^8.0.4"
   },
@@ -38,7 +39,7 @@
     "build": "wp-scripts build",
     "dev": "wp-scripts start",
     "lint": "npm-run-all lint:*",
-    "lint:js": "DEBUG=eslint:cli-engine wp-scripts lint-js",
+    "lint:js": "wp-scripts lint-js",
     "lint:php": "composer lint",
     "lint:php-tests": "composer lint-tests",
     "format": "npm-run-all format:*",
