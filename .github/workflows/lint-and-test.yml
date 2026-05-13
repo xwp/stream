@@ -2,11 +2,16 @@ name: Lint and Test
 
 on: [push, workflow_call]
 
+env:
+  # Opt into Node.js 24 for JavaScript actions that still ship a Node 20 runtime.
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
 jobs:
 
   lint:
     name: Lint and Test
     runs-on: ubuntu-22.04
+    timeout-minutes: 10
     permissions:
       contents: read
       packages: read
@@ -39,7 +44,7 @@ jobs:
           restore-keys: ${{ runner.os }}-php-
 
       - name: Log in to the Container registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -62,3 +67,104 @@ jobs:
 
       - name: Test
         run: npm run test
+
+  e2e:
+    name: E2E
+    runs-on: ubuntu-22.04
+    timeout-minutes: 12
+    needs: lint
+    permissions:
+      contents: read
+      packages: read
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer:v2
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-php-${{ hashFiles( 'composer.lock' ) }}
+          restore-keys: ${{ runner.os }}-php-
+
+      - name: Map stream.wpenv.net to localhost
+        run: echo "127.0.0.1 stream.wpenv.net" | sudo tee -a /etc/hosts
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install NPM dependencies
+        run: npm install
+
+      - name: Install Composer dependencies
+        run: composer install
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Build
+        run: npm run build
+
+      - name: Pull custom Docker images
+        run: docker compose pull wordpress
+
+      - name: Start WordPress
+        run: npm run start
+
+      - name: Wait for MySQL (from inside the wordpress container)
+        run: |
+          npm run cli -- php -r '
+            require "/var/www/html/wp-content/plugins/stream-src/vendor/autoload.php";
+            ( new XWP\Wait_For\Tcp_Connection( "mysql", 3306 ) )->connect( 120 );
+            echo "MySQL is accepting connections on mysql:3306.\n";
+          '
+
+      - name: Wait for WordPress (from the runner)
+        run: |
+          php -r '
+            require "vendor/autoload.php";
+            ( new XWP\Wait_For\Tcp_Connection( "127.0.0.1", 80 ) )->connect( 60 );
+            echo "WordPress is accepting connections on 127.0.0.1:80.\n";
+          '
+
+      - name: Install WordPress multisite
+        run: npm run install-wordpress
+
+      - name: Run E2E tests
+        run: npm run test-e2e
+
+      - name: Dump container state on failure
+        if: failure()
+        run: |
+          docker compose ps || true
+          docker compose logs --tail=80 mysql || true
+          docker compose logs --tail=80 wordpress || true
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 7
