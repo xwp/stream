@@ -148,18 +148,18 @@ jobs:
             echo "WordPress is accepting connections on 127.0.0.1:80.\n";
           '
 
+      - name: Install WordPress multisite
+        run: npm run install-wordpress
+
+      - name: Run E2E tests
+        run: npm run test-e2e
+
       - name: Dump container state on failure
         if: failure()
         run: |
           docker compose ps || true
           docker compose logs --tail=80 mysql || true
           docker compose logs --tail=80 wordpress || true
-
-      - name: Install WordPress multisite
-        run: npm run install-wordpress
-
-      - name: Run E2E tests
-        run: npm run test-e2e
 
       - name: Upload Playwright report
         if: ${{ !cancelled() }}
