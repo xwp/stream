@@ -83,10 +83,15 @@ class Ability_Delete_Alert extends Ability {
 	 * @param mixed $input Validated input matching get_input_schema(), or null.
 	 */
 	public function execute( $input = null ) {
-		$id   = isset( $input['id'] ) ? (int) $input['id'] : 0;
-		$post = $id > 0 ? get_post( $id ) : null;
+		$id = isset( $input['id'] ) ? (int) $input['id'] : 0;
 
-		if ( ! $post || Alerts::POST_TYPE !== $post->post_type ) {
+		// Load via Alerts::get_alert() so we can leverage the existing factory.
+		// It returns an Alert with ID=null for unknown post IDs, which we treat
+		// as not-found. The Alert::delete() method then double-checks the post
+		// type to refuse deleting non-alert posts.
+		$alert = $id > 0 ? $this->plugin->alerts->get_alert( $id ) : null;
+
+		if ( ! $alert || empty( $alert->ID ) ) {
 			return new \WP_Error(
 				'stream_alert_not_found',
 				__( 'Alert not found.', 'stream' ),
@@ -94,10 +99,18 @@ class Ability_Delete_Alert extends Ability {
 			);
 		}
 
-		$result = wp_delete_post( $id, true );
+		$result = $alert->delete();
+
+		if ( ! $result ) {
+			return new \WP_Error(
+				'stream_alert_not_found',
+				__( 'Alert not found.', 'stream' ),
+				array( 'status' => 404 )
+			);
+		}
 
 		return array(
-			'deleted' => (bool) $result,
+			'deleted' => true,
 			'id'      => $id,
 		);
 	}

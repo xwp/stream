@@ -223,6 +223,36 @@ class Connectors {
 	}
 
 	/**
+	 * Return the slugs of all registered connectors.
+	 *
+	 * @return string[]
+	 */
+	public function get_slugs() {
+		return array_keys( (array) $this->connectors );
+	}
+
+	/**
+	 * Return a normalized list of all registered connectors and their
+	 * context/action labels.
+	 *
+	 * @return array<int, array{slug:string,label:string,contexts:array<string,string>,actions:array<string,string>}>
+	 */
+	public function get_all() {
+		$out = array();
+
+		foreach ( (array) $this->connectors as $slug => $connector ) {
+			$out[] = array(
+				'slug'     => (string) $slug,
+				'label'    => method_exists( $connector, 'get_label' ) ? (string) $connector->get_label() : (string) $slug,
+				'contexts' => method_exists( $connector, 'get_context_labels' ) ? (array) $connector->get_context_labels() : array(),
+				'actions'  => method_exists( $connector, 'get_action_labels' ) ? (array) $connector->get_action_labels() : array(),
+			);
+		}
+
+		return $out;
+	}
+
+	/**
 	 * Unregisters the context hooks for all connectors.
 	 */
 	public function unload_connectors() {

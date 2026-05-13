@@ -100,33 +100,20 @@ class Ability_Get_Record extends Ability {
 	 * @param mixed $input Validated input matching get_input_schema(), or null.
 	 */
 	public function execute( $input = null ) {
-		global $wpdb;
-
 		$id = isset( $input['id'] ) ? (int) $input['id'] : 0;
 
-		// Stream's Query class doesn't expose a single-ID filter (record__in
-		// is broken for one-element arrays due to array_shift() in
-		// Query::query()), so query the table directly. On any multisite
-		// install, scope reads to the current blog unless the request is
-		// running inside Network Admin — this mirrors Network::network_query_args()
-		// (default blog_id is get_current_blog_id() outside network admin) and
-		// applies the same protection in REST contexts, where is_network_admin()
-		// is always false. Without this guard, a user with view_stream on one
-		// site of a network-activated install could fetch records from other
-		// sites by guessing IDs.
-		$where    = '';
-		$prepared = array( $id );
-		if ( is_multisite() && ! is_network_admin() ) {
-			$where      = ' AND blog_id = %d';
-			$prepared[] = get_current_blog_id();
-		}
+		// On any multisite install, scope reads to the current blog unless the
+		// request is running inside Network Admin — this mirrors
+		// Network::network_query_args() (default blog_id is get_current_blog_id()
+		// outside network admin) and applies the same protection in REST
+		// contexts, where is_network_admin() is always false. Without this
+		// guard, a user with view_stream on one site of a network-activated
+		// install could fetch records from other sites by guessing IDs.
+		$blog_id = ( is_multisite() && ! is_network_admin() )
+			? get_current_blog_id()
+			: null;
 
-		// $wpdb->stream and {$where} are constructed from string literals in this
-		// method (no user input), and $prepared holds only an int id and (on
-		// multisite) the integer blog id from get_current_blog_id().
-		$sql = "SELECT * FROM {$wpdb->stream} WHERE ID = %d{$where}";
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared
-		$row = $wpdb->get_row( $wpdb->prepare( $sql, $prepared ), ARRAY_A );
+		$row = Record::get_by_id( $id, $blog_id );
 
 		if ( empty( $row ) ) {
 			return new \WP_Error(
@@ -135,8 +122,6 @@ class Ability_Get_Record extends Ability {
 				array( 'status' => 404 )
 			);
 		}
-
-		$row['meta'] = (array) get_metadata( 'record', $row['ID'] );
 
 		return $row;
 	}

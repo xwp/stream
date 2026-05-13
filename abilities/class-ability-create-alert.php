@@ -76,8 +76,8 @@ class Ability_Create_Alert extends Ability {
 				'status'          => array(
 					'type'        => 'string',
 					'description' => 'Initial alert status.',
-					'enum'        => array( 'wp_stream_enabled', 'wp_stream_disabled' ),
-					'default'     => 'wp_stream_enabled',
+					'enum'        => array( Alerts::STATUS_ENABLED, Alerts::STATUS_DISABLED ),
+					'default'     => Alerts::STATUS_ENABLED,
 				),
 			),
 		);
@@ -94,7 +94,7 @@ class Ability_Create_Alert extends Ability {
 				'id'         => array( 'type' => 'integer' ),
 				'status'     => array(
 					'type' => 'string',
-					'enum' => array( 'wp_stream_enabled', 'wp_stream_disabled' ),
+					'enum' => array( Alerts::STATUS_ENABLED, Alerts::STATUS_DISABLED ),
 				),
 				'title'      => array( 'type' => 'string' ),
 				'alert_type' => array( 'type' => array( 'string', 'null' ) ),
@@ -112,7 +112,7 @@ class Ability_Create_Alert extends Ability {
 	 * @param mixed $input Validated input matching get_input_schema(), or null.
 	 */
 	public function execute( $input = null ) {
-		$status = isset( $input['status'] ) ? $input['status'] : 'wp_stream_enabled';
+		$status = isset( $input['status'] ) ? $input['status'] : Alerts::STATUS_ENABLED;
 
 		// Validate alert_type against the registered notifier slugs. The schema
 		// can't enum these because alert types are extensible via the
@@ -156,9 +156,9 @@ class Ability_Create_Alert extends Ability {
 			)
 		);
 
-		// Build an Alert model so we can reuse Stream's title-generation logic
-		// (otherwise wp_insert_post stores 'Auto Draft' for empty post_title).
-		$alert_model = new Alert(
+		// Delegate the actual insert + meta save to Alert::save() so the
+		// admin UI and the Abilities API stay on a single code path.
+		$alert = new Alert(
 			(object) array(
 				'alert_type' => $input['alert_type'],
 				'alert_meta' => $alert_meta,
@@ -166,23 +166,20 @@ class Ability_Create_Alert extends Ability {
 			),
 			$this->plugin
 		);
-		$post_title  = $alert_model->get_title();
 
-		$post_id = wp_insert_post(
-			array(
-				'post_type'   => Alerts::POST_TYPE,
-				'post_status' => $status,
-				'post_title'  => $post_title,
-			),
-			true
-		);
+		$post_id = $alert->save();
 
 		if ( is_wp_error( $post_id ) ) {
 			return $post_id;
 		}
 
-		update_post_meta( $post_id, 'alert_type', $input['alert_type'] );
-		update_post_meta( $post_id, 'alert_meta', $alert_meta );
+		if ( empty( $post_id ) ) {
+			return new \WP_Error(
+				'stream_alert_create_failed',
+				__( 'Failed to create alert.', 'stream' ),
+				array( 'status' => 500 )
+			);
+		}
 
 		return array(
 			'id'         => (int) $post_id,

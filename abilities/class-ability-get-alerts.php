@@ -80,7 +80,7 @@ class Ability_Get_Alerts extends Ability {
 					'id'         => array( 'type' => 'integer' ),
 					'status'     => array(
 						'type' => 'string',
-						'enum' => array( 'wp_stream_enabled', 'wp_stream_disabled' ),
+						'enum' => array( Alerts::STATUS_ENABLED, Alerts::STATUS_DISABLED ),
 					),
 					'title'      => array( 'type' => 'string' ),
 					'alert_type' => array( 'type' => array( 'string', 'null' ) ),
@@ -103,39 +103,32 @@ class Ability_Get_Alerts extends Ability {
 
 		switch ( $requested ) {
 			case 'enabled':
-				$statuses = array( 'wp_stream_enabled' );
+				$statuses = array( Alerts::STATUS_ENABLED );
 				break;
 			case 'disabled':
-				$statuses = array( 'wp_stream_disabled' );
+				$statuses = array( Alerts::STATUS_DISABLED );
 				break;
 			default:
-				$statuses = array( 'wp_stream_enabled', 'wp_stream_disabled' );
+				$statuses = array( Alerts::STATUS_ENABLED, Alerts::STATUS_DISABLED );
 		}
 
-		$posts = get_posts(
-			array(
-				'post_type'      => Alerts::POST_TYPE,
-				'post_status'    => $statuses,
-				'posts_per_page' => -1, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
-			)
-		);
+		$alerts = $this->plugin->alerts->get_alerts( $statuses );
 
 		$out = array();
-		foreach ( $posts as $post ) {
-			// get_post_meta() returns '' (string) when the key is missing; an
-			// empty PHP array() also JSON-encodes as a list ([]), which violates
-			// the declared object output schema. Normalize both cases to a real
-			// object so wp_json_encode() emits {} when there is no meta.
-			$alert_meta = get_post_meta( $post->ID, 'alert_meta', true );
-			if ( ! is_array( $alert_meta ) || array() === $alert_meta ) {
-				$alert_meta = new \stdClass();
-			}
+		foreach ( $alerts as $alert ) {
+			// Alert::$alert_meta defaults to array(); an empty PHP array() also
+			// JSON-encodes as a list ([]), which violates the declared object
+			// output schema. Normalize empty/non-array values to a real object
+			// so wp_json_encode() emits {} when there is no meta.
+			$alert_meta = is_array( $alert->alert_meta ) && ! empty( $alert->alert_meta )
+				? $alert->alert_meta
+				: new \stdClass();
 
 			$out[] = array(
-				'id'         => (int) $post->ID,
-				'status'     => (string) $post->post_status,
-				'title'      => (string) $post->post_title,
-				'alert_type' => get_post_meta( $post->ID, 'alert_type', true ),
+				'id'         => (int) $alert->ID,
+				'status'     => (string) $alert->status,
+				'title'      => (string) get_the_title( $alert->ID ),
+				'alert_type' => $alert->alert_type,
 				'alert_meta' => $alert_meta,
 			);
 		}

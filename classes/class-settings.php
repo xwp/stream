@@ -451,6 +451,36 @@ class Settings {
 	}
 
 	/**
+	 * Returns a single setting value, reading the network-level option when
+	 * Stream is network-activated on multisite.
+	 *
+	 * Settings::get_options() only loads from get_site_option() inside
+	 * is_network_admin() screens. In REST and frontend contexts on a
+	 * network-activated install, $this->options reflects the (typically empty)
+	 * per-site option, which would silently mask a network-admin-controlled
+	 * setting. This accessor handles that case so callers don't have to
+	 * duplicate the multisite branching.
+	 *
+	 * @param string $key           Fully-qualified setting key (e.g. "advanced_enable_abilities_api").
+	 * @param mixed  $default_value Value returned when the setting is not present.
+	 *
+	 * @return mixed
+	 */
+	public function get_setting_value( $key, $default_value = null ) {
+		if (
+			is_multisite()
+			&& isset( $this->plugin )
+			&& $this->plugin->is_network_activated()
+		) {
+			$options = (array) get_site_option( $this->network_options_key, array() );
+		} else {
+			$options = (array) $this->options;
+		}
+
+		return isset( $options[ $key ] ) ? $options[ $key ] : $default_value;
+	}
+
+	/**
 	 * Returns a list of options based on the current screen.
 	 *
 	 * @return array

@@ -136,6 +136,51 @@ class Record {
 	}
 
 	/**
+	 * Fetch a single record row by ID, including its metadata.
+	 *
+	 * Stream's Query class doesn't expose a single-ID filter (record__in is
+	 * broken for one-element arrays due to array_shift() in Query::query()),
+	 * so query the table directly. Pass $blog_id to scope the lookup to a
+	 * specific blog on multisite — callers running in REST/non-network-admin
+	 * contexts should pass get_current_blog_id() to prevent cross-site reads.
+	 *
+	 * @param int      $id      Record ID.
+	 * @param int|null $blog_id Optional blog ID to constrain the lookup to.
+	 *
+	 * @return array|null Associative row with merged 'meta' key, or null when
+	 *                   no matching record exists.
+	 */
+	public static function get_by_id( $id, $blog_id = null ) {
+		global $wpdb;
+
+		$id = (int) $id;
+		if ( $id <= 0 ) {
+			return null;
+		}
+
+		$where    = '';
+		$prepared = array( $id );
+		if ( null !== $blog_id ) {
+			$where      = ' AND blog_id = %d';
+			$prepared[] = (int) $blog_id;
+		}
+
+		// $wpdb->stream and {$where} are constructed from string literals (no
+		// user input), and $prepared holds only integer IDs.
+		$sql = "SELECT * FROM {$wpdb->stream} WHERE ID = %d{$where}";
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared
+		$row = $wpdb->get_row( $wpdb->prepare( $sql, $prepared ), ARRAY_A );
+
+		if ( empty( $row ) ) {
+			return null;
+		}
+
+		$row['meta'] = (array) get_metadata( 'record', $row['ID'] );
+
+		return $row;
+	}
+
+	/**
 	 * Save record.
 	 *
 	 * @return int|WP_Error

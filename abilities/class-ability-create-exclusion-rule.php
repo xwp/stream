@@ -154,8 +154,8 @@ class Ability_Create_Exclusion_Rule extends Ability {
 
 		// Validate connector against registered connectors when provided.
 		if ( '' !== $sanitized['connector'] ) {
-			$known = isset( $this->plugin->connectors->connectors )
-				? array_keys( (array) $this->plugin->connectors->connectors )
+			$known = isset( $this->plugin->connectors )
+				? $this->plugin->connectors->get_slugs()
 				: array();
 			if ( ! empty( $known ) && ! in_array( $sanitized['connector'], $known, true ) ) {
 				return new \WP_Error(
