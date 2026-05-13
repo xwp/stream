@@ -132,20 +132,20 @@ jobs:
       - name: Start WordPress
         run: npm run start
 
-      - name: Wait for MySQL and WordPress
+      - name: Wait for MySQL (from inside the wordpress container)
+        run: |
+          npm run cli -- php -r '
+            require "/var/www/html/wp-content/plugins/stream-src/vendor/autoload.php";
+            ( new XWP\Wait_For\Tcp_Connection( "mysql", 3306 ) )->connect( 120 );
+            echo "MySQL is accepting connections on mysql:3306.\n";
+          '
+
+      - name: Wait for WordPress (from the runner)
         run: |
           php -r '
             require "vendor/autoload.php";
-            foreach ( [ [ "127.0.0.1", 3306, "MySQL" ], [ "127.0.0.1", 80, "WordPress" ] ] as $svc ) {
-              [ $host, $port, $name ] = $svc;
-              try {
-                ( new XWP\Wait_For\Tcp_Connection( $host, $port ) )->connect( 120 );
-                fwrite( STDOUT, "$name is accepting connections on $host:$port.\n" );
-              } catch ( Throwable $e ) {
-                fwrite( STDERR, "$name not ready: " . $e->getMessage() . "\n" );
-                exit( 1 );
-              }
-            }
+            ( new XWP\Wait_For\Tcp_Connection( "127.0.0.1", 80 ) )->connect( 60 );
+            echo "WordPress is accepting connections on 127.0.0.1:80.\n";
           '
 
       - name: Dump container state on failure
