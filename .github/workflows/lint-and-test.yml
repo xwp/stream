@@ -128,14 +128,19 @@ jobs:
       - name: Wait for WordPress HTTP
         run: |
           for i in {1..60}; do
-            if curl --silent --output /dev/null --fail --resolve stream.wpenv.net:80:127.0.0.1 http://stream.wpenv.net/; then
-              echo "WordPress is reachable."
+            status=$(curl --silent --output /dev/null --write-out '%{http_code}' --max-time 5 http://stream.wpenv.net/ || echo "000")
+            if [ "$status" != "000" ]; then
+              echo "WordPress is reachable (HTTP $status)."
               exit 0
             fi
-            echo "Waiting for WordPress... ($i)"
+            echo "Waiting for WordPress... ($i) status=$status"
             sleep 2
           done
-          echo "WordPress did not become reachable in time." >&2
+          echo "WordPress did not become reachable in time. Last status: $status" >&2
+          echo "--- docker compose ps ---" >&2
+          docker compose ps >&2 || true
+          echo "--- wordpress container logs (tail) ---" >&2
+          docker compose logs --tail=80 wordpress >&2 || true
           exit 1
 
       - name: Install WordPress multisite
