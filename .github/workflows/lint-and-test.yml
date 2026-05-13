@@ -2,11 +2,16 @@ name: Lint and Test
 
 on: [push, workflow_call]
 
+env:
+  # Opt into Node.js 24 for JavaScript actions that still ship a Node 20 runtime.
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
 jobs:
 
   lint:
     name: Lint and Test
     runs-on: ubuntu-22.04
+    timeout-minutes: 10
     permissions:
       contents: read
       packages: read
@@ -39,7 +44,7 @@ jobs:
           restore-keys: ${{ runner.os }}-php-
 
       - name: Log in to the Container registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -66,6 +71,7 @@ jobs:
   e2e:
     name: E2E
     runs-on: ubuntu-22.04
+    timeout-minutes: 12
     needs: lint
     permissions:
       contents: read
@@ -85,7 +91,7 @@ jobs:
         run: echo "127.0.0.1 stream.wpenv.net" | sudo tee -a /etc/hosts
 
       - name: Log in to the Container registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -109,7 +115,7 @@ jobs:
       - name: Wait for MySQL
         run: |
           for i in {1..60}; do
-            if docker compose exec -T mysql mysqladmin ping -h localhost -ppassword --silent; then
+            if docker compose exec -T mysql mariadb-admin ping -h localhost -ppassword --silent; then
               echo "MySQL is up."
               exit 0
             fi
