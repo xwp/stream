@@ -135,14 +135,15 @@ jobs:
       - name: Wait for MySQL
         run: |
           for i in {1..60}; do
-            if docker compose exec -T mysql mariadb-admin ping -h localhost -ppassword --silent; then
-              echo "MySQL is up."
+            if docker compose exec -T mysql mariadb -uwordpress -ppassword wordpress -e 'SELECT 1' >/dev/null 2>&1; then
+              echo "MySQL is accepting connections."
               exit 0
             fi
             echo "Waiting for MySQL... ($i)"
             sleep 2
           done
           echo "MySQL did not become ready in time." >&2
+          docker compose logs --tail=50 mysql >&2 || true
           exit 1
 
       - name: Wait for WordPress HTTP
