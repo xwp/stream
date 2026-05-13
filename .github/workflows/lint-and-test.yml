@@ -87,6 +87,23 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer:v2
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-php-${{ hashFiles( 'composer.lock' ) }}
+          restore-keys: ${{ runner.os }}-php-
+
       - name: Map stream.wpenv.net to localhost
         run: echo "127.0.0.1 stream.wpenv.net" | sudo tee -a /etc/hosts
 
@@ -99,6 +116,9 @@ jobs:
 
       - name: Install NPM dependencies
         run: npm install
+
+      - name: Install Composer dependencies
+        run: composer install
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
