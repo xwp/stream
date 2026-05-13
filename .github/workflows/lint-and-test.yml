@@ -132,37 +132,28 @@ jobs:
       - name: Start WordPress
         run: npm run start
 
-      - name: Wait for MySQL
+      - name: Wait for MySQL and WordPress
         run: |
-          for i in {1..60}; do
-            if docker compose exec -T mysql mariadb -uwordpress -ppassword wordpress -e 'SELECT 1' >/dev/null 2>&1; then
-              echo "MySQL is accepting connections."
-              exit 0
-            fi
-            echo "Waiting for MySQL... ($i)"
-            sleep 2
-          done
-          echo "MySQL did not become ready in time." >&2
-          docker compose logs --tail=50 mysql >&2 || true
-          exit 1
+          php -r '
+            require "vendor/autoload.php";
+            foreach ( [ [ "127.0.0.1", 3306, "MySQL" ], [ "127.0.0.1", 80, "WordPress" ] ] as $svc ) {
+              [ $host, $port, $name ] = $svc;
+              try {
+                ( new XWP\Wait_For\Tcp_Connection( $host, $port ) )->connect( 120 );
+                fwrite( STDOUT, "$name is accepting connections on $host:$port.\n" );
+              } catch ( Throwable $e ) {
+                fwrite( STDERR, "$name not ready: " . $e->getMessage() . "\n" );
+                exit( 1 );
+              }
+            }
+          '
 
-      - name: Wait for WordPress HTTP
+      - name: Dump container state on failure
+        if: failure()
         run: |
-          for i in {1..60}; do
-            status=$(curl --silent --output /dev/null --write-out '%{http_code}' --max-time 5 http://stream.wpenv.net/ || echo "000")
-            if [ "$status" != "000" ]; then
-              echo "WordPress is reachable (HTTP $status)."
-              exit 0
-            fi
-            echo "Waiting for WordPress... ($i) status=$status"
-            sleep 2
-          done
-          echo "WordPress did not become reachable in time. Last status: $status" >&2
-          echo "--- docker compose ps ---" >&2
-          docker compose ps >&2 || true
-          echo "--- wordpress container logs (tail) ---" >&2
-          docker compose logs --tail=80 wordpress >&2 || true
-          exit 1
+          docker compose ps || true
+          docker compose logs --tail=80 mysql || true
+          docker compose logs --tail=80 wordpress || true
 
       - name: Install WordPress multisite
         run: npm run install-wordpress
