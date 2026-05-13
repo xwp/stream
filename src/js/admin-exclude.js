@@ -60,7 +60,7 @@ const initSettingsSelect2 = function( $rowsWithSelect2 ) {
 
 						return null;
 					},
-				}
+				},
 			).on(
 				'change', function() {
 					const row = $( this ).closest( 'tr' );
@@ -70,9 +70,9 @@ const initSettingsSelect2 = function( $rowsWithSelect2 ) {
 						connector = connector_split[ 0 ];
 					}
 					getActions( row, connector );
-				}
+				},
 			);
-		}
+		},
 	);
 
 	$( 'select.select2-select.action', $rowsWithSelect2 ).each(
@@ -80,9 +80,9 @@ const initSettingsSelect2 = function( $rowsWithSelect2 ) {
 			$( el ).select2(
 				{
 					allowClear: true,
-				}
+				},
 			);
-		}
+		},
 	);
 
 	$( 'select.select2-select.author_or_role', $rowsWithSelect2 ).each(
@@ -130,9 +130,9 @@ const initSettingsSelect2 = function( $rowsWithSelect2 ) {
 										{
 											id,
 											text,
-										}
+										},
 									);
-								}
+								},
 							);
 
 							answer.results[ 1 ].children = roles;
@@ -172,16 +172,16 @@ const initSettingsSelect2 = function( $rowsWithSelect2 ) {
 					},
 					allowClear: true,
 					placeholder: $input_user.data( 'placeholder' ),
-				}
+				},
 			).on(
 				'change', function() {
 					const value = $( this ).select2( 'data' );
 
 					$( this ).data( 'selected-id', value.id );
 					$( this ).data( 'selected-text', value.text );
-				}
+				},
 			);
-		}
+		},
 	);
 
 	$( 'select.select2-select.ip_address', $rowsWithSelect2 ).each(
@@ -216,9 +216,9 @@ const initSettingsSelect2 = function( $rowsWithSelect2 ) {
 											{
 												id: ip,
 												text: ip,
-											}
+											},
 										);
-									}
+									},
 								);
 							}
 
@@ -240,7 +240,7 @@ const initSettingsSelect2 = function( $rowsWithSelect2 ) {
 								function( chunk ) {
 									const numeric = parseInt( chunk, 10 );
 									return numeric <= 255 && numeric.toString() === chunk;
-								}
+								},
 							);
 
 							if ( ip_chunks.length >= 4 ) {
@@ -248,7 +248,7 @@ const initSettingsSelect2 = function( $rowsWithSelect2 ) {
 									{
 										id: searchTerm,
 										text: searchTerm,
-									}
+									},
 								);
 							}
 
@@ -260,13 +260,13 @@ const initSettingsSelect2 = function( $rowsWithSelect2 ) {
 					maximumSelectionSize: 1,
 					placeholder: $input_ip.data( 'placeholder' ),
 					tags: true,
-				}
+				},
 			);
-		}
+		},
 	).on(
 		'change', function() {
 			$( this ).prev( '.select2-container' ).find( 'input.select2-input' ).blur();
-		}
+		},
 	);
 
 	$( 'ul.select2-choices, ul.select2-choices li, input.select2-input', '.stream-exclude-list tr:not(.hidden) .ip_address' ).on(
@@ -279,7 +279,7 @@ const initSettingsSelect2 = function( $rowsWithSelect2 ) {
 				$input.blur();
 				return false;
 			}
-		}
+		},
 	);
 
 	$( '.exclude_rules_remove_rule_row', $rowsWithSelect2 ).on(
@@ -292,7 +292,7 @@ const initSettingsSelect2 = function( $rowsWithSelect2 ) {
 			recalculate_rules_selected();
 
 			e.preventDefault();
-		}
+		},
 	);
 };
 
@@ -302,7 +302,7 @@ $( 'select.select2-select.author_or_role', $excludeRows ).each(
 	function() {
 		const $option = $( '<option selected>' + $( this ).data( 'selected-text' ) + '</option>' ).val( $( this ).data( 'selected-id' ) );
 		$( this ).append( $option ).trigger( 'change' );
-	}
+	},
 );
 
 $( 'select.select2-select.connector_or_context', $excludeRows ).each(
@@ -315,7 +315,7 @@ $( 'select.select2-select.connector_or_context', $excludeRows ).each(
 			parts.splice( 1, 1 );
 		}
 		$( this ).val( parts.join( '-' ) ).trigger( 'change' );
-	}
+	},
 );
 
 $( '#exclude_rules_new_rule' ).on(
@@ -328,7 +328,7 @@ $( '#exclude_rules_new_rule' ).on(
 		initSettingsSelect2( $newRow );
 		recalculate_rules_found();
 		recalculate_rules_selected();
-	}
+	},
 );
 
 $( '#exclude_rules_remove_rules' ).on(
@@ -348,7 +348,7 @@ $( '#exclude_rules_remove_rules' ).on(
 
 		recalculate_rules_found();
 		recalculate_rules_selected();
-	}
+	},
 );
 
 $( '.stream-exclude-list' ).closest( 'form' ).submit(
@@ -356,7 +356,7 @@ $( '.stream-exclude-list' ).closest( 'form' ).submit(
 		$( '.stream-exclude-list tbody tr.hidden', this ).each(
 			function() {
 				$( this ).find( ':input' ).removeAttr( 'name' );
-			}
+			},
 		);
 		$( '.stream-exclude-list tbody tr:not(.hidden) select.select2-select.connector_or_context', this ).each(
 			function() {
@@ -364,7 +364,7 @@ $( '.stream-exclude-list' ).closest( 'form' ).submit(
 				$( this ).siblings( '.connector' ).val( parts[ 0 ] );
 				$( this ).siblings( '.context' ).val( parts.slice( 1 ).join( '-' ) );
 				$( this ).removeAttr( 'name' );
-			}
+			},
 		);
 		$( '.stream-exclude-list tbody tr:not(.hidden) select.select2-select.ip_address', this ).each(
 			function() {
@@ -379,11 +379,11 @@ $( '.stream-exclude-list' ).closest( 'form' ).submit(
 					function() {
 						firstSelected.attr( 'value', firstSelected.attr( 'value' ) + ',' + $( this ).attr( 'value' ) );
 						$( this ).removeAttr( 'selected' );
-					}
+					},
 				);
-			}
+			},
 		);
-	}
+	},
 );
 
 $( '.stream-exclude-list' ).closest( 'td' ).prev( 'th' ).hide();
@@ -391,7 +391,7 @@ $( '.stream-exclude-list' ).closest( 'td' ).prev( 'th' ).hide();
 $( 'table.stream-exclude-list' ).on(
 	'click', 'input.cb-select', function() {
 		recalculate_rules_selected();
-	}
+	},
 );
 
 function getActions( row, connector ) {
@@ -426,7 +426,7 @@ function getActions( row, connector ) {
 			trigger_action.val( action_value );
 			trigger_action.prop( 'disabled', false );
 			$( document ).trigger( 'alert-actions-updated' );
-		}
+		},
 	);
 }
 
@@ -463,5 +463,5 @@ $( document ).ready(
 	function() {
 		recalculate_rules_found();
 		recalculate_rules_selected();
-	}
+	},
 );

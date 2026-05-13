@@ -35,7 +35,7 @@ $( document ).ready(
 								if ( true === response.success ) {
 									ajaxDone();
 								}
-							}
+							},
 						);
 
 						/**
@@ -48,20 +48,20 @@ $( document ).ready(
 								row.animate(
 									{ backgroundColor: '#f9f9f9' }, 300, function() {
 										row.removeClass( 'alert-highlight' );
-									}
+									},
 								);
 							} else {
 								row.animate(
 									{ backgroundColor: '' }, 300, function() {
 										row.removeClass( 'alert-highlight' );
-									}
+									},
 								);
 							}
 							actionLink.remove();
 						}
-					}
+					},
 				);
-			}
+			},
 		);
-	}
+	},
 );
