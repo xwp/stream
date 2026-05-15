@@ -242,6 +242,17 @@ class Ability_Get_Records extends Ability {
 			$args['records_per_page'] = self::DEFAULT_PER_PAGE;
 		}
 
+		// Scope reads to the current blog on multisite unless the caller is
+		// in Network Admin (mirrors Network::network_query_args). The
+		// wp_stream_query_args filter that normally injects this is only
+		// registered when Admin instantiates Network — Admin isn't loaded in
+		// REST, so without this guard a user with view_stream on one site of
+		// a network-activated install could read records from other sites.
+		// Matches the guards already in get-record and purge-records.
+		if ( is_multisite() && ! is_network_admin() ) {
+			$args['blog_id'] = get_current_blog_id();
+		}
+
 		$records = $this->plugin->db->get_records( $args );
 		$total   = $this->plugin->db->get_found_records_count();
 

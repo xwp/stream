@@ -123,6 +123,13 @@ class Ability_Get_Record extends Ability {
 			);
 		}
 
+		// Normalize empty meta to a stdClass so wp_json_encode() emits {} and
+		// satisfies the declared meta: object output schema. get_metadata()
+		// returns [] for records with no meta, which JSON-encodes as a list.
+		if ( ! isset( $row['meta'] ) || ! is_array( $row['meta'] ) || array() === $row['meta'] ) {
+			$row['meta'] = new \stdClass();
+		}
+
 		return $row;
 	}
 }

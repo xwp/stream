@@ -80,9 +80,14 @@ class Ability_Update_Settings extends Ability {
 	 * @param mixed $input Validated input matching get_input_schema(), or null.
 	 */
 	public function execute( $input = null ) {
-		$option_key = $this->plugin->settings->option_key;
-		$current    = (array) get_option( $option_key, array() );
-		$updates    = isset( $input['settings'] ) ? (array) $input['settings'] : array();
+		// Read/write through Settings so the network-level option is honored
+		// on network-activated multisite. In REST contexts is_network_admin()
+		// is always false, so a direct get_option()/update_option() pair would
+		// hit the per-site option even when wp_stream_network is authoritative,
+		// and writes would silently fail to take effect (admin/UI/is_enabled()
+		// all read from the network option).
+		$current = $this->plugin->settings->get_all_setting_values();
+		$updates = isset( $input['settings'] ) ? (array) $input['settings'] : array();
 
 		// Build allowlist of {section}_{field} keys from registered settings,
 		// and a parallel list of which keys correspond to checkbox fields.
@@ -133,13 +138,10 @@ class Ability_Update_Settings extends Ability {
 		$sanitized = $this->plugin->settings->sanitize_settings( $filtered );
 		$merged    = array_merge( $current, $sanitized );
 
-		update_option( $option_key, $merged );
-
-		// Refresh in-memory copy through get_options() so defaults are merged
-		// in (the raw option is sparse). Subsequent abilities and any code
-		// that reads $plugin->settings->options in the same request need the
-		// fully-populated array to avoid undefined-index notices.
-		$this->plugin->settings->options = $this->plugin->settings->get_options();
+		// Settings::update_all_setting_values() also refreshes
+		// $plugin->settings->options so subsequent reads in the same request
+		// see the fully-populated array (defaults merged in).
+		$this->plugin->settings->update_all_setting_values( $merged );
 
 		return $this->plugin->settings->options;
 	}

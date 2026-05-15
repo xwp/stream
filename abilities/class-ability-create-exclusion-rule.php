@@ -185,8 +185,10 @@ class Ability_Create_Exclusion_Rule extends Ability {
 			);
 		}
 
-		$option_key = $this->plugin->settings->option_key;
-		$options    = (array) get_option( $option_key, array() );
+		// Read through Settings so we hit the network option on network-activated
+		// multisite. A direct get_option() would silently target the per-site
+		// option in REST contexts (is_network_admin() is always false there).
+		$options = $this->plugin->settings->get_all_setting_values();
 
 		$rules = isset( $options['exclude_rules'] ) && is_array( $options['exclude_rules'] )
 			? $options['exclude_rules']
@@ -213,12 +215,9 @@ class Ability_Create_Exclusion_Rule extends Ability {
 		}
 
 		$options['exclude_rules'] = $rules;
-		update_option( $option_key, $options );
-
-		// Refresh in-memory copy through get_options() so defaults are merged
-		// in (the raw option is sparse). Direct assignment of $options would
-		// leave default-only keys missing for the rest of the request.
-		$this->plugin->settings->options = $this->plugin->settings->get_options();
+		// update_all_setting_values() handles the network-activated case and
+		// also refreshes $plugin->settings->options for the rest of the request.
+		$this->plugin->settings->update_all_setting_values( $options );
 
 		return array(
 			'index' => $index,

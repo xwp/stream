@@ -92,9 +92,13 @@ class Abilities {
 			return $allcaps;
 		}
 
-		$role_access = isset( $this->plugin->settings->options['general_role_access'] )
-			? (array) $this->plugin->settings->options['general_role_access']
-			: array();
+		// Read through Settings::get_setting_value() so the network-level option
+		// (wp_stream_network) is consulted on network-activated multisite.
+		// In REST contexts is_network_admin() is always false, so a direct
+		// $plugin->settings->options read would hit the empty per-site option
+		// and silently drop view_stream for users granted access via the
+		// network admin's Role Access setting.
+		$role_access = (array) $this->plugin->settings->get_setting_value( 'general_role_access', array() );
 
 		if ( empty( $role_access ) ) {
 			return $allcaps;

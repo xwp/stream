@@ -403,13 +403,15 @@ class Settings {
 		// Abilities API toggle is only meaningful on WordPress 6.9+. On
 		// network-activated multisite, Abilities::is_enabled() reads the
 		// network option (wp_stream_network), so a per-site checkbox on the
-		// site's own settings screen would be a no-op and misleading. Only
-		// expose the field when it actually drives behavior: in network admin
-		// (where settings save to the network option), or on installs where
-		// the per-site option is authoritative.
+		// site's own settings screen would be a no-op and misleading. Hide
+		// the field from per-site settings pages, but keep it available in
+		// network admin and in REST/CLI contexts where update_all_setting_values()
+		// routes writes to the network option correctly.
+		$hide_per_site = $this->plugin->is_network_activated() && is_admin() && ! is_network_admin();
+
 		if (
 			class_exists( '\WP_Ability' )
-			&& ( ! $this->plugin->is_network_activated() || is_network_admin() )
+			&& ! $hide_per_site
 		) {
 			$enable_abilities_api = array(
 				'name'        => 'enable_abilities_api',
@@ -478,6 +480,55 @@ class Settings {
 		}
 
 		return isset( $options[ $key ] ) ? $options[ $key ] : $default_value;
+	}
+
+	/**
+	 * Returns the full options array, reading the network-level option when
+	 * Stream is network-activated on multisite. Mirrors get_setting_value()
+	 * but returns the entire array.
+	 *
+	 * @return array
+	 */
+	public function get_all_setting_values() {
+		if (
+			is_multisite()
+			&& isset( $this->plugin )
+			&& $this->plugin->is_network_activated()
+		) {
+			return (array) get_site_option( $this->network_options_key, array() );
+		}
+
+		return (array) $this->options;
+	}
+
+	/**
+	 * Persists the options array, writing to the network-level option when
+	 * Stream is network-activated on multisite. Used by REST/ability writers
+	 * which run outside is_network_admin() but must respect the authoritative
+	 * store. Refreshes $this->options afterwards so in-request reads see the
+	 * new values.
+	 *
+	 * @param array $options Full options array to persist (caller is responsible
+	 *                       for merging over existing values when desired).
+	 *
+	 * @return bool True on a successful write, false on no-op or failure.
+	 */
+	public function update_all_setting_values( array $options ) {
+		if (
+			is_multisite()
+			&& isset( $this->plugin )
+			&& $this->plugin->is_network_activated()
+		) {
+			$result = update_site_option( $this->network_options_key, $options );
+		} else {
+			$result = update_option( $this->option_key, $options );
+		}
+
+		// Refresh the in-memory copy so subsequent reads in the same request
+		// see the updated values.
+		$this->options = $this->get_options();
+
+		return (bool) $result;
 	}
 
 	/**
