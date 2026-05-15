@@ -113,6 +113,25 @@ class Test_Ability_Create_Exclusion_Rule extends Abilities_TestCase {
 		$this->assertSame( 'stream_unknown_connector', $result->get_error_code() );
 	}
 
+	/**
+	 * Admin-only connectors (register_frontend = false) must validate
+	 * successfully even when the test/REST request isn't wp-admin. Regression
+	 * guard for the bug where the validation enum came from the
+	 * request-context-gated $plugin->connectors registry, which excluded
+	 * "settings", "editor", "menus", etc. on REST.
+	 */
+	public function test_accepts_admin_only_connector() {
+		wp_set_current_user( $this->admin_user_id );
+
+		$option_key = $this->plugin->settings->option_key;
+		update_option( $option_key, array() );
+
+		$result = $this->ability->execute( array( 'connector' => 'settings' ) );
+
+		$this->assertIsArray( $result, 'Admin-only "settings" connector should be accepted.' );
+		$this->assertSame( 'settings', $result['rule']['connector'] );
+	}
+
 	public function test_rejects_all_empty_values() {
 		wp_set_current_user( $this->admin_user_id );
 

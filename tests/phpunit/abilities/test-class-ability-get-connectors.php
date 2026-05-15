@@ -68,4 +68,26 @@ class Test_Ability_Get_Connectors extends Abilities_TestCase {
 			$this->assertIsArray( $entry['actions'] );
 		}
 	}
+
+	/**
+	 * Admin-only connectors (register_frontend = false) must appear in the
+	 * abilities response even when the request isn't wp-admin. Regression
+	 * guard for the bug where REST callers got a frontend-only subset of
+	 * connectors because Connectors::load_connectors() filtered against
+	 * is_admin().
+	 */
+	public function test_returns_admin_only_connectors_outside_admin_context() {
+		wp_set_current_user( $this->admin_user_id );
+
+		$result = $this->ability->execute( array() );
+		$slugs  = array_column( $result, 'slug' );
+
+		foreach ( array( 'settings', 'editor', 'menus' ) as $admin_only_slug ) {
+			$this->assertContains(
+				$admin_only_slug,
+				$slugs,
+				sprintf( 'Admin-only connector "%s" should be exposed to abilities even outside wp-admin.', $admin_only_slug )
+			);
+		}
+	}
 }

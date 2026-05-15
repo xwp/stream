@@ -152,10 +152,14 @@ class Ability_Create_Exclusion_Rule extends Ability {
 			);
 		}
 
-		// Validate connector against registered connectors when provided.
+		// Validate connector against the full site-wide list, including
+		// admin-only connectors (settings, editor, menus, etc.). get_slugs()
+		// alone returns only request-context-loaded connectors, so REST
+		// callers would otherwise be unable to exclude valid admin-only
+		// connectors even though those are real and configurable in wp-admin.
 		if ( '' !== $sanitized['connector'] ) {
 			$known = isset( $this->plugin->connectors )
-				? $this->plugin->connectors->get_slugs()
+				? $this->plugin->connectors->get_all_slugs_including_admin_only()
 				: array();
 			if ( ! empty( $known ) && ! in_array( $sanitized['connector'], $known, true ) ) {
 				return new \WP_Error(
