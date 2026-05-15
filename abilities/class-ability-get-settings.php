@@ -9,6 +9,14 @@ namespace WP_Stream;
 
 /**
  * Class - Ability_Get_Settings
+ *
+ * Unlike the other read abilities (get-records, get-record, get-alerts,
+ * get-connectors, get-exclusion-rules) which gate on `view_stream`, this
+ * one inherits the base permission_callback that requires
+ * `WP_STREAM_SETTINGS_CAPABILITY` (defaults to `manage_options`). The
+ * settings payload can include role allowlists and other configuration
+ * that's intentionally restricted to administrators, so the same cap that
+ * gates the wp-admin settings screen guards this ability too.
  */
 class Ability_Get_Settings extends Ability {
 
@@ -70,6 +78,13 @@ class Ability_Get_Settings extends Ability {
 	public function execute( $input = null ) {
 		unset( $input );
 
-		return (array) $this->plugin->settings->options;
+		// Route through Settings::get_all_setting_values() so the network
+		// option is consulted on network-activated multisite. A direct read
+		// of $plugin->settings->options would return the (typically empty)
+		// per-site option in REST contexts (is_network_admin() is always
+		// false there), making get-settings disagree with update-settings,
+		// which routes writes to the network option via
+		// Settings::update_all_setting_values().
+		return $this->plugin->settings->get_all_setting_values();
 	}
 }

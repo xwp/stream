@@ -514,19 +514,34 @@ class Settings {
 	 * @return bool True on a successful write, false on no-op or failure.
 	 */
 	public function update_all_setting_values( array $options ) {
-		if (
+		$is_network = (
 			is_multisite()
 			&& isset( $this->plugin )
 			&& $this->plugin->is_network_activated()
-		) {
+		);
+
+		if ( $is_network ) {
 			$result = update_site_option( $this->network_options_key, $options );
 		} else {
 			$result = update_option( $this->option_key, $options );
 		}
 
 		// Refresh the in-memory copy so subsequent reads in the same request
-		// see the updated values.
-		$this->options = $this->get_options();
+		// see the updated values. On network-activated installs we re-read
+		// from the network option directly because Settings::get_options()
+		// gates on is_network_admin() and would return the (now-stale)
+		// per-site option in REST contexts. Merge defaults on top so callers
+		// reading $plugin->settings->options keep seeing a fully-populated
+		// array (matches get_options()'s historical contract).
+		if ( $is_network ) {
+			$defaults      = $this->get_defaults( $this->option_key );
+			$this->options = wp_parse_args(
+				(array) get_site_option( $this->network_options_key, array() ),
+				$defaults
+			);
+		} else {
+			$this->options = $this->get_options();
+		}
 
 		return (bool) $result;
 	}

@@ -77,7 +77,12 @@ class Ability_Get_Exclusion_Rules extends Ability {
 	public function execute( $input = null ) {
 		unset( $input );
 
-		$options = (array) $this->plugin->settings->options;
+		// Route through Settings::get_all_setting_values() so reads hit the
+		// network option on network-activated multisite (where create-
+		// exclusion-rule's writes land). A direct read of
+		// $plugin->settings->options would return the empty per-site option
+		// in REST contexts, so newly-created rules would not appear.
+		$options = $this->plugin->settings->get_all_setting_values();
 		$rules   = isset( $options['exclude_rules'] ) ? (array) $options['exclude_rules'] : array();
 
 		// Reuse Log's row pivot so output matches how Stream applies the rules internally.

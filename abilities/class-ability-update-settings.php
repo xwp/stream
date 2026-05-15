@@ -138,11 +138,14 @@ class Ability_Update_Settings extends Ability {
 		$sanitized = $this->plugin->settings->sanitize_settings( $filtered );
 		$merged    = array_merge( $current, $sanitized );
 
-		// Settings::update_all_setting_values() also refreshes
-		// $plugin->settings->options so subsequent reads in the same request
-		// see the fully-populated array (defaults merged in).
+		// update_all_setting_values() persists to the correct store and
+		// refreshes $plugin->settings->options for callers in the same
+		// request. We still return via get_all_setting_values() so the
+		// response reflects the authoritative store on network-activated
+		// multisite (where $plugin->settings->options would be the per-site
+		// option and could disagree with what was just persisted).
 		$this->plugin->settings->update_all_setting_values( $merged );
 
-		return $this->plugin->settings->options;
+		return $this->plugin->settings->get_all_setting_values();
 	}
 }
