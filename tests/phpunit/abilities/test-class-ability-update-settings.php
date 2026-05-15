@@ -151,4 +151,72 @@ class Test_Ability_Update_Settings extends Abilities_TestCase {
 		$stored = (array) get_option( $option_key );
 		$this->assertArrayNotHasKey( 'malicious_key', $stored );
 	}
+
+	/**
+	 * On network-activated multisite, writes must land in wp_stream_network
+	 * (the authoritative store that is_enabled() and the admin UI read from),
+	 * NOT in the per-site wp_stream option. The ability runs in REST where
+	 * is_network_admin() is always false, so without Settings::update_all_setting_values()
+	 * routing the write would silently target the per-site option and ghost-
+	 * save. Mirrors the read-side coverage in
+	 * Test_Abilities::test_is_enabled_reads_network_option_when_network_activated.
+	 *
+	 * @group ms-required
+	 */
+	public function test_write_targets_network_option_when_network_activated() {
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'Requires multisite.' );
+		}
+
+		wp_set_current_user( $this->admin_user_id );
+
+		$network_key      = $this->plugin->settings->network_options_key;
+		$per_site_key     = $this->plugin->settings->option_key;
+		$original_network = get_site_option( $network_key, false );
+		$original_site    = get_option( $per_site_key, false );
+
+		// Force network-activated so update_all_setting_values() chooses the
+		// site-option write path.
+		add_filter( 'wp_stream_is_network_activated', '__return_true' );
+
+		// Reset both stores to a known baseline.
+		update_site_option( $network_key, array( 'general_records_ttl' => 30 ) );
+		update_option( $per_site_key, array( 'general_records_ttl' => 30 ) );
+
+		try {
+			$result = $this->ability->execute(
+				array(
+					'settings' => array( 'general_records_ttl' => 90 ),
+				)
+			);
+
+			$this->assertIsArray( $result, 'Update must succeed.' );
+
+			$stored_network  = (array) get_site_option( $network_key, array() );
+			$stored_per_site = (array) get_option( $per_site_key, array() );
+
+			$this->assertSame(
+				90,
+				(int) ( $stored_network['general_records_ttl'] ?? 0 ),
+				'Write must land in the network option on network-activated multisite.'
+			);
+			$this->assertSame(
+				30,
+				(int) ( $stored_per_site['general_records_ttl'] ?? 0 ),
+				'Per-site option must NOT be touched on network-activated multisite.'
+			);
+		} finally {
+			remove_filter( 'wp_stream_is_network_activated', '__return_true' );
+			if ( false === $original_network ) {
+				delete_site_option( $network_key );
+			} else {
+				update_site_option( $network_key, $original_network );
+			}
+			if ( false === $original_site ) {
+				delete_option( $per_site_key );
+			} else {
+				update_option( $per_site_key, $original_site );
+			}
+		}//end try
+	}
 }

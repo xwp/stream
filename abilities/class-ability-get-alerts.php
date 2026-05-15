@@ -114,8 +114,18 @@ class Ability_Get_Alerts extends Ability {
 
 		$alerts = $this->plugin->alerts->get_alerts( $statuses );
 
+		// Output enum is fixed (STATUS_ENABLED / STATUS_DISABLED). Alerts::get_alerts()
+		// only fetches those two statuses today, but a third party could trash an
+		// alert post or wire up a custom status. Defensive filter keeps the
+		// response schema-valid for any downstream changes.
+		$allowed_statuses = array( Alerts::STATUS_ENABLED, Alerts::STATUS_DISABLED );
+
 		$out = array();
 		foreach ( $alerts as $alert ) {
+			if ( ! in_array( (string) $alert->status, $allowed_statuses, true ) ) {
+				continue;
+			}
+
 			// Alert::$alert_meta defaults to array(); an empty PHP array() also
 			// JSON-encodes as a list ([]), which violates the declared object
 			// output schema. Normalize empty/non-array values to a real object

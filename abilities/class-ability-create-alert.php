@@ -181,12 +181,22 @@ class Ability_Create_Alert extends Ability {
 			);
 		}
 
+		// Normalize alert_meta to stdClass when empty so the response satisfies
+		// the declared object output schema. Reachable in theory if a future
+		// Alert::save() change ever leaves alert_meta unwritten -- today the
+		// call always persists the merged trigger keys, but the coerce is cheap
+		// defense and keeps the JSON output consistent with get-alerts.
+		$persisted_meta = get_post_meta( $post_id, 'alert_meta', true );
+		$alert_meta     = is_array( $persisted_meta ) && ! empty( $persisted_meta )
+			? $persisted_meta
+			: new \stdClass();
+
 		return array(
 			'id'         => (int) $post_id,
 			'status'     => (string) get_post_status( $post_id ),
 			'title'      => (string) get_the_title( $post_id ),
 			'alert_type' => get_post_meta( $post_id, 'alert_type', true ),
-			'alert_meta' => (array) get_post_meta( $post_id, 'alert_meta', true ),
+			'alert_meta' => $alert_meta,
 		);
 	}
 }

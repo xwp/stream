@@ -217,20 +217,17 @@ class Test_Abilities extends WP_StreamTestCase {
 
 		$this->assertCount( 11, $abilities->abilities );
 
-		foreach ( $abilities->abilities as $name => $ability ) {
-			$this->assertInstanceOf( __NAMESPACE__ . '\\Ability', $ability );
-			$this->assertSame( $name, $ability->get_name() );
-		}
-	}
-
-	public function test_load_abilities_populates_all_slugs() {
-		$abilities = new Abilities( $this->plugin );
-
-		$abilities->load_abilities();
-
-		$this->assertCount( 11, $abilities->abilities );
+		// Every slug declared by the loader must produce an Ability instance
+		// keyed under "stream/{slug}", and each instance must report the
+		// matching get_name(). Combines the population check (key presence)
+		// with the instantiation check (instanceof + get_name) in one pass.
 		foreach ( $abilities->get_ability_slugs() as $slug ) {
-			$this->assertArrayHasKey( 'stream/' . $slug, $abilities->abilities );
+			$expected_name = 'stream/' . $slug;
+			$this->assertArrayHasKey( $expected_name, $abilities->abilities );
+
+			$ability = $abilities->abilities[ $expected_name ];
+			$this->assertInstanceOf( __NAMESPACE__ . '\\Ability', $ability );
+			$this->assertSame( $expected_name, $ability->get_name() );
 		}
 	}
 
