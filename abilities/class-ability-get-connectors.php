@@ -7,8 +7,6 @@
 
 namespace WP_Stream;
 
-require_once __DIR__ . '/trait-view-stream-permission.php';
-
 /**
  * Class - Ability_Get_Connectors
  */

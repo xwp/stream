@@ -48,6 +48,14 @@ abstract class Abilities_TestCase extends WP_StreamTestCase {
 			$this->markTestSkipped( 'Requires WordPress 6.9+ (Abilities API).' );
 		}
 
+		// Mirror Abilities::load_abilities(): the trait must be loaded before
+		// any ability class file is `require_once`'d by a test setUp, since the
+		// `use Trait_View_Stream_Permission` in the class body needs the trait
+		// declared at parse time. In production the require lives in
+		// load_abilities(), but tests bypass that path and pull each ability
+		// file in directly.
+		require_once $this->plugin->locations['dir'] . 'abilities/trait-view-stream-permission.php';
+
 		$this->admin_user_id      = self::factory()->user->create( array( 'role' => 'administrator' ) );
 		$this->subscriber_user_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
 

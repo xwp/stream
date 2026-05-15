@@ -221,6 +221,13 @@ class Abilities {
 	public function load_abilities() {
 		$dir = trailingslashit( $this->plugin->locations['dir'] ) . 'abilities/';
 
+		// Load shared trait once before any ability file is included. The
+		// read abilities `use Trait_View_Stream_Permission` and PHP needs the
+		// trait declared before the class declaration is parsed. Doing it
+		// here keeps the require centralized -- new read abilities don't
+		// have to remember to require the trait themselves.
+		require_once $dir . 'trait-view-stream-permission.php';
+
 		foreach ( $this->get_ability_slugs() as $slug ) {
 			$file = $dir . 'class-ability-' . $slug . '.php';
 			if ( ! is_readable( $file ) ) {
