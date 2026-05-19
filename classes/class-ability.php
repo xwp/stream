@@ -113,6 +113,17 @@ abstract class Ability {
 	public function get_meta() {
 		$meta = array(
 			'show_in_rest' => true,
+			// Mark every Stream ability as MCP-discoverable. When the
+			// WordPress MCP Adapter (wordpress/mcp-adapter) is installed,
+			// the default MCP server exposes abilities with this flag via
+			// its `mcp-adapter/discover-abilities` and `execute-ability`
+			// tools. The flag is harmless if mcp-adapter is not present
+			// (unused meta key). permission_callback still gates execution,
+			// so destructive abilities aren't auto-callable by anonymous
+			// MCP clients.
+			'mcp'          => array(
+				'public' => true,
+			),
 		);
 
 		$annotations = $this->get_annotations();

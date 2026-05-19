@@ -72,6 +72,13 @@ class Abilities {
 		if ( ! isset( $this->plugin->admin ) ) {
 			add_filter( 'user_has_cap', array( $this, 'filter_user_caps' ), 10, 4 );
 		}
+
+		// MCP exposure is handled by the WordPress MCP Adapter when it's
+		// installed alongside Stream (as a plugin or via Composer). The
+		// adapter boots its own singleton and picks up Stream abilities
+		// because each one advertises meta.mcp.public via Ability::get_meta().
+		// Stream does NOT load or initialize the adapter -- that's the
+		// adapter plugin's responsibility once activated.
 	}
 
 	/**

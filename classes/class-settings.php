@@ -415,9 +415,9 @@ class Settings {
 		) {
 			$enable_abilities_api = array(
 				'name'        => 'enable_abilities_api',
-				'title'       => esc_html__( 'Enable Abilities API', 'stream' ),
+				'title'       => esc_html__( 'Enable Abilities API and MCP', 'stream' ),
 				'type'        => 'checkbox',
-				'desc'        => esc_html__( 'Expose Stream operations via the WordPress Abilities API. Allows AI agents and automation tools to query records, manage alerts, and update settings through the Abilities API REST routes. Requires WordPress 6.9 or newer.', 'stream' ),
+				'desc'        => esc_html__( 'Expose Stream operations via the WordPress Abilities API REST routes so AI agents and automation tools can query records, manage alerts, and update settings. When the WordPress MCP Adapter plugin (wordpress/mcp-adapter) is also installed, the same operations are exposed as Model Context Protocol tools on the default MCP server (/wp-json/mcp/mcp-adapter-default-server). Requires WordPress 6.9 or newer.', 'stream' ),
 				'after_field' => esc_html__( 'Enabled', 'stream' ),
 				'default'     => 0,
 			);
