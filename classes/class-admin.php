@@ -1062,6 +1062,7 @@ class Admin {
 	 *                           first batch in a chain. The next SELECT uses `ID < last_entry`
 	 *                           when non-zero, guaranteeing forward progress even on tables
 	 *                           that grow rapidly during the chain.
+	 * @throws \InvalidArgumentException When $cutoff is empty (signals AS to mark the action as failed).
 	 * @return void
 	 */
 	public function auto_purge_batch( $cutoff, $blog_id = 0, $last_entry = 0 ) {
@@ -1072,9 +1073,14 @@ class Admin {
 		$last_entry = (int) $last_entry;
 
 		// Defensive: a malformed cutoff would otherwise translate to a no-op
-		// DELETE that still busies the DB. Refuse and let AS retry the action.
+		// DELETE that still busies the DB. Throw so Action Scheduler marks
+		// the action as failed (and visible in Tools → Scheduled Actions)
+		// rather than silently completing. In practice this is unreachable
+		// because purge_scheduled_action() always populates the cutoff arg
+		// and AS args are immutable; the guard exists for third-party code
+		// that may enqueue the action with bad input.
 		if ( '' === $cutoff ) {
-			return;
+			throw new \InvalidArgumentException( 'auto_purge_batch requires a non-empty cutoff.' );
 		}
 
 		/**
@@ -1220,7 +1226,7 @@ class Admin {
 	 * @return bool|void True under tests; otherwise redirects and exits.
 	 */
 	public function wp_ajax_clean_orphan_meta() {
-		if ( ! current_user_can( WP_STREAM_SETTINGS_CAPABILITY ) ) {
+		if ( ! current_user_can( $this->settings_cap ) ) {
 			wp_die( esc_html__( 'You do not have permission to do this.', 'stream' ), 403 );
 		}
 

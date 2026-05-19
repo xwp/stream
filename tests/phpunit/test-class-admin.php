@@ -931,6 +931,11 @@ class Test_Admin extends WP_StreamTestCase {
 		remove_all_filters( 'wp_stream_batch_size' );
 	}
 
+	public function test_auto_purge_batch_throws_on_empty_cutoff() {
+		$this->expectException( \InvalidArgumentException::class );
+		$this->admin->auto_purge_batch( '', 0, 0 );
+	}
+
 	public function test_auto_purge_batch_enqueues_reaper_when_no_rows_remain() {
 		global $wpdb;
 		if ( function_exists( 'as_unschedule_all_actions' ) ) {

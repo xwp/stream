@@ -371,23 +371,7 @@ class Settings {
 						'default' => 0,
 						'sticky'  => 'bottom',
 					),
-					array(
-						'name'    => 'clean_orphan_meta',
-						'title'   => esc_html__( 'Clean Orphaned Meta', 'stream' ),
-						'type'    => Admin::is_running_auto_purge() ? 'none' : 'link',
-						'href'    => add_query_arg(
-							array(
-								'action' => 'wp_stream_clean_orphan_meta',
-								'wp_stream_nonce_clean_orphan_meta' => wp_create_nonce( 'stream_nonce_clean_orphan_meta' ),
-							),
-							admin_url( 'admin-ajax.php' )
-						),
-						'desc'    => Admin::is_running_auto_purge()
-							? esc_html__( 'Auto-purge is currently running. The orphan reaper will execute as part of that cycle; the manual cleanup link is hidden to avoid duplicating the work.', 'stream' )
-							: esc_html__( 'Schedules an immediate background cleanup of stream_meta rows whose parent record is missing. Safe to run while Stream is in use; runs once via Action Scheduler.', 'stream' ),
-						'default' => 0,
-						'sticky'  => 'bottom',
-					),
+					$this->build_clean_orphan_meta_field(),
 				),
 			),
 		);
@@ -442,6 +426,37 @@ class Settings {
 		}
 
 		return $this->fields;
+	}
+
+	/**
+	 * Build the "Clean Orphaned Meta" settings field definition.
+	 *
+	 * Extracted so the auto-purge running-state check
+	 * ({@see Admin::is_running_auto_purge()}) is evaluated once per render
+	 * instead of once per field property.
+	 *
+	 * @return array
+	 */
+	private function build_clean_orphan_meta_field() {
+		$is_running = Admin::is_running_auto_purge();
+
+		return array(
+			'name'    => 'clean_orphan_meta',
+			'title'   => esc_html__( 'Clean Orphaned Meta', 'stream' ),
+			'type'    => $is_running ? 'none' : 'link',
+			'href'    => add_query_arg(
+				array(
+					'action'                            => 'wp_stream_clean_orphan_meta',
+					'wp_stream_nonce_clean_orphan_meta' => wp_create_nonce( 'stream_nonce_clean_orphan_meta' ),
+				),
+				admin_url( 'admin-ajax.php' )
+			),
+			'desc'    => $is_running
+				? esc_html__( 'Auto-purge is currently running. The orphan reaper will execute as part of that cycle; the manual cleanup link is hidden to avoid duplicating the work.', 'stream' )
+				: esc_html__( 'Schedules an immediate background cleanup of stream_meta rows whose parent record is missing. Safe to run while Stream is in use; runs once via Action Scheduler.', 'stream' ),
+			'default' => 0,
+			'sticky'  => 'bottom',
+		);
 	}
 
 	/**
