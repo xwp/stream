@@ -134,6 +134,16 @@ jobs:
         # green while a master push backfills the registry.
         run: docker compose pull --ignore-pull-failures wordpress mkcert
 
+      - name: Rebuild WordPress image on top of the pulled base
+        # The published ghcr.io/xwp/stream-wordpress image is updated only by
+        # docker-images.yml on master pushes. When this branch changes
+        # local/docker/wordpress/Dockerfile (e.g. to enable mod_ssl), the
+        # pulled image lags behind the branch's intent and Apache rejects
+        # :443 with ERR_CONNECTION_CLOSED. Build locally so the branch's
+        # Dockerfile actually applies; Docker layer caching keeps this cheap
+        # when the Dockerfile hasn't changed since the last published build.
+        run: docker compose build wordpress
+
       - name: Start WordPress
         run: npm run start
 
