@@ -964,6 +964,59 @@ class Admin {
 		// blog_id = 0 means "all blogs" (network-activated path).
 		$blog_id = $this->plugin->is_multisite_not_network_activated() ? (int) get_current_blog_id() : 0;
 
+		global $wpdb;
+
+		// "Is this a large table?" decision matches the manual reset path
+		// (Admin::erase_stream_records()). When the table is small the cost
+		// of scheduling a chain (and waiting for AS to drain it on the next
+		// runner tick) exceeds the cost of a single inline DELETE. Only fall
+		// through to the batched chain when the filter says "yes, large".
+		if ( $blog_id > 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$record_count = (int) $wpdb->get_var(
+				$wpdb->prepare( "SELECT COUNT(ID) FROM {$wpdb->stream} WHERE `blog_id` = %d", $blog_id )
+			);
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$record_count = (int) $wpdb->get_var( "SELECT COUNT(ID) FROM {$wpdb->stream}" );
+		}
+
+		if ( ! $this->plugin->is_large_records_table( $record_count ) ) {
+			// Small-table fast path: one inline multi-table DELETE, then enqueue
+			// the orphan reaper as a one-shot async action so the heal step is
+			// still observable in Tools → Scheduled Actions.
+			if ( $blog_id > 0 ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->query(
+					$wpdb->prepare(
+						"DELETE `stream`, `meta`
+						FROM {$wpdb->stream} AS `stream`
+						LEFT JOIN {$wpdb->streammeta} AS `meta`
+						ON `meta`.`record_id` = `stream`.`ID`
+						WHERE `stream`.`created` < %s AND `stream`.`blog_id` = %d;",
+						$cutoff,
+						$blog_id
+					)
+				);
+			} else {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->query(
+					$wpdb->prepare(
+						"DELETE `stream`, `meta`
+						FROM {$wpdb->stream} AS `stream`
+						LEFT JOIN {$wpdb->streammeta} AS `meta`
+						ON `meta`.`record_id` = `stream`.`ID`
+						WHERE `stream`.`created` < %s;",
+						$cutoff
+					)
+				);
+			}
+
+			as_enqueue_async_action( self::AUTO_PURGE_REAPER_ACTION, array(), self::AUTO_PURGE_GROUP );
+			return;
+		}
+
+		// Large-table path: batched chain.
 		as_enqueue_async_action(
 			self::AUTO_PURGE_BATCH_ACTION,
 			array(

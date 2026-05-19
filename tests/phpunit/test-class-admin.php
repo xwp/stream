@@ -432,10 +432,72 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->assertSame( 1, $hits, 'wp_stream_auto_purge action must fire exactly once per recurring tick' );
 	}
 
+	public function test_purge_scheduled_action_small_table_fast_path() {
+		// Default: table is "small" (filter returns false for record_count <= 1M).
+		global $wpdb;
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		}
+		$ids = $this->seed_aged_records( 2, 5 );
+		$this->set_records_ttl( 1 );
+
+		$this->admin->purge_scheduled_action();
+
+		// Inline DELETE must have run — rows are gone.
+		$remaining = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM {$wpdb->stream} WHERE ID IN (" . implode( ',', array_fill( 0, count( $ids ), '%d' ) ) . ')',
+				...$ids
+			)
+		);
+		$this->assertSame( 0, $remaining, 'Small-table fast path must delete eligible rows inline' );
+
+		// No batched chain was enqueued.
+		$this->assertFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION ),
+			'Small-table fast path must not enqueue a batched chain'
+		);
+
+		// Reaper still runs so the heal step is observable in Scheduled Actions.
+		$this->assertNotFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION ),
+			'Small-table fast path must still enqueue the orphan reaper'
+		);
+	}
+
+	public function test_purge_scheduled_action_large_table_uses_batched_chain() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		}
+		// Force the "large table" branch without seeding 1M rows.
+		add_filter( 'wp_stream_is_large_records_table', '__return_true' );
+
+		$this->seed_aged_records( 2, 5 );
+		$this->set_records_ttl( 1 );
+
+		$this->admin->purge_scheduled_action();
+
+		$this->assertNotFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION ),
+			'Large table must enqueue the batched chain'
+		);
+		$this->assertFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION ),
+			'Reaper is enqueued by the terminal batch worker, not by the recurring callback'
+		);
+
+		remove_filter( 'wp_stream_is_large_records_table', '__return_true' );
+	}
+
 	public function test_purge_scheduled_action_enqueues_first_batch_with_snapshotted_cutoff() {
 		if ( function_exists( 'as_unschedule_all_actions' ) ) {
 			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
 		}
+
+		// Force the batched path so we can assert batch args.
+		add_filter( 'wp_stream_is_large_records_table', '__return_true' );
 
 		$this->seed_aged_records( 1, 5 );
 		$this->set_records_ttl( 1 );
@@ -459,6 +521,8 @@ class Test_Admin extends WP_StreamTestCase {
 			$args['cutoff'],
 			'Cutoff must be a MySQL DATETIME string'
 		);
+
+		remove_filter( 'wp_stream_is_large_records_table', '__return_true' );
 	}
 
 	public function test_purge_scheduled_action_respects_keep_indefinitely() {
@@ -492,6 +556,9 @@ class Test_Admin extends WP_StreamTestCase {
 			delete_option( 'wp_stream' );
 		}
 
+		// Force the batched path so the assertion targets a batch enqueue.
+		add_filter( 'wp_stream_is_large_records_table', '__return_true' );
+
 		// Seed records older than the default 30-day TTL.
 		$this->seed_aged_records( 1, 31 );
 
@@ -501,12 +568,17 @@ class Test_Admin extends WP_StreamTestCase {
 			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION ),
 			'Defaults (30-day TTL) must apply when the settings option is missing'
 		);
+
+		remove_filter( 'wp_stream_is_large_records_table', '__return_true' );
 	}
 
 	public function test_purge_scheduled_action_overlap_guard_skips_when_batch_already_pending() {
 		if ( function_exists( 'as_unschedule_all_actions' ) ) {
 			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
 		}
+		// Overlap guard only applies to the batched chain path.
+		add_filter( 'wp_stream_is_large_records_table', '__return_true' );
+
 		$this->seed_aged_records( 1, 5 );
 		$this->set_records_ttl( 1 );
 
@@ -531,6 +603,8 @@ class Test_Admin extends WP_StreamTestCase {
 			'ids'
 		);
 		$this->assertCount( 1, $second, 'Overlap guard must prevent stacking a second batch chain' );
+
+		remove_filter( 'wp_stream_is_large_records_table', '__return_true' );
 	}
 
 	public function test_plugin_action_links() {
