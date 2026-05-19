@@ -762,6 +762,39 @@ class Test_Admin extends WP_StreamTestCase {
 		}
 	}
 
+	public function test_auto_purge_reaper_deletes_orphaned_meta_only() {
+		global $wpdb;
+
+		// Seed a real record with meta, then a free-floating meta row pointing at
+		// a non-existent record_id.
+		$stream_data            = $this->dummy_stream_data();
+		$stream_data['created'] = gmdate( 'Y-m-d H:i:s', strtotime( '5 days ago' ) );
+		$wpdb->insert( $wpdb->stream, $stream_data );
+		$real_id = (int) $wpdb->insert_id;
+		$wpdb->insert( $wpdb->streammeta, $this->dummy_meta_data( $real_id ) );
+
+		// Orphan meta: record_id points nowhere.
+		$orphan_record_id = $real_id + 999999;
+		$wpdb->insert( $wpdb->streammeta, $this->dummy_meta_data( $orphan_record_id ) );
+
+		$before_orphans = (int) $wpdb->get_var(
+			$wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->streammeta} WHERE record_id = %d", $orphan_record_id )
+		);
+		$this->assertSame( 1, $before_orphans );
+
+		$this->admin->auto_purge_reaper();
+
+		$after_orphans = (int) $wpdb->get_var(
+			$wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->streammeta} WHERE record_id = %d", $orphan_record_id )
+		);
+		$linked_meta = (int) $wpdb->get_var(
+			$wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->streammeta} WHERE record_id = %d", $real_id )
+		);
+
+		$this->assertSame( 0, $after_orphans, 'Reaper must delete meta rows whose parent stream row is absent' );
+		$this->assertSame( 1, $linked_meta, 'Reaper must not touch meta rows whose parent still exists' );
+	}
+
 	public function test_auto_purge_batch_deletes_window_and_chains_next_batch() {
 		global $wpdb;
 

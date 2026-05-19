@@ -881,7 +881,7 @@ class Admin {
 	 *
 	 * @global wpdb $wpdb The WordPress database object.
 	 */
-	private function delete_orphaned_meta() {
+	protected function delete_orphaned_meta() {
 		global $wpdb;
 
 		$wpdb->query(
@@ -1074,12 +1074,15 @@ class Admin {
 	/**
 	 * Terminal Action Scheduler callback for the auto-purge chain.
 	 *
-	 * Stub implementation; real body is added in a later task.
+	 * Runs once per chain (after the last batch) and once when the manual
+	 * "Clean orphaned meta now" button is used. Cleans up meta rows whose
+	 * parent stream row is already gone — i.e. residue from historical
+	 * unbatched purges and from any logger races during a chain.
 	 *
 	 * @return void
 	 */
 	public function auto_purge_reaper() {
-		// Filled in by a later task.
+		$this->delete_orphaned_meta();
 	}
 
 	/**
