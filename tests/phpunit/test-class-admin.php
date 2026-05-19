@@ -747,6 +747,8 @@ class Test_Admin extends WP_StreamTestCase {
 
 	/**
 	 * Set the records TTL in whichever option applies on this install.
+	 *
+	 * @param int $days Number of days to retain records for.
 	 */
 	private function set_records_ttl( int $days ) {
 		if ( is_multisite() && is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
@@ -808,7 +810,7 @@ class Test_Admin extends WP_StreamTestCase {
 		$after_orphans = (int) $wpdb->get_var(
 			$wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->streammeta} WHERE record_id = %d", $orphan_record_id )
 		);
-		$linked_meta = (int) $wpdb->get_var(
+		$linked_meta   = (int) $wpdb->get_var(
 			$wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->streammeta} WHERE record_id = %d", $real_id )
 		);
 
@@ -820,7 +822,12 @@ class Test_Admin extends WP_StreamTestCase {
 		global $wpdb;
 
 		// Force a small batch size so we can chain twice without seeding huge data.
-		add_filter( 'wp_stream_batch_size', function () { return 2; } );
+		add_filter(
+			'wp_stream_batch_size',
+			function () {
+				return 2;
+			}
+		);
 
 		if ( function_exists( 'as_unschedule_all_actions' ) ) {
 			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
@@ -901,7 +908,12 @@ class Test_Admin extends WP_StreamTestCase {
 		global $wpdb;
 
 		// Force a small batch size so we can chain multiple times.
-		add_filter( 'wp_stream_batch_size', function () { return 3; } );
+		add_filter(
+			'wp_stream_batch_size',
+			function () {
+				return 3;
+			}
+		);
 
 		if ( function_exists( 'as_unschedule_all_actions' ) ) {
 			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
@@ -951,7 +963,8 @@ class Test_Admin extends WP_StreamTestCase {
 		}
 
 		$current_blog = (int) get_current_blog_id();
-		$other_blog   = $current_blog + 1000; // arbitrary distinct id, no real blog required for SQL scoping.
+		$other_blog   = $current_blog + 1000;
+		// arbitrary distinct id, no real blog required for SQL scoping.
 
 		$this->seed_aged_records( 1, 5, $current_blog );
 		$this->seed_aged_records( 1, 5, $other_blog );

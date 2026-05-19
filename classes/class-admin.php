@@ -1006,23 +1006,40 @@ class Admin {
 		// Find the highest-ID record still eligible under the snapshotted cutoff
 		// that lies strictly below the previous window's lower bound (when set).
 		// $last_entry=0 means "first batch in chain" — search from the top.
-		$id_upper_bound_sql = $last_entry > 0 ? ' AND `ID` < %d' : '';
-		$id_upper_bound_arg = $last_entry > 0 ? array( $last_entry ) : array();
-
-		if ( $blog_id > 0 ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		if ( $blog_id > 0 && $last_entry > 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			$start_from = $wpdb->get_var(
 				$wpdb->prepare(
-					"SELECT ID FROM {$wpdb->stream} WHERE `created` < %s AND `blog_id` = %d{$id_upper_bound_sql} ORDER BY ID DESC LIMIT 1",
-					array_merge( array( $cutoff, $blog_id ), $id_upper_bound_arg )
+					"SELECT ID FROM {$wpdb->stream} WHERE `created` < %s AND `blog_id` = %d AND `ID` < %d ORDER BY ID DESC LIMIT 1",
+					$cutoff,
+					$blog_id,
+					$last_entry
+				)
+			);
+		} elseif ( $blog_id > 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$start_from = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT ID FROM {$wpdb->stream} WHERE `created` < %s AND `blog_id` = %d ORDER BY ID DESC LIMIT 1",
+					$cutoff,
+					$blog_id
+				)
+			);
+		} elseif ( $last_entry > 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$start_from = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT ID FROM {$wpdb->stream} WHERE `created` < %s AND `ID` < %d ORDER BY ID DESC LIMIT 1",
+					$cutoff,
+					$last_entry
 				)
 			);
 		} else {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			$start_from = $wpdb->get_var(
 				$wpdb->prepare(
-					"SELECT ID FROM {$wpdb->stream} WHERE `created` < %s{$id_upper_bound_sql} ORDER BY ID DESC LIMIT 1",
-					array_merge( array( $cutoff ), $id_upper_bound_arg )
+					"SELECT ID FROM {$wpdb->stream} WHERE `created` < %s ORDER BY ID DESC LIMIT 1",
+					$cutoff
 				)
 			);
 		}
@@ -1108,7 +1125,10 @@ class Admin {
 	 * Schedules an immediate async run of the orphan reaper. Idempotent:
 	 * if a reaper is already scheduled, returns without enqueuing a second.
 	 *
-	 * @return void
+	 * Returns true under WP_STREAM_TESTS so PHPUnit can call this directly
+	 * without exiting the worker.
+	 *
+	 * @return bool|void True under tests; otherwise redirects and exits.
 	 */
 	public function wp_ajax_clean_orphan_meta() {
 		if ( ! current_user_can( WP_STREAM_SETTINGS_CAPABILITY ) ) {

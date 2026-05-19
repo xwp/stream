@@ -377,7 +377,7 @@ class Settings {
 						'type'    => 'link',
 						'href'    => add_query_arg(
 							array(
-								'action'                            => 'wp_stream_clean_orphan_meta',
+								'action' => 'wp_stream_clean_orphan_meta',
 								'wp_stream_nonce_clean_orphan_meta' => wp_create_nonce( 'stream_nonce_clean_orphan_meta' ),
 							),
 							admin_url( 'admin-ajax.php' )
