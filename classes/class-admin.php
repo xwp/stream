@@ -955,16 +955,120 @@ class Admin {
 
 	/**
 	 * Async Action Scheduler callback: delete one batch of records eligible
-	 * under the snapshotted UTC cutoff, then chain the next batch.
+	 * under the snapshotted UTC cutoff, then chain the next batch (or the
+	 * orphan reaper when nothing remains).
 	 *
-	 * Stub implementation; real body is added in a later task.
+	 * Window-based deletion mirrors {@see Admin::erase_large_records()} so the
+	 * InnoDB lock footprint is bounded and predictable on bloated tables.
 	 *
 	 * @param string $cutoff  MySQL DATETIME string in UTC.
-	 * @param int    $blog_id Blog to scope to, or 0 for all blogs.
+	 * @param int    $blog_id Blog to scope to, or 0 for all blogs (network-activated).
 	 * @return void
 	 */
 	public function auto_purge_batch( $cutoff, $blog_id = 0 ) {
-		unset( $cutoff, $blog_id );
+		global $wpdb;
+
+		$cutoff  = (string) $cutoff;
+		$blog_id = (int) $blog_id;
+
+		// Defensive: a malformed cutoff would otherwise translate to a no-op
+		// DELETE that still busies the DB. Refuse and let AS retry the action.
+		if ( '' === $cutoff ) {
+			return;
+		}
+
+		/**
+		 * Filters the number of records to delete per batch.
+		 *
+		 * Shared with the manual reset path (see {@see Admin::erase_large_records()})
+		 * so site owners only need to tune one knob.
+		 *
+		 * @since 4.1.0
+		 *
+		 * @param int $batch_size Default 250000.
+		 */
+		$batch_size = (int) apply_filters( 'wp_stream_batch_size', 250000 );
+		if ( $batch_size < 1 ) {
+			$batch_size = 250000;
+		}
+
+		// Find the highest-ID record still eligible under the snapshotted cutoff.
+		if ( $blog_id > 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$start_from = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT ID FROM {$wpdb->stream} WHERE `created` < %s AND `blog_id` = %d ORDER BY ID DESC LIMIT 1",
+					$cutoff,
+					$blog_id
+				)
+			);
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$start_from = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT ID FROM {$wpdb->stream} WHERE `created` < %s ORDER BY ID DESC LIMIT 1",
+					$cutoff
+				)
+			);
+		}
+
+		if ( empty( $start_from ) ) {
+			// Chain is done. Schedule the orphan reaper as the terminal step.
+			as_enqueue_async_action( self::AUTO_PURGE_REAPER_ACTION, array(), self::AUTO_PURGE_GROUP );
+			return;
+		}
+
+		$start_from = (int) $start_from;
+		$window_low = max( 0, $start_from - $batch_size );
+
+		// Multi-table DELETE: parent + meta in one statement. Mirrors
+		// Admin::erase_large_records().
+		if ( $blog_id > 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query(
+				$wpdb->prepare(
+					"DELETE `stream`, `meta`
+					FROM {$wpdb->stream} AS `stream`
+					LEFT JOIN {$wpdb->streammeta} AS `meta`
+					ON `meta`.`record_id` = `stream`.`ID`
+					WHERE `stream`.`ID` <= %d
+					  AND `stream`.`ID` >= %d
+					  AND `stream`.`created` < %s
+					  AND `stream`.`blog_id` = %d;",
+					$start_from,
+					$window_low,
+					$cutoff,
+					$blog_id
+				)
+			);
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query(
+				$wpdb->prepare(
+					"DELETE `stream`, `meta`
+					FROM {$wpdb->stream} AS `stream`
+					LEFT JOIN {$wpdb->streammeta} AS `meta`
+					ON `meta`.`record_id` = `stream`.`ID`
+					WHERE `stream`.`ID` <= %d
+					  AND `stream`.`ID` >= %d
+					  AND `stream`.`created` < %s;",
+					$start_from,
+					$window_low,
+					$cutoff
+				)
+			);
+		}
+
+		// Chain the next batch. If nothing remains the next batch will detect
+		// it via the SELECT above and schedule the reaper instead.
+		as_enqueue_async_action(
+			self::AUTO_PURGE_BATCH_ACTION,
+			array(
+				'cutoff'  => $cutoff,
+				'blog_id' => $blog_id,
+			),
+			self::AUTO_PURGE_GROUP
+		);
 	}
 
 	/**

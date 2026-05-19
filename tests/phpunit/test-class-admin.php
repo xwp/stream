@@ -762,6 +762,116 @@ class Test_Admin extends WP_StreamTestCase {
 		}
 	}
 
+	public function test_auto_purge_batch_deletes_window_and_chains_next_batch() {
+		global $wpdb;
+
+		// Force a small batch size so we can chain twice without seeding huge data.
+		add_filter( 'wp_stream_batch_size', function () { return 2; } );
+
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		}
+
+		// Seed 5 aged rows. With batch_size=2 the chain runs 3 batches + reaper.
+		$this->seed_aged_records( 5, 5 );
+
+		$cutoff = ( new \DateTime( 'now', new \DateTimeZone( 'UTC' ) ) )
+			->sub( \DateInterval::createFromDateString( '1 days' ) )
+			->format( 'Y-m-d H:i:s' );
+
+		$before = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->stream}" );
+
+		$this->admin->auto_purge_batch( $cutoff, 0 );
+
+		$remaining = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->stream}" );
+		$this->assertLessThan( $before, $remaining, 'Batch must delete at least one row' );
+		$this->assertGreaterThan( 0, $remaining, 'Batch must not delete more than one window of rows' );
+
+		$this->assertNotFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION ),
+			'Next batch must be chained when more eligible rows remain'
+		);
+
+		remove_all_filters( 'wp_stream_batch_size' );
+	}
+
+	public function test_auto_purge_batch_enqueues_reaper_when_no_rows_remain() {
+		global $wpdb;
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		}
+		// Wipe any leftover rows from earlier tests so nothing is eligible.
+		$wpdb->query( "DELETE FROM {$wpdb->stream}" );
+		$wpdb->query( "DELETE FROM {$wpdb->streammeta}" );
+
+		$cutoff = ( new \DateTime( 'now', new \DateTimeZone( 'UTC' ) ) )
+			->sub( \DateInterval::createFromDateString( '1 days' ) )
+			->format( 'Y-m-d H:i:s' );
+
+		$this->admin->auto_purge_batch( $cutoff, 0 );
+
+		$this->assertFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION ),
+			'No further batch must be chained when nothing is eligible'
+		);
+		$this->assertNotFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION ),
+			'Reaper must be enqueued as the terminal step of the chain'
+		);
+	}
+
+	public function test_auto_purge_batch_respects_wp_stream_batch_size_filter() {
+		$invocations = 0;
+		add_filter(
+			'wp_stream_batch_size',
+			function () use ( &$invocations ) {
+				++$invocations;
+				return 1;
+			}
+		);
+
+		$this->seed_aged_records( 1, 5 );
+
+		$cutoff = ( new \DateTime( 'now', new \DateTimeZone( 'UTC' ) ) )
+			->sub( \DateInterval::createFromDateString( '1 days' ) )
+			->format( 'Y-m-d H:i:s' );
+		$this->admin->auto_purge_batch( $cutoff, 0 );
+
+		$this->assertGreaterThanOrEqual( 1, $invocations, 'wp_stream_batch_size filter must be consulted' );
+		remove_all_filters( 'wp_stream_batch_size' );
+	}
+
+	public function test_auto_purge_batch_scopes_to_blog_id_when_non_zero() {
+		global $wpdb;
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'Multisite scoping test' );
+		}
+
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		}
+
+		$current_blog = (int) get_current_blog_id();
+		$other_blog   = $current_blog + 1000; // arbitrary distinct id, no real blog required for SQL scoping.
+
+		$this->seed_aged_records( 1, 5, $current_blog );
+		$this->seed_aged_records( 1, 5, $other_blog );
+
+		$cutoff = ( new \DateTime( 'now', new \DateTimeZone( 'UTC' ) ) )
+			->sub( \DateInterval::createFromDateString( '1 days' ) )
+			->format( 'Y-m-d H:i:s' );
+
+		$this->admin->auto_purge_batch( $cutoff, $current_blog );
+
+		$remaining_other = (int) $wpdb->get_var(
+			$wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->stream} WHERE blog_id = %d", $other_blog )
+		);
+		$this->assertSame( 1, $remaining_other, 'Per-blog scoping must leave sibling blogs untouched' );
+	}
+
 	public function test_auto_purge_action_constants_exist() {
 		$this->assertSame( 'stream_auto_purge_action', \WP_Stream\Admin::AUTO_PURGE_ACTION );
 		$this->assertSame( 'stream_auto_purge_batch_action', \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
