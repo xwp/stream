@@ -374,50 +374,237 @@ class Test_Admin extends WP_StreamTestCase {
 		remove_filter( 'wp_stream_is_network_activated', '__return_false' );
 	}
 
-	public function test_purge_schedule_setup() {
+	public function test_purge_schedule_setup_uses_action_scheduler_and_unschedules_wp_cron() {
+		// Simulate a pre-existing legacy WP-Cron event from older Stream versions.
 		wp_clear_scheduled_hook( 'wp_stream_auto_purge' );
-		$this->assertFalse( wp_next_scheduled( 'wp_stream_auto_purge' ) );
-		$this->admin->purge_schedule_setup();
+		wp_schedule_event( time(), 'twicedaily', 'wp_stream_auto_purge' );
 		$this->assertNotFalse( wp_next_scheduled( 'wp_stream_auto_purge' ) );
-	}
 
-	public function test_purge_scheduled_action() {
-		// Set the TTL to one day
-		if ( is_multisite() && is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
-			$options                        = (array) get_site_option( 'wp_stream_network', array() );
-			$options['general_records_ttl'] = '1';
-			update_site_option( 'wp_stream_network', $options );
-		} else {
-			$options                        = (array) get_option( 'wp_stream', array() );
-			$options['general_records_ttl'] = '1';
-			update_option( 'wp_stream', $options );
+		// Make sure AS has no purge actions queued.
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_ACTION );
 		}
 
-		global $wpdb;
+		$this->admin->purge_schedule_setup();
 
-		// Create (two day old) dummy records
-		$stream_data            = $this->dummy_stream_data();
-		$stream_data['created'] = gmdate( 'Y-m-d h:i:s', strtotime( '2 days ago' ) );
-		$wpdb->insert( $wpdb->stream, $stream_data );
-		$stream_id = $wpdb->insert_id;
-		$this->assertNotFalse( $stream_id );
+		// Legacy WP-Cron event is gone.
+		$this->assertFalse(
+			wp_next_scheduled( 'wp_stream_auto_purge' ),
+			'Legacy wp_stream_auto_purge WP-Cron event should be cleared'
+		);
 
-		// Create dummy meta
-		$meta_data = $this->dummy_meta_data( $stream_id );
-		$wpdb->insert( $wpdb->streammeta, $meta_data );
-		$meta_id = $wpdb->insert_id;
-		$this->assertNotFalse( $meta_id );
+		// Recurring AS action is scheduled.
+		$this->assertNotFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_ACTION ),
+			'Recurring AS auto-purge action should be scheduled'
+		);
 
-		// Purge old records and meta
+		// Idempotent: calling it again must not schedule a second recurring action.
+		$this->admin->purge_schedule_setup();
+		$ids = as_get_scheduled_actions(
+			array(
+				'hook'   => \WP_Stream\Admin::AUTO_PURGE_ACTION,
+				'status' => \ActionScheduler_Store::STATUS_PENDING,
+			),
+			'ids'
+		);
+		$this->assertCount( 1, $ids, 'purge_schedule_setup() must be idempotent' );
+	}
+
+	public function test_purge_scheduled_action_fires_bc_filter() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+		}
+
+		$hits     = 0;
+		$listener = function () use ( &$hits ) {
+			++$hits;
+		};
+		add_action( 'wp_stream_auto_purge', $listener );
+
+		// Make sure something is eligible so we exercise the full code path.
+		$this->seed_aged_records( 1, 5 );
+		$this->set_records_ttl( 1 );
+
 		$this->admin->purge_scheduled_action();
 
-		// Check if the old records have been cleared
-		$stream_results = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->stream} WHERE ID = %d", $stream_id ) );
-		$this->assertEmpty( $stream_results );
+		remove_action( 'wp_stream_auto_purge', $listener );
+		$this->assertSame( 1, $hits, 'wp_stream_auto_purge action must fire exactly once per recurring tick' );
+	}
 
-		// Check if the old meta has been cleared
-		$meta_results = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->streammeta} WHERE meta_id = %d", $meta_id ) );
-		$this->assertEmpty( $meta_results );
+	public function test_purge_scheduled_action_small_table_fast_path() {
+		// Default: table is "small" (filter returns false for record_count <= 1M).
+		global $wpdb;
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		}
+		$ids = $this->seed_aged_records( 2, 5 );
+		$this->set_records_ttl( 1 );
+
+		$this->admin->purge_scheduled_action();
+
+		// Inline DELETE must have run — rows are gone.
+		$remaining = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM {$wpdb->stream} WHERE ID IN (" . implode( ',', array_fill( 0, count( $ids ), '%d' ) ) . ')',
+				...$ids
+			)
+		);
+		$this->assertSame( 0, $remaining, 'Small-table fast path must delete eligible rows inline' );
+
+		// No batched chain was enqueued.
+		$this->assertFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION ),
+			'Small-table fast path must not enqueue a batched chain'
+		);
+
+		// Reaper still runs so the heal step is observable in Scheduled Actions.
+		$this->assertNotFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION ),
+			'Small-table fast path must still enqueue the orphan reaper'
+		);
+	}
+
+	public function test_purge_scheduled_action_large_table_uses_batched_chain() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		}
+		// Force the "large table" branch without seeding 1M rows.
+		add_filter( 'wp_stream_is_large_records_table', '__return_true' );
+
+		$this->seed_aged_records( 2, 5 );
+		$this->set_records_ttl( 1 );
+
+		$this->admin->purge_scheduled_action();
+
+		$this->assertNotFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION ),
+			'Large table must enqueue the batched chain'
+		);
+		$this->assertFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION ),
+			'Reaper is enqueued by the terminal batch worker, not by the recurring callback'
+		);
+
+		remove_filter( 'wp_stream_is_large_records_table', '__return_true' );
+	}
+
+	public function test_purge_scheduled_action_enqueues_first_batch_with_snapshotted_cutoff() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+		}
+
+		// Force the batched path so we can assert batch args.
+		add_filter( 'wp_stream_is_large_records_table', '__return_true' );
+
+		$this->seed_aged_records( 1, 5 );
+		$this->set_records_ttl( 1 );
+
+		$this->admin->purge_scheduled_action();
+
+		$scheduled = as_get_scheduled_actions(
+			array(
+				'hook'   => \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION,
+				'status' => \ActionScheduler_Store::STATUS_PENDING,
+			)
+		);
+		$this->assertNotEmpty( $scheduled, 'A first batch must be enqueued when records are eligible' );
+
+		$action = array_shift( $scheduled );
+		$args   = $action->get_args();
+		$this->assertArrayHasKey( 'cutoff', $args );
+		$this->assertArrayHasKey( 'blog_id', $args );
+		$this->assertMatchesRegularExpression(
+			'/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/',
+			$args['cutoff'],
+			'Cutoff must be a MySQL DATETIME string'
+		);
+
+		remove_filter( 'wp_stream_is_large_records_table', '__return_true' );
+	}
+
+	public function test_purge_scheduled_action_respects_keep_indefinitely() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+		}
+		$this->seed_aged_records( 1, 5 );
+
+		if ( is_multisite() && is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
+			update_site_option( 'wp_stream_network', array( 'general_keep_records_indefinitely' => 1 ) );
+		} else {
+			update_option( 'wp_stream', array( 'general_keep_records_indefinitely' => 1 ) );
+		}
+
+		$this->admin->purge_scheduled_action();
+
+		$this->assertFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION ),
+			'No batch must be enqueued when keep-records-indefinitely is on'
+		);
+	}
+
+	public function test_purge_scheduled_action_applies_defaults_when_option_missing() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+		}
+		// Drop the option entirely.
+		if ( is_multisite() && is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
+			delete_site_option( 'wp_stream_network' );
+		} else {
+			delete_option( 'wp_stream' );
+		}
+
+		// Force the batched path so the assertion targets a batch enqueue.
+		add_filter( 'wp_stream_is_large_records_table', '__return_true' );
+
+		// Seed records older than the default 30-day TTL.
+		$this->seed_aged_records( 1, 31 );
+
+		$this->admin->purge_scheduled_action();
+
+		$this->assertNotFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION ),
+			'Defaults (30-day TTL) must apply when the settings option is missing'
+		);
+
+		remove_filter( 'wp_stream_is_large_records_table', '__return_true' );
+	}
+
+	public function test_purge_scheduled_action_overlap_guard_skips_when_batch_already_pending() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+		}
+		// Overlap guard only applies to the batched chain path.
+		add_filter( 'wp_stream_is_large_records_table', '__return_true' );
+
+		$this->seed_aged_records( 1, 5 );
+		$this->set_records_ttl( 1 );
+
+		// First call enqueues a batch.
+		$this->admin->purge_scheduled_action();
+		$first = as_get_scheduled_actions(
+			array(
+				'hook'   => \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION,
+				'status' => \ActionScheduler_Store::STATUS_PENDING,
+			),
+			'ids'
+		);
+		$this->assertCount( 1, $first );
+
+		// Second call must be a no-op.
+		$this->admin->purge_scheduled_action();
+		$second = as_get_scheduled_actions(
+			array(
+				'hook'   => \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION,
+				'status' => \ActionScheduler_Store::STATUS_PENDING,
+			),
+			'ids'
+		);
+		$this->assertCount( 1, $second, 'Overlap guard must prevent stacking a second batch chain' );
+
+		remove_filter( 'wp_stream_is_large_records_table', '__return_true' );
 	}
 
 	public function test_plugin_action_links() {
@@ -604,6 +791,314 @@ class Test_Admin extends WP_StreamTestCase {
 			'record_id'  => $stream_id,
 			'meta_key'   => 'space_helmet',
 			'meta_value' => 'false',
+		);
+	}
+
+	/**
+	 * Insert N stream rows aged $days_old days, optionally pinned to a blog id.
+	 *
+	 * @param int      $count    Number of rows to insert.
+	 * @param int      $days_old How many days ago `created` should be set to.
+	 * @param int|null $blog_id  Optional blog id override.
+	 * @return int[] Inserted stream IDs.
+	 */
+	private function seed_aged_records( int $count, int $days_old, $blog_id = null ): array {
+		global $wpdb;
+		$ids = array();
+		for ( $i = 0; $i < $count; $i++ ) {
+			$row            = $this->dummy_stream_data();
+			$row['created'] = gmdate( 'Y-m-d H:i:s', strtotime( $days_old . ' days ago' ) );
+			if ( null !== $blog_id ) {
+				$row['blog_id'] = $blog_id;
+			}
+			$wpdb->insert( $wpdb->stream, $row );
+			$stream_id = (int) $wpdb->insert_id;
+			$ids[]     = $stream_id;
+			$wpdb->insert( $wpdb->streammeta, $this->dummy_meta_data( $stream_id ) );
+		}
+		return $ids;
+	}
+
+	/**
+	 * Set the records TTL in whichever option applies on this install.
+	 *
+	 * @param int $days Number of days to retain records for.
+	 */
+	private function set_records_ttl( int $days ) {
+		if ( is_multisite() && is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
+			$options                        = (array) get_site_option( 'wp_stream_network', array() );
+			$options['general_records_ttl'] = (string) $days;
+			unset( $options['general_keep_records_indefinitely'] );
+			update_site_option( 'wp_stream_network', $options );
+		} else {
+			$options                        = (array) get_option( 'wp_stream', array() );
+			$options['general_records_ttl'] = (string) $days;
+			unset( $options['general_keep_records_indefinitely'] );
+			update_option( 'wp_stream', $options );
+		}
+	}
+
+	public function test_ajax_clean_orphan_meta_schedules_reaper() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		}
+
+		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$_REQUEST['wp_stream_nonce_clean_orphan_meta'] = wp_create_nonce( 'stream_nonce_clean_orphan_meta' );
+
+		$result = $this->admin->wp_ajax_clean_orphan_meta();
+		$this->assertTrue( $result );
+
+		$this->assertNotFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION ),
+			'Ajax handler must enqueue the reaper action'
+		);
+
+		unset( $_REQUEST['wp_stream_nonce_clean_orphan_meta'] );
+	}
+
+	public function test_auto_purge_reaper_deletes_orphaned_meta_only() {
+		global $wpdb;
+
+		// Seed a real record with meta, then a free-floating meta row pointing at
+		// a non-existent record_id.
+		$stream_data            = $this->dummy_stream_data();
+		$stream_data['created'] = gmdate( 'Y-m-d H:i:s', strtotime( '5 days ago' ) );
+		$wpdb->insert( $wpdb->stream, $stream_data );
+		$real_id = (int) $wpdb->insert_id;
+		$wpdb->insert( $wpdb->streammeta, $this->dummy_meta_data( $real_id ) );
+
+		// Orphan meta: record_id points nowhere.
+		$orphan_record_id = $real_id + 999999;
+		$wpdb->insert( $wpdb->streammeta, $this->dummy_meta_data( $orphan_record_id ) );
+
+		$before_orphans = (int) $wpdb->get_var(
+			$wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->streammeta} WHERE record_id = %d", $orphan_record_id )
+		);
+		$this->assertSame( 1, $before_orphans );
+
+		$this->admin->auto_purge_reaper();
+
+		$after_orphans = (int) $wpdb->get_var(
+			$wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->streammeta} WHERE record_id = %d", $orphan_record_id )
+		);
+		$linked_meta   = (int) $wpdb->get_var(
+			$wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->streammeta} WHERE record_id = %d", $real_id )
+		);
+
+		$this->assertSame( 0, $after_orphans, 'Reaper must delete meta rows whose parent stream row is absent' );
+		$this->assertSame( 1, $linked_meta, 'Reaper must not touch meta rows whose parent still exists' );
+	}
+
+	public function test_auto_purge_batch_deletes_window_and_chains_next_batch() {
+		global $wpdb;
+
+		// Force a small batch size so we can chain twice without seeding huge data.
+		add_filter(
+			'wp_stream_batch_size',
+			function () {
+				return 2;
+			}
+		);
+
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		}
+
+		// Seed 5 aged rows. With batch_size=2 the chain runs 3 batches + reaper.
+		$this->seed_aged_records( 5, 5 );
+
+		$cutoff = ( new \DateTime( 'now', new \DateTimeZone( 'UTC' ) ) )
+			->sub( \DateInterval::createFromDateString( '1 days' ) )
+			->format( 'Y-m-d H:i:s' );
+
+		$before = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->stream}" );
+
+		$this->admin->auto_purge_batch( $cutoff, 0 );
+
+		$remaining = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->stream}" );
+		$this->assertLessThan( $before, $remaining, 'Batch must delete at least one row' );
+		$this->assertGreaterThan( 0, $remaining, 'Batch must not delete more than one window of rows' );
+
+		$this->assertNotFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION ),
+			'Next batch must be chained when more eligible rows remain'
+		);
+
+		remove_all_filters( 'wp_stream_batch_size' );
+	}
+
+	public function test_auto_purge_batch_throws_on_empty_cutoff() {
+		$this->expectException( \InvalidArgumentException::class );
+		$this->admin->auto_purge_batch( '', 0, 0 );
+	}
+
+	public function test_auto_purge_batch_enqueues_reaper_when_no_rows_remain() {
+		global $wpdb;
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		}
+		// Wipe any leftover rows from earlier tests so nothing is eligible.
+		$wpdb->query( "DELETE FROM {$wpdb->stream}" );
+		$wpdb->query( "DELETE FROM {$wpdb->streammeta}" );
+
+		$cutoff = ( new \DateTime( 'now', new \DateTimeZone( 'UTC' ) ) )
+			->sub( \DateInterval::createFromDateString( '1 days' ) )
+			->format( 'Y-m-d H:i:s' );
+
+		$this->admin->auto_purge_batch( $cutoff, 0 );
+
+		$this->assertFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION ),
+			'No further batch must be chained when nothing is eligible'
+		);
+		$this->assertNotFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION ),
+			'Reaper must be enqueued as the terminal step of the chain'
+		);
+	}
+
+	public function test_auto_purge_batch_chain_strides_down_by_window() {
+		global $wpdb;
+
+		// Force a small batch size so we can chain multiple times.
+		add_filter(
+			'wp_stream_batch_size',
+			function () {
+				return 3;
+			}
+		);
+
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		}
+
+		$ids = $this->seed_aged_records( 4, 5 );
+		sort( $ids );
+		$top_id = end( $ids );
+
+		$cutoff = ( new \DateTime( 'now', new \DateTimeZone( 'UTC' ) ) )
+			->sub( \DateInterval::createFromDateString( '1 days' ) )
+			->format( 'Y-m-d H:i:s' );
+
+		// First batch (last_entry=0) should pick the highest ID and pass
+		// last_entry = top_id - batch_size to the next batch.
+		$this->admin->auto_purge_batch( $cutoff, 0, 0 );
+
+		$pending = as_get_scheduled_actions(
+			array(
+				'hook'   => \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION,
+				'status' => \ActionScheduler_Store::STATUS_PENDING,
+			)
+		);
+		$this->assertNotEmpty( $pending );
+		$next_args = array_shift( $pending )->get_args();
+
+		$this->assertArrayHasKey( 'last_entry', $next_args );
+		$this->assertSame(
+			max( 0, $top_id - 3 ),
+			(int) $next_args['last_entry'],
+			'Next batch must receive last_entry = top_id - batch_size'
+		);
+
+		remove_all_filters( 'wp_stream_batch_size' );
+	}
+
+	public function test_auto_purge_batch_scopes_to_blog_id_when_non_zero() {
+		global $wpdb;
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'Multisite scoping test' );
+		}
+
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		}
+
+		$current_blog = (int) get_current_blog_id();
+		$other_blog   = $current_blog + 1000;
+		// arbitrary distinct id, no real blog required for SQL scoping.
+
+		$this->seed_aged_records( 1, 5, $current_blog );
+		$this->seed_aged_records( 1, 5, $other_blog );
+
+		$cutoff = ( new \DateTime( 'now', new \DateTimeZone( 'UTC' ) ) )
+			->sub( \DateInterval::createFromDateString( '1 days' ) )
+			->format( 'Y-m-d H:i:s' );
+
+		$this->admin->auto_purge_batch( $cutoff, $current_blog );
+
+		$remaining_other = (int) $wpdb->get_var(
+			$wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->stream} WHERE blog_id = %d", $other_blog )
+		);
+		$this->assertSame( 1, $remaining_other, 'Per-blog scoping must leave sibling blogs untouched' );
+	}
+
+	public function test_is_running_auto_purge_reflects_chain_state() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		}
+		$this->assertFalse(
+			\WP_Stream\Admin::is_running_auto_purge(),
+			'No scheduled actions means not running'
+		);
+
+		as_enqueue_async_action(
+			\WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION,
+			array(
+				'cutoff'     => '2020-01-01 00:00:00',
+				'blog_id'    => 0,
+				'last_entry' => 0,
+			),
+			\WP_Stream\Admin::AUTO_PURGE_GROUP
+		);
+		$this->assertTrue(
+			\WP_Stream\Admin::is_running_auto_purge(),
+			'A pending batch action means running'
+		);
+
+		as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+		as_enqueue_async_action(
+			\WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION,
+			array(),
+			\WP_Stream\Admin::AUTO_PURGE_GROUP
+		);
+		$this->assertTrue(
+			\WP_Stream\Admin::is_running_auto_purge(),
+			'A pending reaper action means running'
+		);
+
+		as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		$this->assertFalse(
+			\WP_Stream\Admin::is_running_auto_purge(),
+			'Chain drained: not running'
+		);
+	}
+
+	public function test_register_hooks_auto_purge_action_scheduler_callbacks() {
+		// The Admin instance is constructed by the test bootstrap, so register()
+		// has already run. Just assert the actions are wired up.
+		$this->assertNotFalse(
+			has_action( \WP_Stream\Admin::AUTO_PURGE_ACTION, array( $this->admin, 'purge_scheduled_action' ) ),
+			'Recurring auto-purge AS callback should be registered'
+		);
+		$this->assertNotFalse(
+			has_action( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION, array( $this->admin, 'auto_purge_batch' ) ),
+			'Auto-purge batch worker should be registered'
+		);
+		$this->assertNotFalse(
+			has_action( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION, array( $this->admin, 'auto_purge_reaper' ) ),
+			'Auto-purge reaper should be registered'
+		);
+		$this->assertFalse(
+			has_action( 'wp_stream_auto_purge', array( $this->admin, 'purge_scheduled_action' ) ),
+			'Legacy wp_stream_auto_purge hook should no longer dispatch to purge_scheduled_action directly'
 		);
 	}
 }

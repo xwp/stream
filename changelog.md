@@ -1,5 +1,22 @@
 # Stream Changelog
 
+## Unreleased
+
+### Bug Fixes
+
+- Fix unbounded growth of `stream` / `stream_meta` tables: the TTL-based auto-purge now runs via Action Scheduler with batched deletion (default 250,000 rows per batch via the existing `wp_stream_batch_size` filter), resolving database bloat on sites where the previous WP-Cron-driven purge silently failed or timed out on large tables (XWPENG-28).
+- Fix orphan `stream_meta` rows accumulating across repeated purge cycles: a terminal orphan reaper now runs at the end of every auto-purge chain, healing installs that have residual orphans from historical interrupted purges.
+
+### Enhancements
+
+- Add **Clean Orphaned Meta** link under **Settings → Advanced** for one-shot cleanup on already-bloated installs. The link is hidden while the auto-purge chain is running and reappears once the chain drains.
+- Replace the legacy `wp_stream_auto_purge` WP-Cron event with a recurring Action Scheduler action. Run history and failures are now visible under **Tools → Scheduled Actions**.
+- Auto-purge consults the existing `wp_stream_is_large_records_table` filter (default threshold: >1M rows) so small tables get a single inline DELETE while bloated tables go through the batched chain — same knob as the manual reset path.
+
+### Notes
+
+- The `wp_stream_auto_purge` action continues to fire once per purge cycle for backward compatibility. The legacy WP-Cron event of the same name is automatically unscheduled on upgrade.
+
 ## 4.1.2 - February 19, 2026
 
 ### Bug Fixes
