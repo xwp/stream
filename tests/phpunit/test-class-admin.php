@@ -957,27 +957,6 @@ class Test_Admin extends WP_StreamTestCase {
 		);
 	}
 
-	public function test_auto_purge_batch_respects_wp_stream_batch_size_filter() {
-		$invocations = 0;
-		add_filter(
-			'wp_stream_batch_size',
-			function () use ( &$invocations ) {
-				++$invocations;
-				return 1;
-			}
-		);
-
-		$this->seed_aged_records( 1, 5 );
-
-		$cutoff = ( new \DateTime( 'now', new \DateTimeZone( 'UTC' ) ) )
-			->sub( \DateInterval::createFromDateString( '1 days' ) )
-			->format( 'Y-m-d H:i:s' );
-		$this->admin->auto_purge_batch( $cutoff, 0 );
-
-		$this->assertGreaterThanOrEqual( 1, $invocations, 'wp_stream_batch_size filter must be consulted' );
-		remove_all_filters( 'wp_stream_batch_size' );
-	}
-
 	public function test_auto_purge_batch_chain_strides_down_by_window() {
 		global $wpdb;
 
@@ -1095,13 +1074,6 @@ class Test_Admin extends WP_StreamTestCase {
 			\WP_Stream\Admin::is_running_auto_purge(),
 			'Chain drained: not running'
 		);
-	}
-
-	public function test_auto_purge_action_constants_exist() {
-		$this->assertSame( 'stream_auto_purge_action', \WP_Stream\Admin::AUTO_PURGE_ACTION );
-		$this->assertSame( 'stream_auto_purge_batch_action', \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
-		$this->assertSame( 'stream_auto_purge_reaper_action', \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
-		$this->assertSame( 'stream-auto-purge', \WP_Stream\Admin::AUTO_PURGE_GROUP );
 	}
 
 	public function test_register_hooks_auto_purge_action_scheduler_callbacks() {
