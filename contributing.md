@@ -24,7 +24,7 @@ We suggest using the [Homebrew package manager](https://brew.sh) on macOS to ins
 3. Run `npm build` to build the assets.
 3. Run `npm start` to start the development environment.
 4. Run `npm run install-wordpress` to set up the WordPress multisite network.
-5. Visit [stream.wpenv.net](http://stream.wpenv.net) and login using `admin` / `password`.
+5. Visit [stream.wpenv.net](https://stream.wpenv.net) and login using `admin` / `password`. The dev environment forces HTTPS; if you haven't run `mkcert -install` on your host yet (see the HTTPS section below), your browser will show a "not secure" warning that you can dismiss.
 6. Activate the Stream plugin.
 
 ### HTTPS for the dev environment
@@ -39,9 +39,19 @@ To make the browser **trust** the locally-issued cert without a security warning
 - Linux: install mkcert via your package manager, then `mkcert -install`
 - Windows: `choco install mkcert && mkcert -install`
 
-If you skip the trust-store step, HTTPS still works; the browser just shows a "not secure" warning you can dismiss. Tools that don't perform cert validation (curl with `-k`, most MCP clients via app-password auth) are unaffected.
+If you skip the trust-store step, HTTPS still works; the browser just shows a "not secure" warning you can dismiss. Tools that don't perform cert validation (curl with `-k`, Playwright with `ignoreHTTPSErrors: true`, most MCP clients via app-password auth) are unaffected.
 
 Once the cert is generated and (optionally) trusted, visit https://stream.wpenv.net.
+
+**Existing environments** (set up before HTTPS was forced) still have `http://stream.wpenv.net` in their database. Upgrade with:
+
+```sh
+docker compose run --rm --user $(id -u) wordpress -- \
+  wp search-replace 'http://stream.wpenv.net' 'https://stream.wpenv.net' \
+  --network --skip-columns=guid --report-changed-only
+```
+
+New `npm run install-wordpress` runs use the HTTPS URL from `local/public/wp-cli.yml` and don't need this step.
 
 ### MCP (Model Context Protocol) integration
 

@@ -149,8 +149,8 @@ jobs:
         run: |
           php -r '
             require "vendor/autoload.php";
-            ( new XWP\Wait_For\Tcp_Connection( "127.0.0.1", 80 ) )->connect( 60 );
-            echo "WordPress is accepting connections on 127.0.0.1:80.\n";
+            ( new XWP\Wait_For\Tcp_Connection( "127.0.0.1", 443 ) )->connect( 60 );
+            echo "WordPress is accepting HTTPS connections on 127.0.0.1:443.\n";
           '
 
       - name: Install WordPress multisite

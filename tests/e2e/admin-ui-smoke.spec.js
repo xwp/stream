@@ -13,7 +13,7 @@ import { test, expect } from '@wordpress/e2e-test-utils-playwright';
  * suites do not exercise.
  */
 
-const ADMIN = 'http://stream.wpenv.net/wp-admin';
+const ADMIN = 'https://stream.wpenv.net/wp-admin';
 
 test.describe.configure( { mode: 'serial' } );
 
