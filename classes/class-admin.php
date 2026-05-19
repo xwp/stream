@@ -849,8 +849,27 @@ class Admin {
 	 * @return void
 	 */
 	public function purge_schedule_setup() {
-		if ( ! wp_next_scheduled( 'wp_stream_auto_purge' ) ) {
-			wp_schedule_event( time(), 'twicedaily', 'wp_stream_auto_purge' );
+		// Clear the legacy WP-Cron event scheduled by Stream <= 4.1.x so it
+		// cannot double-fire alongside the new AS recurring action.
+		if ( wp_next_scheduled( 'wp_stream_auto_purge' ) ) {
+			wp_clear_scheduled_hook( 'wp_stream_auto_purge' );
+		}
+
+		if ( ! function_exists( 'as_schedule_recurring_action' ) ) {
+			// Action Scheduler not yet loaded (e.g. very early hook); bail.
+			// Plugin::__construct() loads it before init, so this should be unreachable.
+			return;
+		}
+
+		if ( false === as_next_scheduled_action( self::AUTO_PURGE_ACTION ) ) {
+			// 12 hours == old `twicedaily` interval.
+			as_schedule_recurring_action(
+				time(),
+				12 * HOUR_IN_SECONDS,
+				self::AUTO_PURGE_ACTION,
+				array(),
+				self::AUTO_PURGE_GROUP
+			);
 		}
 	}
 

@@ -374,11 +374,41 @@ class Test_Admin extends WP_StreamTestCase {
 		remove_filter( 'wp_stream_is_network_activated', '__return_false' );
 	}
 
-	public function test_purge_schedule_setup() {
+	public function test_purge_schedule_setup_uses_action_scheduler_and_unschedules_wp_cron() {
+		// Simulate a pre-existing legacy WP-Cron event from older Stream versions.
 		wp_clear_scheduled_hook( 'wp_stream_auto_purge' );
-		$this->assertFalse( wp_next_scheduled( 'wp_stream_auto_purge' ) );
-		$this->admin->purge_schedule_setup();
+		wp_schedule_event( time(), 'twicedaily', 'wp_stream_auto_purge' );
 		$this->assertNotFalse( wp_next_scheduled( 'wp_stream_auto_purge' ) );
+
+		// Make sure AS has no purge actions queued.
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_ACTION );
+		}
+
+		$this->admin->purge_schedule_setup();
+
+		// Legacy WP-Cron event is gone.
+		$this->assertFalse(
+			wp_next_scheduled( 'wp_stream_auto_purge' ),
+			'Legacy wp_stream_auto_purge WP-Cron event should be cleared'
+		);
+
+		// Recurring AS action is scheduled.
+		$this->assertNotFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_ACTION ),
+			'Recurring AS auto-purge action should be scheduled'
+		);
+
+		// Idempotent: calling it again must not schedule a second recurring action.
+		$this->admin->purge_schedule_setup();
+		$ids = as_get_scheduled_actions(
+			array(
+				'hook'   => \WP_Stream\Admin::AUTO_PURGE_ACTION,
+				'status' => \ActionScheduler_Store::STATUS_PENDING,
+			),
+			'ids'
+		);
+		$this->assertCount( 1, $ids, 'purge_schedule_setup() must be idempotent' );
 	}
 
 	public function test_purge_scheduled_action() {
