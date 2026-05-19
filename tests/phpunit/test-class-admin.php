@@ -1055,6 +1055,44 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->assertSame( 1, $remaining_other, 'Per-blog scoping must leave sibling blogs untouched' );
 	}
 
+	public function test_is_running_auto_purge_reflects_chain_state() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		}
+		$this->assertFalse(
+			\WP_Stream\Admin::is_running_auto_purge(),
+			'No scheduled actions means not running'
+		);
+
+		as_enqueue_async_action(
+			\WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION,
+			array( 'cutoff' => '2020-01-01 00:00:00', 'blog_id' => 0, 'last_entry' => 0 ),
+			\WP_Stream\Admin::AUTO_PURGE_GROUP
+		);
+		$this->assertTrue(
+			\WP_Stream\Admin::is_running_auto_purge(),
+			'A pending batch action means running'
+		);
+
+		as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+		as_enqueue_async_action(
+			\WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION,
+			array(),
+			\WP_Stream\Admin::AUTO_PURGE_GROUP
+		);
+		$this->assertTrue(
+			\WP_Stream\Admin::is_running_auto_purge(),
+			'A pending reaper action means running'
+		);
+
+		as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		$this->assertFalse(
+			\WP_Stream\Admin::is_running_auto_purge(),
+			'Chain drained: not running'
+		);
+	}
+
 	public function test_auto_purge_action_constants_exist() {
 		$this->assertSame( 'stream_auto_purge_action', \WP_Stream\Admin::AUTO_PURGE_ACTION );
 		$this->assertSame( 'stream_auto_purge_batch_action', \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );

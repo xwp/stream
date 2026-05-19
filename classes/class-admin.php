@@ -759,6 +759,27 @@ class Admin {
 	}
 
 	/**
+	 * Checks if any auto-purge action is currently scheduled or in-flight.
+	 *
+	 * Returns true when either the batched chain worker or the terminal
+	 * orphan reaper is pending. The recurring scheduler is intentionally
+	 * excluded — it is always pending under normal operation, so including
+	 * it here would make the probe useless. Used by the Settings → Advanced
+	 * UI to render an "Auto-purge currently running" notice.
+	 *
+	 * @return bool
+	 */
+	public static function is_running_auto_purge() {
+		if ( ! function_exists( 'as_has_scheduled_action' ) ) {
+			return false;
+		}
+		return (
+			as_has_scheduled_action( self::AUTO_PURGE_BATCH_ACTION )
+			|| as_has_scheduled_action( self::AUTO_PURGE_REAPER_ACTION )
+		);
+	}
+
+	/**
 	 * Erases large records from the stream table.
 	 *
 	 * This function deletes records from the stream table in batches, starting from a given entry ID.
