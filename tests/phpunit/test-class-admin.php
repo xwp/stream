@@ -613,4 +613,25 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->assertSame( 'stream_auto_purge_reaper_action', \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
 		$this->assertSame( 'stream-auto-purge', \WP_Stream\Admin::AUTO_PURGE_GROUP );
 	}
+
+	public function test_register_hooks_auto_purge_action_scheduler_callbacks() {
+		// The Admin instance is constructed by the test bootstrap, so register()
+		// has already run. Just assert the actions are wired up.
+		$this->assertNotFalse(
+			has_action( \WP_Stream\Admin::AUTO_PURGE_ACTION, array( $this->admin, 'purge_scheduled_action' ) ),
+			'Recurring auto-purge AS callback should be registered'
+		);
+		$this->assertNotFalse(
+			has_action( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION, array( $this->admin, 'auto_purge_batch' ) ),
+			'Auto-purge batch worker should be registered'
+		);
+		$this->assertNotFalse(
+			has_action( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION, array( $this->admin, 'auto_purge_reaper' ) ),
+			'Auto-purge reaper should be registered'
+		);
+		$this->assertFalse(
+			has_action( 'wp_stream_auto_purge', array( $this->admin, 'purge_scheduled_action' ) ),
+			'Legacy wp_stream_auto_purge hook should no longer dispatch to purge_scheduled_action directly'
+		);
+	}
 }

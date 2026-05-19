@@ -229,14 +229,21 @@ class Admin {
 			)
 		);
 
-		// Auto purge setup.
+		// Auto purge setup (Action Scheduler).
 		add_action( 'wp_loaded', array( $this, 'purge_schedule_setup' ) );
 		add_action(
-			'wp_stream_auto_purge',
-			array(
-				$this,
-				'purge_scheduled_action',
-			)
+			self::AUTO_PURGE_ACTION,
+			array( $this, 'purge_scheduled_action' )
+		);
+		add_action(
+			self::AUTO_PURGE_BATCH_ACTION,
+			array( $this, 'auto_purge_batch' ),
+			10,
+			2
+		);
+		add_action(
+			self::AUTO_PURGE_REAPER_ACTION,
+			array( $this, 'auto_purge_reaper' )
 		);
 
 		// Ajax users list.
@@ -911,6 +918,31 @@ class Admin {
 			ON `meta`.`record_id` = `stream`.`ID`
 			WHERE 1=1 {$where};", // @codingStandardsIgnoreLine $where already prepared
 		);
+	}
+
+	/**
+	 * Async Action Scheduler callback: delete one batch of records eligible
+	 * under the snapshotted UTC cutoff, then chain the next batch.
+	 *
+	 * Stub implementation; real body is added in a later task.
+	 *
+	 * @param string $cutoff  MySQL DATETIME string in UTC.
+	 * @param int    $blog_id Blog to scope to, or 0 for all blogs.
+	 * @return void
+	 */
+	public function auto_purge_batch( $cutoff, $blog_id = 0 ) {
+		unset( $cutoff, $blog_id );
+	}
+
+	/**
+	 * Terminal Action Scheduler callback for the auto-purge chain.
+	 *
+	 * Stub implementation; real body is added in a later task.
+	 *
+	 * @return void
+	 */
+	public function auto_purge_reaper() {
+		// Filled in by a later task.
 	}
 
 	/**
