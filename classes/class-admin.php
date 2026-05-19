@@ -1119,13 +1119,17 @@ class Admin {
 			return true;
 		}
 
+		$is_network = $this->plugin->is_multisite_network_activated();
+		$page_slug  = $is_network ? $this->network->network_settings_page_slug : $this->settings_page_slug;
+		$base_url   = $is_network ? network_admin_url( $this->admin_parent_page ) : admin_url( $this->admin_parent_page );
+
 		wp_safe_redirect(
 			add_query_arg(
 				array(
-					'page'              => $this->settings_page_slug,
+					'page'              => $page_slug,
 					'wp_stream_message' => 'orphan_meta_cleanup_scheduled',
 				),
-				admin_url( $this->plugin->is_multisite_network_activated() ? 'network/admin.php' : 'admin.php' )
+				$base_url
 			)
 		);
 		exit;
