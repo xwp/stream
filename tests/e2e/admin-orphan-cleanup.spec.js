@@ -28,16 +28,24 @@ const ADMIN = 'http://stream.wpenv.net/wp-admin';
 /**
  * Run a PHP snippet inside the wordpress container.
  *
+ * Best-effort: returns null on container errors (e.g. Stream not yet active
+ * during a parallel suite's bootstrap). State seeding is auxiliary; the
+ * test's own assertions are the source of truth.
+ *
  * @param {string} php The body of the eval call (no `<?php`).
- * @return {string} Trimmed stdout.
+ * @return {string|null} Trimmed stdout, or null on error.
  */
 function wpEval( php ) {
 	// Single-quote the PHP, escape any embedded single quotes.
 	const escaped = php.replace( /'/g, "'\\''" );
-	return execSync(
-		`docker compose run --rm --user $(id -u) wordpress -- wp eval '${ escaped }'`,
-		{ encoding: 'utf8', stdio: [ 'ignore', 'pipe', 'ignore' ] },
-	).trim();
+	try {
+		return execSync(
+			`docker compose run --rm --user $(id -u) wordpress -- wp eval '${ escaped }'`,
+			{ encoding: 'utf8', stdio: [ 'ignore', 'pipe', 'ignore' ] },
+		).trim();
+	} catch ( err ) {
+		return null;
+	}
 }
 
 /**
@@ -66,12 +74,25 @@ test.beforeAll( async ( { browser } ) => {
 	page = await browser.newPage();
 
 	// The setup fixture deactivates Stream network-wide before the suite.
-	// Reactivate it so the Stream admin pages are reachable.
+	// Earlier specs in the suite may also have deactivated it. Reactivate
+	// and wait for the post-activation redirect so subsequent navigations
+	// see a fully-activated plugin.
 	await page.goto( `${ ADMIN }/network/plugins.php` );
 	const activate = page.getByLabel( 'Network Activate Stream' );
 	if ( await activate.isVisible() ) {
-		await activate.click();
+		await Promise.all( [
+			page.waitForURL( /plugins\.php/ ),
+			activate.click(),
+		] );
 	}
+
+	// Belt-and-suspenders: confirm via the page DOM that the deactivate
+	// label is now present. If it isn't, fail fast rather than letting
+	// every test silently hit "Sorry, you are not allowed to access this page".
+	await page.goto( `${ ADMIN }/network/plugins.php` );
+	await expect(
+		page.getByLabel( 'Network Deactivate Stream' ),
+	).toBeVisible();
 } );
 
 test.afterAll( async () => {
