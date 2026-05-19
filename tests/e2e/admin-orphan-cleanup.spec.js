@@ -43,7 +43,7 @@ function wpEval( php ) {
 			`docker compose run --rm --user $(id -u) wordpress -- wp eval '${ escaped }'`,
 			{ encoding: 'utf8', stdio: [ 'ignore', 'pipe', 'ignore' ] },
 		).trim();
-	} catch ( err ) {
+	} catch {
 		return null;
 	}
 }
