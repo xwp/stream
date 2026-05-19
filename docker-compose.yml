@@ -28,8 +28,11 @@ services:
   # once at `npm start`, writes cert.pem + key.pem into ./local/certs/, and
   # exits. Skips work if the files already exist. Pattern adopted from
   # https://github.com/xwp/vip-site-template/blob/main/docker-compose.yml.
-  # See local/docker/mkcert/Dockerfile.
+  # The image is pre-built and published by .github/workflows/docker-images.yml
+  # so CI and contributors don't rebuild it on every fresh environment.
+  # See local/docker/mkcert/Dockerfile and docker-compose.build.yml.
   mkcert:
+    image: ghcr.io/xwp/stream-mkcert:${MKCERT_IMAGE_VERSION:-latest}
     build:
       context: ./local/docker/mkcert
     volumes:

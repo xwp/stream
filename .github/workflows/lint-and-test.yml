@@ -127,7 +127,12 @@ jobs:
         run: npm run build
 
       - name: Pull custom Docker images
-        run: docker compose pull wordpress
+        # `--ignore-pull-failures` so the first push of this branch (before
+        # docker-images.yml has published ghcr.io/xwp/stream-mkcert) still
+        # passes CI. Docker Compose then falls back to the local build:
+        # context for any image it couldn't pull, keeping the workflow
+        # green while a master push backfills the registry.
+        run: docker compose pull --ignore-pull-failures wordpress mkcert
 
       - name: Start WordPress
         run: npm run start
