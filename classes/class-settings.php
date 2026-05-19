@@ -374,7 +374,7 @@ class Settings {
 					array(
 						'name'    => 'clean_orphan_meta',
 						'title'   => esc_html__( 'Clean Orphaned Meta', 'stream' ),
-						'type'    => 'link',
+						'type'    => Admin::is_running_auto_purge() ? 'none' : 'link',
 						'href'    => add_query_arg(
 							array(
 								'action' => 'wp_stream_clean_orphan_meta',
@@ -382,10 +382,9 @@ class Settings {
 							),
 							admin_url( 'admin-ajax.php' )
 						),
-						'desc'    => esc_html__(
-							'Schedules an immediate background cleanup of stream_meta rows whose parent record is missing. Safe to run while Stream is in use; runs once via Action Scheduler.',
-							'stream'
-						),
+						'desc'    => Admin::is_running_auto_purge()
+							? esc_html__( 'Auto-purge is currently running. The orphan reaper will execute as part of that cycle; the manual cleanup link is hidden to avoid duplicating the work.', 'stream' )
+							: esc_html__( 'Schedules an immediate background cleanup of stream_meta rows whose parent record is missing. Safe to run while Stream is in use; runs once via Action Scheduler.', 'stream' ),
 						'default' => 0,
 						'sticky'  => 'bottom',
 					),

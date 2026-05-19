@@ -1067,7 +1067,11 @@ class Test_Admin extends WP_StreamTestCase {
 
 		as_enqueue_async_action(
 			\WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION,
-			array( 'cutoff' => '2020-01-01 00:00:00', 'blog_id' => 0, 'last_entry' => 0 ),
+			array(
+				'cutoff'     => '2020-01-01 00:00:00',
+				'blog_id'    => 0,
+				'last_entry' => 0,
+			),
 			\WP_Stream\Admin::AUTO_PURGE_GROUP
 		);
 		$this->assertTrue(
