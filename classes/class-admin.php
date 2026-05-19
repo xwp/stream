@@ -229,6 +229,12 @@ class Admin {
 			)
 		);
 
+		// Manual "Clean orphaned meta now" action (Settings → Advanced).
+		add_action(
+			'wp_ajax_wp_stream_clean_orphan_meta',
+			array( $this, 'wp_ajax_clean_orphan_meta' )
+		);
+
 		// Auto purge setup (Action Scheduler).
 		add_action( 'wp_loaded', array( $this, 'purge_schedule_setup' ) );
 		add_action(
@@ -1083,6 +1089,46 @@ class Admin {
 	 */
 	public function auto_purge_reaper() {
 		$this->delete_orphaned_meta();
+	}
+
+	/**
+	 * Ajax handler for the "Clean orphaned meta now" button on
+	 * Settings → Advanced.
+	 *
+	 * Schedules an immediate async run of the orphan reaper. Idempotent:
+	 * if a reaper is already scheduled, returns without enqueuing a second.
+	 *
+	 * @return void
+	 */
+	public function wp_ajax_clean_orphan_meta() {
+		if ( ! current_user_can( WP_STREAM_SETTINGS_CAPABILITY ) ) {
+			wp_die( esc_html__( 'You do not have permission to do this.', 'stream' ), 403 );
+		}
+
+		check_ajax_referer( 'stream_nonce_clean_orphan_meta', 'wp_stream_nonce_clean_orphan_meta' );
+
+		if ( ! function_exists( 'as_has_scheduled_action' ) || ! function_exists( 'as_enqueue_async_action' ) ) {
+			wp_die( esc_html__( 'Action Scheduler is not available.', 'stream' ), 500 );
+		}
+
+		if ( ! as_has_scheduled_action( self::AUTO_PURGE_REAPER_ACTION ) ) {
+			as_enqueue_async_action( self::AUTO_PURGE_REAPER_ACTION, array(), self::AUTO_PURGE_GROUP );
+		}
+
+		if ( defined( 'WP_STREAM_TESTS' ) && WP_STREAM_TESTS ) {
+			return true;
+		}
+
+		wp_safe_redirect(
+			add_query_arg(
+				array(
+					'page'              => $this->settings_page_slug,
+					'wp_stream_message' => 'orphan_meta_cleanup_scheduled',
+				),
+				admin_url( $this->plugin->is_multisite_network_activated() ? 'network/admin.php' : 'admin.php' )
+			)
+		);
+		exit;
 	}
 
 	/**

@@ -762,6 +762,27 @@ class Test_Admin extends WP_StreamTestCase {
 		}
 	}
 
+	public function test_ajax_clean_orphan_meta_schedules_reaper() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		}
+
+		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$_REQUEST['wp_stream_nonce_clean_orphan_meta'] = wp_create_nonce( 'stream_nonce_clean_orphan_meta' );
+
+		$result = $this->admin->wp_ajax_clean_orphan_meta();
+		$this->assertTrue( $result );
+
+		$this->assertNotFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION ),
+			'Ajax handler must enqueue the reaper action'
+		);
+
+		unset( $_REQUEST['wp_stream_nonce_clean_orphan_meta'] );
+	}
+
 	public function test_auto_purge_reaper_deletes_orphaned_meta_only() {
 		global $wpdb;
 

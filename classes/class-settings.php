@@ -371,6 +371,24 @@ class Settings {
 						'default' => 0,
 						'sticky'  => 'bottom',
 					),
+					array(
+						'name'    => 'clean_orphan_meta',
+						'title'   => esc_html__( 'Clean Orphaned Meta', 'stream' ),
+						'type'    => 'link',
+						'href'    => add_query_arg(
+							array(
+								'action'                            => 'wp_stream_clean_orphan_meta',
+								'wp_stream_nonce_clean_orphan_meta' => wp_create_nonce( 'stream_nonce_clean_orphan_meta' ),
+							),
+							admin_url( 'admin-ajax.php' )
+						),
+						'desc'    => esc_html__(
+							'Schedules an immediate background cleanup of stream_meta rows whose parent record is missing. Safe to run while Stream is in use; runs once via Action Scheduler.',
+							'stream'
+						),
+						'default' => 0,
+						'sticky'  => 'bottom',
+					),
 				),
 			),
 		);
