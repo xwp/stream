@@ -927,7 +927,22 @@ class Admin {
 			$options = wp_parse_args( (array) get_option( 'wp_stream', array() ), $defaults );
 		}
 
-		if ( ! empty( $options['general_keep_records_indefinitely'] ) || empty( $options['general_records_ttl'] ) ) {
+		// Hardcoded TTL fallback. Settings::get_defaults() runs every settings
+		// field through the `wp_stream_settings_option_fields` filter, which
+		// Network::get_network_admin_fields() uses to strip the `records_ttl`
+		// field from the per-site option's defaults set. When this callback runs
+		// outside any admin context (Action Scheduler, WP-CLI, system cron), the
+		// per-site option_key is in effect, so the filtered defaults array does
+		// not contain general_records_ttl at all. Without this fallback the
+		// purge silently no-ops on every install where the option is missing,
+		// defeating the whole point of fixing this on bloated sites.
+		// Mirrors the 30-day default declared on the settings field itself
+		// (classes/class-settings.php, `records_ttl` field).
+		if ( empty( $options['general_records_ttl'] ) ) {
+			$options['general_records_ttl'] = 30;
+		}
+
+		if ( ! empty( $options['general_keep_records_indefinitely'] ) ) {
 			return;
 		}
 
