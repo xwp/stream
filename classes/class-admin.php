@@ -245,7 +245,7 @@ class Admin {
 			self::AUTO_PURGE_BATCH_ACTION,
 			array( $this, 'auto_purge_batch' ),
 			10,
-			2
+			3
 		);
 		add_action(
 			self::AUTO_PURGE_REAPER_ACTION,
@@ -967,15 +967,20 @@ class Admin {
 	 * Window-based deletion mirrors {@see Admin::erase_large_records()} so the
 	 * InnoDB lock footprint is bounded and predictable on bloated tables.
 	 *
-	 * @param string $cutoff  MySQL DATETIME string in UTC.
-	 * @param int    $blog_id Blog to scope to, or 0 for all blogs (network-activated).
+	 * @param string $cutoff     MySQL DATETIME string in UTC.
+	 * @param int    $blog_id    Blog to scope to, or 0 for all blogs (network-activated).
+	 * @param int    $last_entry The lower-bound ID of the previous batch's window; 0 on the
+	 *                           first batch in a chain. The next SELECT uses `ID < last_entry`
+	 *                           when non-zero, guaranteeing forward progress even on tables
+	 *                           that grow rapidly during the chain.
 	 * @return void
 	 */
-	public function auto_purge_batch( $cutoff, $blog_id = 0 ) {
+	public function auto_purge_batch( $cutoff, $blog_id = 0, $last_entry = 0 ) {
 		global $wpdb;
 
-		$cutoff  = (string) $cutoff;
-		$blog_id = (int) $blog_id;
+		$cutoff     = (string) $cutoff;
+		$blog_id    = (int) $blog_id;
+		$last_entry = (int) $last_entry;
 
 		// Defensive: a malformed cutoff would otherwise translate to a no-op
 		// DELETE that still busies the DB. Refuse and let AS retry the action.
@@ -998,22 +1003,26 @@ class Admin {
 			$batch_size = 250000;
 		}
 
-		// Find the highest-ID record still eligible under the snapshotted cutoff.
+		// Find the highest-ID record still eligible under the snapshotted cutoff
+		// that lies strictly below the previous window's lower bound (when set).
+		// $last_entry=0 means "first batch in chain" — search from the top.
+		$id_upper_bound_sql = $last_entry > 0 ? ' AND `ID` < %d' : '';
+		$id_upper_bound_arg = $last_entry > 0 ? array( $last_entry ) : array();
+
 		if ( $blog_id > 0 ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$start_from = $wpdb->get_var(
 				$wpdb->prepare(
-					"SELECT ID FROM {$wpdb->stream} WHERE `created` < %s AND `blog_id` = %d ORDER BY ID DESC LIMIT 1",
-					$cutoff,
-					$blog_id
+					"SELECT ID FROM {$wpdb->stream} WHERE `created` < %s AND `blog_id` = %d{$id_upper_bound_sql} ORDER BY ID DESC LIMIT 1",
+					array_merge( array( $cutoff, $blog_id ), $id_upper_bound_arg )
 				)
 			);
 		} else {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$start_from = $wpdb->get_var(
 				$wpdb->prepare(
-					"SELECT ID FROM {$wpdb->stream} WHERE `created` < %s ORDER BY ID DESC LIMIT 1",
-					$cutoff
+					"SELECT ID FROM {$wpdb->stream} WHERE `created` < %s{$id_upper_bound_sql} ORDER BY ID DESC LIMIT 1",
+					array_merge( array( $cutoff ), $id_upper_bound_arg )
 				)
 			);
 		}
@@ -1065,13 +1074,14 @@ class Admin {
 			);
 		}
 
-		// Chain the next batch. If nothing remains the next batch will detect
-		// it via the SELECT above and schedule the reaper instead.
+		// Chain the next batch. Pass $window_low as the new upper bound so the
+		// next SELECT cannot pick up rows in or above the window we just touched.
 		as_enqueue_async_action(
 			self::AUTO_PURGE_BATCH_ACTION,
 			array(
-				'cutoff'  => $cutoff,
-				'blog_id' => $blog_id,
+				'cutoff'     => $cutoff,
+				'blog_id'    => $blog_id,
+				'last_entry' => $window_low,
 			),
 			self::AUTO_PURGE_GROUP
 		);

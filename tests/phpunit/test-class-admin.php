@@ -897,6 +897,48 @@ class Test_Admin extends WP_StreamTestCase {
 		remove_all_filters( 'wp_stream_batch_size' );
 	}
 
+	public function test_auto_purge_batch_chain_strides_down_by_window() {
+		global $wpdb;
+
+		// Force a small batch size so we can chain multiple times.
+		add_filter( 'wp_stream_batch_size', function () { return 3; } );
+
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		}
+
+		$ids = $this->seed_aged_records( 4, 5 );
+		sort( $ids );
+		$top_id = end( $ids );
+
+		$cutoff = ( new \DateTime( 'now', new \DateTimeZone( 'UTC' ) ) )
+			->sub( \DateInterval::createFromDateString( '1 days' ) )
+			->format( 'Y-m-d H:i:s' );
+
+		// First batch (last_entry=0) should pick the highest ID and pass
+		// last_entry = top_id - batch_size to the next batch.
+		$this->admin->auto_purge_batch( $cutoff, 0, 0 );
+
+		$pending = as_get_scheduled_actions(
+			array(
+				'hook'   => \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION,
+				'status' => \ActionScheduler_Store::STATUS_PENDING,
+			)
+		);
+		$this->assertNotEmpty( $pending );
+		$next_args = array_shift( $pending )->get_args();
+
+		$this->assertArrayHasKey( 'last_entry', $next_args );
+		$this->assertSame(
+			max( 0, $top_id - 3 ),
+			(int) $next_args['last_entry'],
+			'Next batch must receive last_entry = top_id - batch_size'
+		);
+
+		remove_all_filters( 'wp_stream_batch_size' );
+	}
+
 	public function test_auto_purge_batch_scopes_to_blog_id_when_non_zero() {
 		global $wpdb;
 		if ( ! is_multisite() ) {
