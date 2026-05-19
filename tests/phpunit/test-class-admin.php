@@ -411,43 +411,126 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->assertCount( 1, $ids, 'purge_schedule_setup() must be idempotent' );
 	}
 
-	public function test_purge_scheduled_action() {
-		// Set the TTL to one day
-		if ( is_multisite() && is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
-			$options                        = (array) get_site_option( 'wp_stream_network', array() );
-			$options['general_records_ttl'] = '1';
-			update_site_option( 'wp_stream_network', $options );
-		} else {
-			$options                        = (array) get_option( 'wp_stream', array() );
-			$options['general_records_ttl'] = '1';
-			update_option( 'wp_stream', $options );
+	public function test_purge_scheduled_action_fires_bc_filter() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
 		}
 
-		global $wpdb;
+		$hits     = 0;
+		$listener = function () use ( &$hits ) {
+			++$hits;
+		};
+		add_action( 'wp_stream_auto_purge', $listener );
 
-		// Create (two day old) dummy records
-		$stream_data            = $this->dummy_stream_data();
-		$stream_data['created'] = gmdate( 'Y-m-d h:i:s', strtotime( '2 days ago' ) );
-		$wpdb->insert( $wpdb->stream, $stream_data );
-		$stream_id = $wpdb->insert_id;
-		$this->assertNotFalse( $stream_id );
+		// Make sure something is eligible so we exercise the full code path.
+		$this->seed_aged_records( 1, 5 );
+		$this->set_records_ttl( 1 );
 
-		// Create dummy meta
-		$meta_data = $this->dummy_meta_data( $stream_id );
-		$wpdb->insert( $wpdb->streammeta, $meta_data );
-		$meta_id = $wpdb->insert_id;
-		$this->assertNotFalse( $meta_id );
-
-		// Purge old records and meta
 		$this->admin->purge_scheduled_action();
 
-		// Check if the old records have been cleared
-		$stream_results = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->stream} WHERE ID = %d", $stream_id ) );
-		$this->assertEmpty( $stream_results );
+		remove_action( 'wp_stream_auto_purge', $listener );
+		$this->assertSame( 1, $hits, 'wp_stream_auto_purge action must fire exactly once per recurring tick' );
+	}
 
-		// Check if the old meta has been cleared
-		$meta_results = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->streammeta} WHERE meta_id = %d", $meta_id ) );
-		$this->assertEmpty( $meta_results );
+	public function test_purge_scheduled_action_enqueues_first_batch_with_snapshotted_cutoff() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+		}
+
+		$this->seed_aged_records( 1, 5 );
+		$this->set_records_ttl( 1 );
+
+		$this->admin->purge_scheduled_action();
+
+		$scheduled = as_get_scheduled_actions(
+			array(
+				'hook'   => \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION,
+				'status' => \ActionScheduler_Store::STATUS_PENDING,
+			)
+		);
+		$this->assertNotEmpty( $scheduled, 'A first batch must be enqueued when records are eligible' );
+
+		$action = array_shift( $scheduled );
+		$args   = $action->get_args();
+		$this->assertArrayHasKey( 'cutoff', $args );
+		$this->assertArrayHasKey( 'blog_id', $args );
+		$this->assertMatchesRegularExpression(
+			'/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/',
+			$args['cutoff'],
+			'Cutoff must be a MySQL DATETIME string'
+		);
+	}
+
+	public function test_purge_scheduled_action_respects_keep_indefinitely() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+		}
+		$this->seed_aged_records( 1, 5 );
+
+		if ( is_multisite() && is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
+			update_site_option( 'wp_stream_network', array( 'general_keep_records_indefinitely' => 1 ) );
+		} else {
+			update_option( 'wp_stream', array( 'general_keep_records_indefinitely' => 1 ) );
+		}
+
+		$this->admin->purge_scheduled_action();
+
+		$this->assertFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION ),
+			'No batch must be enqueued when keep-records-indefinitely is on'
+		);
+	}
+
+	public function test_purge_scheduled_action_applies_defaults_when_option_missing() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+		}
+		// Drop the option entirely.
+		if ( is_multisite() && is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
+			delete_site_option( 'wp_stream_network' );
+		} else {
+			delete_option( 'wp_stream' );
+		}
+
+		// Seed records older than the default 30-day TTL.
+		$this->seed_aged_records( 1, 31 );
+
+		$this->admin->purge_scheduled_action();
+
+		$this->assertNotFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION ),
+			'Defaults (30-day TTL) must apply when the settings option is missing'
+		);
+	}
+
+	public function test_purge_scheduled_action_overlap_guard_skips_when_batch_already_pending() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+		}
+		$this->seed_aged_records( 1, 5 );
+		$this->set_records_ttl( 1 );
+
+		// First call enqueues a batch.
+		$this->admin->purge_scheduled_action();
+		$first = as_get_scheduled_actions(
+			array(
+				'hook'   => \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION,
+				'status' => \ActionScheduler_Store::STATUS_PENDING,
+			),
+			'ids'
+		);
+		$this->assertCount( 1, $first );
+
+		// Second call must be a no-op.
+		$this->admin->purge_scheduled_action();
+		$second = as_get_scheduled_actions(
+			array(
+				'hook'   => \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION,
+				'status' => \ActionScheduler_Store::STATUS_PENDING,
+			),
+			'ids'
+		);
+		$this->assertCount( 1, $second, 'Overlap guard must prevent stacking a second batch chain' );
 	}
 
 	public function test_plugin_action_links() {
@@ -635,6 +718,48 @@ class Test_Admin extends WP_StreamTestCase {
 			'meta_key'   => 'space_helmet',
 			'meta_value' => 'false',
 		);
+	}
+
+	/**
+	 * Insert N stream rows aged $days_old days, optionally pinned to a blog id.
+	 *
+	 * @param int      $count    Number of rows to insert.
+	 * @param int      $days_old How many days ago `created` should be set to.
+	 * @param int|null $blog_id  Optional blog id override.
+	 * @return int[] Inserted stream IDs.
+	 */
+	private function seed_aged_records( int $count, int $days_old, $blog_id = null ): array {
+		global $wpdb;
+		$ids = array();
+		for ( $i = 0; $i < $count; $i++ ) {
+			$row            = $this->dummy_stream_data();
+			$row['created'] = gmdate( 'Y-m-d H:i:s', strtotime( $days_old . ' days ago' ) );
+			if ( null !== $blog_id ) {
+				$row['blog_id'] = $blog_id;
+			}
+			$wpdb->insert( $wpdb->stream, $row );
+			$stream_id = (int) $wpdb->insert_id;
+			$ids[]     = $stream_id;
+			$wpdb->insert( $wpdb->streammeta, $this->dummy_meta_data( $stream_id ) );
+		}
+		return $ids;
+	}
+
+	/**
+	 * Set the records TTL in whichever option applies on this install.
+	 */
+	private function set_records_ttl( int $days ) {
+		if ( is_multisite() && is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
+			$options                        = (array) get_site_option( 'wp_stream_network', array() );
+			$options['general_records_ttl'] = (string) $days;
+			unset( $options['general_keep_records_indefinitely'] );
+			update_site_option( 'wp_stream_network', $options );
+		} else {
+			$options                        = (array) get_option( 'wp_stream', array() );
+			$options['general_records_ttl'] = (string) $days;
+			unset( $options['general_keep_records_indefinitely'] );
+			update_option( 'wp_stream', $options );
+		}
 	}
 
 	public function test_auto_purge_action_constants_exist() {

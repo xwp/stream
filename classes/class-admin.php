@@ -895,7 +895,15 @@ class Admin {
 	 * @return void
 	 */
 	public function purge_scheduled_action() {
-		global $wpdb;
+		/**
+		 * Fires once per auto-purge cycle, before any deletion is enqueued.
+		 *
+		 * Preserved for backward compatibility with consumers that hooked the
+		 * legacy WP-Cron event of the same name in Stream <= 4.1.x.
+		 *
+		 * @since 1.0.0
+		 */
+		do_action( 'wp_stream_auto_purge' );
 
 		// Don't purge when in Network Admin unless Stream is network activated.
 		if (
@@ -908,34 +916,40 @@ class Admin {
 
 		$defaults = $this->plugin->settings->get_defaults();
 		if ( $this->plugin->is_multisite_network_activated() ) {
-			$options = (array) get_site_option( 'wp_stream_network', $defaults );
+			$options = wp_parse_args( (array) get_site_option( 'wp_stream_network', array() ), $defaults );
 		} else {
-			$options = (array) get_option( 'wp_stream', $defaults );
+			$options = wp_parse_args( (array) get_option( 'wp_stream', array() ), $defaults );
 		}
 
-		if ( ! empty( $options['general_keep_records_indefinitely'] ) || ! isset( $options['general_records_ttl'] ) ) {
+		if ( ! empty( $options['general_keep_records_indefinitely'] ) || empty( $options['general_records_ttl'] ) ) {
 			return;
 		}
 
-		$days     = $options['general_records_ttl'];
-		$timezone = new DateTimeZone( 'UTC' );
-		$date     = new DateTime( 'now', $timezone );
-
-		$date->sub( DateInterval::createFromDateString( "$days days" ) );
-
-		$where = $wpdb->prepare( ' AND `stream`.`created` < %s', $date->format( 'Y-m-d H:i:s' ) );
-
-		// Multisite but NOT network activated, only purge the current blog.
-		if ( $this->plugin->is_multisite_not_network_activated() ) {
-			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
+		// Overlap guard: if a previous chain is still draining, don't stack a new one.
+		if (
+			function_exists( 'as_has_scheduled_action' )
+			&& as_has_scheduled_action( self::AUTO_PURGE_BATCH_ACTION )
+		) {
+			return;
 		}
 
-		$wpdb->query(
-			"DELETE `stream`, `meta`
-			FROM {$wpdb->stream} AS `stream`
-			LEFT JOIN {$wpdb->streammeta} AS `meta`
-			ON `meta`.`record_id` = `stream`.`ID`
-			WHERE 1=1 {$where};", // @codingStandardsIgnoreLine $where already prepared
+		// Snapshot the UTC cutoff once per recurring tick. Each batch in this
+		// chain operates against this fixed cutoff so the chain is finite.
+		$days   = (int) $options['general_records_ttl'];
+		$cutoff = ( new DateTime( 'now', new DateTimeZone( 'UTC' ) ) )
+			->sub( DateInterval::createFromDateString( $days . ' days' ) )
+			->format( 'Y-m-d H:i:s' );
+
+		// blog_id = 0 means "all blogs" (network-activated path).
+		$blog_id = $this->plugin->is_multisite_not_network_activated() ? (int) get_current_blog_id() : 0;
+
+		as_enqueue_async_action(
+			self::AUTO_PURGE_BATCH_ACTION,
+			array(
+				'cutoff'  => $cutoff,
+				'blog_id' => $blog_id,
+			),
+			self::AUTO_PURGE_GROUP
 		);
 	}
 
