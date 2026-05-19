@@ -120,3 +120,4 @@ require __DIR__ . '/testcase.php';
 
 // Base class for future tests
 require __DIR__ . '/phpunit/test-class-alert-trigger.php';
+require __DIR__ . '/phpunit/abilities/abilities-testcase.php';

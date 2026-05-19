@@ -12,6 +12,7 @@
 	>
 	<coverage processUncoveredFiles="true">
 	<include>
+		<directory prefix="class-" suffix=".php">abilities</directory>
 		<directory prefix="class-" suffix=".php">alerts</directory>
 		<directory prefix="class-" suffix=".php">classes</directory>
 		<directory prefix="class-" suffix=".php">connectors</directory>

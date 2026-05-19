@@ -23,3 +23,13 @@ COPY php.ini /usr/local/etc/php/php.ini
 # Setup xdebug.
 RUN pecl install "xdebug-${XDEBUG_VERSION}"
 RUN docker-php-ext-enable xdebug
+
+# Enable HTTPS for testing WordPress Application Passwords and the MCP
+# Adapter (both flows assume a secure connection). The vhost expects a
+# mkcert-generated certificate mounted at /etc/ssl/certs/stream-local;
+# see local/scripts/setup-https.sh for one-time generation. Apache stays
+# functional on :80 too so HTTP redirects and existing tooling keep working.
+COPY apache-ssl.conf /etc/apache2/sites-available/stream-ssl.conf
+RUN a2enmod ssl rewrite \
+	&& a2ensite stream-ssl \
+	&& mkdir -p /etc/ssl/certs/stream-local

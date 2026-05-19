@@ -400,6 +400,31 @@ class Settings {
 
 		array_push( $fields['advanced']['fields'], $wp_cron_tracking );
 
+		// Abilities API toggle is only meaningful on WordPress 6.9+. On
+		// network-activated multisite, Abilities::is_enabled() reads the
+		// network option (wp_stream_network), so a per-site checkbox on the
+		// site's own settings screen would be a no-op and misleading. Hide
+		// the field from per-site settings pages, but keep it available in
+		// network admin and in REST/CLI contexts where update_all_setting_values()
+		// routes writes to the network option correctly.
+		$hide_per_site = $this->plugin->is_network_activated() && is_admin() && ! is_network_admin();
+
+		if (
+			class_exists( '\WP_Ability' )
+			&& ! $hide_per_site
+		) {
+			$enable_abilities_api = array(
+				'name'        => 'enable_abilities_api',
+				'title'       => esc_html__( 'Enable Abilities API and MCP', 'stream' ),
+				'type'        => 'checkbox',
+				'desc'        => esc_html__( 'Expose Stream operations to AI agents via the WordPress Abilities API (and MCP when the MCP Adapter plugin is installed). Requires WordPress 6.9.', 'stream' ),
+				'after_field' => esc_html__( 'Enabled', 'stream' ),
+				'default'     => 0,
+			);
+
+			array_push( $fields['advanced']['fields'], $enable_abilities_api );
+		}
+
 		/**
 		 * Filter allows for modification of options fields
 		 *
@@ -425,6 +450,100 @@ class Settings {
 		}
 
 		return $this->fields;
+	}
+
+	/**
+	 * Returns a single setting value, reading the network-level option when
+	 * Stream is network-activated on multisite.
+	 *
+	 * Settings::get_options() only loads from get_site_option() inside
+	 * is_network_admin() screens. In REST and frontend contexts on a
+	 * network-activated install, $this->options reflects the (typically empty)
+	 * per-site option, which would silently mask a network-admin-controlled
+	 * setting. This accessor handles that case so callers don't have to
+	 * duplicate the multisite branching.
+	 *
+	 * @param string $key           Fully-qualified setting key (e.g. "advanced_enable_abilities_api").
+	 * @param mixed  $default_value Value returned when the setting is not present.
+	 *
+	 * @return mixed
+	 */
+	public function get_setting_value( $key, $default_value = null ) {
+		if (
+			is_multisite()
+			&& isset( $this->plugin )
+			&& $this->plugin->is_network_activated()
+		) {
+			$options = (array) get_site_option( $this->network_options_key, array() );
+		} else {
+			$options = (array) $this->options;
+		}
+
+		return isset( $options[ $key ] ) ? $options[ $key ] : $default_value;
+	}
+
+	/**
+	 * Returns the full options array, reading the network-level option when
+	 * Stream is network-activated on multisite. Mirrors get_setting_value()
+	 * but returns the entire array.
+	 *
+	 * @return array
+	 */
+	public function get_all_setting_values() {
+		if (
+			is_multisite()
+			&& isset( $this->plugin )
+			&& $this->plugin->is_network_activated()
+		) {
+			return (array) get_site_option( $this->network_options_key, array() );
+		}
+
+		return (array) $this->options;
+	}
+
+	/**
+	 * Persists the options array, writing to the network-level option when
+	 * Stream is network-activated on multisite. Used by REST/ability writers
+	 * which run outside is_network_admin() but must respect the authoritative
+	 * store. Refreshes $this->options afterwards so in-request reads see the
+	 * new values.
+	 *
+	 * @param array $options Full options array to persist (caller is responsible
+	 *                       for merging over existing values when desired).
+	 *
+	 * @return bool True on a successful write, false on no-op or failure.
+	 */
+	public function update_all_setting_values( array $options ) {
+		$is_network = (
+			is_multisite()
+			&& isset( $this->plugin )
+			&& $this->plugin->is_network_activated()
+		);
+
+		if ( $is_network ) {
+			$result = update_site_option( $this->network_options_key, $options );
+		} else {
+			$result = update_option( $this->option_key, $options );
+		}
+
+		// Refresh the in-memory copy so subsequent reads in the same request
+		// see the updated values. On network-activated installs we re-read
+		// from the network option directly because Settings::get_options()
+		// gates on is_network_admin() and would return the (now-stale)
+		// per-site option in REST contexts. Merge defaults on top so callers
+		// reading $plugin->settings->options keep seeing a fully-populated
+		// array (matches get_options()'s historical contract).
+		if ( $is_network ) {
+			$defaults      = $this->get_defaults( $this->option_key );
+			$this->options = wp_parse_args(
+				(array) get_site_option( $this->network_options_key, array() ),
+				$defaults
+			);
+		} else {
+			$this->options = $this->get_options();
+		}
+
+		return (bool) $result;
 	}
 
 	/**

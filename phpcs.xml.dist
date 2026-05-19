@@ -15,6 +15,14 @@
 
 	<rule ref="WordPress-Extra" />
 
+	<rule ref="WordPress.WP.Capabilities">
+		<properties>
+			<property name="custom_capabilities" type="array">
+				<element value="view_stream" />
+			</property>
+		</properties>
+	</rule>
+
 	<rule ref="WordPress-Core">
 		<exclude name="WordPress.Security.EscapeOutput.DeprecatedWhitelistCommentFound" /><!-- TODO: Change these to phpcs:ignore -->
 	</rule>
