@@ -606,4 +606,11 @@ class Test_Admin extends WP_StreamTestCase {
 			'meta_value' => 'false',
 		);
 	}
+
+	public function test_auto_purge_action_constants_exist() {
+		$this->assertSame( 'stream_auto_purge_action', \WP_Stream\Admin::AUTO_PURGE_ACTION );
+		$this->assertSame( 'stream_auto_purge_batch_action', \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+		$this->assertSame( 'stream_auto_purge_reaper_action', \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		$this->assertSame( 'stream-auto-purge', \WP_Stream\Admin::AUTO_PURGE_GROUP );
+	}
 }

@@ -26,6 +26,34 @@ class Admin {
 	const ASYNC_DELETION_ACTION = 'stream_erase_large_records_action';
 
 	/**
+	 * Recurring Action Scheduler action that drives the TTL-based auto-purge.
+	 *
+	 * @const string
+	 */
+	const AUTO_PURGE_ACTION = 'stream_auto_purge_action';
+
+	/**
+	 * Async batch worker scheduled by the recurring auto-purge action.
+	 *
+	 * @const string
+	 */
+	const AUTO_PURGE_BATCH_ACTION = 'stream_auto_purge_batch_action';
+
+	/**
+	 * Terminal action that runs the orphan-meta reaper once per chain.
+	 *
+	 * @const string
+	 */
+	const AUTO_PURGE_REAPER_ACTION = 'stream_auto_purge_reaper_action';
+
+	/**
+	 * Action Scheduler group string for all auto-purge actions.
+	 *
+	 * @const string
+	 */
+	const AUTO_PURGE_GROUP = 'stream-auto-purge';
+
+	/**
 	 * Holds Instance of plugin object
 	 *
 	 * @var Plugin
