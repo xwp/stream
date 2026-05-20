@@ -20,6 +20,16 @@ class Alerts {
 	const POST_TYPE = 'wp_stream_alerts';
 
 	/**
+	 * Enabled alert post status slug.
+	 */
+	const STATUS_ENABLED = 'wp_stream_enabled';
+
+	/**
+	 * Disabled alert post status slug.
+	 */
+	const STATUS_DISABLED = 'wp_stream_disabled';
+
+	/**
 	 * Triggered Alerts meta key for Records
 	 */
 	const ALERTS_TRIGGERED_META_KEY = 'wp_stream_alerts_triggered';
@@ -425,6 +435,35 @@ class Alerts {
 		);
 
 		return new Alert( $obj, $this->plugin );
+	}
+
+	/**
+	 * Return a list of alerts, optionally filtered by post status.
+	 *
+	 * @param array $statuses Optional list of alert post statuses to include.
+	 *                        Defaults to enabled + disabled.
+	 *
+	 * @return Alert[]
+	 */
+	public function get_alerts( array $statuses = array() ) {
+		if ( empty( $statuses ) ) {
+			$statuses = array( self::STATUS_ENABLED, self::STATUS_DISABLED );
+		}
+
+		$posts = get_posts(
+			array(
+				'post_type'      => self::POST_TYPE,
+				'post_status'    => $statuses,
+				'posts_per_page' => -1, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+			)
+		);
+
+		$alerts = array();
+		foreach ( $posts as $post ) {
+			$alerts[] = $this->get_alert( $post->ID );
+		}
+
+		return $alerts;
 	}
 
 	/**

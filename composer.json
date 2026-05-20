@@ -26,6 +26,7 @@
     "phpcompatibility/phpcompatibility-wp": "^2.1",
     "phpunit/phpunit": "^9.6",
     "roots/wordpress": "^6.9",
+    "wordpress/mcp-adapter": "^0.5",
     "wp-cli/wp-cli-bundle": "^2.6",
     "wp-coding-standards/wpcs": "^3.1",
     "wp-phpunit/wp-phpunit": "^6.9",
@@ -64,6 +65,15 @@
     }
   },
   "scripts": {
+    "post-install-cmd": [
+      "@install-mcp-adapter-deps"
+    ],
+    "post-update-cmd": [
+      "@install-mcp-adapter-deps"
+    ],
+    "install-mcp-adapter-deps": [
+      "@php local/scripts/install-mcp-adapter-deps.php"
+    ],
     "release": [
       "composer install --no-dev --prefer-dist --optimize-autoloader"
     ],

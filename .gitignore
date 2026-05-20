@@ -14,6 +14,10 @@ debug.log
 package.lock
 .phpunit.result.cache
 
+# Locally-generated TLS cert + key for the dev environment HTTPS vhost.
+# Created by local/scripts/setup-https.sh via mkcert.
+/local/certs/
+
 # Generated test data
 /artifacts/
 tests/data/tmp/*

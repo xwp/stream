@@ -127,7 +127,22 @@ jobs:
         run: npm run build
 
       - name: Pull custom Docker images
-        run: docker compose pull wordpress
+        # `--ignore-pull-failures` so the first push of this branch (before
+        # docker-images.yml has published ghcr.io/xwp/stream-mkcert) still
+        # passes CI. Docker Compose then falls back to the local build:
+        # context for any image it couldn't pull, keeping the workflow
+        # green while a master push backfills the registry.
+        run: docker compose pull --ignore-pull-failures wordpress mkcert
+
+      - name: Rebuild WordPress image on top of the pulled base
+        # The published ghcr.io/xwp/stream-wordpress image is updated only by
+        # docker-images.yml on master pushes. When this branch changes
+        # local/docker/wordpress/Dockerfile (e.g. to enable mod_ssl), the
+        # pulled image lags behind the branch's intent and Apache rejects
+        # :443 with ERR_CONNECTION_CLOSED. Build locally so the branch's
+        # Dockerfile actually applies; Docker layer caching keeps this cheap
+        # when the Dockerfile hasn't changed since the last published build.
+        run: docker compose build wordpress
 
       - name: Start WordPress
         run: npm run start
@@ -144,8 +159,8 @@ jobs:
         run: |
           php -r '
             require "vendor/autoload.php";
-            ( new XWP\Wait_For\Tcp_Connection( "127.0.0.1", 80 ) )->connect( 60 );
-            echo "WordPress is accepting connections on 127.0.0.1:80.\n";
+            ( new XWP\Wait_For\Tcp_Connection( "127.0.0.1", 443 ) )->connect( 60 );
+            echo "WordPress is accepting HTTPS connections on 127.0.0.1:443.\n";
           '
 
       - name: Install WordPress multisite
