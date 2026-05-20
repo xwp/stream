@@ -32,6 +32,14 @@ const ADMIN = 'http://stream.wpenv.net/wp-admin';
  * container instead of spinning a fresh one per call — `run` is ~3-5s of
  * overhead per invocation and accumulates fast across this suite.
  *
+ * `--user www-data` matches the user that owns the WordPress files inside
+ * the container. Without it, `exec` defaults to root and wp-cli refuses to
+ * run ("YIKES! It looks like you're running this as root."). The previous
+ * `docker compose run` form used `--user $(id -u)` for the same reason —
+ * it relied on host UID 1000 happening to map to www-data inside the
+ * container, which works on local dev but not on the GitHub Actions
+ * runner (UID 1001).
+ *
  * Best-effort: returns null on container errors (e.g. Stream not yet active
  * during a parallel suite's bootstrap). State seeding is auxiliary; the
  * test's own assertions are the source of truth — but surface failures via
@@ -42,11 +50,11 @@ const ADMIN = 'http://stream.wpenv.net/wp-admin';
  */
 function wpEval( php ) {
 	// Single-quote the PHP, escape any embedded single quotes for the
-	// outer shell. The `--` separates docker args from the wp-cli args.
+	// outer shell.
 	const escaped = php.replace( /'/g, "'\\''" );
 	try {
 		return execSync(
-			`docker compose exec -T wordpress wp eval '${ escaped }'`,
+			`docker compose exec -T --user www-data wordpress wp eval '${ escaped }'`,
 			{ encoding: 'utf8', stdio: [ 'ignore', 'pipe', 'pipe' ] },
 		).trim();
 	} catch ( err ) {
