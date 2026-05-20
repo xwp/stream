@@ -1246,7 +1246,23 @@ class Settings {
 
 			// Trigger an immediate auto-purge cycle so the shortened TTL
 			// takes effect now instead of at the next 12h recurring tick.
-			if ( isset( $this->plugin->admin ) ) {
+			//
+			// Enqueue the recurring AS action as a one-shot async action so
+			// the work serializes through Action Scheduler. Calling
+			// purge_scheduled_action() inline here would bypass the overlap
+			// guard's view of "in-flight" work (the current request is not a
+			// scheduled action) and could stack a parallel chain when a
+			// real chain is already running. Falls back to inline if AS
+			// isn't loaded (defensive — Plugin::__construct() loads it).
+			if ( function_exists( 'as_enqueue_async_action' ) ) {
+				if ( ! \WP_Stream\Admin::is_running_auto_purge() ) {
+					as_enqueue_async_action(
+						\WP_Stream\Admin::AUTO_PURGE_ACTION,
+						array(),
+						\WP_Stream\Admin::AUTO_PURGE_GROUP
+					);
+				}
+			} elseif ( isset( $this->plugin->admin ) ) {
 				$this->plugin->admin->purge_scheduled_action();
 			}
 		}

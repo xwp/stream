@@ -26,24 +26,32 @@ import { test, expect } from '@wordpress/e2e-test-utils-playwright';
 const ADMIN = 'http://stream.wpenv.net/wp-admin';
 
 /**
- * Run a PHP snippet inside the wordpress container.
+ * Run a PHP snippet inside the long-lived wordpress container.
+ *
+ * Uses `docker compose exec` (not `run`) so we attach to the running
+ * container instead of spinning a fresh one per call — `run` is ~3-5s of
+ * overhead per invocation and accumulates fast across this suite.
  *
  * Best-effort: returns null on container errors (e.g. Stream not yet active
  * during a parallel suite's bootstrap). State seeding is auxiliary; the
- * test's own assertions are the source of truth.
+ * test's own assertions are the source of truth — but surface failures via
+ * console so silent breakage during CI is at least visible in logs.
  *
  * @param {string} php The body of the eval call (no `<?php`).
  * @return {string|null} Trimmed stdout, or null on error.
  */
 function wpEval( php ) {
-	// Single-quote the PHP, escape any embedded single quotes.
+	// Single-quote the PHP, escape any embedded single quotes for the
+	// outer shell. The `--` separates docker args from the wp-cli args.
 	const escaped = php.replace( /'/g, "'\\''" );
 	try {
 		return execSync(
-			`docker compose run --rm --user $(id -u) wordpress -- wp eval '${ escaped }'`,
-			{ encoding: 'utf8', stdio: [ 'ignore', 'pipe', 'ignore' ] },
+			`docker compose exec -T wordpress wp eval '${ escaped }'`,
+			{ encoding: 'utf8', stdio: [ 'ignore', 'pipe', 'pipe' ] },
 		).trim();
-	} catch {
+	} catch ( err ) {
+		// eslint-disable-next-line no-console
+		console.warn( 'wpEval failed:', err.message );
 		return null;
 	}
 }

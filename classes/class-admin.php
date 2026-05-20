@@ -235,6 +235,11 @@ class Admin {
 			array( $this, 'wp_ajax_clean_orphan_meta' )
 		);
 
+		// Render confirmation notices keyed by the wp_stream_message query
+		// arg set on post-action redirects (e.g. orphan_meta_cleanup_scheduled).
+		add_action( 'admin_notices', array( $this, 'maybe_display_message' ) );
+		add_action( 'network_admin_notices', array( $this, 'maybe_display_message' ) );
+
 		// Auto purge setup (Action Scheduler).
 		add_action( 'wp_loaded', array( $this, 'purge_schedule_setup' ) );
 		add_action(
@@ -762,21 +767,43 @@ class Admin {
 	 * Checks if any auto-purge action is currently scheduled or in-flight.
 	 *
 	 * Returns true when either the batched chain worker or the terminal
-	 * orphan reaper is pending. The recurring scheduler is intentionally
-	 * excluded — it is always pending under normal operation, so including
-	 * it here would make the probe useless. Used by the Settings → Advanced
-	 * UI to render an "Auto-purge currently running" notice.
+	 * orphan reaper is pending OR running. The recurring scheduler is
+	 * intentionally excluded — it is always pending under normal operation,
+	 * so including it here would make the probe useless. Used by the
+	 * Settings → Advanced UI to render an "Auto-purge currently running"
+	 * notice and by the recurring callback as an overlap guard.
+	 *
+	 * Checks both PENDING and IN-PROGRESS statuses so a chain that is
+	 * mid-execution (e.g. the batch worker is currently running and has not
+	 * yet enqueued the next batch) still reports as running. Without the
+	 * RUNNING check the overlap guard can let a second parallel chain stack
+	 * against the same rows.
 	 *
 	 * @return bool
 	 */
 	public static function is_running_auto_purge() {
-		if ( ! function_exists( 'as_has_scheduled_action' ) ) {
+		if ( ! function_exists( 'as_get_scheduled_actions' ) ) {
 			return false;
 		}
-		return (
-			as_has_scheduled_action( self::AUTO_PURGE_BATCH_ACTION )
-			|| as_has_scheduled_action( self::AUTO_PURGE_REAPER_ACTION )
-		);
+
+		foreach ( array( self::AUTO_PURGE_BATCH_ACTION, self::AUTO_PURGE_REAPER_ACTION ) as $hook ) {
+			$found = as_get_scheduled_actions(
+				array(
+					'hook'     => $hook,
+					'status'   => array(
+						\ActionScheduler_Store::STATUS_PENDING,
+						\ActionScheduler_Store::STATUS_RUNNING,
+					),
+					'per_page' => 1,
+				),
+				'ids'
+			);
+			if ( ! empty( $found ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -922,16 +949,6 @@ class Admin {
 	 * @return void
 	 */
 	public function purge_scheduled_action() {
-		/**
-		 * Fires once per auto-purge cycle, before any deletion is enqueued.
-		 *
-		 * Preserved for backward compatibility with consumers that hooked the
-		 * legacy WP-Cron event of the same name in Stream <= 4.1.x.
-		 *
-		 * @since 1.0.0
-		 */
-		do_action( 'wp_stream_auto_purge' );
-
 		// Don't purge when in Network Admin unless Stream is network activated.
 		if (
 			$this->plugin->is_multisite_not_network_activated()
@@ -977,11 +994,24 @@ class Admin {
 		}
 
 		// Overlap guard: if any auto-purge action (batch worker or reaper) is
-		// pending, don't stack a new chain. Reuses the same probe used by the
-		// Settings UI so the two views of "running" agree.
+		// pending or in-progress, don't stack a new chain. Reuses the same
+		// probe used by the Settings UI so the two views of "running" agree.
 		if ( self::is_running_auto_purge() ) {
 			return;
 		}
+
+		/**
+		 * Fires once per auto-purge cycle, after all bail-out checks pass and
+		 * immediately before deletion work is enqueued.
+		 *
+		 * Preserved for backward compatibility with consumers that hooked the
+		 * legacy WP-Cron event of the same name in Stream <= 4.1.x. Note that
+		 * since 4.2.0 this fires only when a purge is actually about to run —
+		 * it no longer fires on every cron tick regardless of whether work
+		 * happens. Hook into the recurring AS action (Admin::AUTO_PURGE_ACTION)
+		 * directly if you need the older "every tick" semantics.
+		 */
+		do_action( 'wp_stream_auto_purge' );
 
 		// Snapshot the UTC cutoff once per recurring tick. Each batch in this
 		// chain operates against this fixed cutoff so the chain is finite.
@@ -1266,6 +1296,38 @@ class Admin {
 			)
 		);
 		exit;
+	}
+
+	/**
+	 * Render admin notices for post-action redirects.
+	 *
+	 * Reads `wp_stream_message` from the query string and renders a matching
+	 * notice. Used to surface "Clean Orphaned Meta" confirmation after the
+	 * Ajax handler redirects back to Settings → Advanced.
+	 *
+	 * @return void
+	 */
+	public function maybe_display_message() {
+		$message = wp_stream_filter_input( INPUT_GET, 'wp_stream_message' );
+		if ( empty( $message ) ) {
+			return;
+		}
+
+		$notices = array(
+			'orphan_meta_cleanup_scheduled' => __(
+				'Orphaned meta cleanup scheduled. Progress is visible under Tools → Scheduled Actions.',
+				'stream'
+			),
+		);
+
+		if ( ! isset( $notices[ $message ] ) ) {
+			return;
+		}
+
+		printf(
+			'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
+			esc_html( $notices[ $message ] )
+		);
 	}
 
 	/**

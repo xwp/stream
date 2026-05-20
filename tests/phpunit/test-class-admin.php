@@ -411,9 +411,10 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->assertCount( 1, $ids, 'purge_schedule_setup() must be idempotent' );
 	}
 
-	public function test_purge_scheduled_action_fires_bc_filter() {
+	public function test_purge_scheduled_action_fires_bc_action_once_when_work_runs() {
 		if ( function_exists( 'as_unschedule_all_actions' ) ) {
 			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
 		}
 
 		$hits     = 0;
@@ -429,7 +430,36 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->admin->purge_scheduled_action();
 
 		remove_action( 'wp_stream_auto_purge', $listener );
-		$this->assertSame( 1, $hits, 'wp_stream_auto_purge action must fire exactly once per recurring tick' );
+		$this->assertSame( 1, $hits, 'wp_stream_auto_purge action must fire exactly once per recurring tick when work runs' );
+	}
+
+	public function test_purge_scheduled_action_does_not_fire_bc_action_when_cycle_bails() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		}
+
+		// keep_records_indefinitely=1 is one of the bail-out conditions.
+		if ( is_multisite() && is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
+			update_site_option( 'wp_stream_network', array( 'general_keep_records_indefinitely' => 1 ) );
+		} else {
+			update_option( 'wp_stream', array( 'general_keep_records_indefinitely' => 1 ) );
+		}
+
+		$hits     = 0;
+		$listener = function () use ( &$hits ) {
+			++$hits;
+		};
+		add_action( 'wp_stream_auto_purge', $listener );
+
+		$this->admin->purge_scheduled_action();
+
+		remove_action( 'wp_stream_auto_purge', $listener );
+		$this->assertSame(
+			0,
+			$hits,
+			'wp_stream_auto_purge BC action must not fire when the cycle bails out (keep_records_indefinitely)'
+		);
 	}
 
 	public function test_purge_scheduled_action_small_table_fast_path() {
@@ -661,9 +691,10 @@ class Test_Admin extends WP_StreamTestCase {
 
 	public function test_settings_ttl_shortened_triggers_immediate_purge() {
 		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_ACTION );
 			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
 		}
-		add_filter( 'wp_stream_is_large_records_table', '__return_true' );
 
 		$this->seed_aged_records( 1, 5 );
 
@@ -673,12 +704,20 @@ class Test_Admin extends WP_StreamTestCase {
 			array( 'general_records_ttl' => 7 )
 		);
 
-		$this->assertNotFalse(
-			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION ),
-			'Shortening TTL must trigger an immediate purge cycle'
+		// The TTL-shortened path enqueues the recurring AS action as a
+		// one-shot async action so work serializes through AS rather than
+		// running inline (which would bypass the overlap guard).
+		$async = as_get_scheduled_actions(
+			array(
+				'hook'   => \WP_Stream\Admin::AUTO_PURGE_ACTION,
+				'status' => \ActionScheduler_Store::STATUS_PENDING,
+			),
+			'ids'
 		);
-
-		remove_filter( 'wp_stream_is_large_records_table', '__return_true' );
+		$this->assertNotEmpty(
+			$async,
+			'Shortening TTL must enqueue an immediate auto-purge action via Action Scheduler'
+		);
 	}
 
 	public function test_plugin_action_links() {
@@ -1153,6 +1192,36 @@ class Test_Admin extends WP_StreamTestCase {
 			\WP_Stream\Admin::is_running_auto_purge(),
 			'Chain drained: not running'
 		);
+	}
+
+	public function test_is_running_auto_purge_includes_in_progress_actions() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		}
+
+		// Enqueue and then flip the action's status to IN-PROGRESS to simulate
+		// the runner having dequeued an action and started executing it.
+		// Without RUNNING-aware filtering, is_running_auto_purge() would
+		// return false here and the overlap guard would let a second chain
+		// stack against the same rows.
+		$action_id = as_enqueue_async_action(
+			\WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION,
+			array(
+				'cutoff'     => '2020-01-01 00:00:00',
+				'blog_id'    => 0,
+				'last_entry' => 0,
+			),
+			\WP_Stream\Admin::AUTO_PURGE_GROUP
+		);
+		\ActionScheduler::store()->log_execution( $action_id );
+
+		$this->assertTrue(
+			\WP_Stream\Admin::is_running_auto_purge(),
+			'In-progress (RUNNING) actions must count as running to prevent overlap'
+		);
+
+		as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
 	}
 
 	public function test_register_hooks_auto_purge_action_scheduler_callbacks() {
