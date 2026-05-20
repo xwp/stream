@@ -607,6 +607,80 @@ class Test_Admin extends WP_StreamTestCase {
 		remove_filter( 'wp_stream_is_large_records_table', '__return_true' );
 	}
 
+	public function test_purge_scheduled_action_overlap_guard_skips_when_reaper_pending() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		}
+		add_filter( 'wp_stream_is_large_records_table', '__return_true' );
+
+		// Simulate the post-chain state: only the reaper is left pending.
+		as_enqueue_async_action(
+			\WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION,
+			array(),
+			\WP_Stream\Admin::AUTO_PURGE_GROUP
+		);
+
+		$this->seed_aged_records( 1, 5 );
+		$this->set_records_ttl( 1 );
+
+		$this->admin->purge_scheduled_action();
+
+		$this->assertFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION ),
+			'Overlap guard must skip when only the reaper is pending'
+		);
+
+		remove_filter( 'wp_stream_is_large_records_table', '__return_true' );
+	}
+
+	public function test_purge_scheduled_action_bails_when_ttl_is_zero_or_negative() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+		}
+		add_filter( 'wp_stream_is_large_records_table', '__return_true' );
+
+		$this->seed_aged_records( 1, 5 );
+
+		// TTL=0 (operator error via CLI/SQL). Must not delete anything.
+		if ( is_multisite() && is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
+			update_site_option( 'wp_stream_network', array( 'general_records_ttl' => '0' ) );
+		} else {
+			update_option( 'wp_stream', array( 'general_records_ttl' => '0' ) );
+		}
+
+		$this->admin->purge_scheduled_action();
+
+		$this->assertFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION ),
+			'Non-positive TTL must short-circuit the recurring callback'
+		);
+
+		remove_filter( 'wp_stream_is_large_records_table', '__return_true' );
+	}
+
+	public function test_settings_ttl_shortened_triggers_immediate_purge() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+		}
+		add_filter( 'wp_stream_is_large_records_table', '__return_true' );
+
+		$this->seed_aged_records( 1, 5 );
+
+		// Simulate the option-changed event: TTL shortened from 30 to 7.
+		$this->plugin->settings->updated_option_ttl_remove_records(
+			array( 'general_records_ttl' => 30 ),
+			array( 'general_records_ttl' => 7 )
+		);
+
+		$this->assertNotFalse(
+			as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION ),
+			'Shortening TTL must trigger an immediate purge cycle'
+		);
+
+		remove_filter( 'wp_stream_is_large_records_table', '__return_true' );
+	}
+
 	public function test_plugin_action_links() {
 		$links = array( '<a href="javascript:void(0);">Disconnect</a>' );
 		$file  = plugin_basename( $this->plugin->locations['dir'] . 'stream.php' );

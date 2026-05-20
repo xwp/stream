@@ -948,18 +948,17 @@ class Admin {
 			$options = wp_parse_args( (array) get_option( 'wp_stream', array() ), $defaults );
 		}
 
-		// Hardcoded TTL fallback. Settings::get_defaults() runs every settings
-		// field through the `wp_stream_settings_option_fields` filter, which
+		// TTL fallback. Settings::get_defaults() runs every settings field
+		// through the `wp_stream_settings_option_fields` filter, which
 		// Network::get_network_admin_fields() uses to strip the `records_ttl`
 		// field from the per-site option's defaults set. When this callback runs
 		// outside any admin context (Action Scheduler, WP-CLI, system cron), the
 		// per-site option_key is in effect, so the filtered defaults array does
-		// not contain general_records_ttl at all. Without this fallback the
-		// purge silently no-ops on every install where the option is missing,
-		// defeating the whole point of fixing this on bloated sites.
-		// Mirrors the 30-day default declared on the settings field itself
-		// (classes/class-settings.php, `records_ttl` field).
-		if ( empty( $options['general_records_ttl'] ) ) {
+		// not contain general_records_ttl at all. Apply the documented 30-day
+		// default (classes/class-settings.php, `records_ttl` field) only when
+		// the key is genuinely missing, so an operator who set the value via
+		// CLI/SQL keeps their explicit choice.
+		if ( ! isset( $options['general_records_ttl'] ) ) {
 			$options['general_records_ttl'] = 30;
 		}
 
@@ -967,11 +966,20 @@ class Admin {
 			return;
 		}
 
-		// Overlap guard: if a previous chain is still draining, don't stack a new one.
-		if (
-			function_exists( 'as_has_scheduled_action' )
-			&& as_has_scheduled_action( self::AUTO_PURGE_BATCH_ACTION )
-		) {
+		// Refuse to purge with a non-positive TTL. The UI enforces min=1, but
+		// CLI/SQL can set 0 or a negative integer. Honoring those would mean
+		// "delete every record on every cycle", which has no legitimate use
+		// case (keep_records_indefinitely covers the opposite extreme).
+		// Bailing out makes operator error visible (records stop being purged)
+		// instead of catastrophic (records get wiped repeatedly).
+		if ( (int) $options['general_records_ttl'] < 1 ) {
+			return;
+		}
+
+		// Overlap guard: if any auto-purge action (batch worker or reaper) is
+		// pending, don't stack a new chain. Reuses the same probe used by the
+		// Settings UI so the two views of "running" agree.
+		if ( self::is_running_auto_purge() ) {
 			return;
 		}
 

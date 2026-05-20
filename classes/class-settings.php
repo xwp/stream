@@ -1235,9 +1235,20 @@ class Settings {
 
 		if ( $ttl_after < $ttl_before ) {
 			/**
-			 * Action assists in purging when TTL is shortened
+			 * Fires when the records TTL is shortened.
+			 *
+			 * Preserved for backward compatibility with third-party code that
+			 * hooked this action in Stream <= 4.1.x. The auto-purge itself
+			 * no longer listens to this hook (it was migrated to Action
+			 * Scheduler), so trigger the purge directly below.
 			 */
 			do_action( 'wp_stream_auto_purge' );
+
+			// Trigger an immediate auto-purge cycle so the shortened TTL
+			// takes effect now instead of at the next 12h recurring tick.
+			if ( isset( $this->plugin->admin ) ) {
+				$this->plugin->admin->purge_scheduled_action();
+			}
 		}
 	}
 
