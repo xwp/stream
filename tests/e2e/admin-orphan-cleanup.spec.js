@@ -1,135 +1,55 @@
 /**
  * WordPress dependencies
  */
-/**
- * External dependencies
- */
-import { execSync } from 'node:child_process';
 import { test, expect } from '@wordpress/e2e-test-utils-playwright';
-
-/**
- * Node dependencies
- */
 
 /**
  * Settings → Advanced manual "Clean Orphaned Meta" link.
  *
- * Asserts that the link is rendered, that its href points at admin-ajax.php
- * with the expected action + nonce parameters, and that following the link
- * redirects back to the Stream settings page with a confirmation marker in
- * the URL.
+ * Asserts the idle-state UX: the link renders, its href points at admin-ajax.php
+ * with the expected action + nonce, and following it redirects back to the
+ * settings page with a confirmation marker in the URL.
  *
- * Also covers the running-state UX: when the auto-purge chain is active the
- * link is hidden and the field description is swapped to explain the reaper
- * will run as part of the active cycle.
+ * The running-state branch (`is_running_auto_purge() === true` hides the link
+ * and swaps the description) is covered by the PHPUnit suite. Reproducing it
+ * here would require shelling out of Playwright to seed Action Scheduler state,
+ * which no other e2e spec in this project does.
  */
-const ADMIN = 'http://stream.wpenv.net/wp-admin';
-
-/**
- * Run a PHP snippet inside the long-lived wordpress container.
- *
- * Uses `docker compose exec` (not `run`) so we attach to the running
- * container instead of spinning a fresh one per call — `run` is ~3-5s of
- * overhead per invocation and accumulates fast across this suite.
- *
- * `--user www-data` matches the user that owns the WordPress files inside
- * the container. Without it, `exec` defaults to root and wp-cli refuses to
- * run ("YIKES! It looks like you're running this as root."). The previous
- * `docker compose run` form used `--user $(id -u)` for the same reason —
- * it relied on host UID 1000 happening to map to www-data inside the
- * container, which works on local dev but not on the GitHub Actions
- * runner (UID 1001).
- *
- * Best-effort: returns null on container errors (e.g. Stream not yet active
- * during a parallel suite's bootstrap). State seeding is auxiliary; the
- * test's own assertions are the source of truth — but surface failures via
- * console so silent breakage during CI is at least visible in logs.
- *
- * @param {string} php The body of the eval call (no `<?php`).
- * @return {string|null} Trimmed stdout, or null on error.
- */
-function wpEval( php ) {
-	// Single-quote the PHP, escape any embedded single quotes for the
-	// outer shell.
-	const escaped = php.replace( /'/g, "'\\''" );
-	try {
-		return execSync(
-			`docker compose exec -T --user www-data wordpress wp eval '${ escaped }'`,
-			{ encoding: 'utf8', stdio: [ 'ignore', 'pipe', 'pipe' ] },
-		).trim();
-	} catch ( err ) {
-		// eslint-disable-next-line no-console
-		console.warn( 'wpEval failed:', err.message );
-		return null;
-	}
-}
-
-/**
- * Clear all AS state for the auto-purge group.
- */
-function clearAutoPurgeState() {
-	wpEval(
-		`foreach (["stream_auto_purge_batch_action","stream_auto_purge_reaper_action"] as $h) { if (function_exists("as_unschedule_all_actions")) as_unschedule_all_actions($h); }`,
-	);
-}
-
-/**
- * Seed a single pending reaper action so is_running_auto_purge() returns true.
- */
-function seedRunningAutoPurge() {
-	wpEval(
-		`as_enqueue_async_action("stream_auto_purge_reaper_action", array(), "stream-auto-purge");`,
-	);
-}
-
-test.describe.configure( { mode: 'serial' } );
+const ADVANCED_TAB_URL =
+	'/wp-admin/network/admin.php?page=wp_stream_network_settings&tab=advanced';
 
 let page;
+
+test.describe.configure( { mode: 'serial' } );
 
 test.beforeAll( async ( { browser } ) => {
 	page = await browser.newPage();
 
-	// The setup fixture deactivates Stream network-wide before the suite.
-	// Earlier specs in the suite may also have deactivated it. Reactivate
-	// and wait for the post-activation redirect so subsequent navigations
-	// see a fully-activated plugin.
-	await page.goto( `${ ADMIN }/network/plugins.php` );
+	// The shared setup fixture deactivates Stream network-wide before the
+	// suite. Reactivate so the settings page is reachable.
+	await page.goto( '/wp-admin/network/plugins.php' );
 	const activate = page.getByLabel( 'Network Activate Stream' );
 	if ( await activate.isVisible() ) {
-		await Promise.all( [
-			page.waitForURL( /plugins\.php/ ),
-			activate.click(),
-		] );
+		await activate.click();
+		await page.waitForURL( /plugins\.php/ );
 	}
 
-	// Belt-and-suspenders: confirm via the page DOM that the deactivate
-	// label is now present. If it isn't, fail fast rather than letting
-	// every test silently hit "Sorry, you are not allowed to access this page".
-	await page.goto( `${ ADMIN }/network/plugins.php` );
 	await expect(
 		page.getByLabel( 'Network Deactivate Stream' ),
 	).toBeVisible();
 } );
 
 test.afterAll( async () => {
-	// Deactivate Stream again so other suites start from the same state
-	// as the shared setup fixture.
-	await page.goto( `${ ADMIN }/network/plugins.php` );
+	// Restore the deactivated state other suites expect.
+	await page.goto( '/wp-admin/network/plugins.php' );
 	const deactivate = page.getByLabel( 'Network Deactivate Stream' );
 	if ( await deactivate.isVisible() ) {
 		await deactivate.click();
 	}
 } );
 
-const ADVANCED_TAB_URL = `${ ADMIN }/network/admin.php?page=wp_stream_network_settings&tab=advanced`;
-
 test.describe( 'Manual orphan-meta cleanup link', () => {
-	test.beforeEach( () => {
-		// Idle state for the common-case assertions.
-		clearAutoPurgeState();
-	} );
-
-	test( 'is visible on the Advanced tab (idle state)', async () => {
+	test( 'is visible on the Advanced tab', async () => {
 		await page.goto( ADVANCED_TAB_URL );
 
 		const link = page.getByRole( 'link', { name: /Clean Orphaned Meta/i } );
@@ -159,41 +79,5 @@ test.describe( 'Manual orphan-meta cleanup link', () => {
 			),
 			link.click(),
 		] );
-	} );
-
-	test( 'hides the link while the auto-purge chain is running', async () => {
-		// Simulate an active chain by enqueuing a reaper action.
-		seedRunningAutoPurge();
-
-		try {
-			await page.goto( ADVANCED_TAB_URL );
-
-			// The link MUST NOT be rendered.
-			const link = page.getByRole( 'link', {
-				name: /Clean Orphaned Meta/i,
-			} );
-			await expect( link ).toHaveCount( 0 );
-
-			// The replacement description text MUST be visible somewhere
-			// in the settings form. We assert on a stable substring rather
-			// than the full sentence.
-			await expect(
-				page.getByText( /Auto-purge is currently running/i ),
-			).toBeVisible();
-		} finally {
-			clearAutoPurgeState();
-		}
-	} );
-
-	test( 'restores the link after the chain drains (idle state again)', async () => {
-		// Seed running, drain, confirm idle UX restored.
-		seedRunningAutoPurge();
-		clearAutoPurgeState();
-
-		await page.goto( ADVANCED_TAB_URL );
-		const link = page.getByRole( 'link', {
-			name: /Clean Orphaned Meta/i,
-		} );
-		await expect( link ).toBeVisible();
 	} );
 } );
