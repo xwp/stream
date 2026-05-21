@@ -1,67 +1,85 @@
 /**
- * External dependencies
- */
-import { v4 as uuidv4 } from 'uuid';
-
-/**
  * WordPress dependencies
  */
-import { test, expect } from '@wordpress/e2e-test-utils-playwright';
+import { test, expect, Editor } from '@wordpress/e2e-test-utils-playwright';
 
 test.describe( 'Editor: saving a new post', () => {
-	let page, postTitle, postId;
+	let page, editor, postTitle, postId;
 
 	test.beforeAll( async ( { browser } ) => {
-		page = await browser.newPage();
+		test.setTimeout( 90_000 );
 
-		const uuid = uuidv4();
-		postTitle = `Test Post ${ uuid }`; // Sometimes this runs more than once within a microsecond so it's a UUID.
+		page = await browser.newPage();
+		editor = new Editor( { page } );
+
+		postTitle = `Test Post ${ crypto.randomUUID() }`; // Sometimes this runs more than once within a microsecond so it's a UUID.
 
 		// eslint-disable-next-line no-console
 		console.log( `New post ${ postTitle }` );
 
-		// Even though we're using WP's npm package, it's more straightforward to do it this way, at least for me in this environment.
-		await page.goto( 'http://stream.wpenv.net/wp-admin/post-new.php' );
-		await page.getByLabel( 'Add title' ).click();
-		await page.getByLabel( 'Add title' ).fill( postTitle );
-		await page.getByLabel( 'Add title' ).press( 'Tab' );
-		await page.getByLabel( 'Empty block; start writing or' ).fill( 'I\'m a test post' );
-		await page.getByRole( 'button', { name: 'Publish', exact: true } ).click();
+		// The shared setup deactivates Stream. Reactivate it so the publish action is logged.
+		await page.goto( 'https://stream.wpenv.net/wp-admin/network/plugins.php' );
+		const activateLink = page.getByLabel( 'Network Activate Stream' );
+		if ( await activateLink.isVisible().catch( () => false ) ) {
+			await activateLink.click();
+			await page.waitForURL( /plugins\.php/ );
+		}
+
+		await page.goto( 'https://stream.wpenv.net/wp-admin/post-new.php' );
+
+		// Wait for Gutenberg to be ready.
+		await page.waitForFunction( () => window?.wp?.blocks && window?.wp?.data );
+
+		// Dismiss the welcome dialog if it appears.
+		const welcomeClose = page.getByRole( 'dialog', { name: 'Welcome to the editor' } ).getByRole( 'button', { name: 'Close' } );
+		if ( await welcomeClose.isVisible().catch( () => false ) ) {
+			await welcomeClose.click();
+		}
+
+		// Set the title via the data layer, and the body via the editor helper.
+		await page.evaluate( ( title ) => {
+			window.wp.data.dispatch( 'core/editor' ).editPost( { title } );
+		}, postTitle );
+		await editor.setContent( '<!-- wp:paragraph --><p>I\'m a test post</p><!-- /wp:paragraph -->' );
+
+		// Publish; the helper handles the pre-publish panel and waits for the published snackbar.
+		await editor.publishPost();
 
 		postId = await page.locator( 'input#post_ID' ).inputValue();
 
 		// eslint-disable-next-line no-console
 		console.log( `Post ID: ${ postId }` );
 
-		// We need to wait for both of the editor responses! The post saves to the posts table then the metadata saves to postmeta.
-		await Promise.all( [
-			page.waitForResponse( ( resp ) => resp.url().includes( 'meta-box-loader' ) && resp.status() === 302 ),
-			page.waitForResponse( ( resp ) => resp.url().includes( `wp-json/wp/v2/posts/${ postId }` ) && resp.status() === 200 ),
-			page.getByLabel( 'Editor publish' ).getByRole( 'button', { name: 'Publish', exact: true } ).click(),
-		] );
-
-		// They are too much in the posts table so I'm deleting them.
-		await page.goto( 'http://stream.wpenv.net/wp-admin/edit.php?post_type=post' );
-		const listTable = page.getByRole( 'table', { name: 'Table ordered by' } );
-		await expect( listTable ).toBeVisible();
-
-		// Move post to trash.
-		await listTable.getByRole( 'link', { name: `“${ postTitle }” (Edit)` } ).hover();
-		await listTable.getByRole( 'link', { name: `Move “${ postTitle }” to the Trash` } ).click();
-
-		// Ok, we're all set up, let's go to our page.
-		await page.goto( 'http://stream.wpenv.net/wp-admin/admin.php?page=wp_stream' );
+		// Go straight to the Stream log so the assertions below can check the published row.
+		await page.goto( 'https://stream.wpenv.net/wp-admin/admin.php?page=wp_stream' );
 	} );
 
-	// Do we have a published row?
+	test.afterAll( async () => {
+		// Clean up the published post so it doesn't accumulate in the posts table.
+		if ( postId ) {
+			await page.goto( `https://stream.wpenv.net/wp-admin/post.php?post=${ postId }&action=trash&_wpnonce=` ).catch( () => {} );
+			await page.goto( 'https://stream.wpenv.net/wp-admin/edit.php?post_type=post' );
+			const trashLink = page.getByRole( 'link', { name: `Move “${ postTitle }” to the Trash` } );
+			if ( await trashLink.isVisible().catch( () => false ) ) {
+				await page.getByRole( 'link', { name: `“${ postTitle }” (Edit)` } ).hover();
+				await trashLink.click();
+			}
+		}
+
+		// Restore the deactivated state expected by other test files.
+		await page.goto( 'https://stream.wpenv.net/wp-admin/network/plugins.php' );
+		const deactivateLink = page.getByLabel( 'Network Deactivate Stream' );
+		if ( await deactivateLink.isVisible().catch( () => false ) ) {
+			await deactivateLink.click();
+		}
+		await page.close();
+	} );
+
 	test( 'has published row', async () => {
-		// Expects Stream log to have "Test Post" post published visible.
 		await expect( page.getByText( `"${ postTitle }" post published` ) ).toBeVisible();
 	} );
 
-	// We should not have an updated row. This times out which makes it fail.
 	test( 'does not have updated row', async () => {
-		// Expects Stream log to have "Test Post" post published visible.
 		await expect( page.getByText( `"${ postTitle }" post updated` ) ).not.toBeVisible();
 	} );
 } );

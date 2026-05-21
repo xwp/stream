@@ -10,7 +10,7 @@ $( '.actions :submit:not([name="filter_action"])' ).on(
 		if ( $( 'table.widefat tbody :checkbox:checked' ).length > window[ 'wp-stream-global' ].bulk_actions.threshold ) {
 			warning_message( e );
 		}
-	}
+	},
 );
 
 // Post type empty trash
@@ -21,7 +21,7 @@ $( '#delete_all' ).on(
 		if ( trash_count > window[ 'wp-stream-global' ].bulk_actions.threshold ) {
 			warning_message( e );
 		}
-	}
+	},
 );
 
 function warning_message( e ) {

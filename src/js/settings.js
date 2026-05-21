@@ -27,7 +27,7 @@ function toggleKeepRecordsFor() {
 keepRecordsIndefinitely.on(
 	'change', function() {
 		toggleKeepRecordsFor();
-	}
+	},
 );
 
 toggleKeepRecordsFor();
@@ -38,7 +38,7 @@ $( '#wp_stream_general_reset_site_settings' ).click(
 		if ( ! confirm( window[ 'wp-stream-settings' ].i18n.confirm_defaults ) ) { // eslint-disable-line no-alert
 			e.preventDefault();
 		}
-	}
+	},
 );
 
 // Settings page tabs
@@ -78,7 +78,7 @@ $tabs.on(
 		syncFormAction( index );
 
 		return false;
-	}
+	},
 );
 
 $tabs.children().eq( currentHash ).trigger( 'click' );

@@ -13,19 +13,20 @@
   "require": {
     "php": ">=7.2",
     "ext-json": "*",
-    "composer/installers": "~1.0",
+    "composer/installers": "^1.0 || ^2.0",
     "woocommerce/action-scheduler": "^3.9"
   },
   "require-dev": {
     "automattic/vipwpcs": "^3.0",
     "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
-    "humanmade/mercator": "^1.0",
+    "humanmade/mercator": "dev-master as 1.1.0",
     "johnbillion/query-monitor": "^3.16",
     "php-coveralls/php-coveralls": "^2.5",
     "phpcompatibility/php-compatibility": "dev-develop as 9.99.99",
     "phpcompatibility/phpcompatibility-wp": "^2.1",
     "phpunit/phpunit": "^9.6",
     "roots/wordpress": "^6.9",
+    "wordpress/mcp-adapter": "^0.5",
     "wp-cli/wp-cli-bundle": "^2.6",
     "wp-coding-standards/wpcs": "^3.1",
     "wp-phpunit/wp-phpunit": "^6.9",
@@ -64,6 +65,15 @@
     }
   },
   "scripts": {
+    "post-install-cmd": [
+      "@install-mcp-adapter-deps"
+    ],
+    "post-update-cmd": [
+      "@install-mcp-adapter-deps"
+    ],
+    "install-mcp-adapter-deps": [
+      "@php local/scripts/install-mcp-adapter-deps.php"
+    ],
     "release": [
       "composer install --no-dev --prefer-dist --optimize-autoloader"
     ],

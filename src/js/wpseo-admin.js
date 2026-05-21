@@ -26,11 +26,11 @@ if ( window.location.hash.includes( 'stream-highlight-' ) ) {
 							'slow',
 							function() {
 								input.animate( { backgroundColor: 'yellow' }, 'slow' );
-							}
+							},
 						);
-					}, 500
+					}, 500,
 				);
-			}
+			},
 		);
 	}
 }

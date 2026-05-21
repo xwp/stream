@@ -36,3 +36,12 @@ services:
       args:
         PHP_VERSION: "8.2"
         XDEBUG_VERSION: "3.2.1"
+
+  # Helper image that generates a locally-trusted TLS cert via mkcert for
+  # the Apache HTTPS vhost on the wordpress service. Pre-built and pushed
+  # to ghcr.io so CI and contributors don't rebuild it on every fresh
+  # environment spin-up. See local/docker/mkcert/Dockerfile.
+  mkcert:
+    image: ghcr.io/xwp/stream-mkcert:latest
+    build:
+      context: ./local/docker/mkcert
