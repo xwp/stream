@@ -200,6 +200,8 @@ class DB {
 			'orderby'          => 'date',
 			// Fields selection.
 			'fields'           => array(),
+			// Include record metadata in the query result.
+			'with_meta'        => false,
 		);
 
 		// Additional property fields.

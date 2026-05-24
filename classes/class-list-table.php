@@ -278,9 +278,20 @@ class List_Table extends \WP_List_Table {
 		}
 		$args['records_per_page'] = apply_filters( 'stream_records_per_page', $args['records_per_page'] );
 
+		$args['with_meta'] = $this->should_display_metadata();
+
 		$items = $this->plugin->db->get_records( $args );
 
 		return $items;
+	}
+
+	/**
+	 * Whether metadata should be retrieved and displayed with records.
+	 *
+	 * @return bool
+	 */
+	public function should_display_metadata() {
+		return ! empty( $this->plugin->settings->options['advanced_display_metadata'] );
 	}
 
 	/**
@@ -333,7 +344,7 @@ class List_Table extends \WP_List_Table {
 						esc_attr( $view_all_text )
 					);
 				}
-				if ( $record->meta ) {
+				if ( $this->should_display_metadata() && $record->meta ) {
 					$meta = array();
 					foreach ( $record->meta as $key => $value ) {
 						if ( false === strpos( $key, '[' ) ) {
@@ -345,9 +356,9 @@ class List_Table extends \WP_List_Table {
 							$meta[ $main_key ][ $sub_key ] = $value;
 						}
 					}
-					$out  .= '<details><summary>' . esc_html__( 'Metadata', 'stream' ) . '</summary><pre>';
-					$out  .= esc_html( print_r( $meta, true ) );
-					 $out .= '</pre></details>';
+					$out .= '<details><summary>' . esc_html__( 'Metadata', 'stream' ) . '</summary><pre>';
+					$out .= esc_html( wp_json_encode( $meta, JSON_PRETTY_PRINT ) );
+					$out .= '</pre></details>';
 				}
 				$out .= $this->get_action_links( $record );
 				break;

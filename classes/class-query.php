@@ -203,8 +203,16 @@ class Query {
 		/**
 		 * PARSE FIELDS PARAMETER
 		 */
-		$fields  = (array) $args['fields'];
-		$selects = array();
+		$fields = $args['fields'];
+
+		if ( is_string( $fields ) ) {
+			$fields = array_filter( array_map( 'trim', explode( ',', $fields ) ) );
+		} else {
+			$fields = (array) $fields;
+		}
+
+		$with_meta = ! empty( $args['with_meta'] ) || in_array( 'meta', $fields, true );
+		$selects   = array();
 
 		if ( ! empty( $fields ) ) {
 			foreach ( $fields as $field ) {
@@ -219,10 +227,16 @@ class Query {
 			$selects[] = "$wpdb->stream.*";
 		}
 
-		$join      = "LEFT JOIN $wpdb->streammeta ON $wpdb->stream.ID = $wpdb->streammeta.record_id";
-		$selects[] = "$wpdb->streammeta.meta_key";
-		$selects[] = "$wpdb->streammeta.meta_value";
-		$select    = implode( ', ', $selects );
+		if ( $with_meta ) {
+			if ( ! empty( $fields ) && ! in_array( 'ID', $fields, true ) ) {
+				$selects[] = "$wpdb->stream.ID AS record_id";
+			}
+
+			$selects[] = "$wpdb->streammeta.meta_key";
+			$selects[] = "$wpdb->streammeta.meta_value";
+		}
+
+		$select = implode( ', ', $selects );
 
 		/**
 		 * Filters query WHERE statement as an alternative to filtering
@@ -234,21 +248,29 @@ class Query {
 		 */
 		$where = apply_filters( 'wp_stream_db_query_where', $where );
 
-		/**
-		* Build the query but just to get the IDs
-		*/
-		$query = "SELECT $wpdb->stream.ID
-		FROM $wpdb->stream
-		WHERE 1=1 {$where}
-		{$orderby}
-		{$limits}";
+		$query_where = $where;
 
-		$ids = $wpdb->get_col( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		if ( $with_meta ) {
+			/**
+			 * Build the query just to get the IDs for the current page before
+			 * expanding the result set with one row per metadata entry.
+			 */
+			$query = "SELECT $wpdb->stream.ID
+			FROM $wpdb->stream
+			WHERE 1=1 {$where}
+			{$orderby}
+			{$limits}";
 
-		if ( $ids ) {
-			$where .= $wpdb->prepare( " AND $wpdb->stream.ID IN (%d" . str_repeat( ', %d', count( $ids ) - 1 ) . ')', $ids );
-		} else {
-			$where .= ' AND 0 = 1';
+			$ids = $wpdb->get_col( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
+			if ( $ids ) {
+				$ids_placeholder = implode( ', ', array_fill( 0, count( $ids ), '%d' ) );
+				$query_where    .= $wpdb->prepare( " AND $wpdb->stream.ID IN ({$ids_placeholder})", $ids ); // @codingStandardsIgnoreLine prepare okay
+			} else {
+				$query_where .= ' AND 0 = 1';
+			}
+
+			$join = "LEFT JOIN $wpdb->streammeta ON $wpdb->stream.ID = $wpdb->streammeta.record_id";
 		}
 
 		/**
@@ -257,8 +279,9 @@ class Query {
 		$query = "SELECT {$select}
 		FROM $wpdb->stream
 		{$join}
-		WHERE 1=1 {$where}
-		{$orderby}";
+		WHERE 1=1 {$query_where}
+		{$orderby}
+		" . ( $with_meta ? '' : $limits );
 
 		/**
 		 * Filter allows the final query to be modified before execution
@@ -285,23 +308,38 @@ class Query {
 		 */
 		$count_query = apply_filters( 'wp_stream_db_count_query', $count_query, $args );
 
-		$items = array();
-		foreach ( $wpdb->get_results( $query ) as $item ) { // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			if ( ! isset( $items[ $item->ID ] ) ) {
-				$items[ $item->ID ]       = clone $item;
-				$items[ $item->ID ]->meta = array();
-				unset( $items[ $item->ID ]->meta_key );
-				unset( $items[ $item->ID ]->meta_value );
-			}
-			if ( isset( $items[ $item->ID ]->meta[ $item->meta_key ] ) ) {
-				if ( ! is_array( $items[ $item->ID ]->meta[ $item->meta_key ] ) ) {
-					$items[ $item->ID ]->meta[ $item->meta_key ] = array( $items[ $item->ID ]->meta[ $item->meta_key ] );
+		if ( $with_meta ) {
+			$items = array();
+			foreach ( $wpdb->get_results( $query ) as $item ) { // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				$record_id = isset( $item->ID ) ? $item->ID : $item->record_id;
+
+				if ( ! isset( $items[ $record_id ] ) ) {
+					$items[ $record_id ]       = clone $item;
+					$items[ $record_id ]->meta = array();
+					unset( $items[ $record_id ]->meta_key );
+					unset( $items[ $record_id ]->meta_value );
+					unset( $items[ $record_id ]->record_id );
 				}
-				$items[ $item->ID ]->meta[ $item->meta_key ][] = $item->meta_value;
-			} else {
-				$items[ $item->ID ]->meta[ $item->meta_key ] = $item->meta_value;
+
+				if ( ! isset( $item->meta_key ) ) {
+					continue;
+				}
+
+				if ( isset( $items[ $record_id ]->meta[ $item->meta_key ] ) ) {
+					if ( ! is_array( $items[ $record_id ]->meta[ $item->meta_key ] ) ) {
+						$items[ $record_id ]->meta[ $item->meta_key ] = array( $items[ $record_id ]->meta[ $item->meta_key ] );
+					}
+					$items[ $record_id ]->meta[ $item->meta_key ][] = $item->meta_value;
+				} else {
+					$items[ $record_id ]->meta[ $item->meta_key ] = $item->meta_value;
+				}
 			}
+
+			$items = array_values( $items );
+		} else {
+			$items = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
+
 		/**
 		 * QUERY THE DATABASE FOR RESULTS
 		 */

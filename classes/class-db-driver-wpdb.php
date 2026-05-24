@@ -87,10 +87,8 @@ class DB_Driver_WPDB implements DB_Driver {
 						$this->insert_meta( $record_id, $key . '[' . $k . ']', substr( $val, 0, 200 ) );
 					}
 				}
-			} else {
-				if ( is_scalar( $val ) && '' !== $val ) {
-					$this->insert_meta( $record_id, $key, substr( $val, 0, 200 ) );
-				}
+			} elseif ( is_scalar( $val ) && '' !== $val ) {
+				$this->insert_meta( $record_id, $key, substr( $val, 0, 200 ) );
 			}
 		}
 

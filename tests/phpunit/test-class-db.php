@@ -109,6 +109,41 @@ class Test_DB extends WP_StreamTestCase {
 		);
 	}
 
+	public function test_query_does_not_fetch_meta_by_default() {
+		$dummy_data         = $this->dummy_stream_data();
+		$dummy_data['meta'] = $this->dummy_meta_data();
+
+		$stream_id = $this->db->insert( $dummy_data );
+
+		$records = $this->db->query(
+			array(
+				'search'       => $stream_id,
+				'search_field' => 'ID',
+			)
+		);
+
+		$this->assertCount( 1, $records );
+		$this->assertFalse( property_exists( $records[0], 'meta' ) );
+	}
+
+	public function test_query_fetches_meta_when_requested() {
+		$dummy_data         = $this->dummy_stream_data();
+		$dummy_data['meta'] = $this->dummy_meta_data();
+
+		$stream_id = $this->db->insert( $dummy_data );
+
+		$records = $this->db->query(
+			array(
+				'search'       => $stream_id,
+				'search_field' => 'ID',
+				'with_meta'    => true,
+			)
+		);
+
+		$this->assertCount( 1, $records );
+		$this->assertEquals( $dummy_data['meta'], $records[0]->meta );
+	}
+
 	public function test_existing_records() {
 		$summaries = $this->db->existing_records( 'summary' );
 		$this->assertNotEmpty( $summaries );

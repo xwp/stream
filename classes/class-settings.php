@@ -356,6 +356,14 @@ class Settings {
 						'default'     => 0,
 					),
 					array(
+						'name'        => 'display_metadata',
+						'title'       => esc_html__( 'Display Metadata', 'stream' ),
+						'type'        => 'checkbox',
+						'desc'        => esc_html__( 'Retrieve record metadata when displaying Stream records. This can add database overhead on sites with many records, so it is disabled by default.', 'stream' ),
+						'after_field' => esc_html__( 'Enabled', 'stream' ),
+						'default'     => 0,
+					),
+					array(
 						'name'    => 'delete_all_records',
 						'title'   => esc_html__( 'Reset Stream Database', 'stream' ),
 						'type'    => Admin::is_running_async_deletion() ? 'none' : 'link',
