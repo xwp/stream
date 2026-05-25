@@ -720,6 +720,51 @@ class Test_Admin extends WP_StreamTestCase {
 		);
 	}
 
+	/**
+	 * Exercises the full hook wiring for the TTL-shortened path: writes the
+	 * option via update_option() / update_site_option() and asserts the AS
+	 * enqueue happened. The unit test above invokes the handler directly,
+	 * which would still pass if the underlying hook registration regressed
+	 * (e.g. someone removed Network::updated_option_ttl_remove_records()
+	 * that bridges update_site_option_wp_stream_network → Settings).
+	 *
+	 * Branches by CI lane: single-site lane fires update_option('wp_stream');
+	 * multisite (network-activated) lane fires update_site_option('wp_stream_network').
+	 * Both must end up enqueuing AUTO_PURGE_ACTION.
+	 */
+	public function test_settings_ttl_shortened_via_option_update_enqueues_purge() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_ACTION );
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		}
+
+		// Seed a baseline value of 30 days, then shorten to 7. Both writes
+		// go through the real WP hook chain (update_option_* or
+		// update_site_option_*), which is the wiring under test.
+		$this->set_records_ttl( 30 );
+
+		// Clear anything the baseline write may have enqueued so the
+		// assertion below targets the shortening event only.
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_ACTION );
+		}
+
+		$this->set_records_ttl( 7 );
+
+		$async = as_get_scheduled_actions(
+			array(
+				'hook'   => \WP_Stream\Admin::AUTO_PURGE_ACTION,
+				'status' => \ActionScheduler_Store::STATUS_PENDING,
+			),
+			'ids'
+		);
+		$this->assertNotEmpty(
+			$async,
+			'Updating the TTL via the option API must enqueue AUTO_PURGE_ACTION through the registered hooks'
+		);
+	}
+
 	public function test_plugin_action_links() {
 		$links = array( '<a href="javascript:void(0);">Disconnect</a>' );
 		$file  = plugin_basename( $this->plugin->locations['dir'] . 'stream.php' );
@@ -972,6 +1017,43 @@ class Test_Admin extends WP_StreamTestCase {
 		unset( $_REQUEST['wp_stream_nonce_clean_orphan_meta'] );
 	}
 
+	/**
+	 * Security boundary: a user without WP_STREAM_SETTINGS_CAPABILITY must
+	 * be rejected before the handler reaches the AS enqueue. Mirrors the
+	 * capability check used by the reset/erase handlers in this class.
+	 *
+	 * Uses _handleAjax() so WP_Ajax_UnitTestCase's output-buffer machinery
+	 * runs (the handler calls wp_die(), which the testcase die handler
+	 * routes through ob_get_clean()); calling the method directly would
+	 * leave the buffer state ambiguous and PHPUnit would mark the test risky.
+	 *
+	 * @throws \WPAjaxDieStopException Thrown by the testcase die handler when
+	 *                                 the rejected request triggers wp_die().
+	 */
+	public function test_ajax_clean_orphan_meta_denies_users_without_settings_cap() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		}
+
+		$subscriber_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $subscriber_id );
+
+		$_REQUEST['wp_stream_nonce_clean_orphan_meta'] = wp_create_nonce( 'stream_nonce_clean_orphan_meta' );
+
+		$this->expectException( \WPAjaxDieStopException::class );
+
+		try {
+			$this->_handleAjax( 'wp_stream_clean_orphan_meta' );
+		} catch ( \WPAjaxDieStopException $e ) {
+			unset( $_REQUEST['wp_stream_nonce_clean_orphan_meta'] );
+			$this->assertFalse(
+				as_next_scheduled_action( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION ),
+				'No work must be enqueued for a rejected request'
+			);
+			throw $e;
+		}
+	}
+
 	public function test_auto_purge_reaper_deletes_orphaned_meta_only() {
 		global $wpdb;
 
@@ -1122,6 +1204,96 @@ class Test_Admin extends WP_StreamTestCase {
 		remove_all_filters( 'wp_stream_batch_size' );
 	}
 
+	/**
+	 * Acceptance criterion: "Per-site activations only purge the current blog."
+	 *
+	 * The batch worker scoping is covered above
+	 * ({@see test_auto_purge_batch_scopes_to_blog_id_when_non_zero}); this
+	 * test closes the gap on the routing decision in
+	 * {@see Admin::purge_scheduled_action()}:
+	 *
+	 *     $blog_id = $this->plugin->is_multisite_not_network_activated()
+	 *         ? (int) get_current_blog_id()
+	 *         : 0;
+	 *
+	 * Forces is_multisite_not_network_activated() to return true via a Plugin
+	 * stub (CI's multisite lane runs with network-activated = true), then
+	 * asserts the enqueued batch carries the current blog_id rather than 0.
+	 */
+	public function test_purge_scheduled_action_scopes_to_current_blog_when_not_network_activated() {
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'Per-site scoping is multisite-only' );
+		}
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+		}
+
+		// Force the batched path so the assertion can read $args['blog_id'].
+		add_filter( 'wp_stream_is_large_records_table', '__return_true' );
+
+		$current_blog = (int) get_current_blog_id();
+		$this->seed_aged_records( 1, 5, $current_blog );
+		$this->set_records_ttl( 1 );
+
+		// Swap in a Plugin stub that reports per-site activation.
+		$real_plugin         = $this->admin->plugin;
+		$stub                = new class( $real_plugin ) {
+			public $settings;
+			public $db;
+			public $locations;
+			public $admin;
+			public $connectors;
+			public $network;
+			public function __construct( $real ) {
+				$this->settings   = $real->settings;
+				$this->db         = $real->db;
+				$this->locations  = $real->locations;
+				$this->admin      = $real->admin;
+				$this->connectors = $real->connectors;
+				$this->network    = $real->network;
+			}
+			public function is_multisite_not_network_activated() {
+				return true;
+			}
+			public function is_multisite_network_activated() {
+				return false;
+			}
+			public function is_large_records_table( int $n ): bool {
+				return apply_filters( 'wp_stream_is_large_records_table', $n > 1000000, $n );
+			}
+			public function __call( $name, $args ) {
+				return call_user_func_array( array( $this->settings->plugin ?? null, $name ), $args );
+			}
+		};
+		$this->admin->plugin = $stub;
+
+		try {
+			$this->admin->purge_scheduled_action();
+
+			$scheduled = as_get_scheduled_actions(
+				array(
+					'hook'   => \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION,
+					'status' => \ActionScheduler_Store::STATUS_PENDING,
+				)
+			);
+			$this->assertNotEmpty(
+				$scheduled,
+				'Per-site activation must still enqueue a batch when records are eligible'
+			);
+
+			$action = array_shift( $scheduled );
+			$args   = $action->get_args();
+			$this->assertSame(
+				$current_blog,
+				(int) $args['blog_id'],
+				'Per-site activation must scope the batch to the current blog (not 0 / all blogs)'
+			);
+		} finally {
+			$this->admin->plugin = $real_plugin;
+			remove_filter( 'wp_stream_is_large_records_table', '__return_true' );
+		}//end try
+	}
+
 	public function test_auto_purge_batch_scopes_to_blog_id_when_non_zero() {
 		global $wpdb;
 		if ( ! is_multisite() ) {
@@ -1219,6 +1391,69 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->assertTrue(
 			\WP_Stream\Admin::is_running_auto_purge(),
 			'In-progress (RUNNING) actions must count as running to prevent overlap'
+		);
+
+		as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+	}
+
+	/**
+	 * Integration test for the running-state UI swap. Asserts that the
+	 * "Clean Orphaned Meta" field in Settings::get_fields() flips from
+	 * type=link to type=none and swaps its description when an auto-purge
+	 * chain is active. is_running_auto_purge() is covered in isolation
+	 * above; this test closes the loop on the consumer that drives the UI.
+	 *
+	 * Replaces the e2e specs removed in b4c8f287 for activation-race
+	 * fragility — same assertions, no browser/AS-runner timing surface.
+	 */
+	public function test_clean_orphan_meta_field_reflects_running_state() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+			as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_REAPER_ACTION );
+		}
+
+		$find_field = function () {
+			$fields = $this->plugin->settings->get_fields();
+			foreach ( $fields['advanced']['fields'] as $field ) {
+				if ( isset( $field['name'] ) && 'clean_orphan_meta' === $field['name'] ) {
+					return $field;
+				}
+			}
+			return null;
+		};
+
+		// Idle: link visible, idle description.
+		$idle = $find_field();
+		$this->assertNotNull( $idle, 'clean_orphan_meta field must exist on the Advanced tab' );
+		$this->assertSame( 'link', $idle['type'], 'Idle state must render as a link' );
+		$this->assertStringContainsString(
+			'Schedules an immediate background cleanup',
+			$idle['desc'],
+			'Idle description must explain what the link does'
+		);
+
+		// Simulate an active chain by enqueueing a batch action.
+		as_enqueue_async_action(
+			\WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION,
+			array(
+				'cutoff'     => '2020-01-01 00:00:00',
+				'blog_id'    => 0,
+				'last_entry' => 0,
+			),
+			\WP_Stream\Admin::AUTO_PURGE_GROUP
+		);
+
+		$active = $find_field();
+		$this->assertNotNull( $active );
+		$this->assertSame(
+			'none',
+			$active['type'],
+			'Active state must hide the link by swapping the field type to none'
+		);
+		$this->assertStringContainsString(
+			'Auto-purge is currently running',
+			$active['desc'],
+			'Active description must communicate why the link is hidden'
 		);
 
 		as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );

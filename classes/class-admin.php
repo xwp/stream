@@ -1099,7 +1099,15 @@ class Admin {
 	 * @param int    $last_entry The lower-bound ID of the previous batch's window; 0 on the
 	 *                           first batch in a chain. The next SELECT uses `ID < last_entry`
 	 *                           when non-zero, guaranteeing forward progress even on tables
-	 *                           that grow rapidly during the chain.
+	 *                           that grow rapidly during the chain. Trade-off: any eligible
+	 *                           row that lands inside the already-touched ID range
+	 *                           [window_low, start_from] after that batch ran is skipped
+	 *                           by the current chain and picked up on the next recurring
+	 *                           tick (or small-table fast path). Possible sources: dev/test
+	 *                           seeders, importer/migration plugins replaying historical
+	 *                           rows, or PHP/MySQL clock skew on `created`. Steady-state
+	 *                           logging via Log::log() uses monotonic IDs and current UTC,
+	 *                           so this is a no-op for normal production traffic.
 	 * @throws \InvalidArgumentException When $cutoff is empty (signals AS to mark the action as failed).
 	 * @return void
 	 */
@@ -1270,11 +1278,16 @@ class Admin {
 
 		check_ajax_referer( 'stream_nonce_clean_orphan_meta', 'wp_stream_nonce_clean_orphan_meta' );
 
-		if ( ! function_exists( 'as_has_scheduled_action' ) || ! function_exists( 'as_enqueue_async_action' ) ) {
+		if ( ! function_exists( 'as_get_scheduled_actions' ) || ! function_exists( 'as_enqueue_async_action' ) ) {
 			wp_die( esc_html__( 'Action Scheduler is not available.', 'stream' ), 500 );
 		}
 
-		if ( ! as_has_scheduled_action( self::AUTO_PURGE_REAPER_ACTION ) ) {
+		// Idempotency: skip enqueue when any auto-purge action is already
+		// pending or running. is_running_auto_purge() checks PENDING + RUNNING
+		// across the batch worker and the reaper, so a chain that will run
+		// its own terminal reaper is not duplicated by a manual click landing
+		// in the small CSRF/stale-URL window where the UI link is hidden.
+		if ( ! self::is_running_auto_purge() ) {
 			as_enqueue_async_action( self::AUTO_PURGE_REAPER_ACTION, array(), self::AUTO_PURGE_GROUP );
 		}
 

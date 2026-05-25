@@ -948,6 +948,14 @@ class Settings {
 					esc_attr( $title )
 				);
 				break;
+			case 'none':
+				// Intentional no-op: callers set 'none' to hide a control's value
+				// column while still letting the row label + description render
+				// (e.g. Reset Stream Database while a deletion is running, or
+				// Clean Orphaned Meta while the auto-purge chain is active).
+				// The description string carries the running-state message.
+				$output = '';
+				break;
 			case 'select2':
 				if ( ! isset( $current_value ) ) {
 					$current_value = '';

@@ -15,7 +15,8 @@
 
 ### Notes
 
-- The `wp_stream_auto_purge` action continues to fire once per purge cycle for backward compatibility. The legacy WP-Cron event of the same name is automatically unscheduled on upgrade.
+- The `wp_stream_auto_purge` action continues to fire for backward compatibility, but its semantics have changed: previously it fired on every WP-Cron tick (~every 12 hours) regardless of whether work happened, so some integrators used it as a generic recurring timer. As of this release it fires only when a purge cycle is actually about to run — i.e. after the network-admin scope check, the `keep_records_indefinitely` check, the TTL-validity check, and the overlap guard all pass. Integrations that relied on the hook as a tick-rate timer should switch to `Admin::AUTO_PURGE_ACTION` (the recurring Action Scheduler action, hook name `stream_auto_purge_action`) which retains the "fires on every tick" semantics.
+- The legacy `wp_stream_auto_purge` WP-Cron event is automatically unscheduled on upgrade so it cannot double-fire alongside the new Action Scheduler recurring action.
 
 ## 4.1.2 - February 19, 2026
 
