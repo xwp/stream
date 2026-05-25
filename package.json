@@ -6,7 +6,7 @@
   "author": "XWP",
   "license": "GPLv2+",
   "engines": {
-    "node": "^24.15.0"
+    "node": "^24.16.0"
   },
   "repository": {
     "type": "git",
@@ -33,7 +33,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.6.0",
     "jquery": "4.0.0",
-    "npm-run-all2": "^8.0.4"
+    "npm-run-all2": "^9.0.1"
   },
   "scripts": {
     "build": "wp-scripts build",
