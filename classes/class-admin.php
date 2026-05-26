@@ -757,23 +757,10 @@ class Admin {
 	/**
 	 * Checks if the async deletion process is running.
 	 *
-	 * Short-circuits outside admin (the only callers — Settings::get_fields and
-	 * Settings::get_deletion_warning — render admin UI) and memoises per request,
-	 * since Settings::get_options runs on `init` for every pageload and walks the
-	 * field definition twice in a single request.
-	 *
 	 * @return bool True if the async deletion process is running, false otherwise.
 	 */
 	public static function is_running_async_deletion() {
-		if ( ! is_admin() ) {
-			return false;
-		}
-
-		static $cached = null;
-		if ( null === $cached ) {
-			$cached = as_has_scheduled_action( self::ASYNC_DELETION_ACTION );
-		}
-		return $cached;
+		return as_has_scheduled_action( self::ASYNC_DELETION_ACTION );
 	}
 
 	/**
