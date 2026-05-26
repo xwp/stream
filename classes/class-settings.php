@@ -371,6 +371,7 @@ class Settings {
 						'default' => 0,
 						'sticky'  => 'bottom',
 					),
+					$this->build_clean_orphan_meta_field(),
 				),
 			),
 		);
@@ -450,6 +451,37 @@ class Settings {
 		}
 
 		return $this->fields;
+	}
+
+	/**
+	 * Build the "Clean Orphaned Meta" settings field definition.
+	 *
+	 * Extracted so the auto-purge running-state check
+	 * ({@see Admin::is_running_auto_purge()}) is evaluated once per render
+	 * instead of once per field property.
+	 *
+	 * @return array
+	 */
+	private function build_clean_orphan_meta_field() {
+		$is_running = Admin::is_running_auto_purge();
+
+		return array(
+			'name'    => 'clean_orphan_meta',
+			'title'   => esc_html__( 'Clean Orphaned Meta', 'stream' ),
+			'type'    => $is_running ? 'none' : 'link',
+			'href'    => add_query_arg(
+				array(
+					'action'                            => 'wp_stream_clean_orphan_meta',
+					'wp_stream_nonce_clean_orphan_meta' => wp_create_nonce( 'stream_nonce_clean_orphan_meta' ),
+				),
+				admin_url( 'admin-ajax.php' )
+			),
+			'desc'    => $is_running
+				? esc_html__( 'Auto-purge is currently running. The orphan reaper will execute as part of that cycle; the manual cleanup link is hidden to avoid duplicating the work.', 'stream' )
+				: esc_html__( 'Schedules an immediate background cleanup of stream_meta rows whose parent record is missing. Safe to run while Stream is in use; runs once via Action Scheduler.', 'stream' ),
+			'default' => 0,
+			'sticky'  => 'bottom',
+		);
 	}
 
 	/**
@@ -916,6 +948,14 @@ class Settings {
 					esc_attr( $title )
 				);
 				break;
+			case 'none':
+				// Intentional no-op: callers set 'none' to hide a control's value
+				// column while still letting the row label + description render
+				// (e.g. Reset Stream Database while a deletion is running, or
+				// Clean Orphaned Meta while the auto-purge chain is active).
+				// The description string carries the running-state message.
+				$output = '';
+				break;
 			case 'select2':
 				if ( ! isset( $current_value ) ) {
 					$current_value = '';
@@ -1322,9 +1362,36 @@ class Settings {
 
 		if ( $ttl_after < $ttl_before ) {
 			/**
-			 * Action assists in purging when TTL is shortened
+			 * Fires when the records TTL is shortened.
+			 *
+			 * Preserved for backward compatibility with third-party code that
+			 * hooked this action in Stream <= 4.1.x. The auto-purge itself
+			 * no longer listens to this hook (it was migrated to Action
+			 * Scheduler), so trigger the purge directly below.
 			 */
 			do_action( 'wp_stream_auto_purge' );
+
+			// Trigger an immediate auto-purge cycle so the shortened TTL
+			// takes effect now instead of at the next 12h recurring tick.
+			//
+			// Enqueue the recurring AS action as a one-shot async action so
+			// the work serializes through Action Scheduler. Calling
+			// purge_scheduled_action() inline here would bypass the overlap
+			// guard's view of "in-flight" work (the current request is not a
+			// scheduled action) and could stack a parallel chain when a
+			// real chain is already running. Falls back to inline if AS
+			// isn't loaded (defensive — Plugin::__construct() loads it).
+			if ( function_exists( 'as_enqueue_async_action' ) ) {
+				if ( ! \WP_Stream\Admin::is_running_auto_purge() ) {
+					as_enqueue_async_action(
+						\WP_Stream\Admin::AUTO_PURGE_ACTION,
+						array(),
+						\WP_Stream\Admin::AUTO_PURGE_GROUP
+					);
+				}
+			} elseif ( isset( $this->plugin->admin ) ) {
+				$this->plugin->admin->purge_scheduled_action();
+			}
 		}
 	}
 

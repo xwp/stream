@@ -13,8 +13,6 @@ import { test, expect } from '@wordpress/e2e-test-utils-playwright';
  * suites do not exercise.
  */
 
-const ADMIN = 'https://stream.wpenv.net/wp-admin';
-
 test.describe.configure( { mode: 'serial' } );
 
 let page;
@@ -35,7 +33,7 @@ test.beforeAll( async ( { browser } ) => {
 
 	// The setup fixture deactivates Stream network-wide before the suite.
 	// Reactivate it so the Stream admin pages are reachable.
-	await page.goto( `${ ADMIN }/network/plugins.php` );
+	await page.goto( '/wp-admin/network/plugins.php' );
 	const activate = page.getByLabel( 'Network Activate Stream' );
 	if ( await activate.isVisible() ) {
 		// eslint-disable-next-line no-console
@@ -47,7 +45,7 @@ test.beforeAll( async ( { browser } ) => {
 test.afterAll( async () => {
 	// Deactivate Stream again so other suites start from the same state
 	// as the shared setup fixture.
-	await page.goto( `${ ADMIN }/network/plugins.php` );
+	await page.goto( '/wp-admin/network/plugins.php' );
 	const deactivate = page.getByLabel( 'Network Deactivate Stream' );
 	if ( await deactivate.isVisible() ) {
 		// eslint-disable-next-line no-console
@@ -72,7 +70,7 @@ test.afterAll( async () => {
 
 test.describe( 'Admin UI smoke', () => {
 	test( 'exposes window.jQuery on the Stream records page', async () => {
-		await page.goto( `${ ADMIN }/admin.php?page=wp_stream` );
+		await page.goto( '/wp-admin/admin.php?page=wp_stream' );
 		const version = await page.evaluate(
 			() => window.jQuery && window.jQuery.fn && window.jQuery.fn.jquery,
 		);
@@ -82,12 +80,12 @@ test.describe( 'Admin UI smoke', () => {
 	} );
 
 	test( 'renders the records list table', async () => {
-		await page.goto( `${ ADMIN }/admin.php?page=wp_stream` );
+		await page.goto( '/wp-admin/admin.php?page=wp_stream' );
 		await expect( page.locator( 'table.wp-list-table' ) ).toBeVisible();
 	} );
 
 	test( 'opens the jQuery UI date range picker', async () => {
-		await page.goto( `${ ADMIN }/admin.php?page=wp_stream` );
+		await page.goto( '/wp-admin/admin.php?page=wp_stream' );
 
 		// The date inputs are revealed only when the "Custom" range is selected.
 		// The visible UI is a select2 widget on top of the real <select>, so set
@@ -108,7 +106,7 @@ test.describe( 'Admin UI smoke', () => {
 	} );
 
 	test( 'opens a select2 dropdown', async () => {
-		await page.goto( `${ ADMIN }/admin.php?page=wp_stream` );
+		await page.goto( '/wp-admin/admin.php?page=wp_stream' );
 		const select2 = page.locator( '.select2-selection' ).first();
 		await expect( select2 ).toBeVisible();
 		await select2.click();
@@ -117,12 +115,12 @@ test.describe( 'Admin UI smoke', () => {
 	} );
 
 	test( 'loads the Settings tab', async () => {
-		await page.goto( `${ ADMIN }/admin.php?page=wp_stream_settings` );
+		await page.goto( '/wp-admin/admin.php?page=wp_stream_settings' );
 		await expect( page.locator( 'form' ).first() ).toBeVisible();
 	} );
 
 	test( 'loads the Alerts tab', async () => {
-		await page.goto( `${ ADMIN }/edit.php?post_type=wp_stream_alerts` );
+		await page.goto( '/wp-admin/edit.php?post_type=wp_stream_alerts' );
 		const list = page.locator( '.wp-list-table' );
 		const empty = page.locator( '.no-items, .post-state' );
 		await expect( list.or( empty ).first() ).toBeVisible();
