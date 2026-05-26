@@ -1459,6 +1459,131 @@ class Test_Admin extends WP_StreamTestCase {
 		as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
 	}
 
+	public function test_is_running_async_deletion_reflects_scheduled_state() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::ASYNC_DELETION_ACTION );
+		}
+
+		$this->assertFalse(
+			\WP_Stream\Admin::is_running_async_deletion(),
+			'No scheduled action means not running'
+		);
+
+		as_enqueue_async_action(
+			\WP_Stream\Admin::ASYNC_DELETION_ACTION,
+			array(
+				'total'      => 1,
+				'done'       => 0,
+				'last_entry' => 1,
+				'blog_id'    => (int) get_current_blog_id(),
+			)
+		);
+		$this->assertTrue(
+			\WP_Stream\Admin::is_running_async_deletion(),
+			'A pending async-deletion action means running'
+		);
+
+		as_unschedule_all_actions( \WP_Stream\Admin::ASYNC_DELETION_ACTION );
+		$this->assertFalse(
+			\WP_Stream\Admin::is_running_async_deletion(),
+			'After unscheduling: not running'
+		);
+	}
+
+	/**
+	 * Integration test for the "Reset Stream Database" running-state UI swap.
+	 * Asserts that the delete_all_records field flips from type=link to
+	 * type=none and swaps its description when an async-deletion action is
+	 * scheduled. Mirrors test_clean_orphan_meta_field_reflects_running_state.
+	 */
+	public function test_delete_all_records_field_reflects_running_state() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::ASYNC_DELETION_ACTION );
+		}
+
+		$find_field = function () {
+			$fields = $this->plugin->settings->get_fields();
+			foreach ( $fields['advanced']['fields'] as $field ) {
+				if ( isset( $field['name'] ) && 'delete_all_records' === $field['name'] ) {
+					return $field;
+				}
+			}
+			return null;
+		};
+
+		// Idle: link visible, warning description.
+		$idle = $find_field();
+		$this->assertNotNull( $idle, 'delete_all_records field must exist on the Advanced tab' );
+		$this->assertSame( 'link', $idle['type'], 'Idle state must render as a link' );
+		$this->assertStringContainsString(
+			'Warning',
+			$idle['desc'],
+			'Idle description must show the deletion warning'
+		);
+
+		// Simulate an active deletion by scheduling the action.
+		as_enqueue_async_action(
+			\WP_Stream\Admin::ASYNC_DELETION_ACTION,
+			array(
+				'total'      => 1,
+				'done'       => 0,
+				'last_entry' => 1,
+				'blog_id'    => (int) get_current_blog_id(),
+			)
+		);
+
+		$active = $find_field();
+		$this->assertNotNull( $active );
+		$this->assertSame(
+			'none',
+			$active['type'],
+			'Active state must hide the link by swapping the field type to none'
+		);
+		$this->assertStringContainsString(
+			'Currently deleting records',
+			$active['desc'],
+			'Active description must communicate that deletion is in progress'
+		);
+
+		as_unschedule_all_actions( \WP_Stream\Admin::ASYNC_DELETION_ACTION );
+	}
+
+	/**
+	 * Verifies that get_deletion_warning() honours the pre-computed deletion
+	 * state passed by build_delete_all_records_field(), avoiding a duplicate
+	 * Action Scheduler query inside a single render.
+	 */
+	public function test_get_deletion_warning_respects_precomputed_state() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::ASYNC_DELETION_ACTION );
+		}
+
+		// No deletion scheduled, but caller asserts "running" — message must reflect the argument.
+		$this->assertStringContainsString(
+			'Currently deleting records',
+			$this->plugin->settings->get_deletion_warning( true ),
+			'When caller passes true, message must reflect running deletion regardless of AS state'
+		);
+
+		// Schedule a real action, but caller asserts "not running" — message must reflect the argument.
+		as_enqueue_async_action(
+			\WP_Stream\Admin::ASYNC_DELETION_ACTION,
+			array(
+				'total'      => 1,
+				'done'       => 0,
+				'last_entry' => 1,
+				'blog_id'    => (int) get_current_blog_id(),
+			)
+		);
+		$this->assertStringNotContainsString(
+			'Currently deleting records',
+			$this->plugin->settings->get_deletion_warning( false ),
+			'When caller passes false, message must reflect idle state regardless of AS state'
+		);
+
+		as_unschedule_all_actions( \WP_Stream\Admin::ASYNC_DELETION_ACTION );
+	}
+
 	public function test_register_hooks_auto_purge_action_scheduler_callbacks() {
 		// The Admin instance is constructed by the test bootstrap, so register()
 		// has already run. Just assert the actions are wired up.
