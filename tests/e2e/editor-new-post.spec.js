@@ -18,14 +18,14 @@ test.describe( 'Editor: saving a new post', () => {
 		console.log( `New post ${ postTitle }` );
 
 		// The shared setup deactivates Stream. Reactivate it so the publish action is logged.
-		await page.goto( 'https://stream.wpenv.net/wp-admin/network/plugins.php' );
+		await page.goto( '/wp-admin/network/plugins.php' );
 		const activateLink = page.getByLabel( 'Network Activate Stream' );
 		if ( await activateLink.isVisible().catch( () => false ) ) {
 			await activateLink.click();
 			await page.waitForURL( /plugins\.php/ );
 		}
 
-		await page.goto( 'https://stream.wpenv.net/wp-admin/post-new.php' );
+		await page.goto( '/wp-admin/post-new.php' );
 
 		// Wait for Gutenberg to be ready.
 		await page.waitForFunction( () => window?.wp?.blocks && window?.wp?.data );
@@ -51,14 +51,14 @@ test.describe( 'Editor: saving a new post', () => {
 		console.log( `Post ID: ${ postId }` );
 
 		// Go straight to the Stream log so the assertions below can check the published row.
-		await page.goto( 'https://stream.wpenv.net/wp-admin/admin.php?page=wp_stream' );
+		await page.goto( '/wp-admin/admin.php?page=wp_stream' );
 	} );
 
 	test.afterAll( async () => {
 		// Clean up the published post so it doesn't accumulate in the posts table.
 		if ( postId ) {
-			await page.goto( `https://stream.wpenv.net/wp-admin/post.php?post=${ postId }&action=trash&_wpnonce=` ).catch( () => {} );
-			await page.goto( 'https://stream.wpenv.net/wp-admin/edit.php?post_type=post' );
+			await page.goto( `/wp-admin/post.php?post=${ postId }&action=trash&_wpnonce=` ).catch( () => {} );
+			await page.goto( '/wp-admin/edit.php?post_type=post' );
 			const trashLink = page.getByRole( 'link', { name: `Move “${ postTitle }” to the Trash` } );
 			if ( await trashLink.isVisible().catch( () => false ) ) {
 				await page.getByRole( 'link', { name: `“${ postTitle }” (Edit)` } ).hover();
@@ -67,7 +67,7 @@ test.describe( 'Editor: saving a new post', () => {
 		}
 
 		// Restore the deactivated state expected by other test files.
-		await page.goto( 'https://stream.wpenv.net/wp-admin/network/plugins.php' );
+		await page.goto( '/wp-admin/network/plugins.php' );
 		const deactivateLink = page.getByLabel( 'Network Deactivate Stream' );
 		if ( await deactivateLink.isVisible().catch( () => false ) ) {
 			await deactivateLink.click();

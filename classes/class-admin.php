@@ -26,6 +26,34 @@ class Admin {
 	const ASYNC_DELETION_ACTION = 'stream_erase_large_records_action';
 
 	/**
+	 * Recurring Action Scheduler action that drives the TTL-based auto-purge.
+	 *
+	 * @const string
+	 */
+	const AUTO_PURGE_ACTION = 'stream_auto_purge_action';
+
+	/**
+	 * Async batch worker scheduled by the recurring auto-purge action.
+	 *
+	 * @const string
+	 */
+	const AUTO_PURGE_BATCH_ACTION = 'stream_auto_purge_batch_action';
+
+	/**
+	 * Terminal action that runs the orphan-meta reaper once per chain.
+	 *
+	 * @const string
+	 */
+	const AUTO_PURGE_REAPER_ACTION = 'stream_auto_purge_reaper_action';
+
+	/**
+	 * Action Scheduler group string for all auto-purge actions.
+	 *
+	 * @const string
+	 */
+	const AUTO_PURGE_GROUP = 'stream-auto-purge';
+
+	/**
 	 * Holds Instance of plugin object
 	 *
 	 * @var Plugin
@@ -201,14 +229,32 @@ class Admin {
 			)
 		);
 
-		// Auto purge setup.
+		// Manual "Clean orphaned meta now" action (Settings → Advanced).
+		add_action(
+			'wp_ajax_wp_stream_clean_orphan_meta',
+			array( $this, 'wp_ajax_clean_orphan_meta' )
+		);
+
+		// Render confirmation notices keyed by the wp_stream_message query
+		// arg set on post-action redirects (e.g. orphan_meta_cleanup_scheduled).
+		add_action( 'admin_notices', array( $this, 'maybe_display_message' ) );
+		add_action( 'network_admin_notices', array( $this, 'maybe_display_message' ) );
+
+		// Auto purge setup (Action Scheduler).
 		add_action( 'wp_loaded', array( $this, 'purge_schedule_setup' ) );
 		add_action(
-			'wp_stream_auto_purge',
-			array(
-				$this,
-				'purge_scheduled_action',
-			)
+			self::AUTO_PURGE_ACTION,
+			array( $this, 'purge_scheduled_action' )
+		);
+		add_action(
+			self::AUTO_PURGE_BATCH_ACTION,
+			array( $this, 'auto_purge_batch' ),
+			10,
+			3
+		);
+		add_action(
+			self::AUTO_PURGE_REAPER_ACTION,
+			array( $this, 'auto_purge_reaper' )
 		);
 
 		// Ajax users list.
@@ -731,6 +777,49 @@ class Admin {
 	}
 
 	/**
+	 * Checks if any auto-purge action is currently scheduled or in-flight.
+	 *
+	 * Returns true when either the batched chain worker or the terminal
+	 * orphan reaper is pending OR running. The recurring scheduler is
+	 * intentionally excluded — it is always pending under normal operation,
+	 * so including it here would make the probe useless. Used by the
+	 * Settings → Advanced UI to render an "Auto-purge currently running"
+	 * notice and by the recurring callback as an overlap guard.
+	 *
+	 * Checks both PENDING and IN-PROGRESS statuses so a chain that is
+	 * mid-execution (e.g. the batch worker is currently running and has not
+	 * yet enqueued the next batch) still reports as running. Without the
+	 * RUNNING check the overlap guard can let a second parallel chain stack
+	 * against the same rows.
+	 *
+	 * @return bool
+	 */
+	public static function is_running_auto_purge() {
+		if ( ! function_exists( 'as_get_scheduled_actions' ) ) {
+			return false;
+		}
+
+		foreach ( array( self::AUTO_PURGE_BATCH_ACTION, self::AUTO_PURGE_REAPER_ACTION ) as $hook ) {
+			$found = as_get_scheduled_actions(
+				array(
+					'hook'     => $hook,
+					'status'   => array(
+						\ActionScheduler_Store::STATUS_PENDING,
+						\ActionScheduler_Store::STATUS_RUNNING,
+					),
+					'per_page' => 1,
+				),
+				'ids'
+			);
+			if ( ! empty( $found ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Erases large records from the stream table.
 	 *
 	 * This function deletes records from the stream table in batches, starting from a given entry ID.
@@ -827,8 +916,27 @@ class Admin {
 	 * @return void
 	 */
 	public function purge_schedule_setup() {
-		if ( ! wp_next_scheduled( 'wp_stream_auto_purge' ) ) {
-			wp_schedule_event( time(), 'twicedaily', 'wp_stream_auto_purge' );
+		// Clear the legacy WP-Cron event scheduled by Stream <= 4.1.x so it
+		// cannot double-fire alongside the new AS recurring action.
+		if ( wp_next_scheduled( 'wp_stream_auto_purge' ) ) {
+			wp_clear_scheduled_hook( 'wp_stream_auto_purge' );
+		}
+
+		if ( ! function_exists( 'as_schedule_recurring_action' ) ) {
+			// Action Scheduler not yet loaded (e.g. very early hook); bail.
+			// Plugin::__construct() loads it before init, so this should be unreachable.
+			return;
+		}
+
+		if ( false === as_next_scheduled_action( self::AUTO_PURGE_ACTION ) ) {
+			// 12 hours == old `twicedaily` interval.
+			as_schedule_recurring_action(
+				time(),
+				12 * HOUR_IN_SECONDS,
+				self::AUTO_PURGE_ACTION,
+				array(),
+				self::AUTO_PURGE_GROUP
+			);
 		}
 	}
 
@@ -840,7 +948,7 @@ class Admin {
 	 *
 	 * @global wpdb $wpdb The WordPress database object.
 	 */
-	private function delete_orphaned_meta() {
+	protected function delete_orphaned_meta() {
 		global $wpdb;
 
 		$wpdb->query(
@@ -854,8 +962,6 @@ class Admin {
 	 * @return void
 	 */
 	public function purge_scheduled_action() {
-		global $wpdb;
-
 		// Don't purge when in Network Admin unless Stream is network activated.
 		if (
 			$this->plugin->is_multisite_not_network_activated()
@@ -867,34 +973,386 @@ class Admin {
 
 		$defaults = $this->plugin->settings->get_defaults();
 		if ( $this->plugin->is_multisite_network_activated() ) {
-			$options = (array) get_site_option( 'wp_stream_network', $defaults );
+			$options = wp_parse_args( (array) get_site_option( 'wp_stream_network', array() ), $defaults );
 		} else {
-			$options = (array) get_option( 'wp_stream', $defaults );
+			$options = wp_parse_args( (array) get_option( 'wp_stream', array() ), $defaults );
 		}
 
-		if ( ! empty( $options['general_keep_records_indefinitely'] ) || ! isset( $options['general_records_ttl'] ) ) {
+		// TTL fallback. Settings::get_defaults() runs every settings field
+		// through the `wp_stream_settings_option_fields` filter, which
+		// Network::get_network_admin_fields() uses to strip the `records_ttl`
+		// field from the per-site option's defaults set. When this callback runs
+		// outside any admin context (Action Scheduler, WP-CLI, system cron), the
+		// per-site option_key is in effect, so the filtered defaults array does
+		// not contain general_records_ttl at all. Apply the documented 30-day
+		// default (classes/class-settings.php, `records_ttl` field) only when
+		// the key is genuinely missing, so an operator who set the value via
+		// CLI/SQL keeps their explicit choice.
+		if ( ! isset( $options['general_records_ttl'] ) ) {
+			$options['general_records_ttl'] = 30;
+		}
+
+		if ( ! empty( $options['general_keep_records_indefinitely'] ) ) {
 			return;
 		}
 
-		$days     = $options['general_records_ttl'];
-		$timezone = new DateTimeZone( 'UTC' );
-		$date     = new DateTime( 'now', $timezone );
-
-		$date->sub( DateInterval::createFromDateString( "$days days" ) );
-
-		$where = $wpdb->prepare( ' AND `stream`.`created` < %s', $date->format( 'Y-m-d H:i:s' ) );
-
-		// Multisite but NOT network activated, only purge the current blog.
-		if ( $this->plugin->is_multisite_not_network_activated() ) {
-			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
+		// Refuse to purge with a non-positive TTL. The UI enforces min=1, but
+		// CLI/SQL can set 0 or a negative integer. Honoring those would mean
+		// "delete every record on every cycle", which has no legitimate use
+		// case (keep_records_indefinitely covers the opposite extreme).
+		// Bailing out makes operator error visible (records stop being purged)
+		// instead of catastrophic (records get wiped repeatedly).
+		if ( (int) $options['general_records_ttl'] < 1 ) {
+			return;
 		}
 
-		$wpdb->query(
-			"DELETE `stream`, `meta`
-			FROM {$wpdb->stream} AS `stream`
-			LEFT JOIN {$wpdb->streammeta} AS `meta`
-			ON `meta`.`record_id` = `stream`.`ID`
-			WHERE 1=1 {$where};", // @codingStandardsIgnoreLine $where already prepared
+		// Overlap guard: if any auto-purge action (batch worker or reaper) is
+		// pending or in-progress, don't stack a new chain. Reuses the same
+		// probe used by the Settings UI so the two views of "running" agree.
+		if ( self::is_running_auto_purge() ) {
+			return;
+		}
+
+		/**
+		 * Fires once per auto-purge cycle, after all bail-out checks pass and
+		 * immediately before deletion work is enqueued.
+		 *
+		 * Preserved for backward compatibility with consumers that hooked the
+		 * legacy WP-Cron event of the same name in Stream <= 4.1.x. Note that
+		 * since 4.2.0 this fires only when a purge is actually about to run —
+		 * it no longer fires on every cron tick regardless of whether work
+		 * happens. Hook into the recurring AS action (Admin::AUTO_PURGE_ACTION)
+		 * directly if you need the older "every tick" semantics.
+		 */
+		do_action( 'wp_stream_auto_purge' );
+
+		// Snapshot the UTC cutoff once per recurring tick. Each batch in this
+		// chain operates against this fixed cutoff so the chain is finite.
+		$days   = (int) $options['general_records_ttl'];
+		$cutoff = ( new DateTime( 'now', new DateTimeZone( 'UTC' ) ) )
+			->sub( DateInterval::createFromDateString( $days . ' days' ) )
+			->format( 'Y-m-d H:i:s' );
+
+		// blog_id = 0 means "all blogs" (network-activated path).
+		$blog_id = $this->plugin->is_multisite_not_network_activated() ? (int) get_current_blog_id() : 0;
+
+		global $wpdb;
+
+		// "Is this a large table?" decision matches the manual reset path
+		// (Admin::erase_stream_records()). When the table is small the cost
+		// of scheduling a chain (and waiting for AS to drain it on the next
+		// runner tick) exceeds the cost of a single inline DELETE. Only fall
+		// through to the batched chain when the filter says "yes, large".
+		if ( $blog_id > 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$record_count = (int) $wpdb->get_var(
+				$wpdb->prepare( "SELECT COUNT(ID) FROM {$wpdb->stream} WHERE `blog_id` = %d", $blog_id )
+			);
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$record_count = (int) $wpdb->get_var( "SELECT COUNT(ID) FROM {$wpdb->stream}" );
+		}
+
+		if ( ! $this->plugin->is_large_records_table( $record_count ) ) {
+			// Small-table fast path: one inline multi-table DELETE, then enqueue
+			// the orphan reaper as a one-shot async action so the heal step is
+			// still observable in Tools → Scheduled Actions.
+			if ( $blog_id > 0 ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->query(
+					$wpdb->prepare(
+						"DELETE `stream`, `meta`
+						FROM {$wpdb->stream} AS `stream`
+						LEFT JOIN {$wpdb->streammeta} AS `meta`
+						ON `meta`.`record_id` = `stream`.`ID`
+						WHERE `stream`.`created` < %s AND `stream`.`blog_id` = %d;",
+						$cutoff,
+						$blog_id
+					)
+				);
+			} else {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->query(
+					$wpdb->prepare(
+						"DELETE `stream`, `meta`
+						FROM {$wpdb->stream} AS `stream`
+						LEFT JOIN {$wpdb->streammeta} AS `meta`
+						ON `meta`.`record_id` = `stream`.`ID`
+						WHERE `stream`.`created` < %s;",
+						$cutoff
+					)
+				);
+			}
+
+			as_enqueue_async_action( self::AUTO_PURGE_REAPER_ACTION, array(), self::AUTO_PURGE_GROUP );
+			return;
+		}
+
+		// Large-table path: batched chain.
+		as_enqueue_async_action(
+			self::AUTO_PURGE_BATCH_ACTION,
+			array(
+				'cutoff'  => $cutoff,
+				'blog_id' => $blog_id,
+			),
+			self::AUTO_PURGE_GROUP
+		);
+	}
+
+	/**
+	 * Async Action Scheduler callback: delete one batch of records eligible
+	 * under the snapshotted UTC cutoff, then chain the next batch (or the
+	 * orphan reaper when nothing remains).
+	 *
+	 * Window-based deletion mirrors {@see Admin::erase_large_records()} so the
+	 * InnoDB lock footprint is bounded and predictable on bloated tables.
+	 *
+	 * @param string $cutoff     MySQL DATETIME string in UTC.
+	 * @param int    $blog_id    Blog to scope to, or 0 for all blogs (network-activated).
+	 * @param int    $last_entry The lower-bound ID of the previous batch's window; 0 on the
+	 *                           first batch in a chain. The next SELECT uses `ID < last_entry`
+	 *                           when non-zero, guaranteeing forward progress even on tables
+	 *                           that grow rapidly during the chain. Trade-off: any eligible
+	 *                           row that lands inside the already-touched ID range
+	 *                           [window_low, start_from] after that batch ran is skipped
+	 *                           by the current chain and picked up on the next recurring
+	 *                           tick (or small-table fast path). Possible sources: dev/test
+	 *                           seeders, importer/migration plugins replaying historical
+	 *                           rows, or PHP/MySQL clock skew on `created`. Steady-state
+	 *                           logging via Log::log() uses monotonic IDs and current UTC,
+	 *                           so this is a no-op for normal production traffic.
+	 * @throws \InvalidArgumentException When $cutoff is empty (signals AS to mark the action as failed).
+	 * @return void
+	 */
+	public function auto_purge_batch( $cutoff, $blog_id = 0, $last_entry = 0 ) {
+		global $wpdb;
+
+		$cutoff     = (string) $cutoff;
+		$blog_id    = (int) $blog_id;
+		$last_entry = (int) $last_entry;
+
+		// Defensive: a malformed cutoff would otherwise translate to a no-op
+		// DELETE that still busies the DB. Throw so Action Scheduler marks
+		// the action as failed (and visible in Tools → Scheduled Actions)
+		// rather than silently completing. In practice this is unreachable
+		// because purge_scheduled_action() always populates the cutoff arg
+		// and AS args are immutable; the guard exists for third-party code
+		// that may enqueue the action with bad input.
+		if ( '' === $cutoff ) {
+			throw new \InvalidArgumentException( 'auto_purge_batch requires a non-empty cutoff.' );
+		}
+
+		/**
+		 * Filters the number of records to delete per batch.
+		 *
+		 * Shared with the manual reset path (see {@see Admin::erase_large_records()})
+		 * so site owners only need to tune one knob.
+		 *
+		 * @since 4.1.0
+		 *
+		 * @param int $batch_size Default 250000.
+		 */
+		$batch_size = (int) apply_filters( 'wp_stream_batch_size', 250000 );
+		if ( $batch_size < 1 ) {
+			$batch_size = 250000;
+		}
+
+		// Find the highest-ID record still eligible under the snapshotted cutoff
+		// that lies strictly below the previous window's lower bound (when set).
+		// $last_entry=0 means "first batch in chain" — search from the top.
+		if ( $blog_id > 0 && $last_entry > 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$start_from = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT ID FROM {$wpdb->stream} WHERE `created` < %s AND `blog_id` = %d AND `ID` < %d ORDER BY ID DESC LIMIT 1",
+					$cutoff,
+					$blog_id,
+					$last_entry
+				)
+			);
+		} elseif ( $blog_id > 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$start_from = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT ID FROM {$wpdb->stream} WHERE `created` < %s AND `blog_id` = %d ORDER BY ID DESC LIMIT 1",
+					$cutoff,
+					$blog_id
+				)
+			);
+		} elseif ( $last_entry > 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$start_from = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT ID FROM {$wpdb->stream} WHERE `created` < %s AND `ID` < %d ORDER BY ID DESC LIMIT 1",
+					$cutoff,
+					$last_entry
+				)
+			);
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$start_from = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT ID FROM {$wpdb->stream} WHERE `created` < %s ORDER BY ID DESC LIMIT 1",
+					$cutoff
+				)
+			);
+		}
+
+		if ( empty( $start_from ) ) {
+			// Chain is done. Schedule the orphan reaper as the terminal step.
+			as_enqueue_async_action( self::AUTO_PURGE_REAPER_ACTION, array(), self::AUTO_PURGE_GROUP );
+			return;
+		}
+
+		$start_from = (int) $start_from;
+		$window_low = max( 0, $start_from - $batch_size );
+
+		// Multi-table DELETE: parent + meta in one statement. Mirrors
+		// Admin::erase_large_records().
+		if ( $blog_id > 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query(
+				$wpdb->prepare(
+					"DELETE `stream`, `meta`
+					FROM {$wpdb->stream} AS `stream`
+					LEFT JOIN {$wpdb->streammeta} AS `meta`
+					ON `meta`.`record_id` = `stream`.`ID`
+					WHERE `stream`.`ID` <= %d
+					  AND `stream`.`ID` >= %d
+					  AND `stream`.`created` < %s
+					  AND `stream`.`blog_id` = %d;",
+					$start_from,
+					$window_low,
+					$cutoff,
+					$blog_id
+				)
+			);
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query(
+				$wpdb->prepare(
+					"DELETE `stream`, `meta`
+					FROM {$wpdb->stream} AS `stream`
+					LEFT JOIN {$wpdb->streammeta} AS `meta`
+					ON `meta`.`record_id` = `stream`.`ID`
+					WHERE `stream`.`ID` <= %d
+					  AND `stream`.`ID` >= %d
+					  AND `stream`.`created` < %s;",
+					$start_from,
+					$window_low,
+					$cutoff
+				)
+			);
+		}
+
+		// Chain the next batch. Pass $window_low as the new upper bound so the
+		// next SELECT cannot pick up rows in or above the window we just touched.
+		as_enqueue_async_action(
+			self::AUTO_PURGE_BATCH_ACTION,
+			array(
+				'cutoff'     => $cutoff,
+				'blog_id'    => $blog_id,
+				'last_entry' => $window_low,
+			),
+			self::AUTO_PURGE_GROUP
+		);
+	}
+
+	/**
+	 * Terminal Action Scheduler callback for the auto-purge chain.
+	 *
+	 * Runs once per chain (after the last batch) and once when the manual
+	 * "Clean orphaned meta now" button is used. Cleans up meta rows whose
+	 * parent stream row is already gone — i.e. residue from historical
+	 * unbatched purges and from any logger races during a chain.
+	 *
+	 * @return void
+	 */
+	public function auto_purge_reaper() {
+		$this->delete_orphaned_meta();
+	}
+
+	/**
+	 * Ajax handler for the "Clean orphaned meta now" button on
+	 * Settings → Advanced.
+	 *
+	 * Schedules an immediate async run of the orphan reaper. Idempotent:
+	 * if a reaper is already scheduled, returns without enqueuing a second.
+	 *
+	 * Returns true under WP_STREAM_TESTS so PHPUnit can call this directly
+	 * without exiting the worker.
+	 *
+	 * @return bool|void True under tests; otherwise redirects and exits.
+	 */
+	public function wp_ajax_clean_orphan_meta() {
+		if ( ! current_user_can( $this->settings_cap ) ) {
+			wp_die( esc_html__( 'You do not have permission to do this.', 'stream' ), 403 );
+		}
+
+		check_ajax_referer( 'stream_nonce_clean_orphan_meta', 'wp_stream_nonce_clean_orphan_meta' );
+
+		if ( ! function_exists( 'as_get_scheduled_actions' ) || ! function_exists( 'as_enqueue_async_action' ) ) {
+			wp_die( esc_html__( 'Action Scheduler is not available.', 'stream' ), 500 );
+		}
+
+		// Idempotency: skip enqueue when any auto-purge action is already
+		// pending or running. is_running_auto_purge() checks PENDING + RUNNING
+		// across the batch worker and the reaper, so a chain that will run
+		// its own terminal reaper is not duplicated by a manual click landing
+		// in the small CSRF/stale-URL window where the UI link is hidden.
+		if ( ! self::is_running_auto_purge() ) {
+			as_enqueue_async_action( self::AUTO_PURGE_REAPER_ACTION, array(), self::AUTO_PURGE_GROUP );
+		}
+
+		if ( defined( 'WP_STREAM_TESTS' ) && WP_STREAM_TESTS ) {
+			return true;
+		}
+
+		$is_network = $this->plugin->is_multisite_network_activated();
+		$page_slug  = $is_network ? $this->network->network_settings_page_slug : $this->settings_page_slug;
+		$base_url   = $is_network ? network_admin_url( $this->admin_parent_page ) : admin_url( $this->admin_parent_page );
+
+		wp_safe_redirect(
+			add_query_arg(
+				array(
+					'page'              => $page_slug,
+					'wp_stream_message' => 'orphan_meta_cleanup_scheduled',
+				),
+				$base_url
+			)
+		);
+		exit;
+	}
+
+	/**
+	 * Render admin notices for post-action redirects.
+	 *
+	 * Reads `wp_stream_message` from the query string and renders a matching
+	 * notice. Used to surface "Clean Orphaned Meta" confirmation after the
+	 * Ajax handler redirects back to Settings → Advanced.
+	 *
+	 * @return void
+	 */
+	public function maybe_display_message() {
+		$message = wp_stream_filter_input( INPUT_GET, 'wp_stream_message' );
+		if ( empty( $message ) ) {
+			return;
+		}
+
+		$notices = array(
+			'orphan_meta_cleanup_scheduled' => __(
+				'Orphaned meta cleanup scheduled. Progress is visible under Tools → Scheduled Actions.',
+				'stream'
+			),
+		);
+
+		if ( ! isset( $notices[ $message ] ) ) {
+			return;
+		}
+
+		printf(
+			'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
+			esc_html( $notices[ $message ] )
 		);
 	}
 
