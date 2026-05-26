@@ -175,9 +175,61 @@ class Record {
 			return null;
 		}
 
-		$row['meta'] = (array) get_metadata( 'record', $row['ID'] );
+		$row['meta'] = self::normalize_meta( get_metadata( 'record', $row['ID'] ) );
 
 		return $row;
+	}
+
+	/**
+	 * Normalize Stream's flat stored metadata into the public record shape.
+	 *
+	 * @param array $meta Raw metadata from the database or get_metadata().
+	 * @return array
+	 */
+	public static function normalize_meta( $meta ) {
+		$normalized = array();
+
+		foreach ( (array) $meta as $key => $value ) {
+			$value = self::normalize_meta_value( $value );
+
+			if ( is_string( $key ) && false !== strpos( $key, '[' ) && ']' === substr( $key, -1 ) ) {
+				$main_key = substr( $key, 0, strpos( $key, '[' ) );
+				$sub_key  = substr( $key, strpos( $key, '[' ) + 1, -1 );
+
+				if ( '' !== $main_key && '' !== $sub_key ) {
+					if ( ! isset( $normalized[ $main_key ] ) || ! is_array( $normalized[ $main_key ] ) ) {
+						$normalized[ $main_key ] = array();
+					}
+
+					$normalized[ $main_key ][ $sub_key ] = $value;
+					continue;
+				}
+			}
+
+			$normalized[ $key ] = $value;
+		}
+
+		return $normalized;
+	}
+
+	/**
+	 * Normalize a metadata value from direct SQL or get_metadata().
+	 *
+	 * @param mixed $value Metadata value.
+	 * @return mixed
+	 */
+	protected static function normalize_meta_value( $value ) {
+		if ( is_array( $value ) ) {
+			$value = array_map( 'maybe_unserialize', $value );
+
+			if ( 1 === count( $value ) ) {
+				return reset( $value );
+			}
+
+			return $value;
+		}
+
+		return maybe_unserialize( $value );
 	}
 
 	/**
@@ -226,7 +278,18 @@ class Record {
 	 * @return array
 	 */
 	public function get_meta( $meta_key = '', $single = false ) {
-		return get_metadata( 'record', $this->ID, $meta_key, $single );
+		$meta = get_metadata( 'record', $this->ID, $meta_key, $single );
+
+		if ( '' === $meta_key || ! empty( $meta ) ) {
+			return '' === $meta_key ? self::normalize_meta( $meta ) : $meta;
+		}
+
+		$all_meta = self::normalize_meta( get_metadata( 'record', $this->ID ) );
+		if ( ! array_key_exists( $meta_key, $all_meta ) ) {
+			return $single ? '' : array();
+		}
+
+		return $single ? $all_meta[ $meta_key ] : array( $all_meta[ $meta_key ] );
 	}
 
 	/**

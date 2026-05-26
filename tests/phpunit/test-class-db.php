@@ -144,6 +144,81 @@ class Test_DB extends WP_StreamTestCase {
 		$this->assertEquals( $dummy_data['meta'], $records[0]->meta );
 	}
 
+	public function test_query_fetches_array_meta_when_requested() {
+		$dummy_data         = $this->dummy_stream_data();
+		$dummy_data['meta'] = array(
+			'space_helmet' => 'false',
+			'user_meta'    => array(
+				'agent'        => 'wp_cli',
+				'display_name' => 'HAL 9000',
+			),
+		);
+
+		$stream_id = $this->db->insert( $dummy_data );
+
+		$records = $this->db->query(
+			array(
+				'search'       => $stream_id,
+				'search_field' => 'ID',
+				'with_meta'    => true,
+			)
+		);
+
+		$this->assertCount( 1, $records );
+		$this->assertEquals( $dummy_data['meta'], $records[0]->meta );
+
+		$record = Record::get_by_id( $stream_id );
+		$this->assertEquals( $dummy_data['meta'], $record['meta'] );
+
+		$record = new Record( (object) array( 'ID' => $stream_id ) );
+		$this->assertEquals( $dummy_data['meta']['user_meta'], $record->get_meta( 'user_meta', true ) );
+	}
+
+	public function test_query_with_meta_applies_query_filter_before_pagination() {
+		global $wpdb;
+
+		$first_record         = $this->dummy_stream_data();
+		$first_record['meta'] = array( 'space_helmet' => 'false' );
+		$first_id             = $this->db->insert( $first_record );
+
+		$second_record            = $this->dummy_stream_data();
+		$second_record['summary'] = 'Second filtered record';
+		$second_record['meta']    = array( 'space_helmet' => 'true' );
+		$second_id                = $this->db->insert( $second_record );
+
+		$filter = function ( $query, $args ) use ( $wpdb, $second_id ) {
+			if ( ! empty( $args['with_meta'] ) ) {
+				$query = str_replace(
+					'WHERE 1=1',
+					$wpdb->prepare( "WHERE 1=1 AND $wpdb->stream.ID = %d", $second_id ),
+					$query
+				);
+			}
+
+			return $query;
+		};
+
+		add_filter( 'wp_stream_db_query', $filter, 10, 2 );
+
+		try {
+			$records = $this->db->query(
+				array(
+					'orderby'          => 'ID',
+					'order'            => 'ASC',
+					'records_per_page' => 1,
+					'with_meta'        => true,
+				)
+			);
+		} finally {
+			remove_filter( 'wp_stream_db_query', $filter, 10 );
+		}
+
+		$this->assertNotEquals( $first_id, $second_id );
+		$this->assertCount( 1, $records );
+		$this->assertEquals( $second_id, $records[0]->ID );
+		$this->assertEquals( $second_record['meta'], $records[0]->meta );
+	}
+
 	public function test_existing_records() {
 		$summaries = $this->db->existing_records( 'summary' );
 		$this->assertNotEmpty( $summaries );

@@ -345,17 +345,7 @@ class List_Table extends \WP_List_Table {
 					);
 				}
 				if ( $this->should_display_metadata() && $record->meta ) {
-					$meta = array();
-					foreach ( $record->meta as $key => $value ) {
-						if ( false === strpos( $key, '[' ) ) {
-							$meta[ $key ] = $value;
-						} else {
-							$main_key = substr( $key, 0, strpos( $key, '[' ) );
-							$sub_key  = substr( $key, strpos( $key, '[' ) + 1, - 1 );
-
-							$meta[ $main_key ][ $sub_key ] = $value;
-						}
-					}
+					$meta = Record::normalize_meta( $record->meta );
 					$out .= '<details><summary>' . esc_html__( 'Metadata', 'stream' ) . '</summary><pre>';
 					$out .= esc_html( wp_json_encode( $meta, JSON_PRETTY_PRINT ) );
 					$out .= '</pre></details>';

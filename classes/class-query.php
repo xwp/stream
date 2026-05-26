@@ -231,9 +231,6 @@ class Query {
 			if ( ! empty( $fields ) && ! in_array( 'ID', $fields, true ) ) {
 				$selects[] = "$wpdb->stream.ID AS record_id";
 			}
-
-			$selects[] = "$wpdb->streammeta.meta_key";
-			$selects[] = "$wpdb->streammeta.meta_value";
 		}
 
 		$select = implode( ', ', $selects );
@@ -248,40 +245,15 @@ class Query {
 		 */
 		$where = apply_filters( 'wp_stream_db_query_where', $where );
 
-		$query_where = $where;
-
-		if ( $with_meta ) {
-			/**
-			 * Build the query just to get the IDs for the current page before
-			 * expanding the result set with one row per metadata entry.
-			 */
-			$query = "SELECT $wpdb->stream.ID
-			FROM $wpdb->stream
-			WHERE 1=1 {$where}
-			{$orderby}
-			{$limits}";
-
-			$ids = $wpdb->get_col( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-
-			if ( $ids ) {
-				$ids_placeholder = implode( ', ', array_fill( 0, count( $ids ), '%d' ) );
-				$query_where    .= $wpdb->prepare( " AND $wpdb->stream.ID IN ({$ids_placeholder})", $ids ); // @codingStandardsIgnoreLine prepare okay
-			} else {
-				$query_where .= ' AND 0 = 1';
-			}
-
-			$join = "LEFT JOIN $wpdb->streammeta ON $wpdb->stream.ID = $wpdb->streammeta.record_id";
-		}
-
 		/**
 		 * BUILD THE FINAL QUERY
 		 */
 		$query = "SELECT {$select}
 		FROM $wpdb->stream
 		{$join}
-		WHERE 1=1 {$query_where}
+		WHERE 1=1 {$where}
 		{$orderby}
-		" . ( $with_meta ? '' : $limits );
+		{$limits}";
 
 		/**
 		 * Filter allows the final query to be modified before execution
@@ -309,33 +281,48 @@ class Query {
 		$count_query = apply_filters( 'wp_stream_db_count_query', $count_query, $args );
 
 		if ( $with_meta ) {
-			$items = array();
-			foreach ( $wpdb->get_results( $query ) as $item ) { // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-				$record_id = isset( $item->ID ) ? $item->ID : $item->record_id;
+			$items      = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$record_ids = array();
 
-				if ( ! isset( $items[ $record_id ] ) ) {
-					$items[ $record_id ]       = clone $item;
-					$items[ $record_id ]->meta = array();
-					unset( $items[ $record_id ]->meta_key );
-					unset( $items[ $record_id ]->meta_value );
-					unset( $items[ $record_id ]->record_id );
-				}
-
-				if ( ! isset( $item->meta_key ) ) {
+			foreach ( $items as $item ) {
+				if ( ! isset( $item->ID ) && ! isset( $item->record_id ) ) {
 					continue;
 				}
 
-				if ( isset( $items[ $record_id ]->meta[ $item->meta_key ] ) ) {
-					if ( ! is_array( $items[ $record_id ]->meta[ $item->meta_key ] ) ) {
-						$items[ $record_id ]->meta[ $item->meta_key ] = array( $items[ $record_id ]->meta[ $item->meta_key ] );
+				$record_ids[] = isset( $item->ID ) ? absint( $item->ID ) : absint( $item->record_id );
+			}
+
+			$meta = array();
+			if ( ! empty( $record_ids ) ) {
+				$record_ids      = array_values( array_unique( $record_ids ) );
+				$ids_placeholder = implode( ', ', array_fill( 0, count( $record_ids ), '%d' ) );
+				$meta_query      = $wpdb->prepare( "SELECT record_id, meta_key, meta_value FROM $wpdb->streammeta WHERE record_id IN ({$ids_placeholder}) ORDER BY meta_id ASC", $record_ids ); // @codingStandardsIgnoreLine prepare okay
+
+				foreach ( $wpdb->get_results( $meta_query ) as $meta_row ) { // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+					$record_id = absint( $meta_row->record_id );
+
+					if ( ! isset( $meta[ $record_id ] ) ) {
+						$meta[ $record_id ] = array();
 					}
-					$items[ $record_id ]->meta[ $item->meta_key ][] = $item->meta_value;
-				} else {
-					$items[ $record_id ]->meta[ $item->meta_key ] = $item->meta_value;
+
+					if ( isset( $meta[ $record_id ][ $meta_row->meta_key ] ) ) {
+						if ( ! is_array( $meta[ $record_id ][ $meta_row->meta_key ] ) ) {
+							$meta[ $record_id ][ $meta_row->meta_key ] = array( $meta[ $record_id ][ $meta_row->meta_key ] );
+						}
+
+						$meta[ $record_id ][ $meta_row->meta_key ][] = $meta_row->meta_value;
+					} else {
+						$meta[ $record_id ][ $meta_row->meta_key ] = $meta_row->meta_value;
+					}
 				}
 			}
 
-			$items = array_values( $items );
+			foreach ( $items as $item ) {
+				$record_id  = isset( $item->ID ) ? absint( $item->ID ) : absint( $item->record_id );
+				$item->meta = isset( $meta[ $record_id ] ) ? Record::normalize_meta( $meta[ $record_id ] ) : array();
+
+				unset( $item->record_id );
+			}
 		} else {
 			$items = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
