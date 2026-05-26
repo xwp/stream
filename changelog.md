@@ -1,6 +1,6 @@
 # Stream Changelog
 
-## 4.2.0 - TBD
+## 4.2.0 - May 28, 2026
 
 ### New Features
 

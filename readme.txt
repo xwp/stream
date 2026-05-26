@@ -134,9 +134,9 @@ Use only `$_SERVER['REMOTE_ADDR']` as the client IP address for event logs witho
 
 == Changelog ==
 
-= 4.2.0 - TBD =
+= 4.2.0 - May 28, 2026 =
 
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#420---tbd](https://github.com/xwp/stream/blob/develop/changelog.md#420---tbd)
+See: [https://github.com/xwp/stream/blob/develop/changelog.md#420---may-28-2026](https://github.com/xwp/stream/blob/develop/changelog.md#420---may-28-2026)
 
 = 4.1.2 - February 19, 2026 =
 
