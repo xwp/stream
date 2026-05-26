@@ -10,6 +10,7 @@
 
 - Fix unbounded growth of `stream` / `stream_meta` tables: the TTL-based auto-purge now runs via Action Scheduler with batched deletion (default 250,000 rows per batch via the existing `wp_stream_batch_size` filter), resolving database bloat on sites where the previous WP-Cron-driven purge silently failed or timed out on large tables (XWPENG-28, [#1882](https://github.com/xwp/stream/pull/1882)).
 - Fix orphan `stream_meta` rows accumulating across repeated purge cycles: a terminal orphan reaper now runs at the end of every auto-purge chain, healing installs that have residual orphans from historical interrupted purges.
+- Skip Action Scheduler "is running?" probes on front-end pageloads: the `delete_all_records` and `clean_orphan_meta` settings fields no longer issue Action Scheduler queries on every front-end request, eliminating 3-4 unnecessary queries per pageview on every Stream-active site ([#1884](https://github.com/xwp/stream/issues/1884), [#1885](https://github.com/xwp/stream/pull/1885)).
 
 ### Enhancements
 
