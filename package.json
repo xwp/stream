@@ -71,7 +71,7 @@
     "install-wordpress": "npm run cli wp core multisite-install"
   },
   "dependencies": {
-    "select2": "^4.0.13",
+    "select2": "^4.1.0",
     "timeago": "^1.6.7"
   },
   "overrides": {
