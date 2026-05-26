@@ -3,7 +3,7 @@ Contributors: xwp
 Tags: wp stream, stream, activity, logs, track
 Requires at least: 4.6
 Tested up to: 6.9
-Stable tag: 4.1.2
+Stable tag: 4.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -133,6 +133,10 @@ Use only `$_SERVER['REMOTE_ADDR']` as the client IP address for event logs witho
 
 
 == Changelog ==
+
+= 4.2.0 - TBD =
+
+See: [https://github.com/xwp/stream/blob/develop/changelog.md#420---tbd](https://github.com/xwp/stream/blob/develop/changelog.md#420---tbd)
 
 = 4.1.2 - February 19, 2026 =
 
