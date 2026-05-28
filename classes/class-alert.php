@@ -126,6 +126,24 @@ class Alert {
 	}
 
 	/**
+	 * Permanently delete the underlying alert post.
+	 *
+	 * @return bool True if the post was deleted, false otherwise.
+	 */
+	public function delete() {
+		if ( empty( $this->ID ) ) {
+			return false;
+		}
+
+		$post = get_post( $this->ID );
+		if ( ! ( $post instanceof \WP_Post ) || Alerts::POST_TYPE !== $post->post_type ) {
+			return false;
+		}
+
+		return (bool) wp_delete_post( $this->ID, true );
+	}
+
+	/**
 	 * Process settings form data
 	 *
 	 * @todo Confirm if the function is necessary, it's currently unreference

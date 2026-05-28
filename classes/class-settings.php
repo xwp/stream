@@ -355,22 +355,8 @@ class Settings {
 						'after_field' => esc_html__( 'Enabled', 'stream' ),
 						'default'     => 0,
 					),
-					array(
-						'name'    => 'delete_all_records',
-						'title'   => esc_html__( 'Reset Stream Database', 'stream' ),
-						'type'    => Admin::is_running_async_deletion() ? 'none' : 'link',
-						'href'    => add_query_arg(
-							array(
-								'action'                => 'wp_stream_reset',
-								'wp_stream_nonce_reset' => wp_create_nonce( 'stream_nonce_reset' ),
-							),
-							admin_url( 'admin-ajax.php' )
-						),
-						'class'   => 'warning',
-						'desc'    => esc_html( $this->get_deletion_warning() ),
-						'default' => 0,
-						'sticky'  => 'bottom',
-					),
+					$this->build_delete_all_records_field(),
+					$this->build_clean_orphan_meta_field(),
 				),
 			),
 		);
@@ -400,6 +386,31 @@ class Settings {
 
 		array_push( $fields['advanced']['fields'], $wp_cron_tracking );
 
+		// Abilities API toggle is only meaningful on WordPress 6.9+. On
+		// network-activated multisite, Abilities::is_enabled() reads the
+		// network option (wp_stream_network), so a per-site checkbox on the
+		// site's own settings screen would be a no-op and misleading. Hide
+		// the field from per-site settings pages, but keep it available in
+		// network admin and in REST/CLI contexts where update_all_setting_values()
+		// routes writes to the network option correctly.
+		$hide_per_site = $this->plugin->is_network_activated() && is_admin() && ! is_network_admin();
+
+		if (
+			class_exists( '\WP_Ability' )
+			&& ! $hide_per_site
+		) {
+			$enable_abilities_api = array(
+				'name'        => 'enable_abilities_api',
+				'title'       => esc_html__( 'Enable Abilities API and MCP', 'stream' ),
+				'type'        => 'checkbox',
+				'desc'        => esc_html__( 'Expose Stream operations to AI agents via the WordPress Abilities API (and MCP when the MCP Adapter plugin is installed). Requires WordPress 6.9.', 'stream' ),
+				'after_field' => esc_html__( 'Enabled', 'stream' ),
+				'default'     => 0,
+			);
+
+			array_push( $fields['advanced']['fields'], $enable_abilities_api );
+		}
+
 		/**
 		 * Filter allows for modification of options fields
 		 *
@@ -425,6 +436,168 @@ class Settings {
 		}
 
 		return $this->fields;
+	}
+
+	/**
+	 * Build the "Reset Stream Database" settings field definition.
+	 *
+	 * Extracted so the async-deletion running-state check
+	 * ({@see Admin::is_running_async_deletion()}) is evaluated once per render
+	 * instead of once per field property, and only in admin context.
+	 *
+	 * `Settings::__construct` populates `$this->options = $this->get_options()`
+	 * on the `init` hook for every pageload, which walks `get_fields()`. The
+	 * field is only ever rendered in admin, so outside admin the dynamic state
+	 * is irrelevant and the Action Scheduler query is skipped entirely.
+	 *
+	 * @return array
+	 */
+	private function build_delete_all_records_field() {
+		$is_running_deletion = is_admin() ? Admin::is_running_async_deletion() : false;
+
+		return array(
+			'name'    => 'delete_all_records',
+			'title'   => esc_html__( 'Reset Stream Database', 'stream' ),
+			'type'    => $is_running_deletion ? 'none' : 'link',
+			'href'    => add_query_arg(
+				array(
+					'action'                => 'wp_stream_reset',
+					'wp_stream_nonce_reset' => wp_create_nonce( 'stream_nonce_reset' ),
+				),
+				admin_url( 'admin-ajax.php' )
+			),
+			'class'   => 'warning',
+			'desc'    => esc_html( $this->get_deletion_warning( $is_running_deletion ) ),
+			'default' => 0,
+			'sticky'  => 'bottom',
+		);
+	}
+
+	/**
+	 * Build the "Clean Orphaned Meta" settings field definition.
+	 *
+	 * Extracted so the auto-purge running-state check
+	 * ({@see Admin::is_running_auto_purge()}) is evaluated once per render
+	 * instead of once per field property, and only in admin context — the
+	 * field is never rendered outside admin, so the Action Scheduler query
+	 * is skipped on front-end pageloads.
+	 *
+	 * @return array
+	 */
+	private function build_clean_orphan_meta_field() {
+		$is_running = is_admin() ? Admin::is_running_auto_purge() : false;
+
+		return array(
+			'name'    => 'clean_orphan_meta',
+			'title'   => esc_html__( 'Clean Orphaned Meta', 'stream' ),
+			'type'    => $is_running ? 'none' : 'link',
+			'href'    => add_query_arg(
+				array(
+					'action'                            => 'wp_stream_clean_orphan_meta',
+					'wp_stream_nonce_clean_orphan_meta' => wp_create_nonce( 'stream_nonce_clean_orphan_meta' ),
+				),
+				admin_url( 'admin-ajax.php' )
+			),
+			'desc'    => $is_running
+				? esc_html__( 'Auto-purge is currently running. The orphan reaper will execute as part of that cycle; the manual cleanup link is hidden to avoid duplicating the work.', 'stream' )
+				: esc_html__( 'Schedules an immediate background cleanup of stream_meta rows whose parent record is missing. Safe to run while Stream is in use; runs once via Action Scheduler.', 'stream' ),
+			'default' => 0,
+			'sticky'  => 'bottom',
+		);
+	}
+
+	/**
+	 * Returns a single setting value, reading the network-level option when
+	 * Stream is network-activated on multisite.
+	 *
+	 * Settings::get_options() only loads from get_site_option() inside
+	 * is_network_admin() screens. In REST and frontend contexts on a
+	 * network-activated install, $this->options reflects the (typically empty)
+	 * per-site option, which would silently mask a network-admin-controlled
+	 * setting. This accessor handles that case so callers don't have to
+	 * duplicate the multisite branching.
+	 *
+	 * @param string $key           Fully-qualified setting key (e.g. "advanced_enable_abilities_api").
+	 * @param mixed  $default_value Value returned when the setting is not present.
+	 *
+	 * @return mixed
+	 */
+	public function get_setting_value( $key, $default_value = null ) {
+		if (
+			is_multisite()
+			&& isset( $this->plugin )
+			&& $this->plugin->is_network_activated()
+		) {
+			$options = (array) get_site_option( $this->network_options_key, array() );
+		} else {
+			$options = (array) $this->options;
+		}
+
+		return isset( $options[ $key ] ) ? $options[ $key ] : $default_value;
+	}
+
+	/**
+	 * Returns the full options array, reading the network-level option when
+	 * Stream is network-activated on multisite. Mirrors get_setting_value()
+	 * but returns the entire array.
+	 *
+	 * @return array
+	 */
+	public function get_all_setting_values() {
+		if (
+			is_multisite()
+			&& isset( $this->plugin )
+			&& $this->plugin->is_network_activated()
+		) {
+			return (array) get_site_option( $this->network_options_key, array() );
+		}
+
+		return (array) $this->options;
+	}
+
+	/**
+	 * Persists the options array, writing to the network-level option when
+	 * Stream is network-activated on multisite. Used by REST/ability writers
+	 * which run outside is_network_admin() but must respect the authoritative
+	 * store. Refreshes $this->options afterwards so in-request reads see the
+	 * new values.
+	 *
+	 * @param array $options Full options array to persist (caller is responsible
+	 *                       for merging over existing values when desired).
+	 *
+	 * @return bool True on a successful write, false on no-op or failure.
+	 */
+	public function update_all_setting_values( array $options ) {
+		$is_network = (
+			is_multisite()
+			&& isset( $this->plugin )
+			&& $this->plugin->is_network_activated()
+		);
+
+		if ( $is_network ) {
+			$result = update_site_option( $this->network_options_key, $options );
+		} else {
+			$result = update_option( $this->option_key, $options );
+		}
+
+		// Refresh the in-memory copy so subsequent reads in the same request
+		// see the updated values. On network-activated installs we re-read
+		// from the network option directly because Settings::get_options()
+		// gates on is_network_admin() and would return the (now-stale)
+		// per-site option in REST contexts. Merge defaults on top so callers
+		// reading $plugin->settings->options keep seeing a fully-populated
+		// array (matches get_options()'s historical contract).
+		if ( $is_network ) {
+			$defaults      = $this->get_defaults( $this->option_key );
+			$this->options = wp_parse_args(
+				(array) get_site_option( $this->network_options_key, array() ),
+				$defaults
+			);
+		} else {
+			$this->options = $this->get_options();
+		}
+
+		return (bool) $result;
 	}
 
 	/**
@@ -475,12 +648,22 @@ class Settings {
 	 * Retrieves the deletion warning message based on the site type
 	 * and whether or not there is currently a process running to delete the tables.
 	 *
+	 * @param bool|null $is_running_deletion Optional pre-computed deletion state.
+	 *                                       Pass to avoid a duplicate Action Scheduler
+	 *                                       query when the caller has already checked.
+	 *                                       Defaults to checking only in admin context.
+	 *                                       Untyped parameter to remain compatible with
+	 *                                       phpcs.xml.dist testVersion=7.0- (nullable
+	 *                                       type declarations require PHP 7.1+).
 	 * @return string The deletion warning message.
 	 */
-	public function get_deletion_warning(): string {
+	public function get_deletion_warning( $is_running_deletion = null ): string {
 
-		// Check if there is an action scheduler event running already deleting things.
-		if ( Admin::is_running_async_deletion() ) {
+		if ( null === $is_running_deletion ) {
+			$is_running_deletion = is_admin() ? Admin::is_running_async_deletion() : false;
+		}
+
+		if ( $is_running_deletion ) {
 
 			$warning = __( 'Currently deleting records. Please be patient, this can take a while.', 'stream' );
 
@@ -796,6 +979,14 @@ class Settings {
 					esc_attr( $href ),
 					esc_attr( $title )
 				);
+				break;
+			case 'none':
+				// Intentional no-op: callers set 'none' to hide a control's value
+				// column while still letting the row label + description render
+				// (e.g. Reset Stream Database while a deletion is running, or
+				// Clean Orphaned Meta while the auto-purge chain is active).
+				// The description string carries the running-state message.
+				$output = '';
 				break;
 			case 'select2':
 				if ( ! isset( $current_value ) ) {
@@ -1203,9 +1394,36 @@ class Settings {
 
 		if ( $ttl_after < $ttl_before ) {
 			/**
-			 * Action assists in purging when TTL is shortened
+			 * Fires when the records TTL is shortened.
+			 *
+			 * Preserved for backward compatibility with third-party code that
+			 * hooked this action in Stream <= 4.1.x. The auto-purge itself
+			 * no longer listens to this hook (it was migrated to Action
+			 * Scheduler), so trigger the purge directly below.
 			 */
 			do_action( 'wp_stream_auto_purge' );
+
+			// Trigger an immediate auto-purge cycle so the shortened TTL
+			// takes effect now instead of at the next 12h recurring tick.
+			//
+			// Enqueue the recurring AS action as a one-shot async action so
+			// the work serializes through Action Scheduler. Calling
+			// purge_scheduled_action() inline here would bypass the overlap
+			// guard's view of "in-flight" work (the current request is not a
+			// scheduled action) and could stack a parallel chain when a
+			// real chain is already running. Falls back to inline if AS
+			// isn't loaded (defensive — Plugin::__construct() loads it).
+			if ( function_exists( 'as_enqueue_async_action' ) ) {
+				if ( ! \WP_Stream\Admin::is_running_auto_purge() ) {
+					as_enqueue_async_action(
+						\WP_Stream\Admin::AUTO_PURGE_ACTION,
+						array(),
+						\WP_Stream\Admin::AUTO_PURGE_GROUP
+					);
+				}
+			} elseif ( isset( $this->plugin->admin ) ) {
+				$this->plugin->admin->purge_scheduled_action();
+			}
 		}
 	}
 

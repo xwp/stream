@@ -17,6 +17,15 @@ define( 'WP_STREAM_TESTS', true );
 define( 'WP_STREAM_DEV_DEBUG', true );
 define( 'WP_STEAM_TESTDATA', __DIR__ . '/data' );
 
+// Load the shared abilities trait at bootstrap. Production loads it via
+// Abilities::load_abilities() before any class-ability-*.php file is included.
+// PHPUnit's coverage post-processor with processUncoveredFiles="true" walks the
+// <coverage><include> directories directly via include_once, bypassing the
+// plugin's loader, so each ability class hits a fatal on `use
+// Trait_View_Stream_Permission`. Loading the trait here mirrors the production
+// chokepoint without per-file require_once noise.
+require_once dirname( __DIR__ ) . '/abilities/trait-view-stream-permission.php';
+
 // @see https://core.trac.wordpress.org/browser/trunk/tests/phpunit/includes/functions.php
 require_once $_tests_dir . '/includes/functions.php';
 
@@ -120,3 +129,4 @@ require __DIR__ . '/testcase.php';
 
 // Base class for future tests
 require __DIR__ . '/phpunit/test-class-alert-trigger.php';
+require __DIR__ . '/phpunit/abilities/abilities-testcase.php';

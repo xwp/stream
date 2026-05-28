@@ -12,7 +12,7 @@ test.beforeAll( async ( { browser } ) => {
 } );
 
 test.afterAll( async () => {
-	await page.goto( 'http://stream.wpenv.net/wp-admin/network/plugins.php' );
+	await page.goto( '/wp-admin/network/plugins.php' );
 	const isActive = await page
 		.getByLabel( 'Network Deactivate Stream' )
 		.isVisible();
@@ -27,7 +27,7 @@ test.afterAll( async () => {
 test.describe( 'Network: shows network activated states', () => {
 	// Do we have a published row?
 	test( 'does not show stream in network admin when deactivated', async () => {
-		await page.goto( 'http://stream.wpenv.net/wp-admin/network/index.php' );
+		await page.goto( '/wp-admin/network/index.php' );
 		// Expects Stream log to not have the Network Settings.
 		await expect(
 			page.locator( '[href*="admin.php?page=wp_stream"]' ),
@@ -36,7 +36,7 @@ test.describe( 'Network: shows network activated states', () => {
 
 	// We should not have an updated row. This times out which makes it fail.
 	test( 'does not have updated row', async () => {
-		await page.goto( 'http://stream.wpenv.net/wp-admin/network/plugins.php' );
+		await page.goto( '/wp-admin/network/plugins.php' );
 		const isInactive = await page
 			.getByLabel( 'Network Activate Stream' )
 			.isVisible();
@@ -47,7 +47,7 @@ test.describe( 'Network: shows network activated states', () => {
 			await page.getByLabel( 'Network Activate Stream' ).click();
 		}
 
-		await page.goto( 'http://stream.wpenv.net/wp-admin/network/index.php' );
+		await page.goto( '/wp-admin/network/index.php' );
 		// Expects Stream log to not have the Network Settings.
 		await expect(
 			page.locator( '[href*="admin.php?page=wp_stream_network_settings"]' ),

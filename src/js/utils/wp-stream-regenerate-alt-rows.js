@@ -14,6 +14,6 @@ export default function regenerateAltRows( $rows ) {
 	$rows.each(
 		function( index ) {
 			$( this ).addClass( index % 2 ? '' : 'alternate' );
-		}
+		},
 	);
 }

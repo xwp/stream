@@ -11,7 +11,7 @@ const authFile = 'playwright/.auth/user.json';
  */
 setup( 'authenticate', async ( { page } ) => {
 	// Log in.
-	await page.goto( 'http://stream.wpenv.net/wp-login.php' );
+	await page.goto( '/wp-login.php' );
 	await page.getByLabel( 'Username or Email Address' ).fill( 'admin' );
 	await page.getByLabel( 'Password', { exact: true } ).fill( 'password' );
 	await page.getByRole( 'button', { name: 'Log In' } ).click();
@@ -19,9 +19,9 @@ setup( 'authenticate', async ( { page } ) => {
 
 	// Sometimes login flow sets cookies in the process of several redirects.
 	// Wait for the final URL to ensure that the cookies are actually set.
-	await page.waitForURL( 'http://stream.wpenv.net/wp-admin/' );
+	await page.waitForURL( '/wp-admin/' );
 
-	await page.goto( 'http://stream.wpenv.net/wp-admin/network/plugins.php' );
+	await page.goto( '/wp-admin/network/plugins.php' );
 	const isActive = await page.getByLabel( 'Network Deactivate Stream' ).isVisible();
 
 	// eslint-disable-next-line no-console
