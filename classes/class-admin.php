@@ -659,9 +659,12 @@ class Admin {
 				esc_html__( "You don't have sufficient privileges to do this action.", 'stream' )
 			);
 		}
-		
-		// Create and update the database tables if they do not exist.
-		$this->plugin->install->check();
+
+		// Ensure the database tables exist before attempting to clear records.
+		// Install::check() short-circuits on DOING_AJAX, so call install()
+		// directly. dbDelta is idempotent and safe to run when tables already
+		// exist.
+		$this->plugin->install->install( $this->plugin->get_version() );
 
 		$this->erase_stream_records();
 
