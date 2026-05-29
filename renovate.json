@@ -1,11 +1,15 @@
 {
   "extends": [
-    "config:base"
+    "config:base",
+    "monorepo:wordpress"
   ],
   "enabledManagers": [
     "npm"
   ],
   "rangeStrategy": "bump",
+  "postUpdateOptions": [
+    "npmDedupe"
+  ],
   "packageRules": [
     {
       "updateTypes": [

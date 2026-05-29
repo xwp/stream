@@ -29,13 +29,6 @@ class Connector_Posts extends Connector {
 	);
 
 	/**
-	 * Register connector in the WP Frontend
-	 *
-	 * @var bool
-	 */
-	public $register_frontend = false;
-
-	/**
 	 * Return translated connector label
 	 *
 	 * @return string Translated connector label
@@ -117,7 +110,7 @@ class Connector_Posts extends Connector {
 				/* translators: %s: a post type singular name (e.g. "Post") */
 				$links[ sprintf( esc_html_x( 'Restore %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = $untrash;
 				/* translators: %s: a post type singular name (e.g. "Post") */
-				$links[ sprintf( esc_html_x( 'Delete %s Permenantly', 'Post type singular name', 'stream' ), $post_type_name ) ] = $delete;
+				$links[ sprintf( esc_html_x( 'Delete %s Permanently', 'Post type singular name', 'stream' ), $post_type_name ) ] = $delete;
 			} else {
 				/* translators: %s a post type singular name (e.g. "Post") */
 				$links[ sprintf( esc_html_x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = get_edit_post_link( $post->ID );
@@ -161,28 +154,34 @@ class Connector_Posts extends Connector {
 	 *
 	 * @action transition_post_status
 	 *
-	 * @param mixed    $new  New status.
-	 * @param mixed    $old  Old status.
-	 * @param \WP_Post $post Post object.
+	 * @param mixed    $new_status New status.
+	 * @param mixed    $old_status Old status.
+	 * @param \WP_Post $post       Post object.
 	 */
-	public function callback_transition_post_status( $new, $old, $post ) {
+	public function callback_transition_post_status( $new_status, $old_status, $post ) {
+
 		if ( in_array( $post->post_type, $this->get_excluded_post_types(), true ) ) {
 			return;
 		}
 
+		// We don't want the meta box update request, just the post update.
+		if ( ! empty( wp_stream_filter_input( INPUT_GET, 'meta-box-loader' ) ) ) {
+			return;
+		}
+
 		$start_statuses = array( 'auto-draft', 'inherit', 'new' );
-		if ( in_array( $new, $start_statuses, true ) ) {
+		if ( in_array( $new_status, $start_statuses, true ) ) {
 			return;
 		} elseif ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
-		} elseif ( 'draft' === $new && 'publish' === $old ) {
+		} elseif ( 'draft' === $new_status && 'publish' === $old_status ) {
 			/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post") */
 			$summary = _x(
 				'"%1$s" %2$s unpublished',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-		} elseif ( 'trash' === $old && 'trash' !== $new ) {
+		} elseif ( 'trash' === $old_status && 'trash' !== $new_status ) {
 			/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post") */
 			$summary = _x(
 				'"%1$s" %2$s restored from trash',
@@ -190,56 +189,56 @@ class Connector_Posts extends Connector {
 				'stream'
 			);
 			$action  = 'untrashed';
-		} elseif ( 'draft' === $new && 'draft' === $old ) {
+		} elseif ( 'draft' === $new_status && 'draft' === $old_status ) {
 			/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post") */
 			$summary = _x(
 				'"%1$s" %2$s draft saved',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-		} elseif ( 'publish' === $new && ! in_array( $old, array( 'future', 'publish' ), true ) ) {
+		} elseif ( 'publish' === $new_status && ! in_array( $old_status, array( 'future', 'publish' ), true ) ) {
 			/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post") */
 			$summary = _x(
 				'"%1$s" %2$s published',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-		} elseif ( 'draft' === $new ) {
+		} elseif ( 'draft' === $new_status ) {
 			/* translators: %1$s: a post title, %2$s a post type singular name (e.g. "Hello World", "Post") */
 			$summary = _x(
 				'"%1$s" %2$s drafted',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-		} elseif ( 'pending' === $new ) {
+		} elseif ( 'pending' === $new_status ) {
 			/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post") */
 			$summary = _x(
 				'"%1$s" %2$s pending review',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-		} elseif ( 'future' === $new ) {
+		} elseif ( 'future' === $new_status ) {
 			/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post") */
 			$summary = _x(
 				'"%1$s" %2$s scheduled for %3$s',
 				'1: Post title, 2: Post type singular name, 3: Scheduled post date',
 				'stream'
 			);
-		} elseif ( 'future' === $old && 'publish' === $new ) {
+		} elseif ( 'future' === $old_status && 'publish' === $new_status ) {
 			/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post") */
 			$summary = _x(
 				'"%1$s" scheduled %2$s published',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-		} elseif ( 'private' === $new ) {
+		} elseif ( 'private' === $new_status ) {
 			/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post") */
 			$summary = _x(
 				'"%1$s" %2$s privately published',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-		} elseif ( 'trash' === $new ) {
+		} elseif ( 'trash' === $new_status ) {
 			/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post") */
 			$summary = _x(
 				'"%1$s" %2$s trashed',
@@ -256,7 +255,7 @@ class Connector_Posts extends Connector {
 			);
 		}
 
-		if ( in_array( $old, $start_statuses, true ) && ! in_array( $new, $start_statuses, true ) ) {
+		if ( in_array( $old_status, $start_statuses, true ) && ! in_array( $new_status, $start_statuses, true ) ) {
 			$action = 'created';
 		}
 
@@ -293,8 +292,8 @@ class Connector_Posts extends Connector {
 				'singular_name' => $post_type_name,
 				'post_date'     => $post->post_date,
 				'post_date_gmt' => $post->post_date_gmt,
-				'new_status'    => $new,
-				'old_status'    => $old,
+				'new_status'    => $new_status,
+				'old_status'    => $old_status,
 				'revision_id'   => $revision_id,
 			),
 			$post->ID,

@@ -10,13 +10,48 @@ namespace WP_Stream;
 use DateTime;
 use DateTimeZone;
 use DateInterval;
-use \WP_CLI;
-use \WP_Roles;
+use WP_CLI;
+use WP_Roles;
 
 /**
  * Class - Admin
  */
 class Admin {
+
+	/**
+	 * The async deletion action for large sites.
+	 *
+	 * @const string
+	 */
+	const ASYNC_DELETION_ACTION = 'stream_erase_large_records_action';
+
+	/**
+	 * Recurring Action Scheduler action that drives the TTL-based auto-purge.
+	 *
+	 * @const string
+	 */
+	const AUTO_PURGE_ACTION = 'stream_auto_purge_action';
+
+	/**
+	 * Async batch worker scheduled by the recurring auto-purge action.
+	 *
+	 * @const string
+	 */
+	const AUTO_PURGE_BATCH_ACTION = 'stream_auto_purge_batch_action';
+
+	/**
+	 * Terminal action that runs the orphan-meta reaper once per chain.
+	 *
+	 * @const string
+	 */
+	const AUTO_PURGE_REAPER_ACTION = 'stream_auto_purge_reaper_action';
+
+	/**
+	 * Action Scheduler group string for all auto-purge actions.
+	 *
+	 * @const string
+	 */
+	const AUTO_PURGE_GROUP = 'stream-auto-purge';
 
 	/**
 	 * Holds Instance of plugin object
@@ -103,11 +138,11 @@ class Admin {
 	public $view_cap = 'view_stream';
 
 	/**
-	 * Capability name for viewing settings
+	 * Capability name for managing settings
 	 *
 	 * @var string
 	 */
-	public $settings_cap = 'manage_options';
+	public $settings_cap = WP_STREAM_SETTINGS_CAPABILITY;
 
 	/**
 	 * Total amount of authors to pre-load
@@ -142,7 +177,7 @@ class Admin {
 		add_filter( 'user_has_cap', array( $this, 'filter_user_caps' ), 10, 4 );
 		add_filter( 'role_has_cap', array( $this, 'filter_role_caps' ), 10, 3 );
 
-		if ( is_multisite() && $plugin->is_network_activated() && ! is_network_admin() ) {
+		if ( $this->plugin->is_multisite_network_activated() && ! is_network_admin() ) {
 			$options = (array) get_site_option( 'wp_stream_network', array() );
 			$option  = isset( $options['general_site_access'] ) ? absint( $options['general_site_access'] ) : 1;
 
@@ -157,6 +192,9 @@ class Admin {
 		// Admin notices.
 		add_action( 'admin_notices', array( $this, 'prepare_admin_notices' ) );
 		add_action( 'shutdown', array( $this, 'admin_notices' ) );
+
+		// Feature request notice.
+		add_action( 'admin_notices', array( $this, 'display_feature_request_notice' ) );
 
 		// Add admin body class.
 		add_filter( 'admin_body_class', array( $this, 'admin_body_class' ) );
@@ -191,21 +229,32 @@ class Admin {
 			)
 		);
 
-		/**
-		 * Uninstall Streams and Deactivate plugin.
-		 *
-		 * @todo Confirm if variable assignment is necessary.
-		 */
-		$uninstall = $this->plugin->db->driver->purge_storage( $this->plugin );
+		// Manual "Clean orphaned meta now" action (Settings → Advanced).
+		add_action(
+			'wp_ajax_wp_stream_clean_orphan_meta',
+			array( $this, 'wp_ajax_clean_orphan_meta' )
+		);
 
-		// Auto purge setup.
+		// Render confirmation notices keyed by the wp_stream_message query
+		// arg set on post-action redirects (e.g. orphan_meta_cleanup_scheduled).
+		add_action( 'admin_notices', array( $this, 'maybe_display_message' ) );
+		add_action( 'network_admin_notices', array( $this, 'maybe_display_message' ) );
+
+		// Auto purge setup (Action Scheduler).
 		add_action( 'wp_loaded', array( $this, 'purge_schedule_setup' ) );
 		add_action(
-			'wp_stream_auto_purge',
-			array(
-				$this,
-				'purge_scheduled_action',
-			)
+			self::AUTO_PURGE_ACTION,
+			array( $this, 'purge_scheduled_action' )
+		);
+		add_action(
+			self::AUTO_PURGE_BATCH_ACTION,
+			array( $this, 'auto_purge_batch' ),
+			10,
+			3
+		);
+		add_action(
+			self::AUTO_PURGE_REAPER_ACTION,
+			array( $this, 'auto_purge_reaper' )
 		);
 
 		// Ajax users list.
@@ -215,6 +264,17 @@ class Admin {
 				$this,
 				'ajax_filters',
 			)
+		);
+
+		// Async action for erasing large log tables.
+		add_action(
+			self::ASYNC_DELETION_ACTION,
+			array(
+				$this,
+				'erase_large_records',
+			),
+			10,
+			4
 		);
 	}
 
@@ -227,6 +287,12 @@ class Admin {
 		$this->network     = new Network( $this->plugin );
 		$this->live_update = new Live_Update( $this->plugin );
 		$this->export      = new Export( $this->plugin );
+
+		// Check if the host has configured the `REMOTE_ADDR` correctly.
+		$client_ip = $this->plugin->get_client_ip_address();
+		if ( empty( $client_ip ) && $this->is_stream_screen() ) {
+			$this->notice( __( 'Stream plugin can\'t determine a reliable client IP address! Please update the hosting environment to set the $_SERVER[\'REMOTE_ADDR\'] variable or use the wp_stream_client_ip_address filter to specify the verified client IP address!', 'stream' ) );
+		}
 	}
 
 	/**
@@ -304,6 +370,26 @@ class Admin {
 	}
 
 	/**
+	 * Display a feature request notice.
+	 *
+	 * @return void
+	 */
+	public function display_feature_request_notice() {
+		$screen = get_current_screen();
+
+		// Display the notice only on the Stream settings page.
+		if ( empty( $this->screen_id['settings'] ) || $this->screen_id['settings'] !== $screen->id ) {
+			return;
+		}
+
+		printf(
+			'<div class="notice notice-info notice-stream-feature-request"><p>%1$s <a href="https://github.com/xwp/stream/issues/new/choose" target="_blank">%2$s <span class="dashicons dashicons-external"></span></a></p></div>',
+			esc_html__( 'Have suggestions or found a bug?', 'stream' ),
+			esc_html__( 'Click here to let us know!', 'stream' )
+		);
+	}
+
+	/**
 	 * Register menu page
 	 *
 	 * @action admin_menu
@@ -340,7 +426,7 @@ class Admin {
 			$this->view_cap,
 			$this->records_page_slug,
 			array( $this, 'render_list_table' ),
-			'div',
+			'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDI0IDEwMjQiIGZpbGw9IjAwMCI+Cgk8cGF0aCBkPSJNOTAzLjExNSA1MTUuNDEzYy00OS4zOTIgMC05MS40NzQgMzEuMzM3LTEwNy40NiA3NS4yMDNsLTEyNC40MTEtMS41MzJjLTExLjM3Ny0uMzQ2LTIyLjc1MS0uNjg5LTM0LjEyOS0uOTk4bC0uMjQxLjU3NC0yMi40MzYtLjI3OC0uMTUzLS45Mi0xNS4wNTYtODIuOTMzLTIwLjE0Ni0xMDguNDA1LTIwLjU0NC0xMDguMzM3TDUwMy45ODIgMGwtNTMuMTQxIDQyOS4wMTMtMTYuMjE0IDEzNy45MzUtMTIuMDE2IDEwNi45MjQtMTE3LjI4Ni0yODUuMjItMTguMzUzIDIwMi44MWMtNDIuNTYyIDEuNDU0LTg1LjEyNyAyLjkzNC0xMjcuNjg4IDQuNzM4LTUzLjA5NyAyLjI5Mi0xMDYuMTg3IDQuNDczLTE1OS4yODQgNy41MzZ2NDIuMDQyYzUzLjA5NyAzLjA2IDEwNi4xODcgNS4yNDcgMTU5LjI4NCA3LjUzMyA1My4wOTMgMi4yNDUgMTA2LjE4IDQuMTk0IDE1OS4yNzMgNS45MDNsMTQuMjQuNDY1IDE3LjM1MSA0OC4zOWMxOC44NDIgNTEuODc0IDM3LjU0MiAxMDMuODA2IDU2Ljc2NSAxNTUuNTQxTDQ2Ni41MiAxMDI0bDQxLjUxMi0zMDguMjkzIDE3LjYzMy0xMzYuNjg1IDEwLjc3NiA1MC4zMjkgNTQuODE1IDI0OC41NDQgNzIuNTE2LTIxNy4yMTdoMTI5LjI2MWMxMy40OTMgNDguMTIxIDU3LjY1NSA4My40MjkgMTEwLjA3NSA4My40MjkgNjMuMTYgMCAxMTQuMzUyLTUxLjIwNSAxMTQuMzUyLTExNC4zNDggMC02My4xMzktNTEuMTg5LTExNC4zNDUtMTE0LjM0OS0xMTQuMzQ1bC4wMDQtLjAwMVoiIC8+Cjwvc3ZnPgo=',
 			$main_menu_position
 		);
 
@@ -397,100 +483,40 @@ class Admin {
 	 * @return void
 	 */
 	public function admin_enqueue_scripts( $hook ) {
-		wp_register_script( 'wp-stream-select2', $this->plugin->locations['url'] . 'ui/lib/select2/js/select2.full.min.js', array( 'jquery' ), '3.5.2', true );
-		wp_register_style( 'wp-stream-select2', $this->plugin->locations['url'] . 'ui/lib/select2/css/select2.min.css', array(), '3.5.2' );
-		wp_register_script( 'wp-stream-timeago', $this->plugin->locations['url'] . 'ui/lib/timeago/jquery.timeago.js', array(), '1.4.1', true );
-
-		$locale    = strtolower( substr( get_locale(), 0, 2 ) );
-		$file_tmpl = 'ui/lib/timeago/locales/jquery.timeago.%s.js';
-
-		if ( file_exists( $this->plugin->locations['dir'] . sprintf( $file_tmpl, $locale ) ) ) {
-			wp_register_script(
-				'wp-stream-timeago-locale',
-				$this->plugin->locations['url'] . sprintf( $file_tmpl, $locale ),
-				array( 'wp-stream-timeago' ),
-				'1',
-				false
-			);
-		} else {
-			wp_register_script(
-				'wp-stream-timeago-locale',
-				$this->plugin->locations['url'] . sprintf( $file_tmpl, 'en' ),
-				array( 'wp-stream-timeago' ),
-				'1',
-				false
-			);
-		}
-
-		$min = wp_stream_min_suffix();
-		wp_enqueue_style( 'wp-stream-admin', $this->plugin->locations['url'] . 'ui/css/admin.' . $min . 'css', array(), $this->plugin->get_version() );
-
-		$script_screens = array( 'plugins.php' );
-
-		if ( in_array( $hook, $this->screen_id, true ) || in_array( $hook, $script_screens, true ) ) {
-			wp_enqueue_script( 'wp-stream-select2' );
-			wp_enqueue_style( 'wp-stream-select2' );
-
-			wp_enqueue_script( 'wp-stream-timeago' );
-			wp_enqueue_script( 'wp-stream-timeago-locale' );
-
-			wp_enqueue_script(
-				'wp-stream-admin',
-				$this->plugin->locations['url'] . 'ui/js/admin.' . $min . 'js',
+		if ( in_array( $hook, $this->screen_id, true ) ) {
+			$this->plugin->enqueue_asset(
+				'admin',
 				array(
-					'jquery',
-					'wp-stream-select2',
+					$this->plugin->with_select2(),
+					$this->plugin->with_jquery_timeago(),
 				),
-				$this->plugin->get_version(),
-				false
-			);
-			wp_enqueue_script(
-				'wp-stream-admin-exclude',
-				$this->plugin->locations['url'] . 'ui/js/exclude.' . $min . 'js',
-				array(
-					'jquery',
-					'wp-stream-select2',
-				),
-				$this->plugin->get_version(),
-				false
-			);
-			wp_enqueue_script(
-				'wp-stream-live-updates',
-				$this->plugin->locations['url'] . 'ui/js/live-updates.' . $min . 'js',
-				array(
-					'jquery',
-					'heartbeat',
-				),
-				$this->plugin->get_version(),
-				false
-			);
-
-			wp_localize_script(
-				'wp-stream-admin',
-				'wp_stream',
 				array(
 					'i18n'       => array(
-						'confirm_purge'     => esc_html__( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
-						'confirm_defaults'  => esc_html__( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
-						'confirm_uninstall' => esc_html__( 'Are you sure you want to uninstall and deactivate Stream? This will delete all Stream tables from the database and cannot be undone.', 'stream' ),
+						'confirm_purge'    => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
+						'confirm_defaults' => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
 					),
-					'locale'     => esc_js( $locale ),
+					'locale'     => strtolower( substr( get_locale(), 0, 2 ) ),
 					'gmt_offset' => get_option( 'gmt_offset' ),
 				)
 			);
 
-			$order_types = array( 'asc', 'desc' );
+			$this->plugin->enqueue_asset(
+				'admin-exclude',
+				array(
+					$this->plugin->with_select2(),
+				)
+			);
 
-			wp_localize_script(
-				'wp-stream-live-updates',
-				'wp_stream_live_updates',
+			$this->plugin->enqueue_asset(
+				'live-updates',
+				array( 'heartbeat' ),
 				array(
 					'current_screen'      => $hook,
 					'current_page'        => isset( $_GET['paged'] ) ? absint( wp_unslash( $_GET['paged'] ) ) : '1', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-					'current_order'       => isset( $_GET['order'] ) && in_array( strtolower( $_GET['order'] ), $order_types, true ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					'current_order'       => isset( $_GET['order'] ) && in_array( strtolower( $_GET['order'] ), array( 'asc', 'desc' ), true ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						? esc_js( $_GET['order'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						: 'desc',
-					'current_query'       => wp_stream_json_encode( $_GET ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					'current_query'       => wp_json_encode( $_GET ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					'current_query_count' => count( $_GET ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				)
 			);
@@ -510,22 +536,14 @@ class Admin {
 		 */
 		$bulk_actions_threshold = apply_filters( 'wp_stream_bulk_actions_threshold', 100 );
 
-		wp_enqueue_script(
-			'wp-stream-global',
-			$this->plugin->locations['url'] . 'ui/js/global.' . $min . 'js',
-			array( 'jquery' ),
-			$this->plugin->get_version(),
-			false
-		);
-
-		wp_localize_script(
-			'wp-stream-global',
-			'wp_stream_global',
+		$this->plugin->enqueue_asset(
+			'global',
+			array(),
 			array(
 				'bulk_actions'       => array(
 					'i18n'      => array(
 						/* translators: %s: a number of items (e.g. "1,742") */
-						'confirm_action' => sprintf( esc_html__( 'Are you sure you want to perform bulk actions on over %s items? This process could take a while to complete.', 'stream' ), number_format( absint( $bulk_actions_threshold ) ) ),
+						'confirm_action' => sprintf( __( 'Are you sure you want to perform bulk actions on over %s items? This process could take a while to complete.', 'stream' ), number_format( absint( $bulk_actions_threshold ) ) ),
 					),
 					'threshold' => absint( $bulk_actions_threshold ),
 				),
@@ -540,13 +558,19 @@ class Admin {
 	 * @return bool
 	 */
 	public function is_stream_screen() {
-		if ( is_admin() && false !== strpos( wp_stream_filter_input( INPUT_GET, 'page' ), $this->records_page_slug ) ) {
+		if ( ! is_admin() ) {
+			return false;
+		}
+
+		$page = wp_stream_filter_input( INPUT_GET, 'page' );
+		if ( is_string( $page ) && false !== strpos( $page, $this->records_page_slug ) ) {
 			return true;
 		}
 
-		$screen = get_current_screen();
-		if ( is_admin() && Alerts::POST_TYPE === $screen->post_type ) {
-			return true;
+		if ( is_admin() && function_exists( 'get_current_screen' ) ) {
+			$screen = get_current_screen();
+
+			return ( Alerts::POST_TYPE === $screen->post_type );
 		}
 
 		return false;
@@ -584,17 +608,11 @@ class Admin {
 	}
 
 	/**
-	 * Add menu styles for various WP Admin skins
-	 *
-	 * @uses \wp_add_inline_style()
+	 * Add menu styles for various WP Admin skins.
 	 *
 	 * @action admin_enqueue_scripts
 	 */
 	public function admin_menu_css() {
-		$min = wp_stream_min_suffix();
-		wp_register_style( 'wp-stream-datepicker', $this->plugin->locations['url'] . 'ui/css/datepicker.' . $min . 'css', array(), $this->plugin->get_version() );
-		wp_register_style( 'wp-stream-icons', $this->plugin->locations['url'] . 'ui/stream-icons/style.css', array(), $this->plugin->get_version() );
-
 		// Make sure we're working off a clean version.
 		if ( ! file_exists( ABSPATH . WPINC . '/version.php' ) ) {
 			return;
@@ -605,59 +623,27 @@ class Admin {
 			return;
 		}
 
-		$body_class   = $this->admin_body_class;
-		$records_page = $this->records_page_slug;
-		$stream_url   = $this->plugin->locations['url'];
+		$css = "
+			body.{$this->admin_body_class} #wpbody-content .wrap h1:nth-child(1):before {
+				content: '';
+				display: inline-block;
+				width: 24px;
+				height: 24px;
+				margin-right: 8px;
+				vertical-align: text-bottom;
+				background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDI0IDEwMjQiIGZpbGw9ImN1cnJlbnRjb2xvciI+Cgk8cGF0aCBkPSJNOTAzLjExNSA1MTUuNDEzYy00OS4zOTIgMC05MS40NzQgMzEuMzM3LTEwNy40NiA3NS4yMDNsLTEyNC40MTEtMS41MzJjLTExLjM3Ny0uMzQ2LTIyLjc1MS0uNjg5LTM0LjEyOS0uOTk4bC0uMjQxLjU3NC0yMi40MzYtLjI3OC0uMTUzLS45Mi0xNS4wNTYtODIuOTMzLTIwLjE0Ni0xMDguNDA1LTIwLjU0NC0xMDguMzM3TDUwMy45ODIgMGwtNTMuMTQxIDQyOS4wMTMtMTYuMjE0IDEzNy45MzUtMTIuMDE2IDEwNi45MjQtMTE3LjI4Ni0yODUuMjItMTguMzUzIDIwMi44MWMtNDIuNTYyIDEuNDU0LTg1LjEyNyAyLjkzNC0xMjcuNjg4IDQuNzM4LTUzLjA5NyAyLjI5Mi0xMDYuMTg3IDQuNDczLTE1OS4yODQgNy41MzZ2NDIuMDQyYzUzLjA5NyAzLjA2IDEwNi4xODcgNS4yNDcgMTU5LjI4NCA3LjUzMyA1My4wOTMgMi4yNDUgMTA2LjE4IDQuMTk0IDE1OS4yNzMgNS45MDNsMTQuMjQuNDY1IDE3LjM1MSA0OC4zOWMxOC44NDIgNTEuODc0IDM3LjU0MiAxMDMuODA2IDU2Ljc2NSAxNTUuNTQxTDQ2Ni41MiAxMDI0bDQxLjUxMi0zMDguMjkzIDE3LjYzMy0xMzYuNjg1IDEwLjc3NiA1MC4zMjkgNTQuODE1IDI0OC41NDQgNzIuNTE2LTIxNy4yMTdoMTI5LjI2MWMxMy40OTMgNDguMTIxIDU3LjY1NSA4My40MjkgMTEwLjA3NSA4My40MjkgNjMuMTYgMCAxMTQuMzUyLTUxLjIwNSAxMTQuMzUyLTExNC4zNDggMC02My4xMzktNTEuMTg5LTExNC4zNDUtMTE0LjM0OS0xMTQuMzQ1bC4wMDQtLjAwMVoiIC8+Cjwvc3ZnPgo=');
+			}
+			#menu-posts-feedback .wp-menu-image:before {
+				font-family: dashicons !important;
+				content: '\\f175';
+			}
+			#adminmenu #menu-posts-feedback div.wp-menu-image {
+				background: none !important;
+				background-repeat: no-repeat;
+			}
+		";
 
-		if ( version_compare( $wp_version, '3.8-alpha', '>=' ) ) {
-			wp_enqueue_style( 'wp-stream-icons' );
-
-			$css = "
-				#toplevel_page_{$records_page} .wp-menu-image:before {
-					font-family: 'WP Stream' !important;
-					content: '\\73' !important;
-				}
-				#toplevel_page_{$records_page} .wp-menu-image {
-					background-repeat: no-repeat;
-				}
-				#menu-posts-feedback .wp-menu-image:before {
-					font-family: dashicons !important;
-					content: '\\f175';
-				}
-				#adminmenu #menu-posts-feedback div.wp-menu-image {
-					background: none !important;
-					background-repeat: no-repeat;
-				}
-				body.{$body_class} #wpbody-content .wrap h1:nth-child(1):before {
-					font-family: 'WP Stream' !important;
-					content: '\\73';
-					padding: 0 8px 0 0;
-				}
-			";
-		} else {
-			$css = "
-				#toplevel_page_{$records_page} .wp-menu-image {
-					background: url( {$stream_url}ui/stream-icons/menuicon-sprite.png ) 0 90% no-repeat;
-				}
-				/* Retina Stream Menu Icon */
-				@media  only screen and (-moz-min-device-pixel-ratio: 1.5),
-						only screen and (-o-min-device-pixel-ratio: 3/2),
-						only screen and (-webkit-min-device-pixel-ratio: 1.5),
-						only screen and (min-device-pixel-ratio: 1.5) {
-					#toplevel_page_{$records_page} .wp-menu-image {
-						background: url( {$stream_url}ui/stream-icons/menuicon-sprite-2x.png ) 0 90% no-repeat;
-						background-size:30px 64px;
-					}
-				}
-				#toplevel_page_{$records_page}.current .wp-menu-image,
-				#toplevel_page_{$records_page}.wp-has-current-submenu .wp-menu-image,
-				#toplevel_page_{$records_page}:hover .wp-menu-image {
-					background-position: top left;
-				}
-			";
-		}
-
-		\wp_add_inline_style( 'wp-admin', $css );
+		wp_add_inline_style( 'wp-admin', $css );
 	}
 
 	/**
@@ -704,19 +690,214 @@ class Admin {
 	private function erase_stream_records() {
 		global $wpdb;
 
-		$where = '';
+		// If this is a multisite and it's not network activated,
+		// only delete the entries from the blog which made the request.
+		if ( $this->plugin->is_multisite_not_network_activated() ) {
 
-		if ( is_multisite() && ! $this->plugin->is_network_activated() ) {
-			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
+			// First check the log size.
+			$stream_log_size = self::get_blog_record_table_size();
+
+			// If this is a large log and we need to delete only the entries
+			// pertaining to an individual site, we will need to do those in batches.
+			if ( $this->plugin->is_large_records_table( $stream_log_size ) ) {
+				$this->schedule_erase_large_records( $stream_log_size );
+				return;
+			}
+
+			$wpdb->query(
+				$wpdb->prepare(
+					"DELETE `stream`, `meta`
+					FROM {$wpdb->stream} AS `stream`
+					LEFT JOIN {$wpdb->streammeta} AS `meta`
+					ON `meta`.`record_id` = `stream`.`ID`
+					WHERE `blog_id`=%d;",
+					get_current_blog_id()
+				)
+			);
+		} else {
+			// If we are deleting all the entries, we can truncate the tables.
+			$wpdb->query( "TRUNCATE {$wpdb->streammeta};" );
+			$wpdb->query( "TRUNCATE {$wpdb->stream};" );
+			// Tidy up any meta which may have been added in between the two truncations.
+			$this->delete_orphaned_meta();
+		}
+	}
+
+	/**
+	 * Schedule the initial event to start erasing the logs from now.
+	 *
+	 * @param int $log_size The number of rows which will be affected.
+	 * @return void
+	 */
+	private function schedule_erase_large_records( int $log_size ) {
+		global $wpdb;
+
+		$last_entry = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT ID FROM {$wpdb->stream} WHERE `blog_id`=%d ORDER BY ID DESC LIMIT 1",
+				get_current_blog_id()
+			)
+		);
+
+		// If there are no entries to erase, don't try to erase them.
+		if ( empty( $last_entry ) ) {
+			return;
 		}
 
-		$wpdb->query(
-			"DELETE `stream`, `meta`
-			FROM {$wpdb->stream} AS `stream`
-			LEFT JOIN {$wpdb->streammeta} AS `meta`
-			ON `meta`.`record_id` = `stream`.`ID`
-			WHERE 1=1 {$where};" // @codingStandardsIgnoreLine $where already prepared
+		// We are going to delete this many and this many only.
+		// This is to avoid the situation where rows keep getting added
+		// between the Action Scheduler runs and they never stop.
+		$args = array(
+			'total'      => (int) $log_size,
+			'done'       => 0,
+			'last_entry' => (int) $last_entry,
+			'blog_id'    => (int) get_current_blog_id(),
 		);
+
+		as_enqueue_async_action( self::ASYNC_DELETION_ACTION, $args );
+	}
+
+	/**
+	 * Checks if the async deletion process is running.
+	 *
+	 * @return bool True if the async deletion process is running, false otherwise.
+	 */
+	public static function is_running_async_deletion() {
+		return as_has_scheduled_action( self::ASYNC_DELETION_ACTION );
+	}
+
+	/**
+	 * Checks if any auto-purge action is currently scheduled or in-flight.
+	 *
+	 * Returns true when either the batched chain worker or the terminal
+	 * orphan reaper is pending OR running. The recurring scheduler is
+	 * intentionally excluded — it is always pending under normal operation,
+	 * so including it here would make the probe useless. Used by the
+	 * Settings → Advanced UI to render an "Auto-purge currently running"
+	 * notice and by the recurring callback as an overlap guard.
+	 *
+	 * Checks both PENDING and IN-PROGRESS statuses so a chain that is
+	 * mid-execution (e.g. the batch worker is currently running and has not
+	 * yet enqueued the next batch) still reports as running. Without the
+	 * RUNNING check the overlap guard can let a second parallel chain stack
+	 * against the same rows.
+	 *
+	 * @return bool
+	 */
+	public static function is_running_auto_purge() {
+		if ( ! function_exists( 'as_get_scheduled_actions' ) ) {
+			return false;
+		}
+
+		foreach ( array( self::AUTO_PURGE_BATCH_ACTION, self::AUTO_PURGE_REAPER_ACTION ) as $hook ) {
+			$found = as_get_scheduled_actions(
+				array(
+					'hook'     => $hook,
+					'status'   => array(
+						\ActionScheduler_Store::STATUS_PENDING,
+						\ActionScheduler_Store::STATUS_RUNNING,
+					),
+					'per_page' => 1,
+				),
+				'ids'
+			);
+			if ( ! empty( $found ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Erases large records from the stream table.
+	 *
+	 * This function deletes records from the stream table in batches, starting from a given entry ID.
+	 * It deletes records in reverse chronological order, starting from the largest ID and going back.
+	 * The number of records deleted in each batch is determined by the batch size, which can be filtered
+	 * using the 'wp_stream_batch_size' hook.
+	 *
+	 * @param int $total      The total number of records to be deleted.
+	 * @param int $done       The number of records that have already been deleted.
+	 * @param int $last_entry The ID of the last entry that was deleted.
+	 * @param int $blog_id    The ID of the blog for which the records should be deleted.
+	 * @return void
+	 */
+	public function erase_large_records( int $total, int $done, int $last_entry, int $blog_id ) {
+		global $wpdb;
+
+		$start_from = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT ID FROM {$wpdb->stream} WHERE ID < %d AND `blog_id`=%d ORDER BY ID DESC LIMIT 1",
+				$last_entry + 1, // A tweak to get it correct the first time through.
+				get_current_blog_id()
+			)
+		);
+
+		if ( empty( $start_from ) ) {
+			return;
+		}
+
+		/**
+		 * Filters the number of records in the {$wpdb->stream} table to do at a time.
+		 *
+		 * @since 4.1.0
+		 *
+		 * @param int $batch_size The batch size, default 250000.
+		 */
+		$batch_size = apply_filters( 'wp_stream_batch_size', 250000 );
+
+		// This will tend to erase them in reverse chronological order,
+		// ie it will start from the largest ID and go back from there.
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE `stream`, `meta`
+				FROM {$wpdb->stream} AS `stream`
+				LEFT JOIN {$wpdb->streammeta} AS `meta`
+				ON `meta`.`record_id` = `stream`.`ID`
+				WHERE ID <= %d AND ID >= %d AND `blog_id`=%d;",
+				$start_from,
+				$start_from - $batch_size,
+				get_current_blog_id()
+			)
+		);
+
+		$remaining = $wpdb->get_var(
+			$wpdb->prepare( "SELECT COUNT(ID) FROM {$wpdb->stream} WHERE `blog_id`=%d", $blog_id )
+		);
+
+		$done = $total - $remaining;
+
+		as_enqueue_async_action(
+			self::ASYNC_DELETION_ACTION,
+			array(
+				'total'      => (int) $total,
+				'done'       => (int) $done,
+				'last_entry' => (int) $start_from - $batch_size, // The last ID checked.
+				'blog_id'    => (int) $blog_id,
+			)
+		);
+	}
+
+	/**
+	 * Retrieves the size of the blog record table for a specific blog.
+	 *
+	 * @param int|null $blog_id The ID of the blog. If not provided, the current blog ID will be used.
+	 * @return int The size of the blog record table.
+	 */
+	public static function get_blog_record_table_size( $blog_id = null ): int {
+		global $wpdb;
+
+		$blog_id = empty( $blog_id ) ? get_current_blog_id() : $blog_id;
+
+		$blog_size = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(ID) FROM {$wpdb->stream} WHERE `blog_id`=%d",
+				$blog_id
+			)
+		);
+
+		return (int) $blog_size;
 	}
 
 	/**
@@ -725,9 +906,44 @@ class Admin {
 	 * @return void
 	 */
 	public function purge_schedule_setup() {
-		if ( ! wp_next_scheduled( 'wp_stream_auto_purge' ) ) {
-			wp_schedule_event( time(), 'twicedaily', 'wp_stream_auto_purge' );
+		// Clear the legacy WP-Cron event scheduled by Stream <= 4.1.x so it
+		// cannot double-fire alongside the new AS recurring action.
+		if ( wp_next_scheduled( 'wp_stream_auto_purge' ) ) {
+			wp_clear_scheduled_hook( 'wp_stream_auto_purge' );
 		}
+
+		if ( ! function_exists( 'as_schedule_recurring_action' ) ) {
+			// Action Scheduler not yet loaded (e.g. very early hook); bail.
+			// Plugin::__construct() loads it before init, so this should be unreachable.
+			return;
+		}
+
+		if ( false === as_next_scheduled_action( self::AUTO_PURGE_ACTION ) ) {
+			// 12 hours == old `twicedaily` interval.
+			as_schedule_recurring_action(
+				time(),
+				12 * HOUR_IN_SECONDS,
+				self::AUTO_PURGE_ACTION,
+				array(),
+				self::AUTO_PURGE_GROUP
+			);
+		}
+	}
+
+	/**
+	 * Deletes orphaned meta records from the database.
+	 *
+	 * Deletes meta records from the stream meta table where the corresponding
+	 * stream record no longer exists.
+	 *
+	 * @global wpdb $wpdb The WordPress database object.
+	 */
+	protected function delete_orphaned_meta() {
+		global $wpdb;
+
+		$wpdb->query(
+			"DELETE `meta` FROM {$wpdb->streammeta} as `meta` LEFT JOIN {$wpdb->stream} as `stream` ON `stream`.`ID`=`meta`.`record_id` WHERE `stream`.`ID` IS NULL"
+		);
 	}
 
 	/**
@@ -736,49 +952,397 @@ class Admin {
 	 * @return void
 	 */
 	public function purge_scheduled_action() {
-		global $wpdb;
-
 		// Don't purge when in Network Admin unless Stream is network activated.
 		if (
-			is_multisite()
+			$this->plugin->is_multisite_not_network_activated()
 			&&
 			is_network_admin()
-			&&
-			! $this->plugin->is_network_activated()
 		) {
 			return;
 		}
 
 		$defaults = $this->plugin->settings->get_defaults();
-		if ( is_multisite() && $this->plugin->is_network_activated() ) {
-			$options = (array) get_site_option( 'wp_stream_network', $defaults );
+		if ( $this->plugin->is_multisite_network_activated() ) {
+			$options = wp_parse_args( (array) get_site_option( 'wp_stream_network', array() ), $defaults );
 		} else {
-			$options = (array) get_option( 'wp_stream', $defaults );
+			$options = wp_parse_args( (array) get_option( 'wp_stream', array() ), $defaults );
 		}
 
-		if ( ! empty( $options['general_keep_records_indefinitely'] ) || ! isset( $options['general_records_ttl'] ) ) {
+		// TTL fallback. Settings::get_defaults() runs every settings field
+		// through the `wp_stream_settings_option_fields` filter, which
+		// Network::get_network_admin_fields() uses to strip the `records_ttl`
+		// field from the per-site option's defaults set. When this callback runs
+		// outside any admin context (Action Scheduler, WP-CLI, system cron), the
+		// per-site option_key is in effect, so the filtered defaults array does
+		// not contain general_records_ttl at all. Apply the documented 30-day
+		// default (classes/class-settings.php, `records_ttl` field) only when
+		// the key is genuinely missing, so an operator who set the value via
+		// CLI/SQL keeps their explicit choice.
+		if ( ! isset( $options['general_records_ttl'] ) ) {
+			$options['general_records_ttl'] = 30;
+		}
+
+		if ( ! empty( $options['general_keep_records_indefinitely'] ) ) {
 			return;
 		}
 
-		$days     = $options['general_records_ttl'];
-		$timezone = new DateTimeZone( 'UTC' );
-		$date     = new DateTime( 'now', $timezone );
-
-		$date->sub( DateInterval::createFromDateString( "$days days" ) );
-
-		$where = $wpdb->prepare( ' AND `stream`.`created` < %s', $date->format( 'Y-m-d H:i:s' ) );
-
-		// Multisite but NOT network activated, only purge the current blog.
-		if ( is_multisite() && ! $this->plugin->is_network_activated() ) {
-			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
+		// Refuse to purge with a non-positive TTL. The UI enforces min=1, but
+		// CLI/SQL can set 0 or a negative integer. Honoring those would mean
+		// "delete every record on every cycle", which has no legitimate use
+		// case (keep_records_indefinitely covers the opposite extreme).
+		// Bailing out makes operator error visible (records stop being purged)
+		// instead of catastrophic (records get wiped repeatedly).
+		if ( (int) $options['general_records_ttl'] < 1 ) {
+			return;
 		}
 
-		$wpdb->query(
-			"DELETE `stream`, `meta`
-			FROM {$wpdb->stream} AS `stream`
-			LEFT JOIN {$wpdb->streammeta} AS `meta`
-			ON `meta`.`record_id` = `stream`.`ID`
-			WHERE 1=1 {$where};" // @codingStandardsIgnoreLine $where already prepared
+		// Overlap guard: if any auto-purge action (batch worker or reaper) is
+		// pending or in-progress, don't stack a new chain. Reuses the same
+		// probe used by the Settings UI so the two views of "running" agree.
+		if ( self::is_running_auto_purge() ) {
+			return;
+		}
+
+		/**
+		 * Fires once per auto-purge cycle, after all bail-out checks pass and
+		 * immediately before deletion work is enqueued.
+		 *
+		 * Preserved for backward compatibility with consumers that hooked the
+		 * legacy WP-Cron event of the same name in Stream <= 4.1.x. Note that
+		 * since 4.2.0 this fires only when a purge is actually about to run —
+		 * it no longer fires on every cron tick regardless of whether work
+		 * happens. Hook into the recurring AS action (Admin::AUTO_PURGE_ACTION)
+		 * directly if you need the older "every tick" semantics.
+		 */
+		do_action( 'wp_stream_auto_purge' );
+
+		// Snapshot the UTC cutoff once per recurring tick. Each batch in this
+		// chain operates against this fixed cutoff so the chain is finite.
+		$days   = (int) $options['general_records_ttl'];
+		$cutoff = ( new DateTime( 'now', new DateTimeZone( 'UTC' ) ) )
+			->sub( DateInterval::createFromDateString( $days . ' days' ) )
+			->format( 'Y-m-d H:i:s' );
+
+		// blog_id = 0 means "all blogs" (network-activated path).
+		$blog_id = $this->plugin->is_multisite_not_network_activated() ? (int) get_current_blog_id() : 0;
+
+		global $wpdb;
+
+		// "Is this a large table?" decision matches the manual reset path
+		// (Admin::erase_stream_records()). When the table is small the cost
+		// of scheduling a chain (and waiting for AS to drain it on the next
+		// runner tick) exceeds the cost of a single inline DELETE. Only fall
+		// through to the batched chain when the filter says "yes, large".
+		if ( $blog_id > 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$record_count = (int) $wpdb->get_var(
+				$wpdb->prepare( "SELECT COUNT(ID) FROM {$wpdb->stream} WHERE `blog_id` = %d", $blog_id )
+			);
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$record_count = (int) $wpdb->get_var( "SELECT COUNT(ID) FROM {$wpdb->stream}" );
+		}
+
+		if ( ! $this->plugin->is_large_records_table( $record_count ) ) {
+			// Small-table fast path: one inline multi-table DELETE, then enqueue
+			// the orphan reaper as a one-shot async action so the heal step is
+			// still observable in Tools → Scheduled Actions.
+			if ( $blog_id > 0 ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->query(
+					$wpdb->prepare(
+						"DELETE `stream`, `meta`
+						FROM {$wpdb->stream} AS `stream`
+						LEFT JOIN {$wpdb->streammeta} AS `meta`
+						ON `meta`.`record_id` = `stream`.`ID`
+						WHERE `stream`.`created` < %s AND `stream`.`blog_id` = %d;",
+						$cutoff,
+						$blog_id
+					)
+				);
+			} else {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->query(
+					$wpdb->prepare(
+						"DELETE `stream`, `meta`
+						FROM {$wpdb->stream} AS `stream`
+						LEFT JOIN {$wpdb->streammeta} AS `meta`
+						ON `meta`.`record_id` = `stream`.`ID`
+						WHERE `stream`.`created` < %s;",
+						$cutoff
+					)
+				);
+			}
+
+			as_enqueue_async_action( self::AUTO_PURGE_REAPER_ACTION, array(), self::AUTO_PURGE_GROUP );
+			return;
+		}
+
+		// Large-table path: batched chain.
+		as_enqueue_async_action(
+			self::AUTO_PURGE_BATCH_ACTION,
+			array(
+				'cutoff'  => $cutoff,
+				'blog_id' => $blog_id,
+			),
+			self::AUTO_PURGE_GROUP
+		);
+	}
+
+	/**
+	 * Async Action Scheduler callback: delete one batch of records eligible
+	 * under the snapshotted UTC cutoff, then chain the next batch (or the
+	 * orphan reaper when nothing remains).
+	 *
+	 * Window-based deletion mirrors {@see Admin::erase_large_records()} so the
+	 * InnoDB lock footprint is bounded and predictable on bloated tables.
+	 *
+	 * @param string $cutoff     MySQL DATETIME string in UTC.
+	 * @param int    $blog_id    Blog to scope to, or 0 for all blogs (network-activated).
+	 * @param int    $last_entry The lower-bound ID of the previous batch's window; 0 on the
+	 *                           first batch in a chain. The next SELECT uses `ID < last_entry`
+	 *                           when non-zero, guaranteeing forward progress even on tables
+	 *                           that grow rapidly during the chain. Trade-off: any eligible
+	 *                           row that lands inside the already-touched ID range
+	 *                           [window_low, start_from] after that batch ran is skipped
+	 *                           by the current chain and picked up on the next recurring
+	 *                           tick (or small-table fast path). Possible sources: dev/test
+	 *                           seeders, importer/migration plugins replaying historical
+	 *                           rows, or PHP/MySQL clock skew on `created`. Steady-state
+	 *                           logging via Log::log() uses monotonic IDs and current UTC,
+	 *                           so this is a no-op for normal production traffic.
+	 * @throws \InvalidArgumentException When $cutoff is empty (signals AS to mark the action as failed).
+	 * @return void
+	 */
+	public function auto_purge_batch( $cutoff, $blog_id = 0, $last_entry = 0 ) {
+		global $wpdb;
+
+		$cutoff     = (string) $cutoff;
+		$blog_id    = (int) $blog_id;
+		$last_entry = (int) $last_entry;
+
+		// Defensive: a malformed cutoff would otherwise translate to a no-op
+		// DELETE that still busies the DB. Throw so Action Scheduler marks
+		// the action as failed (and visible in Tools → Scheduled Actions)
+		// rather than silently completing. In practice this is unreachable
+		// because purge_scheduled_action() always populates the cutoff arg
+		// and AS args are immutable; the guard exists for third-party code
+		// that may enqueue the action with bad input.
+		if ( '' === $cutoff ) {
+			throw new \InvalidArgumentException( 'auto_purge_batch requires a non-empty cutoff.' );
+		}
+
+		/**
+		 * Filters the number of records to delete per batch.
+		 *
+		 * Shared with the manual reset path (see {@see Admin::erase_large_records()})
+		 * so site owners only need to tune one knob.
+		 *
+		 * @since 4.1.0
+		 *
+		 * @param int $batch_size Default 250000.
+		 */
+		$batch_size = (int) apply_filters( 'wp_stream_batch_size', 250000 );
+		if ( $batch_size < 1 ) {
+			$batch_size = 250000;
+		}
+
+		// Find the highest-ID record still eligible under the snapshotted cutoff
+		// that lies strictly below the previous window's lower bound (when set).
+		// $last_entry=0 means "first batch in chain" — search from the top.
+		if ( $blog_id > 0 && $last_entry > 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$start_from = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT ID FROM {$wpdb->stream} WHERE `created` < %s AND `blog_id` = %d AND `ID` < %d ORDER BY ID DESC LIMIT 1",
+					$cutoff,
+					$blog_id,
+					$last_entry
+				)
+			);
+		} elseif ( $blog_id > 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$start_from = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT ID FROM {$wpdb->stream} WHERE `created` < %s AND `blog_id` = %d ORDER BY ID DESC LIMIT 1",
+					$cutoff,
+					$blog_id
+				)
+			);
+		} elseif ( $last_entry > 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$start_from = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT ID FROM {$wpdb->stream} WHERE `created` < %s AND `ID` < %d ORDER BY ID DESC LIMIT 1",
+					$cutoff,
+					$last_entry
+				)
+			);
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$start_from = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT ID FROM {$wpdb->stream} WHERE `created` < %s ORDER BY ID DESC LIMIT 1",
+					$cutoff
+				)
+			);
+		}
+
+		if ( empty( $start_from ) ) {
+			// Chain is done. Schedule the orphan reaper as the terminal step.
+			as_enqueue_async_action( self::AUTO_PURGE_REAPER_ACTION, array(), self::AUTO_PURGE_GROUP );
+			return;
+		}
+
+		$start_from = (int) $start_from;
+		$window_low = max( 0, $start_from - $batch_size );
+
+		// Multi-table DELETE: parent + meta in one statement. Mirrors
+		// Admin::erase_large_records().
+		if ( $blog_id > 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query(
+				$wpdb->prepare(
+					"DELETE `stream`, `meta`
+					FROM {$wpdb->stream} AS `stream`
+					LEFT JOIN {$wpdb->streammeta} AS `meta`
+					ON `meta`.`record_id` = `stream`.`ID`
+					WHERE `stream`.`ID` <= %d
+					  AND `stream`.`ID` >= %d
+					  AND `stream`.`created` < %s
+					  AND `stream`.`blog_id` = %d;",
+					$start_from,
+					$window_low,
+					$cutoff,
+					$blog_id
+				)
+			);
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query(
+				$wpdb->prepare(
+					"DELETE `stream`, `meta`
+					FROM {$wpdb->stream} AS `stream`
+					LEFT JOIN {$wpdb->streammeta} AS `meta`
+					ON `meta`.`record_id` = `stream`.`ID`
+					WHERE `stream`.`ID` <= %d
+					  AND `stream`.`ID` >= %d
+					  AND `stream`.`created` < %s;",
+					$start_from,
+					$window_low,
+					$cutoff
+				)
+			);
+		}
+
+		// Chain the next batch. Pass $window_low as the new upper bound so the
+		// next SELECT cannot pick up rows in or above the window we just touched.
+		as_enqueue_async_action(
+			self::AUTO_PURGE_BATCH_ACTION,
+			array(
+				'cutoff'     => $cutoff,
+				'blog_id'    => $blog_id,
+				'last_entry' => $window_low,
+			),
+			self::AUTO_PURGE_GROUP
+		);
+	}
+
+	/**
+	 * Terminal Action Scheduler callback for the auto-purge chain.
+	 *
+	 * Runs once per chain (after the last batch) and once when the manual
+	 * "Clean orphaned meta now" button is used. Cleans up meta rows whose
+	 * parent stream row is already gone — i.e. residue from historical
+	 * unbatched purges and from any logger races during a chain.
+	 *
+	 * @return void
+	 */
+	public function auto_purge_reaper() {
+		$this->delete_orphaned_meta();
+	}
+
+	/**
+	 * Ajax handler for the "Clean orphaned meta now" button on
+	 * Settings → Advanced.
+	 *
+	 * Schedules an immediate async run of the orphan reaper. Idempotent:
+	 * if a reaper is already scheduled, returns without enqueuing a second.
+	 *
+	 * Returns true under WP_STREAM_TESTS so PHPUnit can call this directly
+	 * without exiting the worker.
+	 *
+	 * @return bool|void True under tests; otherwise redirects and exits.
+	 */
+	public function wp_ajax_clean_orphan_meta() {
+		if ( ! current_user_can( $this->settings_cap ) ) {
+			wp_die( esc_html__( 'You do not have permission to do this.', 'stream' ), 403 );
+		}
+
+		check_ajax_referer( 'stream_nonce_clean_orphan_meta', 'wp_stream_nonce_clean_orphan_meta' );
+
+		if ( ! function_exists( 'as_get_scheduled_actions' ) || ! function_exists( 'as_enqueue_async_action' ) ) {
+			wp_die( esc_html__( 'Action Scheduler is not available.', 'stream' ), 500 );
+		}
+
+		// Idempotency: skip enqueue when any auto-purge action is already
+		// pending or running. is_running_auto_purge() checks PENDING + RUNNING
+		// across the batch worker and the reaper, so a chain that will run
+		// its own terminal reaper is not duplicated by a manual click landing
+		// in the small CSRF/stale-URL window where the UI link is hidden.
+		if ( ! self::is_running_auto_purge() ) {
+			as_enqueue_async_action( self::AUTO_PURGE_REAPER_ACTION, array(), self::AUTO_PURGE_GROUP );
+		}
+
+		if ( defined( 'WP_STREAM_TESTS' ) && WP_STREAM_TESTS ) {
+			return true;
+		}
+
+		$is_network = $this->plugin->is_multisite_network_activated();
+		$page_slug  = $is_network ? $this->network->network_settings_page_slug : $this->settings_page_slug;
+		$base_url   = $is_network ? network_admin_url( $this->admin_parent_page ) : admin_url( $this->admin_parent_page );
+
+		wp_safe_redirect(
+			add_query_arg(
+				array(
+					'page'              => $page_slug,
+					'wp_stream_message' => 'orphan_meta_cleanup_scheduled',
+				),
+				$base_url
+			)
+		);
+		exit;
+	}
+
+	/**
+	 * Render admin notices for post-action redirects.
+	 *
+	 * Reads `wp_stream_message` from the query string and renders a matching
+	 * notice. Used to surface "Clean Orphaned Meta" confirmation after the
+	 * Ajax handler redirects back to Settings → Advanced.
+	 *
+	 * @return void
+	 */
+	public function maybe_display_message() {
+		$message = wp_stream_filter_input( INPUT_GET, 'wp_stream_message' );
+		if ( empty( $message ) ) {
+			return;
+		}
+
+		$notices = array(
+			'orphan_meta_cleanup_scheduled' => __(
+				'Orphaned meta cleanup scheduled. Progress is visible under Tools → Scheduled Actions.',
+				'stream'
+			),
+		);
+
+		if ( ! isset( $notices[ $message ] ) ) {
+			return;
+		}
+
+		printf(
+			'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
+			esc_html( $notices[ $message ] )
 		);
 	}
 
@@ -798,7 +1362,7 @@ class Admin {
 		}
 
 		// Also don't show links in Network Admin if Stream isn't network enabled.
-		if ( is_network_admin() && is_multisite() && ! $this->plugin->is_network_activated() ) {
+		if ( is_network_admin() && $this->plugin->is_multisite_not_network_activated() ) {
 			return $links;
 		}
 
@@ -819,18 +1383,6 @@ class Admin {
 		}
 
 		$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'default' ) );
-
-		if ( ! defined( 'DISALLOW_FILE_MODS' ) || false === DISALLOW_FILE_MODS ) {
-			$url = add_query_arg(
-				array(
-					'action'          => 'wp_stream_uninstall',
-					'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
-				),
-				admin_url( 'admin-ajax.php' )
-			);
-
-			$links[] = sprintf( '<span id="wp_stream_uninstall" class="delete"><a href="%s">%s</a></span>', esc_url( $url ), esc_html__( 'Uninstall', 'stream' ) );
-		}
 
 		return $links;
 	}
@@ -859,8 +1411,16 @@ class Admin {
 
 		$sections   = $this->plugin->settings->get_fields();
 		$active_tab = wp_stream_filter_input( INPUT_GET, 'tab' );
-		$min        = wp_stream_min_suffix();
-		wp_enqueue_script( 'wp-stream-settings', $this->plugin->locations['url'] . 'ui/js/settings.' . $min . 'js', array( 'jquery' ), $this->plugin->get_version(), true );
+
+		$this->plugin->enqueue_asset(
+			'settings',
+			array(),
+			array(
+				'i18n' => array(
+					'confirm_purge' => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
+				),
+			)
+		);
 		?>
 		<div class="wrap">
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
@@ -875,7 +1435,7 @@ class Admin {
 				<h2 class="nav-tab-wrapper">
 					<?php $i = 0; ?>
 					<?php foreach ( $sections as $section => $data ) : ?>
-						<?php $i++; ?>
+						<?php ++$i; ?>
 						<?php $is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section ); ?>
 						<a href="<?php echo esc_url( add_query_arg( 'tab', $section ) ); ?>" class="nav-tab <?php echo $is_active ? esc_attr( ' nav-tab-active' ) : ''; ?>">
 							<?php echo esc_html( $data['title'] ); ?>
@@ -890,7 +1450,7 @@ class Admin {
 						<?php
 						$i = 0;
 						foreach ( $sections as $section => $data ) {
-							$i++;
+							++$i;
 
 							$is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section );
 
@@ -1049,7 +1609,7 @@ class Admin {
 		}
 
 		if ( isset( $results ) ) {
-			echo wp_stream_json_encode( $results ); // xss ok.
+			echo wp_json_encode( $results );
 		}
 
 		die();
@@ -1089,10 +1649,6 @@ class Admin {
 	 * @return mixed
 	 */
 	public function get_user_meta( $user_id, $meta_key, $single = true ) {
-		if ( wp_stream_is_vip() && function_exists( 'get_user_attribute' ) ) {
-			return get_user_attribute( $user_id, $meta_key );
-		}
-
 		return get_user_meta( $user_id, $meta_key, $single );
 	}
 
@@ -1107,10 +1663,6 @@ class Admin {
 	 * @return int|bool
 	 */
 	public function update_user_meta( $user_id, $meta_key, $meta_value, $prev_value = '' ) {
-		if ( wp_stream_is_vip() && function_exists( 'update_user_attribute' ) ) {
-			return update_user_attribute( $user_id, $meta_key, $meta_value );
-		}
-
 		return update_user_meta( $user_id, $meta_key, $meta_value, $prev_value );
 	}
 
@@ -1124,10 +1676,6 @@ class Admin {
 	 * @return bool
 	 */
 	public function delete_user_meta( $user_id, $meta_key, $meta_value = '' ) {
-		if ( wp_stream_is_vip() && function_exists( 'delete_user_attribute' ) ) {
-			return delete_user_attribute( $user_id, $meta_key, $meta_value );
-		}
-
 		return delete_user_meta( $user_id, $meta_key, $meta_value );
 	}
 }

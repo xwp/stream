@@ -216,10 +216,8 @@ class Alert_Trigger_Context extends Alert_Trigger {
 			$term_labels = $this->get_terms_labels( 'context' );
 			if ( ! empty( $term_labels[ $connector ]['children'][ $context ] ) ) {
 				$context = $term_labels[ $connector ]['children'][ $context ];
-			} else {
-				if ( ! empty( $term_labels[ $connector ]['label'] ) ) {
+			} elseif ( ! empty( $term_labels[ $connector ]['label'] ) ) {
 					$context = $term_labels[ $connector ]['label'];
-				}
 			}
 		}
 

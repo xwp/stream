@@ -20,14 +20,6 @@ class Log {
 	public $plugin;
 
 	/**
-	 * Hold Current visitors IP Address.
-	 *
-	 * @var string
-	 */
-	private $ip_address;
-
-
-	/**
 	 * Previous Stream record ID, used for chaining same-session records
 	 *
 	 * @var int
@@ -41,12 +33,6 @@ class Log {
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
-
-		// Support proxy mode by checking the `X-Forwarded-For` header first.
-		$ip_address = wp_stream_filter_input( INPUT_SERVER, 'HTTP_X_FORWARDED_FOR', FILTER_VALIDATE_IP );
-		$ip_address = $ip_address ? $ip_address : wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP );
-
-		$this->ip_address = $ip_address;
 
 		// Ensure function used in various methods is pre-loaded.
 		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
@@ -87,9 +73,11 @@ class Log {
 			return false;
 		}
 
+		$ip_address = $this->plugin->get_client_ip_address();
+
 		$user = new \WP_User( $user_id );
 
-		if ( $this->is_record_excluded( $connector, $context, $action, $user ) ) {
+		if ( $this->is_record_excluded( $connector, $context, $action, $user, $ip_address ) ) {
 			return false;
 		}
 
@@ -105,15 +93,20 @@ class Log {
 			$uid       = posix_getuid();
 			$user_info = posix_getpwuid( $uid );
 
+			// Normalize the user info to an array if it's not already.
+			if ( ! is_array( $user_info ) ) {
+				$user_info = array( 'name' => 'unknown' );
+			}
+
 			$user_meta['system_user_id']   = (int) $uid;
-			$user_meta['system_user_name'] = (string) $user_info['name'];
+			$user_meta['system_user_name'] = (string) ( $user_info['name'] ?? 'unknown' );
 		}
 
 		// Prevent any meta with null values from being logged.
 		$stream_meta = array_filter(
 			$args,
-			function ( $var ) {
-				return ! is_null( $var );
+			function ( $value ) {
+				return ! is_null( $value );
 			}
 		);
 
@@ -140,7 +133,7 @@ class Log {
 			'connector' => (string) $connector,
 			'context'   => (string) $context,
 			'action'    => (string) $action,
-			'ip'        => (string) $this->ip_address,
+			'ip'        => (string) $ip_address,
 			'meta'      => (array) $stream_meta,
 		);
 
@@ -172,12 +165,6 @@ class Log {
 
 		if ( is_null( $user ) ) {
 			$user = wp_get_current_user();
-		}
-
-		if ( is_null( $ip ) ) {
-			$ip = $this->ip_address;
-		} else {
-			$ip = wp_stream_filter_var( $ip, FILTER_VALIDATE_IP );
 		}
 
 		if ( ! empty( $user->roles ) ) {
@@ -212,7 +199,12 @@ class Log {
 				'role'       => ( ! empty( $exclude_rule['author_or_role'] ) && ! is_numeric( $exclude_rule['author_or_role'] ) ) ? $exclude_rule['author_or_role'] : null,
 			);
 
-			$exclude_rules = array_filter( $exclude, 'strlen' );
+			$exclude_rules = array_filter(
+				$exclude,
+				function ( $value ) {
+					return ! is_null( $value );
+				}
+			);
 
 			if ( $this->record_matches_rules( $record, $exclude_rules ) ) {
 				$exclude_record = true;
@@ -253,10 +245,10 @@ class Log {
 				$ip_addresses = explode( ',', $exclude_value );
 
 				if ( in_array( $record['ip_address'], $ip_addresses, true ) ) {
-					$matches_found++;
+					++$matches_found;
 				}
 			} elseif ( $record[ $exclude_key ] === $exclude_value ) {
-				$matches_found++;
+				++$matches_found;
 			}
 		}
 

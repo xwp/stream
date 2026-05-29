@@ -5,15 +5,24 @@
 /vendor/
 /build/
 /dist/
-/.vagrant/
 /console.log
 /phpcs.xml
 /stream.zip
 /stream-*.zip
 npm-debug.log
+debug.log
 package.lock
+.phpunit.result.cache
 
-# Compiled files
-ui/js/*.min.js
-ui/css/*.min.css
-alerts/js/*.min.js
+# Locally-generated TLS cert + key for the dev environment HTTPS vhost.
+# Created by local/scripts/setup-https.sh via mkcert.
+/local/certs/
+
+# Generated test data
+/artifacts/
+tests/data/tmp/*
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/

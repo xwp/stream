@@ -7,12 +7,6 @@
 
 namespace WP_Stream;
 
-// Load Carbon to Handle dates much easier.
-if ( ! class_exists( 'Carbon\Carbon' ) ) {
-	require_once wp_stream_get_instance()->locations['inc_dir'] . 'lib/Carbon.php';
-}
-use Carbon\Carbon;
-
 /**
  * Class - Date_Interval
  */
@@ -43,86 +37,109 @@ class Date_Interval {
 
 		if ( empty( $timezone ) ) {
 			$gmt_offset = (int) get_option( 'gmt_offset' );
-			$timezone   = timezone_name_from_abbr( null, $gmt_offset * 3600, true );
+			$timezone   = timezone_name_from_abbr( '', $gmt_offset * 3600, true );
 			if ( false === $timezone ) {
-				$timezone = timezone_name_from_abbr( null, $gmt_offset * 3600, false );
-			}
-			if ( false === $timezone ) {
-				$timezone = null;
+				$timezone = timezone_name_from_abbr( '', $gmt_offset * 3600, false );
 			}
 		}
 
-		return apply_filters(
-			'wp_stream_predefined_date_intervals',
-			array(
-				'today'          => array(
-					'label' => esc_html__( 'Today', 'stream' ),
-					'start' => Carbon::today( $timezone )->startOfDay(),
-					'end'   => Carbon::today( $timezone )->endOfDay(),
-				),
-				'yesterday'      => array(
-					'label' => esc_html__( 'Yesterday', 'stream' ),
-					'start' => Carbon::today( $timezone )->startOfDay()->subDay(),
-					'end'   => Carbon::today( $timezone )->startOfDay()->subSecond(),
-				),
-				'last-7-days'    => array(
-					/* translators: %d: number of days (e.g. "7") */
-					'label' => sprintf( esc_html__( 'Last %d Days', 'stream' ), 7 ),
-					'start' => Carbon::today( $timezone )->subDays( 7 ),
-					'end'   => Carbon::today( $timezone ),
-				),
-				'last-14-days'   => array(
-					/* translators: %d: number of days (e.g. "7") */
-					'label' => sprintf( esc_html__( 'Last %d Days', 'stream' ), 14 ),
-					'start' => Carbon::today( $timezone )->subDays( 14 ),
-					'end'   => Carbon::today( $timezone ),
-				),
-				'last-30-days'   => array(
-					/* translators: %d: number of days (e.g. "7") */
-					'label' => sprintf( esc_html__( 'Last %d Days', 'stream' ), 30 ),
-					'start' => Carbon::today( $timezone )->subDays( 30 ),
-					'end'   => Carbon::today( $timezone ),
-				),
-				'this-month'     => array(
-					'label' => esc_html__( 'This Month', 'stream' ),
-					'start' => Carbon::today( $timezone )->startOfMonth(),
-					'end'   => Carbon::today( $timezone )->endOfMonth(),
-				),
-				'last-month'     => array(
-					'label' => esc_html__( 'Last Month', 'stream' ),
-					'start' => Carbon::today( $timezone )->startOfMonth()->subMonth(),
-					'end'   => Carbon::today( $timezone )->startOfMonth()->subSecond(),
-				),
-				'last-3-months'  => array(
-					/* translators: %d: number of months (e.g. "3") */
-					'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 3 ),
-					'start' => Carbon::today( $timezone )->subMonths( 3 ),
-					'end'   => Carbon::today( $timezone ),
-				),
-				'last-6-months'  => array(
-					/* translators: %d: number of months (e.g. "3") */
-					'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 6 ),
-					'start' => Carbon::today( $timezone )->subMonths( 6 ),
-					'end'   => Carbon::today( $timezone ),
-				),
-				'last-12-months' => array(
-					/* translators: %d: number of months (e.g. "3") */
-					'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 12 ),
-					'start' => Carbon::today( $timezone )->subMonths( 12 ),
-					'end'   => Carbon::today( $timezone ),
-				),
-				'this-year'      => array(
-					'label' => esc_html__( 'This Year', 'stream' ),
-					'start' => Carbon::today( $timezone )->startOfYear(),
-					'end'   => Carbon::today( $timezone )->endOfYear(),
-				),
-				'last-year'      => array(
-					'label' => esc_html__( 'Last Year', 'stream' ),
-					'start' => Carbon::today( $timezone )->startOfYear()->subYear(),
-					'end'   => Carbon::today( $timezone )->startOfYear()->subSecond(),
-				),
+		try {
+			$timezone_object = $timezone ? new \DateTimeZone( $timezone ) : null;
+		} catch ( \Exception $e ) {
+			$timezone_object = null;
+		}
+
+		try {
+			$today          = new \DateTimeImmutable( 'today', $timezone_object );
+			$date_intervals = $this->generate_date_intervals( $today );
+		} catch ( \Exception $e ) {
+			$date_intervals = array();
+		}
+
+		/**
+		 * Allow other plugins to filter the predefined date intervals.
+		 *
+		 * @param array  $date_intervals Date intervals array.
+		 * @param string $timezone       Timezone.
+		 */
+		return apply_filters( 'wp_stream_predefined_date_intervals', $date_intervals, $timezone );
+	}
+
+	/**
+	 * Generate date intervals relative to date object provided.
+	 *
+	 * @param \DateTimeImmutable $date Date object.
+	 *
+	 * @return array[]
+	 */
+	public function generate_date_intervals( \DateTimeImmutable $date ) {
+		return array(
+			'today'          => array(
+				'label' => esc_html__( 'Today', 'stream' ),
+				'start' => $date,
+				'end'   => $date->modify( '+1 day -1 microsecond' ),
 			),
-			$timezone
+			'yesterday'      => array(
+				'label' => esc_html__( 'Yesterday', 'stream' ),
+				'start' => $date->modify( '-1 day' ),
+				'end'   => $date->modify( '-1 microsecond' ),
+			),
+			'last-7-days'    => array(
+				/* translators: %d: number of days (e.g. "7") */
+				'label' => sprintf( esc_html__( 'Last %d Days', 'stream' ), 7 ),
+				'start' => $date->modify( '-7 days' ),
+				'end'   => $date,
+			),
+			'last-14-days'   => array(
+				/* translators: %d: number of days (e.g. "7") */
+				'label' => sprintf( esc_html__( 'Last %d Days', 'stream' ), 14 ),
+				'start' => $date->modify( '-14 days' ),
+				'end'   => $date,
+			),
+			'last-30-days'   => array(
+				/* translators: %d: number of days (e.g. "7") */
+				'label' => sprintf( esc_html__( 'Last %d Days', 'stream' ), 30 ),
+				'start' => $date->modify( '-30 days' ),
+				'end'   => $date,
+			),
+			'this-month'     => array(
+				'label' => esc_html__( 'This Month', 'stream' ),
+				'start' => $date->modify( 'first day of this month' ),
+				'end'   => $date->modify( 'last day of this month' )->modify( '+1 day -1 microsecond' ),
+			),
+			'last-month'     => array(
+				'label' => esc_html__( 'Last Month', 'stream' ),
+				'start' => $date->modify( 'first day of last month' ),
+				'end'   => $date->modify( 'last day of last month' )->modify( '+1 day -1 microsecond' ),
+			),
+			'last-3-months'  => array(
+				/* translators: %d: number of months (e.g. "3") */
+				'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 3 ),
+				'start' => $date->modify( '-3 months' ),
+				'end'   => $date,
+			),
+			'last-6-months'  => array(
+				/* translators: %d: number of months (e.g. "3") */
+				'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 6 ),
+				'start' => $date->modify( '-6 months' ),
+				'end'   => $date,
+			),
+			'last-12-months' => array(
+				/* translators: %d: number of months (e.g. "3") */
+				'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 12 ),
+				'start' => $date->modify( '-12 months' ),
+				'end'   => $date,
+			),
+			'this-year'      => array(
+				'label' => esc_html__( 'This Year', 'stream' ),
+				'start' => $date->modify( 'first day of January' ),
+				'end'   => $date->modify( 'last day of December' )->modify( '+1 day -1 microsecond' ),
+			),
+			'last-year'      => array(
+				'label' => esc_html__( 'Last Year', 'stream' ),
+				'start' => $date->modify( 'first day of January' )->modify( '-1 year' ),
+				'end'   => $date->modify( 'first day of January' )->modify( '-1 microsecond' ),
+			),
 		);
 	}
 }

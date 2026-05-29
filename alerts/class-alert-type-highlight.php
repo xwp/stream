@@ -16,6 +16,8 @@ class Alert_Type_Highlight extends Alert_Type {
 
 	/**
 	 * Main JS file script handle.
+	 *
+	 * @deprecated 4.1.0 Constant is not used anymore and will be removed.
 	 */
 	const SCRIPT_HANDLE = 'wp-stream-alert-highlight-js';
 
@@ -162,7 +164,7 @@ class Alert_Type_Highlight extends Alert_Type {
 		echo '<span class="wp_stream_alert_type_description">' . esc_html__( 'Highlight this alert on the Stream records page.', 'stream' ) . '</span>';
 		echo '<label for="wp_stream_highlight_color"><span class="title">' . esc_html__( 'Color', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo $form->render_field(
+		$form->render_field(
 			'select',
 			array(
 				'name'    => 'wp_stream_highlight_color',
@@ -170,7 +172,7 @@ class Alert_Type_Highlight extends Alert_Type {
 				'options' => $this->get_highlight_options(),
 				'value'   => $options['color'],
 			)
-		); // Xss ok.
+		);
 		echo '</span></label>';
 	}
 
@@ -206,7 +208,6 @@ class Alert_Type_Highlight extends Alert_Type {
 		} else {
 			$alert->alert_meta['color'] = $input_color;
 		}
-
 	}
 
 	/**
@@ -308,34 +309,19 @@ class Alert_Type_Highlight extends Alert_Type {
 	 * @param string $page WP admin page.
 	 */
 	public function enqueue_scripts( $page ) {
-		if ( 'toplevel_page_wp_stream' === $page ) {
-			$min = wp_stream_min_suffix();
+		if ( 'toplevel_page_wp_stream' !== $page ) {
+			return;
+		}
 
-			wp_register_script(
-				self::SCRIPT_HANDLE,
-				$this->plugin->locations['url'] . 'alerts/js/alert-type-highlight.' . $min . 'js',
-				array(
-					'jquery',
-				),
-				$this->plugin->get_version(),
-				false
-			);
-
-			$exports = array(
+		$this->plugin->enqueue_asset(
+			'alert-type-highlight',
+			array(),
+			array(
 				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
 				'removeAction' => self::REMOVE_ACTION,
 				'security'     => wp_create_nonce( self::REMOVE_ACTION_NONCE ),
-			);
-
-			wp_scripts()->add_data(
-				self::SCRIPT_HANDLE,
-				'data',
-				sprintf( 'var _streamAlertTypeHighlightExports = %s;', wp_json_encode( $exports ) )
-			);
-
-			wp_add_inline_script( self::SCRIPT_HANDLE, 'streamAlertTypeHighlight.init();', 'after' );
-			wp_enqueue_script( self::SCRIPT_HANDLE );
-		}
+			)
+		);
 	}
 
 	/**

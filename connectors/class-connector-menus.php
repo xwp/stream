@@ -68,8 +68,8 @@ class Connector_Menus extends Connector {
 	public function get_context_labels() {
 		$labels = array();
 		$menus  = get_terms(
-			'nav_menu',
 			array(
+				'taxonomy'   => 'nav_menu',
 				'hide_empty' => false,
 			)
 		);
@@ -199,10 +199,10 @@ class Connector_Menus extends Connector {
 	 *
 	 * @action update_option_theme_mods_{$stylesheet}
 	 *
-	 * @param array $old  Old theme data.
-	 * @param array $new  New theme data.
+	 * @param array $old_data Old theme data.
+	 * @param array $new_data New theme data.
 	 */
-	public function callback_update_option_theme_mods( $old, $new ) {
+	public function callback_update_option_theme_mods( $old_data, $new_data ) {
 		// Disable if we're switching themes.
 		if ( did_action( 'after_switch_theme' ) ) {
 			return;
@@ -210,17 +210,17 @@ class Connector_Menus extends Connector {
 
 		$key = 'nav_menu_locations';
 
-		if ( ! isset( $new[ $key ] ) ) {
+		if ( ! isset( $new_data[ $key ] ) ) {
 			return; // Switching themes ?.
 		}
 
-		if ( $old[ $key ] === $new[ $key ] ) {
+		if ( $old_data[ $key ] === $new_data[ $key ] ) {
 			return;
 		}
 
 		$locations = get_registered_nav_menus();
-		$old_value = (array) $old[ $key ];
-		$new_value = (array) $new[ $key ];
+		$old_value = (array) $old_data[ $key ];
+		$new_value = (array) $new_data[ $key ];
 		$changed   = array_diff_assoc( $old_value, $new_value ) + array_diff_assoc( $new_value, $old_value );
 
 		if ( ! $changed ) {
@@ -230,9 +230,9 @@ class Connector_Menus extends Connector {
 		foreach ( $changed as $location_id => $menu_id ) {
 			$location = $locations[ $location_id ];
 
-			if ( empty( $new[ $key ][ $location_id ] ) ) {
+			if ( empty( $new_data[ $key ][ $location_id ] ) ) {
 				$action  = 'unassigned';
-				$menu_id = isset( $old[ $key ][ $location_id ] ) ? $old[ $key ][ $location_id ] : 0;
+				$menu_id = isset( $old_data[ $key ][ $location_id ] ) ? $old_data[ $key ][ $location_id ] : 0;
 				/* translators: %1$s: a menu name, %2$s: a theme location (e.g. "Primary Menu", "primary_nav") */
 				$message = _x(
 					'"%1$s" has been unassigned from "%2$s"',
@@ -241,7 +241,7 @@ class Connector_Menus extends Connector {
 				);
 			} else {
 				$action  = 'assigned';
-				$menu_id = isset( $new[ $key ][ $location_id ] ) ? $new[ $key ][ $location_id ] : 0;
+				$menu_id = isset( $new_data[ $key ][ $location_id ] ) ? $new_data[ $key ][ $location_id ] : 0;
 				/* translators: %1$s: a menu name, %2$s a theme location (e.g. "Primary Menu", "primary_nav") */
 				$message = _x(
 					'"%1$s" has been assigned to "%2$s"',

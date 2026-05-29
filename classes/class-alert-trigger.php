@@ -52,7 +52,7 @@ abstract class Alert_Trigger {
 	 * @param Alert $alert The Alert being worked on.
 	 * @return bool False on failure, otherwise should return original value of $success.
 	 */
-	abstract public function check_record ( $success, $record_id, $recordarr, $alert );
+	abstract public function check_record( $success, $record_id, $recordarr, $alert );
 
 	/**
 	 * Adds fields to the trigger form.

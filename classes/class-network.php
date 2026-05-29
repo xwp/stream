@@ -27,11 +27,11 @@ class Network {
 	public $network_settings_page_slug = 'wp_stream_network_settings';
 
 	/**
-	 * Default setting page slug
+	 * The option name for the network settings.
 	 *
 	 * @var string
 	 */
-	public $default_settings_page_slug = 'wp_stream_default_settings';
+	public $network_settings_option = 'wp_stream_network';
 
 	/**
 	 * Class constructor
@@ -225,13 +225,8 @@ class Network {
 
 		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
 
-		switch ( $current_page ) {
-			case $this->network_settings_page_slug:
-				$description = __( 'These settings apply to all sites on the network.', 'stream' );
-				break;
-			case $this->default_settings_page_slug:
-				$description = __( 'These default settings will apply to new sites created on the network. These settings do not alter existing sites.', 'stream' );
-				break;
+		if ( $this->network_settings_page_slug === $current_page ) {
+			$description = __( 'These settings apply to all sites on the network.', 'stream' );
 		}
 
 		return $description;
@@ -351,46 +346,42 @@ class Network {
 	 * Wrapper for the settings API to work on the network settings page
 	 */
 	public function network_options_action() {
-		$allowed_referers = array(
-			$this->network_settings_page_slug,
-			$this->default_settings_page_slug,
-		);
 
-		// @codingStandardsIgnoreLine
-		if ( ! isset( $_GET['action'] ) || ! in_array( $_GET['action'], $allowed_referers, true ) ) {
+		// Check the nonce.
+		if ( empty( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], sprintf( '%s-options', $this->network_settings_option ) ) ) {
 			return;
 		}
 
-		// @codingStandardsIgnoreLine
-		$options = isset( $_POST['option_page'] ) ? explode( ',', stripslashes( $_POST['option_page'] ) ) : null;
+		// Check the user capability.
+		if ( ! current_user_can( $this->plugin->admin->settings_cap ) ) {
+			return;
+		}
 
-		if ( $options ) {
+		// Check the action.
+		if ( ! isset( $_GET['action'] ) || $this->network_settings_page_slug !== $_GET['action'] ) {
+			return;
+		}
 
-			foreach ( $options as $option ) {
-				$option   = trim( $option );
-				$value    = null;
-				$sections = $this->plugin->settings->get_fields();
+		$option = ! empty( $_POST['option_page'] ) ? $_POST['option_page'] : false;
 
-				foreach ( $sections as $section_name => $section ) {
-					foreach ( $section['fields'] as $field_idx => $field ) {
-						$option_key = $section_name . '_' . $field['name'];
+		if ( $option && $this->network_settings_option === $option ) {
 
-						// @codingStandardsIgnoreStart
-						if ( isset( $_POST[ $option ][ $option_key ] ) ) {
-							$value[ $option_key ] = $_POST[ $option ][ $option_key ];
-						} else {
-							$value[ $option_key ] = false;
-						}
-						// @codingStandardsIgnoreEnd
+			$value    = array();
+			$sections = $this->plugin->settings->get_fields();
+
+			foreach ( $sections as $section_name => $section ) {
+				foreach ( $section['fields'] as $field_idx => $field ) {
+					$option_key = $section_name . '_' . $field['name'];
+
+					if ( isset( $_POST[ $option ][ $option_key ] ) ) {
+						$value[ $option_key ] = $this->plugin->settings->sanitize_setting_by_field_type( $_POST[ $option ][ $option_key ], $field['type'] );
+					} else {
+						$value[ $option_key ] = false;
 					}
 				}
-
-				if ( ! is_array( $value ) ) {
-					$value = trim( $value );
-				}
-
-				update_site_option( $option, $value );
 			}
+
+			update_site_option( $this->network_settings_option, $value );
 		}
 
 		if ( ! count( get_settings_errors() ) ) {

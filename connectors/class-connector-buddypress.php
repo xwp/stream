@@ -173,6 +173,18 @@ class Connector_BuddyPress extends Connector {
 	 * @return array Action links
 	 */
 	public function action_links( $links, $record ) {
+
+		// Check we have access to BuddyPress on this blog and that the user will have access to the links.
+		if ( ! $this->is_dependency_satisfied() ) {
+			return array();
+		}
+
+		// Check if user has moderation capabilities (use function_exists to avoid fatal errors).
+		if ( function_exists( 'bp_current_user_can' ) && ! bp_current_user_can( 'bp_moderate' ) ) {
+			return array();
+		}
+
+		// In the links, we also need to check the functions themselves as they're dependent on the BuddyPress module being enabled.
 		if ( in_array( $record->context, array( 'components' ), true ) ) {
 			$option_key = $record->get_meta( 'option_key', true );
 
@@ -181,7 +193,7 @@ class Connector_BuddyPress extends Connector {
 					array(
 						'page' => 'bp-components',
 					),
-					admin_url( 'admin.php' )
+					get_admin_url( $record->blog_id, 'admin.php' )
 				);
 			} elseif ( 'bp-pages' === $option_key ) {
 				$page_id = $record->get_meta( 'page_id', true );
@@ -190,7 +202,7 @@ class Connector_BuddyPress extends Connector {
 					array(
 						'page' => 'bp-page-settings',
 					),
-					admin_url( 'admin.php' )
+					get_admin_url( $record->blog_id, 'admin.php' )
 				);
 
 				if ( $page_id ) {
@@ -203,9 +215,9 @@ class Connector_BuddyPress extends Connector {
 				array(
 					'page' => $record->get_meta( 'page', true ),
 				),
-				admin_url( 'admin.php' )
+				get_admin_url( $record->blog_id, 'admin.php' )
 			);
-		} elseif ( in_array( $record->context, array( 'groups' ), true ) ) {
+		} elseif ( in_array( $record->context, array( 'groups' ), true ) && function_exists( 'groups_get_group' ) ) {
 			$group_id = $record->get_meta( 'id', true );
 			$group    = \groups_get_group(
 				array(
@@ -218,13 +230,13 @@ class Connector_BuddyPress extends Connector {
 				$base_url   = \bp_get_admin_url( 'admin.php?page=bp-groups&amp;gid=' . $group_id );
 				$delete_url = wp_nonce_url( $base_url . '&amp;action=delete', 'bp-groups-delete' );
 				$edit_url   = $base_url . '&amp;action=edit';
-				$visit_url  = \bp_get_group_permalink( $group );
+				$visit_url  = function_exists( 'bp_get_group_url' ) ? \bp_get_group_url( $group ) : \bp_get_group_permalink( $group );
 
 				$links[ esc_html__( 'Edit group', 'stream' ) ]   = $edit_url;
 				$links[ esc_html__( 'View group', 'stream' ) ]   = $visit_url;
 				$links[ esc_html__( 'Delete group', 'stream' ) ] = $delete_url;
 			}
-		} elseif ( in_array( $record->context, array( 'activity' ), true ) ) {
+		} elseif ( in_array( $record->context, array( 'activity' ), true ) && function_exists( 'bp_activity_get' ) ) {
 			$activity_id = $record->get_meta( 'id', true );
 			$activities  = \bp_activity_get(
 				array(
@@ -271,7 +283,7 @@ class Connector_BuddyPress extends Connector {
 					),
 					admin_url( 'users.php' )
 				);
-			} else {
+			} elseif ( class_exists( 'BP_XProfile_Field' ) ) {
 				$field = new \BP_XProfile_Field( $field_id );
 				if ( empty( $field->type ) ) {
 					return $links;
@@ -355,12 +367,12 @@ class Connector_BuddyPress extends Connector {
 	/**
 	 * Track buddyPress-specific option changes.
 	 *
-	 * @param string $option Option key.
-	 * @param string $old    Old value.
-	 * @param string $new    New value.
+	 * @param string $option    Option key.
+	 * @param string $old_value Old value.
+	 * @param string $new_value New value.
 	 */
-	public function callback_update_option( $option, $old, $new ) {
-		$this->check( $option, $old, $new );
+	public function callback_update_option( $option, $old_value, $new_value ) {
+		$this->check( $option, $old_value, $new_value );
 	}
 
 	/**
@@ -385,12 +397,12 @@ class Connector_BuddyPress extends Connector {
 	/**
 	 * Track buddyPress-specific site option changes
 	 *
-	 * @param string $option Option key.
-	 * @param string $old    Old value.
-	 * @param string $new    New value.
+	 * @param string $option    Option key.
+	 * @param string $old_value Old value.
+	 * @param string $new_value New value.
 	 */
-	public function callback_update_site_option( $option, $old, $new ) {
-		$this->check( $option, $old, $new );
+	public function callback_update_site_option( $option, $old_value, $new_value ) {
+		$this->check( $option, $old_value, $new_value );
 	}
 
 	/**
@@ -584,16 +596,14 @@ class Connector_BuddyPress extends Connector {
 		if ( 1 === count( $activities_ids ) && isset( $this->deleted_activity ) ) { // Single activity deletion.
 			$activity = $this->deleted_activity;
 			$this->log(
-				sprintf(
-					/* translators: %s: an activity title (e.g. "Update") */
-					__( '"%s" activity deleted', 'stream' ),
-					wp_strip_all_tags( $activity->action )
-				),
+				/* translators: %s: an activity title (e.g. "Update") */
+				__( '"%s" activity deleted', 'stream' ),
 				array(
-					'id'      => $activity->id,
-					'item_id' => $activity->item_id,
-					'type'    => $activity->type,
-					'author'  => $activity->user_id,
+					'activity_action' => wp_strip_all_tags( $activity->action ),
+					'id'              => $activity->id,
+					'item_id'         => $activity->item_id,
+					'type'            => $activity->type,
+					'author'          => $activity->user_id,
 				),
 				$activity->id,
 				$activity->component,
@@ -611,11 +621,8 @@ class Connector_BuddyPress extends Connector {
 				return;
 			}
 			$this->log(
-				sprintf(
-					/* translators: %s: an activity title (e.g. "Update") */
-					__( '"%s" activities were deleted', 'stream' ),
-					count( $activities_ids )
-				),
+				/* translators: %s: number of activities */
+				__( '%s activities were deleted', 'stream' ),
 				array(
 					'count' => count( $activities_ids ),
 					'args'  => $this->delete_activity_args,
@@ -640,16 +647,14 @@ class Connector_BuddyPress extends Connector {
 		unset( $by );
 
 		$this->log(
-			sprintf(
-				/* translators: %s an activity title (e.g. "Update") */
-				__( 'Marked activity "%s" as spam', 'stream' ),
-				wp_strip_all_tags( $activity->action )
-			),
+			/* translators: %s: an activity title (e.g. "Update") */
+			__( 'Marked activity "%s" as spam', 'stream' ),
 			array(
-				'id'      => $activity->id,
-				'item_id' => $activity->item_id,
-				'type'    => $activity->type,
-				'author'  => $activity->user_id,
+				'activity_action' => wp_strip_all_tags( $activity->action ),
+				'id'              => $activity->id,
+				'item_id'         => $activity->item_id,
+				'type'            => $activity->type,
+				'author'          => $activity->user_id,
 			),
 			$activity->id,
 			$activity->component,
@@ -669,16 +674,14 @@ class Connector_BuddyPress extends Connector {
 		unset( $by );
 
 		$this->log(
-			sprintf(
-				/* translators: %s: an activity title (e.g. "Update") */
-				__( 'Unmarked activity "%s" as spam', 'stream' ),
-				wp_strip_all_tags( $activity->action )
-			),
+			/* translators: %s: an activity title (e.g. "Update") */
+			__( 'Unmarked activity "%s" as spam', 'stream' ),
 			array(
-				'id'      => $activity->id,
-				'item_id' => $activity->item_id,
-				'type'    => $activity->type,
-				'author'  => $activity->user_id,
+				'activity_action' => wp_strip_all_tags( $activity->action ),
+				'id'              => $activity->id,
+				'item_id'         => $activity->item_id,
+				'type'            => $activity->type,
+				'author'          => $activity->user_id,
 			),
 			$activity->id,
 			$activity->component,
@@ -698,13 +701,11 @@ class Connector_BuddyPress extends Connector {
 		unset( $error );
 
 		$this->log(
-			sprintf(
-				/* translators: %s: an activity title (e.g. "Update") */
-				__( '"%s" activity updated', 'stream' ),
-				wp_strip_all_tags( $activity->action )
-			),
+			/* translators: %s: an activity title (e.g. "Update") */
+			__( '"%s" activity updated', 'stream' ),
 			array(
-				'id'      => $activity->id,
+				'activity_action' => wp_strip_all_tags( $activity->action ),
+				'id'              => $activity->id,
 				'item_id' => $activity->item_id,
 				'type'    => $activity->type,
 				'author'  => $activity->user_id,

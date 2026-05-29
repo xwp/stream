@@ -194,10 +194,12 @@ class Connector_Comments extends Connector {
 			$user_name = isset( $user->display_name ) ? $user->display_name : $comment->comment_author;
 		}
 
-		if ( $req_user_login ) {
-			$user      = wp_get_current_user();
-			$user_id   = $user->ID;
-			$user_name = $user->display_name;
+		if ( $req_user_login && ! empty( $comment->user_id ) ) {
+			$user = get_user_by( 'id', $comment->user_id );
+			if ( $user ) {
+				$user_id   = $user->ID;
+				$user_name = $user->display_name;
+			}
 		}
 
 		if ( 'id' === $field ) {
@@ -578,7 +580,13 @@ class Connector_Comments extends Connector {
 			return;
 		}
 
-		if ( 'approved' !== $new_status && 'unapproved' !== $new_status || 'trash' === $old_status || 'spam' === $old_status ) {
+		if (
+			( 'approved' !== $new_status && 'unapproved' !== $new_status )
+			||
+			'trash' === $old_status
+			||
+			'spam' === $old_status
+		) {
 			return;
 		}
 
@@ -591,10 +599,10 @@ class Connector_Comments extends Connector {
 		$comment_type = get_comment_type( $comment->comment_ID );
 
 		$this->log(
-			/* translators: %1$s: a comment author, %2$s: a post title, %3$s: a comment type */
+			/* translators: %1$s: comment author, %2$s: comment status, %3$s: comment type, %4$s: old comment status, %5$s: post title */
 			_x(
-				'%1$s\'s %3$s %2$s',
-				'Comment status transition. 1: Comment author, 2: Post title, 3: Comment type',
+				'%1$s\'s %3$s on "%5$s" %2$s',
+				'Comment status transition. 1: Comment author, 2: New status, 3: Comment type, 4. Old status, 5. Post title',
 				'stream'
 			),
 			compact( 'user_name', 'new_status', 'comment_type', 'old_status', 'post_title', 'post_id', 'user_id' ),

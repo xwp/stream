@@ -36,7 +36,7 @@ printf( '<?xml version="1.0" encoding="%s"?>', esc_attr( get_option( 'blog_chars
 		$display_name = isset( $author->display_name ) ? $author->display_name : 'N/A';
 		?>
 		<entry>
-			<title type="html"><![CDATA[[<?php echo esc_html( $domain ); ?>] <?php echo esc_html( $record->summary ); // xss ok. ?> ]]></title>
+			<title type="html"><![CDATA[[<?php echo esc_html( $domain ); ?>] <?php echo esc_html( $record->summary ); ?> ]]></title>
 			<link href="<?php echo esc_url( $record_link ); ?>" />
 			<updated><?php echo esc_html( mysql2date( 'c', $record->created, false ) ); ?></updated>
 			<author>

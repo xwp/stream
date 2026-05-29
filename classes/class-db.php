@@ -117,7 +117,7 @@ class DB {
 
 		// Sanitize all record values.
 		return array_map(
-			function( $value ) {
+			function ( $value ) {
 				if ( ! is_array( $value ) ) {
 					return wp_strip_all_tags( $value );
 				}

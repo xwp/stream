@@ -170,7 +170,7 @@ class Connector_WordPress_SEO extends Connector {
 					/* translators: %s: a post type singular name (e.g. "Post") */
 					$links[ sprintf( esc_html_x( 'Restore %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = $untrash;
 					/* translators: %s: a post type singular name (e.g. "Post") */
-					$links[ sprintf( esc_html_x( 'Delete %s Permenantly', 'Post type singular name', 'stream' ), $post_type_name ) ] = $delete;
+					$links[ sprintf( esc_html_x( 'Delete %s Permanently', 'Post type singular name', 'stream' ), $post_type_name ) ] = $delete;
 				} else {
 					/* translators: %s: a post type singular name (e.g. "Post") */
 					$links[ sprintf( esc_html_x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = get_edit_post_link( $post->ID );
@@ -223,15 +223,7 @@ class Connector_WordPress_SEO extends Connector {
 	 */
 	public function admin_enqueue_scripts( $hook ) {
 		if ( 0 === strpos( $hook, 'seo_page_' ) ) {
-			$stream = wp_stream_get_instance();
-			$src    = $stream->locations['url'] . '/ui/js/wpseo-admin.js';
-			wp_enqueue_script(
-				'stream-connector-wpseo',
-				$src,
-				array( 'jquery' ),
-				$stream->get_version(),
-				false
-			);
+			wp_stream_get_instance()->enqueue_asset( 'wpseo-admin' );
 		}
 	}
 
@@ -296,15 +288,15 @@ class Connector_WordPress_SEO extends Connector {
 				'wpseo_import',
 				'exported'
 			);
-		} elseif ( isset( $_FILES['settings_import_file']['name'] ) ) { // phpcs: input var okay.
+		} elseif ( isset( $_FILES['settings_import_file']['name'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$this->log(
 				sprintf(
 					/* translators: %s: a filename (e.g. "test.xml") */
 					__( 'Tried importing settings from "%s"', 'stream' ),
-					sanitize_text_field( wp_unslash( $_FILES['settings_import_file']['name'] ) ) // phpcs: input var okay.
+					sanitize_text_field( wp_unslash( $_FILES['settings_import_file']['name'] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Missing
 				),
 				array(
-					'file' => sanitize_text_field( wp_unslash( $_FILES['settings_import_file']['name'] ) ), // phpcs: input var okay.
+					'file' => sanitize_text_field( wp_unslash( $_FILES['settings_import_file']['name'] ) ), // phpcs:ignore WordPress.Security.NonceVerification.Missing
 				),
 				null,
 				'wpseo_import',
@@ -393,7 +385,9 @@ class Connector_WordPress_SEO extends Connector {
 	private function meta( $object_id, $meta_key, $meta_value ) {
 		$prefix = \WPSEO_Meta::$meta_prefix;
 
-		\WPSEO_Metabox::translate_meta_boxes();
+		if ( defined( 'WPSEO_VERSION' ) && version_compare( WPSEO_VERSION, '23.5', '<' ) ) {
+			\WPSEO_Metabox::translate_meta_boxes();
+		}
 
 		if ( 0 !== strpos( $meta_key, $prefix ) ) {
 			return;
@@ -413,15 +407,18 @@ class Connector_WordPress_SEO extends Connector {
 		}
 
 		$post            = get_post( $object_id );
-		$post_type_label = get_post_type_labels( get_post_type_object( $post->post_type ) )->singular_name;
+		$post_type_obj   = get_post_type_object( $post->post_type );
+		$post_type_label = is_object( $post_type_obj ) && isset( $post_type_obj->labels->singular_name )
+			? $post_type_obj->labels->singular_name
+			: $post->post_type;
 
 		$this->log(
 			sprintf(
 				/* translators: %1$s: a meta field title, %2$s: a post title, %3$s: a post type (e.g. "Description", "Hello World", "Post") */
 				__( 'Updated "%1$s" of "%2$s" %3$s', 'stream' ),
-				$field['title'],
-				$post->post_title,
-				$post_type_label
+				$this->escape_percentages( (string) $field['title'] ),
+				$this->escape_percentages( (string) $post->post_title ),
+				$this->escape_percentages( (string) $post_type_label )
 			),
 			array(
 				'meta_key'   => $meta_key,

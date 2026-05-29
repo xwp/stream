@@ -140,7 +140,6 @@ class Connector_User_Switching extends Connector {
 				break;
 
 		}
-
 	}
 
 	/**
@@ -171,7 +170,6 @@ class Connector_User_Switching extends Connector {
 			'switched-to',
 			$old_user->ID
 		);
-
 	}
 
 	/**
@@ -208,7 +206,6 @@ class Connector_User_Switching extends Connector {
 			'switched-back',
 			$old_user->ID
 		);
-
 	}
 
 	/**
@@ -228,7 +225,6 @@ class Connector_User_Switching extends Connector {
 			'switched-off',
 			$old_user->ID
 		);
-
 	}
 
 	/**

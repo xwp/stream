@@ -459,7 +459,7 @@ class Connector_Settings extends Connector {
 		/**
 		 * Filter allows for insertion of serialized labels
 		 *
-		 * @param  array  $lables  Serialized labels
+		 * @param  array  $labels  Serialized labels
 		 * @return array  Updated array of serialzed labels
 		 */
 		$labels = apply_filters( 'wp_stream_serialized_labels', $labels );
@@ -489,7 +489,7 @@ class Connector_Settings extends Connector {
 			'stream'            => array(
 				'menu_slug'    => 'wp_stream',
 				'submenu_slug' => $plugin->admin->settings_page_slug,
-				'url'          => function( $rule, $record ) use ( $plugin ) {
+				'url'          => function ( $rule, $record ) use ( $plugin ) {
 					$option_key = $record->get_meta( 'option_key', true );
 					$url_tab    = null;
 
@@ -513,43 +513,43 @@ class Connector_Settings extends Connector {
 						admin_url( 'admin.php' )
 					);
 				},
-				'applicable'   => function( $submenu, $record ) {
+				'applicable'   => function ( $submenu, $record ) {
 					return 'wp_stream' === $record->context;
 				},
 			),
 			'background_header' => array(
 				'menu_slug'    => 'themes.php',
-				'submenu_slug' => function( $record ) {
+				'submenu_slug' => function ( $record ) {
 					return str_replace( '_', '-', $record->context );
 				},
-				'url'          => function( $rule, $record ) {
+				'url'          => function ( $rule, $record ) {
 					return add_query_arg( 'page', $rule['submenu_slug']( $record ), admin_url( $rule['menu_slug'] ) );
 				},
-				'applicable'   => function( $submenu, $record ) {
+				'applicable'   => function ( $submenu, $record ) {
 					return in_array( $record->context, array( 'custom_header', 'custom_background' ), true );
 				},
 			),
 			'general'           => array(
 				'menu_slug'    => 'options-general.php',
-				'submenu_slug' => function( $record ) {
+				'submenu_slug' => function ( $record ) {
 					return sprintf( 'options-%s.php', $record->context );
 				},
-				'url'          => function( $rule, $record ) {
+				'url'          => function ( $rule, $record ) {
 					return admin_url( $rule['submenu_slug']( $record ) );
 				},
-				'applicable'   => function( $submenu, $record ) {
+				'applicable'   => function ( $submenu ) {
 					return ! empty( $submenu['options-general.php'] );
 				},
 			),
 			'network'           => array(
 				'menu_slug'    => 'settings.php',
-				'submenu_slug' => function( $record ) {
+				'submenu_slug' => function () {
 					return 'settings.php';
 				},
-				'url'          => function( $rule, $record ) {
+				'url'          => function ( $rule ) {
 					return network_admin_url( $rule['menu_slug'] );
 				},
-				'applicable'   => function( $submenu, $record ) {
+				'applicable'   => function ( $submenu, $record ) {
 					if ( ! $record->blog_id ) {
 						return ! empty( $submenu['settings.php'] );
 					}
@@ -563,7 +563,7 @@ class Connector_Settings extends Connector {
 
 			$applicable_rules = array_filter(
 				$rules,
-				function( $rule ) use ( $submenu, $record ) {
+				function ( $rule ) use ( $submenu, $record ) {
 					return call_user_func( $rule['applicable'], $submenu, $record );
 				}
 			);
@@ -622,7 +622,15 @@ class Connector_Settings extends Connector {
 	 * @param mixed  $value      Option new value.
 	 */
 	public function callback_update_option( $option, $old_value, $value ) {
-		if ( ( defined( '\WP_CLI' ) && \WP_CLI || did_action( 'customize_save' ) ) && array_key_exists( $option, $this->labels ) ) {
+		if (
+			(
+				( defined( '\WP_CLI' ) && \WP_CLI )
+				||
+				did_action( 'customize_save' )
+			)
+			&&
+			array_key_exists( $option, $this->labels )
+		) {
 			$this->callback_updated_option( $option, $old_value, $value );
 		}
 	}
@@ -777,7 +785,7 @@ class Connector_Settings extends Connector {
 		<script>
 			(function ($) {
 				$(function () {
-					var hashPrefix = <?php echo wp_stream_json_encode( self::HIGHLIGHT_FIELD_URL_HASH_PREFIX ); // xss ok. ?>,
+					var hashPrefix = <?php echo wp_json_encode( self::HIGHLIGHT_FIELD_URL_HASH_PREFIX ); ?>,
 						hashFieldName = "",
 						fieldNames = [],
 						$select2Choices = {},

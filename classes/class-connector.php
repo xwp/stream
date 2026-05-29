@@ -110,7 +110,7 @@ abstract class Connector {
 	 */
 	public function callback() {
 		$action   = current_filter();
-		$callback = array( $this, 'callback_' . preg_replace( '/[^a-z0-9_\-]/', '_', $action ) );
+		$callback = array( $this, 'callback_' . preg_replace( '/[^a-z0-9_]/', '_', $action ) );
 
 		// For the sake of testing, trigger an action with the name of the callback.
 		if ( defined( 'WP_STREAM_TESTS' ) && WP_STREAM_TESTS ) {
@@ -146,18 +146,26 @@ abstract class Connector {
 	/**
 	 * Log handler
 	 *
-	 * @param string $message   sprintf-ready error message string.
-	 * @param array  $args      sprintf (and extra) arguments to use.
-	 * @param int    $object_id Target object id.
-	 * @param string $context   Context of the event.
-	 * @param string $action    Action of the event.
-	 * @param int    $user_id   User responsible for the event.
+	 * @param string   $message   sprintf-ready error message string.
+	 * @param array    $args      sprintf (and extra) arguments to use.
+	 * @param int|null $object_id Target object id (if any).
+	 * @param string   $context   Context of the event.
+	 * @param string   $action    Action of the event.
+	 * @param int      $user_id   User responsible for the event.
 	 *
 	 * @return bool
 	 */
 	public function log( $message, $args, $object_id, $context, $action, $user_id = null ) {
 		$connector = $this->name;
 
+		/**
+		 * Override the data logged. Returning false to this filter will stop the data from being logged.
+		 * Examples of this filter in use can be found in some of the custom connectors.
+		 *
+		 * @see Connector_ACF::log_override()
+		 *
+		 * @return array|false An array of the data to be logged or false if it should not be logged.
+		 */
 		$data = apply_filters(
 			'wp_stream_log_data',
 			compact( 'connector', 'message', 'args', 'object_id', 'context', 'action', 'user_id' )
@@ -229,7 +237,7 @@ abstract class Connector {
 		$diff = array_udiff_assoc(
 			$old_value,
 			$new_value,
-			function( $value1, $value2 ) {
+			function ( $value1, $value2 ) {
 				// Compare potentially complex nested arrays.
 				return wp_json_encode( $value1 ) !== wp_json_encode( $value2 );
 			}
@@ -247,7 +255,7 @@ abstract class Connector {
 		// Remove numeric indexes.
 		$result = array_filter(
 			$result,
-			function( $value ) {
+			function ( $value ) {
 				// @codingStandardsIgnoreStart
 				// check if is not valid number (is_int, is_numeric and ctype_digit are not enough)
 				return (string) (int) $value !== (string) $value;
@@ -272,7 +280,7 @@ abstract class Connector {
 				if ( is_array( $old_value[ $key ] ) && is_array( $new_value[ $key ] ) ) {
 					$inner  = array();
 					$parent = $key;
-					$deep--;
+					--$deep;
 					$changed = $this->get_changed_keys( $old_value[ $key ], $new_value[ $key ], $deep );
 					foreach ( $changed as $child => $change ) {
 						$inner[ $parent . '::' . $child ] = $change;
@@ -293,5 +301,15 @@ abstract class Connector {
 	 */
 	public function is_dependency_satisfied() {
 		return true;
+	}
+
+	/**
+	 * Escape % characters in a string to avoid Uncaught ValueErrors in $this->log().
+	 *
+	 * @param string $value The string value to be escaped.
+	 * @return string The escaped string.
+	 */
+	public function escape_percentages( $value ) {
+		return str_replace( '%', '%%', $value );
 	}
 }

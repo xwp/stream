@@ -176,16 +176,14 @@ class Alert_Trigger_Action extends Alert_Trigger {
 			if ( empty( $action ) ) {
 				$action = __( 'performed any action on', 'stream' );
 			}
-		} else {
-			if ( empty( $action ) ) {
+		} elseif ( empty( $action ) ) {
 				$action = __( 'Any Action', 'stream' );
-			} else {
-				$actions = $this->plugin->connectors->term_labels['stream_action'];
-				if ( ! empty( $actions[ $action ] ) ) {
-					$action = $actions[ $action ];
-				}
-				$action = ucfirst( $action );
+		} else {
+			$actions = $this->plugin->connectors->term_labels['stream_action'];
+			if ( ! empty( $actions[ $action ] ) ) {
+				$action = $actions[ $action ];
 			}
+			$action = ucfirst( $action );
 		}
 
 		return ucfirst( $action );

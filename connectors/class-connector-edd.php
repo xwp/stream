@@ -258,12 +258,12 @@ class Connector_EDD extends Connector {
 	/**
 	 * Track EDD-specific option changes.
 	 *
-	 * @param string $option Option key.
-	 * @param string $old    Old value.
-	 * @param string $new    New value.
+	 * @param string $option    Option key.
+	 * @param string $old_value Old value.
+	 * @param string $new_value New value.
 	 */
-	public function callback_update_option( $option, $old, $new ) {
-		$this->check( $option, $old, $new );
+	public function callback_update_option( $option, $old_value, $new_value ) {
+		$this->check( $option, $old_value, $new_value );
 	}
 
 	/**
@@ -288,12 +288,12 @@ class Connector_EDD extends Connector {
 	/**
 	 * Track EDD-specific site option changes
 	 *
-	 * @param string $option Option key.
-	 * @param string $old    Old value.
-	 * @param string $new    New value.
+	 * @param string $option    Option key.
+	 * @param string $old_value Old value.
+	 * @param string $new_value New value.
 	 */
-	public function callback_update_site_option( $option, $old, $new ) {
-		$this->check( $option, $old, $new );
+	public function callback_update_site_option( $option, $old_value, $new_value ) {
+		$this->check( $option, $old_value, $new_value );
 	}
 
 	/**
@@ -418,6 +418,7 @@ class Connector_EDD extends Connector {
 	 * @return array|bool
 	 */
 	public function log_override( $data ) {
+
 		if ( ! is_array( $data ) ) {
 			return $data;
 		}
@@ -477,18 +478,19 @@ class Connector_EDD extends Connector {
 			sprintf(
 				/* translators: %1$s: a discount title, %2$s: a status (e.g. "Mother's Day", "activated") */
 				__( '"%1$s" discount %2$s', 'stream' ),
-				get_post( $code_id )->post_title,
+				edd_get_discount_field( $code_id, 'name' ),
 				'active' === $new_status ? esc_html__( 'activated', 'stream' ) : esc_html__( 'deactivated', 'stream' )
 			),
 			array(
-				'post_id' => $code_id,
-				'status'  => $new_status,
+				'discount_id' => $code_id,
+				'status'      => $new_status,
 			),
 			$code_id,
 			'discounts',
 			'updated'
 		);
 	}
+
 	/**
 	 * Logs PDFs
 	 *
