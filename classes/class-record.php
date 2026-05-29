@@ -183,6 +183,10 @@ class Record {
 	/**
 	 * Normalize Stream's flat stored metadata into the public record shape.
 	 *
+	 * One-level keys in the form key[sub_key] are grouped into nested arrays.
+	 * Literal or nested brackets stay flat. When flat and grouped values exist
+	 * for the same key in one record, grouped values take precedence.
+	 *
 	 * @param array $meta Raw metadata from the database or get_metadata().
 	 * @return array
 	 */
@@ -191,25 +195,45 @@ class Record {
 
 		foreach ( (array) $meta as $key => $value ) {
 			$value = self::normalize_meta_value( $value );
+			$group = self::parse_grouped_meta_key( $key );
 
-			if ( is_string( $key ) && false !== strpos( $key, '[' ) && ']' === substr( $key, -1 ) ) {
-				$main_key = substr( $key, 0, strpos( $key, '[' ) );
-				$sub_key  = substr( $key, strpos( $key, '[' ) + 1, -1 );
+			if ( null !== $group ) {
+				list( $main_key, $sub_key ) = $group;
 
-				if ( '' !== $main_key && '' !== $sub_key ) {
-					if ( ! isset( $normalized[ $main_key ] ) || ! is_array( $normalized[ $main_key ] ) ) {
-						$normalized[ $main_key ] = array();
-					}
-
-					$normalized[ $main_key ][ $sub_key ] = $value;
-					continue;
+				if ( ! isset( $normalized[ $main_key ] ) || ! is_array( $normalized[ $main_key ] ) ) {
+					$normalized[ $main_key ] = array();
 				}
+
+				$normalized[ $main_key ][ $sub_key ] = $value;
+				continue;
+			}
+
+			if ( isset( $normalized[ $key ] ) && is_array( $normalized[ $key ] ) ) {
+				continue;
 			}
 
 			$normalized[ $key ] = $value;
 		}
 
 		return $normalized;
+	}
+
+	/**
+	 * Parse Stream's one-level grouped metadata key format.
+	 *
+	 * @param mixed $key Metadata key.
+	 * @return array|null Main and sub-key pair when grouped, otherwise null.
+	 */
+	protected static function parse_grouped_meta_key( $key ) {
+		if ( ! is_string( $key ) ) {
+			return null;
+		}
+
+		if ( 1 !== preg_match( '/^([^\[\]]+)\[([^\[\]]+)\]$/', $key, $matches ) ) {
+			return null;
+		}
+
+		return array( $matches[1], $matches[2] );
 	}
 
 	/**
@@ -275,21 +299,10 @@ class Record {
 	 * @param string $meta_key Meta key (optional).
 	 * @param bool   $single   Return only first found (optional).
 	 *
-	 * @return array
+	 * @return mixed
 	 */
 	public function get_meta( $meta_key = '', $single = false ) {
-		$meta = get_metadata( 'record', $this->ID, $meta_key, $single );
-
-		if ( '' === $meta_key || ! empty( $meta ) ) {
-			return '' === $meta_key ? self::normalize_meta( $meta ) : $meta;
-		}
-
-		$all_meta = self::normalize_meta( get_metadata( 'record', $this->ID ) );
-		if ( ! array_key_exists( $meta_key, $all_meta ) ) {
-			return $single ? '' : array();
-		}
-
-		return $single ? $all_meta[ $meta_key ] : array( $all_meta[ $meta_key ] );
+		return get_metadata( 'record', $this->ID, $meta_key, $single );
 	}
 
 	/**

@@ -806,6 +806,41 @@ class Test_Admin extends WP_StreamTestCase {
 	}
 
 	/**
+	 * Display Metadata reads the network option on network-activated installs.
+	 *
+	 * @group ms-required
+	 */
+	public function test_list_table_display_metadata_setting_reads_network_option_when_network_activated() {
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'Requires multisite.' );
+		}
+
+		$network_key      = $this->plugin->settings->network_options_key;
+		$original_network = get_site_option( $network_key, false );
+
+		add_filter( 'wp_stream_is_network_activated', '__return_true' );
+		$this->plugin->settings->options['advanced_display_metadata'] = 0;
+
+		try {
+			update_site_option(
+				$network_key,
+				array( 'advanced_display_metadata' => 1 )
+			);
+
+			$this->admin->register_list_table();
+
+			$this->assertTrue( $this->admin->list_table->should_display_metadata() );
+		} finally {
+			remove_filter( 'wp_stream_is_network_activated', '__return_true' );
+			if ( false === $original_network ) {
+				delete_site_option( $network_key );
+			} else {
+				update_site_option( $network_key, $original_network );
+			}
+		}
+	}
+
+	/**
 	 * Also tests private method role_can_view
 	 */
 	public function test_filter_user_caps() {
@@ -1457,6 +1492,131 @@ class Test_Admin extends WP_StreamTestCase {
 		);
 
 		as_unschedule_all_actions( \WP_Stream\Admin::AUTO_PURGE_BATCH_ACTION );
+	}
+
+	public function test_is_running_async_deletion_reflects_scheduled_state() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::ASYNC_DELETION_ACTION );
+		}
+
+		$this->assertFalse(
+			\WP_Stream\Admin::is_running_async_deletion(),
+			'No scheduled action means not running'
+		);
+
+		as_enqueue_async_action(
+			\WP_Stream\Admin::ASYNC_DELETION_ACTION,
+			array(
+				'total'      => 1,
+				'done'       => 0,
+				'last_entry' => 1,
+				'blog_id'    => (int) get_current_blog_id(),
+			)
+		);
+		$this->assertTrue(
+			\WP_Stream\Admin::is_running_async_deletion(),
+			'A pending async-deletion action means running'
+		);
+
+		as_unschedule_all_actions( \WP_Stream\Admin::ASYNC_DELETION_ACTION );
+		$this->assertFalse(
+			\WP_Stream\Admin::is_running_async_deletion(),
+			'After unscheduling: not running'
+		);
+	}
+
+	/**
+	 * Integration test for the "Reset Stream Database" running-state UI swap.
+	 * Asserts that the delete_all_records field flips from type=link to
+	 * type=none and swaps its description when an async-deletion action is
+	 * scheduled. Mirrors test_clean_orphan_meta_field_reflects_running_state.
+	 */
+	public function test_delete_all_records_field_reflects_running_state() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::ASYNC_DELETION_ACTION );
+		}
+
+		$find_field = function () {
+			$fields = $this->plugin->settings->get_fields();
+			foreach ( $fields['advanced']['fields'] as $field ) {
+				if ( isset( $field['name'] ) && 'delete_all_records' === $field['name'] ) {
+					return $field;
+				}
+			}
+			return null;
+		};
+
+		// Idle: link visible, warning description.
+		$idle = $find_field();
+		$this->assertNotNull( $idle, 'delete_all_records field must exist on the Advanced tab' );
+		$this->assertSame( 'link', $idle['type'], 'Idle state must render as a link' );
+		$this->assertStringContainsString(
+			'Warning',
+			$idle['desc'],
+			'Idle description must show the deletion warning'
+		);
+
+		// Simulate an active deletion by scheduling the action.
+		as_enqueue_async_action(
+			\WP_Stream\Admin::ASYNC_DELETION_ACTION,
+			array(
+				'total'      => 1,
+				'done'       => 0,
+				'last_entry' => 1,
+				'blog_id'    => (int) get_current_blog_id(),
+			)
+		);
+
+		$active = $find_field();
+		$this->assertNotNull( $active );
+		$this->assertSame(
+			'none',
+			$active['type'],
+			'Active state must hide the link by swapping the field type to none'
+		);
+		$this->assertStringContainsString(
+			'Currently deleting records',
+			$active['desc'],
+			'Active description must communicate that deletion is in progress'
+		);
+
+		as_unschedule_all_actions( \WP_Stream\Admin::ASYNC_DELETION_ACTION );
+	}
+
+	/**
+	 * Verifies that get_deletion_warning() honours the pre-computed deletion
+	 * state passed by build_delete_all_records_field(), avoiding a duplicate
+	 * Action Scheduler query inside a single render.
+	 */
+	public function test_get_deletion_warning_respects_precomputed_state() {
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( \WP_Stream\Admin::ASYNC_DELETION_ACTION );
+		}
+
+		// No deletion scheduled, but caller asserts "running" — message must reflect the argument.
+		$this->assertStringContainsString(
+			'Currently deleting records',
+			$this->plugin->settings->get_deletion_warning( true ),
+			'When caller passes true, message must reflect running deletion regardless of AS state'
+		);
+
+		// Schedule a real action, but caller asserts "not running" — message must reflect the argument.
+		as_enqueue_async_action(
+			\WP_Stream\Admin::ASYNC_DELETION_ACTION,
+			array(
+				'total'      => 1,
+				'done'       => 0,
+				'last_entry' => 1,
+				'blog_id'    => (int) get_current_blog_id(),
+			)
+		);
+		$this->assertStringNotContainsString(
+			'Currently deleting records',
+			$this->plugin->settings->get_deletion_warning( false ),
+			'When caller passes false, message must reflect idle state regardless of AS state'
+		);
+
+		as_unschedule_all_actions( \WP_Stream\Admin::ASYNC_DELETION_ACTION );
 	}
 
 	public function test_register_hooks_auto_purge_action_scheduler_callbacks() {

@@ -64,9 +64,20 @@ jobs:
           WORKING_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
           SRC_DIR="$ROOT_DIR/source"
           DIST_DIR="$ROOT_DIR/dist"
-          DIST_BRANCH="${GITHUB_REF#refs/heads/}"
-          DIST_TAG="${GITHUB_REF#refs/tags/}"
           COMMIT_MESSAGE="$(git log -1 --oneline)"
+
+          if [ "${{ github.event_name }}" = "release" ]; then
+            # On a release event, GITHUB_REF is refs/tags/<tag>. Push the dist
+            # commit to the branch the release targets (e.g. master) and create
+            # the tag on top of it.
+            DIST_BRANCH="${{ github.event.release.target_commitish }}"
+            DIST_TAG="${GITHUB_REF#refs/tags/}"
+          else
+            # On a push event, GITHUB_REF is refs/heads/<branch>. Mirror the
+            # branch to dist without tagging.
+            DIST_BRANCH="${GITHUB_REF#refs/heads/}"
+            DIST_TAG=""
+          fi
 
           echo "ROOT_DIR=$ROOT_DIR" >> $GITHUB_ENV
           echo "WORKING_BRANCH=$WORKING_BRANCH" >> $GITHUB_ENV
@@ -121,7 +132,7 @@ jobs:
           if [ "${{ github.event_name }}" = "release" ]; then
             echo "Tagging a release: $DIST_TAG"
             git tag --force "$DIST_TAG"
-            git push --force --tags origin "$DIST_BRANCH"
+            git push --force origin "$DIST_BRANCH" "refs/tags/$DIST_TAG"
           else
             git push --force origin "$DIST_BRANCH"
           fi

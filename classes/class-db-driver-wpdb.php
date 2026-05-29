@@ -84,15 +84,38 @@ class DB_Driver_WPDB implements DB_Driver {
 				$vals = $val;
 				foreach ( $vals as $k => $val ) {
 					if ( is_scalar( $val ) && '' !== $val ) {
-						$this->insert_meta( $record_id, $key . '[' . $k . ']', substr( $val, 0, 200 ) );
+						$this->insert_meta( $record_id, $this->build_meta_key( $key, $k ), $val );
 					}
 				}
 			} elseif ( is_scalar( $val ) && '' !== $val ) {
-				$this->insert_meta( $record_id, $key, substr( $val, 0, 200 ) );
+				$this->insert_meta( $record_id, $key, $val );
 			}
 		}
 
 		return $record_id;
+	}
+
+	/**
+	 * Build a storage key for one-level grouped record metadata.
+	 *
+	 * @param string $key     Top-level meta key.
+	 * @param string $sub_key Grouped meta sub-key.
+	 * @return string
+	 */
+	private function build_meta_key( $key, $sub_key ) {
+		$key     = (string) $key;
+		$sub_key = (string) $sub_key;
+
+		if (
+			false !== strpos( $key, '[' )
+			|| false !== strpos( $key, ']' )
+			|| false !== strpos( $sub_key, '[' )
+			|| false !== strpos( $sub_key, ']' )
+		) {
+			return $key;
+		}
+
+		return $key . '[' . $sub_key . ']';
 	}
 
 	/**

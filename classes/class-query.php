@@ -205,6 +205,7 @@ class Query {
 		 */
 		$fields = $args['fields'];
 
+		// WP-CLI passes comma-separated field names; internal callers may use arrays.
 		if ( is_string( $fields ) ) {
 			$fields = array_filter( array_map( 'trim', explode( ',', $fields ) ) );
 		} else {
@@ -229,7 +230,7 @@ class Query {
 
 		if ( $with_meta ) {
 			if ( ! empty( $fields ) && ! in_array( 'ID', $fields, true ) ) {
-				$selects[] = "$wpdb->stream.ID AS record_id";
+				$selects[] = "$wpdb->stream.ID";
 			}
 		}
 
@@ -266,8 +267,9 @@ class Query {
 		$query = apply_filters( 'wp_stream_db_query', $query, $args );
 
 		// Build result count query.
-		$count_query = "SELECT COUNT(*) as found
+		$count_query = "SELECT COUNT(DISTINCT $wpdb->stream.ID) as found
 		FROM $wpdb->stream
+		{$join}
 		WHERE 1=1 {$where}";
 
 		/**
@@ -285,11 +287,11 @@ class Query {
 			$record_ids = array();
 
 			foreach ( $items as $item ) {
-				if ( ! isset( $item->ID ) && ! isset( $item->record_id ) ) {
+				if ( ! isset( $item->ID ) ) {
 					continue;
 				}
 
-				$record_ids[] = isset( $item->ID ) ? absint( $item->ID ) : absint( $item->record_id );
+				$record_ids[] = absint( $item->ID );
 			}
 
 			$meta = array();
@@ -318,10 +320,13 @@ class Query {
 			}
 
 			foreach ( $items as $item ) {
-				$record_id  = isset( $item->ID ) ? absint( $item->ID ) : absint( $item->record_id );
-				$item->meta = isset( $meta[ $record_id ] ) ? Record::normalize_meta( $meta[ $record_id ] ) : array();
+				if ( ! isset( $item->ID ) ) {
+					$item->meta = array();
+					continue;
+				}
 
-				unset( $item->record_id );
+				$record_id  = absint( $item->ID );
+				$item->meta = isset( $meta[ $record_id ] ) ? Record::normalize_meta( $meta[ $record_id ] ) : array();
 			}
 		} else {
 			$items = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared

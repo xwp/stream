@@ -363,22 +363,7 @@ class Settings {
 						'after_field' => esc_html__( 'Enabled', 'stream' ),
 						'default'     => 0,
 					),
-					array(
-						'name'    => 'delete_all_records',
-						'title'   => esc_html__( 'Reset Stream Database', 'stream' ),
-						'type'    => Admin::is_running_async_deletion() ? 'none' : 'link',
-						'href'    => add_query_arg(
-							array(
-								'action'                => 'wp_stream_reset',
-								'wp_stream_nonce_reset' => wp_create_nonce( 'stream_nonce_reset' ),
-							),
-							admin_url( 'admin-ajax.php' )
-						),
-						'class'   => 'warning',
-						'desc'    => esc_html( $this->get_deletion_warning() ),
-						'default' => 0,
-						'sticky'  => 'bottom',
-					),
+					$this->build_delete_all_records_field(),
 					$this->build_clean_orphan_meta_field(),
 				),
 			),
@@ -462,16 +447,53 @@ class Settings {
 	}
 
 	/**
+	 * Build the "Reset Stream Database" settings field definition.
+	 *
+	 * Extracted so the async-deletion running-state check
+	 * ({@see Admin::is_running_async_deletion()}) is evaluated once per render
+	 * instead of once per field property, and only in admin context.
+	 *
+	 * `Settings::__construct` populates `$this->options = $this->get_options()`
+	 * on the `init` hook for every pageload, which walks `get_fields()`. The
+	 * field is only ever rendered in admin, so outside admin the dynamic state
+	 * is irrelevant and the Action Scheduler query is skipped entirely.
+	 *
+	 * @return array
+	 */
+	private function build_delete_all_records_field() {
+		$is_running_deletion = is_admin() ? Admin::is_running_async_deletion() : false;
+
+		return array(
+			'name'    => 'delete_all_records',
+			'title'   => esc_html__( 'Reset Stream Database', 'stream' ),
+			'type'    => $is_running_deletion ? 'none' : 'link',
+			'href'    => add_query_arg(
+				array(
+					'action'                => 'wp_stream_reset',
+					'wp_stream_nonce_reset' => wp_create_nonce( 'stream_nonce_reset' ),
+				),
+				admin_url( 'admin-ajax.php' )
+			),
+			'class'   => 'warning',
+			'desc'    => esc_html( $this->get_deletion_warning( $is_running_deletion ) ),
+			'default' => 0,
+			'sticky'  => 'bottom',
+		);
+	}
+
+	/**
 	 * Build the "Clean Orphaned Meta" settings field definition.
 	 *
 	 * Extracted so the auto-purge running-state check
 	 * ({@see Admin::is_running_auto_purge()}) is evaluated once per render
-	 * instead of once per field property.
+	 * instead of once per field property, and only in admin context — the
+	 * field is never rendered outside admin, so the Action Scheduler query
+	 * is skipped on front-end pageloads.
 	 *
 	 * @return array
 	 */
 	private function build_clean_orphan_meta_field() {
-		$is_running = Admin::is_running_auto_purge();
+		$is_running = is_admin() ? Admin::is_running_auto_purge() : false;
 
 		return array(
 			'name'    => 'clean_orphan_meta',
@@ -634,12 +656,22 @@ class Settings {
 	 * Retrieves the deletion warning message based on the site type
 	 * and whether or not there is currently a process running to delete the tables.
 	 *
+	 * @param bool|null $is_running_deletion Optional pre-computed deletion state.
+	 *                                       Pass to avoid a duplicate Action Scheduler
+	 *                                       query when the caller has already checked.
+	 *                                       Defaults to checking only in admin context.
+	 *                                       Untyped parameter to remain compatible with
+	 *                                       phpcs.xml.dist testVersion=7.0- (nullable
+	 *                                       type declarations require PHP 7.1+).
 	 * @return string The deletion warning message.
 	 */
-	public function get_deletion_warning(): string {
+	public function get_deletion_warning( $is_running_deletion = null ): string {
 
-		// Check if there is an action scheduler event running already deleting things.
-		if ( Admin::is_running_async_deletion() ) {
+		if ( null === $is_running_deletion ) {
+			$is_running_deletion = is_admin() ? Admin::is_running_async_deletion() : false;
+		}
+
+		if ( $is_running_deletion ) {
 
 			$warning = __( 'Currently deleting records. Please be patient, this can take a while.', 'stream' );
 

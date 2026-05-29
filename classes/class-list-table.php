@@ -291,7 +291,9 @@ class List_Table extends \WP_List_Table {
 	 * @return bool
 	 */
 	public function should_display_metadata() {
-		return ! empty( $this->plugin->settings->options['advanced_display_metadata'] );
+		// The setting field is named display_metadata inside the advanced tab,
+		// which Settings persists as advanced_display_metadata.
+		return (bool) $this->plugin->settings->get_setting_value( 'advanced_display_metadata', 0 );
 	}
 
 	/**
@@ -345,7 +347,7 @@ class List_Table extends \WP_List_Table {
 					);
 				}
 				if ( $this->should_display_metadata() && $record->meta ) {
-					$meta = Record::normalize_meta( $record->meta );
+					$meta = $record->meta;
 					$out .= '<details><summary>' . esc_html__( 'Metadata', 'stream' ) . '</summary><pre>';
 					$out .= esc_html( wp_json_encode( $meta, JSON_PRETTY_PRINT ) );
 					$out .= '</pre></details>';

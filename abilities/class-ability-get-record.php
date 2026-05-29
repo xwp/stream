@@ -86,7 +86,7 @@ class Ability_Get_Record extends Ability {
 				'ip'        => array( 'type' => array( 'string', 'null' ) ),
 				'meta'      => array(
 					'type'        => 'object',
-					'description' => 'Per-record metadata key/value pairs.',
+					'description' => 'Per-record metadata key/value pairs. Single stored values are returned as scalars; legacy grouped values can be indexed arrays, while newer grouped values preserve sub-keys as objects.',
 				),
 			),
 		);

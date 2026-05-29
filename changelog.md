@@ -2,16 +2,35 @@
 
 ## Unreleased
 
+### Enhancements
+
+- Add an opt-in **Display Metadata** setting for Stream records. New records preserve one-level grouped metadata sub-keys in the display/API shape; older records can still return legacy grouped values as indexed arrays, so API and MCP clients should handle both shapes.
+
+## 4.2.0 - May 28, 2026
+
+### New Features
+
+- Expose Stream abilities via the WordPress MCP Adapter when present, enabling AI tools to query Stream records through the Abilities API (XWPENG-13, [#1859](https://github.com/xwp/stream/pull/1859)).
+
 ### Bug Fixes
 
-- Fix unbounded growth of `stream` / `stream_meta` tables: the TTL-based auto-purge now runs via Action Scheduler with batched deletion (default 250,000 rows per batch via the existing `wp_stream_batch_size` filter), resolving database bloat on sites where the previous WP-Cron-driven purge silently failed or timed out on large tables (XWPENG-28).
+- Fix unbounded growth of `stream` / `stream_meta` tables: the TTL-based auto-purge now runs via Action Scheduler with batched deletion (default 250,000 rows per batch via the existing `wp_stream_batch_size` filter), resolving database bloat on sites where the previous WP-Cron-driven purge silently failed or timed out on large tables (XWPENG-28, [#1882](https://github.com/xwp/stream/pull/1882)).
 - Fix orphan `stream_meta` rows accumulating across repeated purge cycles: a terminal orphan reaper now runs at the end of every auto-purge chain, healing installs that have residual orphans from historical interrupted purges.
+- Skip Action Scheduler "is running?" probes on front-end pageloads: the `delete_all_records` and `clean_orphan_meta` settings fields no longer issue Action Scheduler queries on every front-end request, eliminating 3-4 unnecessary queries per pageview on every Stream-active site ([#1884](https://github.com/xwp/stream/issues/1884), [#1885](https://github.com/xwp/stream/pull/1885)).
 
 ### Enhancements
 
 - Add **Clean Orphaned Meta** link under **Settings → Advanced** for one-shot cleanup on already-bloated installs. The link is hidden while the auto-purge chain is running and reappears once the chain drains.
 - Replace the legacy `wp_stream_auto_purge` WP-Cron event with a recurring Action Scheduler action. Run history and failures are now visible under **Tools → Scheduled Actions**.
 - Auto-purge consults the existing `wp_stream_is_large_records_table` filter (default threshold: >1M rows) so small tables get a single inline DELETE while bloated tables go through the batched chain — same knob as the manual reset path.
+
+### Development
+
+- Add HTTPS to the local dev environment via mkcert and an Apache SSL vhost; force HTTPS across local dev and tests.
+- Add Playwright E2E job to CI; harden specs against activation races and add jQuery-dependent admin UI smoke spec (in [#1873](https://github.com/xwp/stream/pull/1873), [#1874](https://github.com/xwp/stream/pull/1874)).
+- Update Node.js to v24 (in [#1867](https://github.com/xwp/stream/pull/1867), [#1883](https://github.com/xwp/stream/pull/1883)) and jQuery to v4 (in [#1834](https://github.com/xwp/stream/pull/1834)).
+- Switch dev dependencies from WPackagist to WP Packages (in [#1858](https://github.com/xwp/stream/pull/1858)).
+- Numerous dependency updates: `composer/composer`, `phpunit/phpunit`, `@playwright/test`, `@wordpress/scripts`, `@wordpress/e2e-test-utils-playwright`, `axios`, `tar-fs`, `http-proxy-middleware`, `copy-webpack-plugin`, `npm-run-all2`, `eslint-plugin-react-hooks`, `uuid` → native `crypto.randomUUID()`.
 
 ### Notes
 

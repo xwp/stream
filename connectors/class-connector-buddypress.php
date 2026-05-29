@@ -706,9 +706,9 @@ class Connector_BuddyPress extends Connector {
 			array(
 				'activity_action' => wp_strip_all_tags( $activity->action ),
 				'id'              => $activity->id,
-				'item_id'         => $activity->item_id,
-				'type'            => $activity->type,
-				'author'          => $activity->user_id,
+				'item_id' => $activity->item_id,
+				'type'    => $activity->type,
+				'author'  => $activity->user_id,
 			),
 			$activity->id,
 			'activity',

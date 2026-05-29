@@ -144,6 +144,27 @@ class Test_DB extends WP_StreamTestCase {
 		$this->assertEquals( $dummy_data['meta'], $records[0]->meta );
 	}
 
+	public function test_query_fetches_meta_with_comma_separated_fields() {
+		$dummy_data         = $this->dummy_stream_data();
+		$dummy_data['meta'] = $this->dummy_meta_data();
+
+		$stream_id = $this->db->insert( $dummy_data );
+
+		$records = $this->db->query(
+			array(
+				'search'       => $stream_id,
+				'search_field' => 'ID',
+				'fields'       => 'summary,meta',
+			)
+		);
+
+		$this->assertCount( 1, $records );
+		$this->assertEquals( $dummy_data['summary'], $records[0]->summary );
+		$this->assertEquals( $dummy_data['meta'], $records[0]->meta );
+		$this->assertEquals( $stream_id, $records[0]->ID );
+		$this->assertFalse( property_exists( $records[0], 'record_id' ) );
+	}
+
 	public function test_query_fetches_array_meta_when_requested() {
 		$dummy_data         = $this->dummy_stream_data();
 		$dummy_data['meta'] = array(
@@ -171,7 +192,100 @@ class Test_DB extends WP_StreamTestCase {
 		$this->assertEquals( $dummy_data['meta'], $record['meta'] );
 
 		$record = new Record( (object) array( 'ID' => $stream_id ) );
-		$this->assertEquals( $dummy_data['meta']['user_meta'], $record->get_meta( 'user_meta', true ) );
+		$this->assertSame( array(), $record->get_meta( 'user_meta', false ) );
+		$this->assertSame( '', $record->get_meta( 'user_meta', true ) );
+	}
+
+	public function test_insert_preserves_multibyte_meta_at_character_limit() {
+		global $wpdb;
+
+		$euro = json_decode( '"\u20ac"' );
+
+		$dummy_data         = $this->dummy_stream_data();
+		$dummy_data['meta'] = array(
+			'multibyte' => str_repeat( 'a', 199 ) . $euro,
+		);
+
+		$stream_id = $this->db->insert( $dummy_data );
+
+		$stored = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT meta_value FROM {$wpdb->streammeta} WHERE record_id = %d AND meta_key = %s",
+				$stream_id,
+				'multibyte'
+			)
+		);
+
+		$this->assertSame( $dummy_data['meta']['multibyte'], $stored );
+	}
+
+	public function test_query_with_meta_preserves_legacy_multi_row_order() {
+		global $wpdb;
+
+		$stream_id = $this->db->insert( $this->dummy_stream_data() );
+		$values    = array( 'admin@example.com', 'admin', 'Administrator' );
+
+		foreach ( $values as $value ) {
+			$wpdb->insert(
+				$wpdb->streammeta,
+				array(
+					'record_id'  => $stream_id,
+					'meta_key'   => 'user_meta',
+					'meta_value' => $value,
+				)
+			);
+		}
+
+		$records = $this->db->query(
+			array(
+				'search'       => $stream_id,
+				'search_field' => 'ID',
+				'with_meta'    => true,
+			)
+		);
+
+		$this->assertCount( 1, $records );
+		$this->assertSame( $values, $records[0]->meta['user_meta'] );
+
+		$record = Record::get_by_id( $stream_id );
+		$this->assertSame( $values, $record['meta']['user_meta'] );
+	}
+
+	public function test_query_with_meta_handles_grouped_key_edges() {
+		global $wpdb;
+
+		$stream_id = $this->db->insert( $this->dummy_stream_data() );
+
+		$rows = array(
+			array( 'user_meta[agent]', 'wp_cli' ),
+			array( 'user_meta', 'legacy value' ),
+			array( 'literal[bracket', 'literal value' ),
+			array( 'deep[one][two]', 'nested value' ),
+		);
+
+		foreach ( $rows as $row ) {
+			$wpdb->insert(
+				$wpdb->streammeta,
+				array(
+					'record_id'  => $stream_id,
+					'meta_key'   => $row[0],
+					'meta_value' => $row[1],
+				)
+			);
+		}
+
+		$records = $this->db->query(
+			array(
+				'search'       => $stream_id,
+				'search_field' => 'ID',
+				'with_meta'    => true,
+			)
+		);
+
+		$this->assertCount( 1, $records );
+		$this->assertSame( array( 'agent' => 'wp_cli' ), $records[0]->meta['user_meta'] );
+		$this->assertSame( 'literal value', $records[0]->meta['literal[bracket'] );
+		$this->assertSame( 'nested value', $records[0]->meta['deep[one][two]'] );
 	}
 
 	public function test_query_with_meta_applies_query_filter_before_pagination() {
@@ -217,6 +331,29 @@ class Test_DB extends WP_StreamTestCase {
 		$this->assertCount( 1, $records );
 		$this->assertEquals( $second_id, $records[0]->ID );
 		$this->assertEquals( $second_record['meta'], $records[0]->meta );
+	}
+
+	public function test_count_query_counts_distinct_record_ids() {
+		$count_query = '';
+		$filter      = function ( $query ) use ( &$count_query ) {
+			$count_query = $query;
+
+			return $query;
+		};
+
+		add_filter( 'wp_stream_db_count_query', $filter );
+
+		try {
+			$this->db->query(
+				array(
+					'records_per_page' => 1,
+				)
+			);
+		} finally {
+			remove_filter( 'wp_stream_db_count_query', $filter );
+		}
+
+		$this->assertStringContainsString( 'COUNT(DISTINCT', $count_query );
 	}
 
 	public function test_existing_records() {
