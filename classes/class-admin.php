@@ -660,6 +660,12 @@ class Admin {
 			);
 		}
 
+		// Ensure the database tables exist before attempting to clear records.
+		// Install::check() short-circuits on DOING_AJAX, so call install()
+		// directly. dbDelta is idempotent and safe to run when tables already
+		// exist.
+		$this->plugin->install->install( $this->plugin->get_version() );
+
 		$this->erase_stream_records();
 
 		if ( defined( 'WP_STREAM_TESTS' ) && WP_STREAM_TESTS ) {
