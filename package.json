@@ -31,7 +31,7 @@
     "@wordpress/scripts": "^32.2.0",
     "copy-webpack-plugin": "^14.0.0",
     "eslint-plugin-react-hooks": "^7.1.1",
-    "globals": "^17.6.0",
+    "globals": "^17.7.0",
     "jquery": "4.0.0",
     "npm-run-all2": "^9.0.2"
   },
