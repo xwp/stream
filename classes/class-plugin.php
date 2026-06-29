@@ -115,6 +115,28 @@ class Plugin {
 	public $install;
 
 	/**
+	 * Backend used to schedule Stream's deferred work (purge / reset).
+	 *
+	 * Either an {@see AS_Scheduler} (Action Scheduler, default) or a
+	 * {@see Cron_Scheduler} (WP-Cron fallback), selected at construction via
+	 * the `wp_stream_use_action_scheduler` filter.
+	 *
+	 * @var Scheduler
+	 */
+	public $scheduler;
+
+	/**
+	 * Whether the bundled Action Scheduler library was loaded.
+	 *
+	 * Set from a file_exists() check at construction (see __construct), so it
+	 * is reliable on `plugins_loaded` even though AS only declares its as_*()
+	 * API later on `init`.
+	 *
+	 * @var bool
+	 */
+	protected $action_scheduler_available = false;
+
+	/**
 	 * URLs and Paths used by the plugin
 	 *
 	 * @var array
@@ -144,8 +166,25 @@ class Plugin {
 
 		spl_autoload_register( array( $this, 'autoload' ) );
 
-		// Load Action Scheduler.
-		require_once $this->locations['dir'] . '/vendor/woocommerce/action-scheduler/action-scheduler.php';
+		// Load Action Scheduler. Guarded with file_exists() so an environment
+		// that already provides or deliberately omits AS does not fatal here;
+		// AS's own ActionScheduler_Versions arbitration handles multiple
+		// bundled copies. AS remains a hard, bundled dependency for the
+		// WordPress.org build (see issue #1907).
+		//
+		// Track availability from the bundled file load rather than
+		// function_exists(): AS only declares its as_*() API on `init`, but
+		// this constructor runs on `plugins_loaded`, so the functions are not
+		// defined yet. Scheduler methods are only ever called on/after `init`
+		// (wp_loaded, AJAX, cron), by which point the API is loaded.
+		$action_scheduler                 = $this->locations['dir'] . '/vendor/woocommerce/action-scheduler/action-scheduler.php';
+		$this->action_scheduler_available = file_exists( $action_scheduler );
+		if ( $this->action_scheduler_available ) {
+			require_once $action_scheduler;
+		}
+
+		// Select the scheduler backend for Stream's deferred work.
+		$this->scheduler = $this->create_scheduler();
 
 		// Load helper functions.
 		require_once $this->locations['inc_dir'] . 'functions.php';
@@ -203,6 +242,25 @@ class Plugin {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			\WP_CLI::add_command( self::WP_CLI_COMMAND, 'WP_Stream\CLI' );
 		}
+	}
+
+	/**
+	 * Build the scheduler backend for Stream's deferred work (purge / reset).
+	 *
+	 * Defaults to Action Scheduler when its API is loaded. Integrators that
+	 * bundle Stream and run reliable cron (e.g. Cavalcade) can force the
+	 * WP-Cron fallback by returning false from `wp_stream_use_action_scheduler`.
+	 * See issue #1907.
+	 *
+	 * @return Scheduler
+	 */
+	public function create_scheduler() {
+		$use_action_scheduler = apply_filters(
+			'wp_stream_use_action_scheduler',
+			$this->action_scheduler_available
+		);
+
+		return $use_action_scheduler ? new AS_Scheduler() : new Cron_Scheduler();
 	}
 
 	/**

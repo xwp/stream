@@ -1,5 +1,12 @@
 # Stream Changelog
 
+## Unreleased
+
+### Enhancements
+
+- Make Action Scheduler usage optional at runtime: Stream now dispatches its deferred purge / reset work through a scheduler abstraction that defaults to Action Scheduler but can fall back to WP-Cron. Hosts that bundle Stream and run reliable cron (e.g. Cavalcade) can force the WP-Cron path with `add_filter( 'wp_stream_use_action_scheduler', '__return_false' )`. Switching backends needs no migration — the recurring purge action left by the previous backend is cleared automatically on the next page load, so only one scheduler ever fires. Action Scheduler remains a bundled dependency for the WordPress.org build ([#1907](https://github.com/xwp/stream/issues/1907)).
+- Guard the Action Scheduler `require_once` so an environment that already provides or deliberately omits Action Scheduler no longer fatals on load.
+
 ## 4.2.0 - May 28, 2026
 
 ### New Features

@@ -54,6 +54,16 @@ class Admin {
 	const AUTO_PURGE_GROUP = 'stream-auto-purge';
 
 	/**
+	 * Option storing which scheduler backend last registered the recurring
+	 * auto-purge action ('action_scheduler' | 'wp_cron'). Used to detect a
+	 * backend switch so the inactive backend's recurring action is cleared
+	 * exactly once, instead of probing for it on every page load.
+	 *
+	 * @const string
+	 */
+	const SCHEDULER_BACKEND_OPTION = 'wp_stream_scheduler_backend';
+
+	/**
 	 * Holds Instance of plugin object
 	 *
 	 * @var Plugin
@@ -757,7 +767,7 @@ class Admin {
 			'blog_id'    => (int) get_current_blog_id(),
 		);
 
-		as_enqueue_async_action( self::ASYNC_DELETION_ACTION, $args );
+		$this->plugin->scheduler->enqueue_async( self::ASYNC_DELETION_ACTION, $args );
 	}
 
 	/**
@@ -766,7 +776,11 @@ class Admin {
 	 * @return bool True if the async deletion process is running, false otherwise.
 	 */
 	public static function is_running_async_deletion() {
-		return as_has_scheduled_action( self::ASYNC_DELETION_ACTION );
+		$plugin = wp_stream_get_instance();
+		if ( empty( $plugin->scheduler ) ) {
+			return false;
+		}
+		return $plugin->scheduler->has_scheduled( self::ASYNC_DELETION_ACTION );
 	}
 
 	/**
@@ -788,28 +802,14 @@ class Admin {
 	 * @return bool
 	 */
 	public static function is_running_auto_purge() {
-		if ( ! function_exists( 'as_get_scheduled_actions' ) ) {
+		$plugin = wp_stream_get_instance();
+		if ( empty( $plugin->scheduler ) ) {
 			return false;
 		}
 
-		foreach ( array( self::AUTO_PURGE_BATCH_ACTION, self::AUTO_PURGE_REAPER_ACTION ) as $hook ) {
-			$found = as_get_scheduled_actions(
-				array(
-					'hook'     => $hook,
-					'status'   => array(
-						\ActionScheduler_Store::STATUS_PENDING,
-						\ActionScheduler_Store::STATUS_RUNNING,
-					),
-					'per_page' => 1,
-				),
-				'ids'
-			);
-			if ( ! empty( $found ) ) {
-				return true;
-			}
-		}
-
-		return false;
+		return $plugin->scheduler->any_pending_or_running(
+			array( self::AUTO_PURGE_BATCH_ACTION, self::AUTO_PURGE_REAPER_ACTION )
+		);
 	}
 
 	/**
@@ -871,7 +871,7 @@ class Admin {
 
 		$done = $total - $remaining;
 
-		as_enqueue_async_action(
+		$this->plugin->scheduler->enqueue_async(
 			self::ASYNC_DELETION_ACTION,
 			array(
 				'total'      => (int) $total,
@@ -910,27 +910,45 @@ class Admin {
 	 */
 	public function purge_schedule_setup() {
 		// Clear the legacy WP-Cron event scheduled by Stream <= 4.1.x so it
-		// cannot double-fire alongside the new AS recurring action.
+		// cannot double-fire alongside the new recurring action.
 		if ( wp_next_scheduled( 'wp_stream_auto_purge' ) ) {
 			wp_clear_scheduled_hook( 'wp_stream_auto_purge' );
 		}
 
-		if ( ! function_exists( 'as_schedule_recurring_action' ) ) {
-			// Action Scheduler not yet loaded (e.g. very early hook); bail.
-			// Plugin::__construct() loads it before init, so this should be unreachable.
-			return;
+		$scheduler = $this->plugin->scheduler;
+		$backend   = $scheduler instanceof AS_Scheduler ? 'action_scheduler' : 'wp_cron';
+
+		// Detect a backend switch and clear the inactive backend's copy of the
+		// recurring action exactly once. A site that switched schedulers (via
+		// the wp_stream_use_action_scheduler filter) would otherwise keep
+		// firing the purge from BOTH backends — the two stores are independent
+		// and neither overlap guard can see the other. The marker is an
+		// autoloaded option, so the steady-state cost on every wp_loaded is a
+		// single in-memory compare; the cleanup query runs only on the first
+		// page load after a switch. Idempotent and self-healing. No data is
+		// affected — only the redundant schedule entry.
+		if ( get_option( self::SCHEDULER_BACKEND_OPTION ) !== $backend ) {
+			if ( 'action_scheduler' === $backend ) {
+				// Drop any leftover WP-Cron recurring event.
+				wp_unschedule_hook( self::AUTO_PURGE_ACTION );
+			} else {
+				// Drop any leftover Action Scheduler recurring action. Routed
+				// through AS_Scheduler so the as_*() call stays contained
+				// there; it no-ops when Action Scheduler is not loaded.
+				( new AS_Scheduler() )->unschedule_all( self::AUTO_PURGE_ACTION );
+			}
+			update_option( self::SCHEDULER_BACKEND_OPTION, $backend );
 		}
 
-		if ( false === as_next_scheduled_action( self::AUTO_PURGE_ACTION ) ) {
-			// 12 hours == old `twicedaily` interval.
-			as_schedule_recurring_action(
-				time(),
-				12 * HOUR_IN_SECONDS,
-				self::AUTO_PURGE_ACTION,
-				array(),
-				self::AUTO_PURGE_GROUP
-			);
-		}
+		// 12 hours == old `twicedaily` interval. The scheduler only schedules
+		// a fresh recurring action when one is not already registered.
+		$scheduler->schedule_recurring(
+			time(),
+			12 * HOUR_IN_SECONDS,
+			self::AUTO_PURGE_ACTION,
+			array(),
+			self::AUTO_PURGE_GROUP
+		);
 	}
 
 	/**
@@ -1077,12 +1095,12 @@ class Admin {
 				);
 			}
 
-			as_enqueue_async_action( self::AUTO_PURGE_REAPER_ACTION, array(), self::AUTO_PURGE_GROUP );
+			$this->plugin->scheduler->enqueue_async( self::AUTO_PURGE_REAPER_ACTION, array(), self::AUTO_PURGE_GROUP );
 			return;
 		}
 
 		// Large-table path: batched chain.
-		as_enqueue_async_action(
+		$this->plugin->scheduler->enqueue_async(
 			self::AUTO_PURGE_BATCH_ACTION,
 			array(
 				'cutoff'  => $cutoff,
@@ -1134,6 +1152,13 @@ class Admin {
 		if ( '' === $cutoff ) {
 			throw new \InvalidArgumentException( 'auto_purge_batch requires a non-empty cutoff.' );
 		}
+
+		// Best-effort "running" marker for schedulers without a native RUNNING
+		// store (cron). Bridges the gap between this batch starting and the
+		// next chained event being enqueued; self-expires on a fatal. No-op
+		// under Action Scheduler. Cleared when the chain reaches its terminal
+		// reaper (see the empty-$start_from branch below).
+		$this->plugin->scheduler->mark_running( 'auto_purge' );
 
 		/**
 		 * Filters the number of records to delete per batch.
@@ -1193,7 +1218,8 @@ class Admin {
 
 		if ( empty( $start_from ) ) {
 			// Chain is done. Schedule the orphan reaper as the terminal step.
-			as_enqueue_async_action( self::AUTO_PURGE_REAPER_ACTION, array(), self::AUTO_PURGE_GROUP );
+			$this->plugin->scheduler->enqueue_async( self::AUTO_PURGE_REAPER_ACTION, array(), self::AUTO_PURGE_GROUP );
+			$this->plugin->scheduler->mark_done( 'auto_purge' );
 			return;
 		}
 
@@ -1240,7 +1266,7 @@ class Admin {
 
 		// Chain the next batch. Pass $window_low as the new upper bound so the
 		// next SELECT cannot pick up rows in or above the window we just touched.
-		as_enqueue_async_action(
+		$this->plugin->scheduler->enqueue_async(
 			self::AUTO_PURGE_BATCH_ACTION,
 			array(
 				'cutoff'     => $cutoff,
@@ -1284,8 +1310,8 @@ class Admin {
 
 		check_ajax_referer( 'stream_nonce_clean_orphan_meta', 'wp_stream_nonce_clean_orphan_meta' );
 
-		if ( ! function_exists( 'as_get_scheduled_actions' ) || ! function_exists( 'as_enqueue_async_action' ) ) {
-			wp_die( esc_html__( 'Action Scheduler is not available.', 'stream' ), 500 );
+		if ( empty( $this->plugin->scheduler ) ) {
+			wp_die( esc_html__( 'No scheduler is available.', 'stream' ), 500 );
 		}
 
 		// Idempotency: skip enqueue when any auto-purge action is already
@@ -1294,7 +1320,7 @@ class Admin {
 		// its own terminal reaper is not duplicated by a manual click landing
 		// in the small CSRF/stale-URL window where the UI link is hidden.
 		if ( ! self::is_running_auto_purge() ) {
-			as_enqueue_async_action( self::AUTO_PURGE_REAPER_ACTION, array(), self::AUTO_PURGE_GROUP );
+			$this->plugin->scheduler->enqueue_async( self::AUTO_PURGE_REAPER_ACTION, array(), self::AUTO_PURGE_GROUP );
 		}
 
 		if ( defined( 'WP_STREAM_TESTS' ) && WP_STREAM_TESTS ) {
