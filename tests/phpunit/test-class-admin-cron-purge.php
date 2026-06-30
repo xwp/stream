@@ -281,6 +281,128 @@ class Test_Admin_Cron_Purge extends WP_StreamTestCase {
 	}
 
 	/**
+	 * The `wp_stream_enable_auto_purge` filter, returning false, unschedules
+	 * any recurring purge and skips re-registering it — for storage drivers
+	 * that manage retention externally.
+	 */
+	public function test_enable_auto_purge_filter_disables_scheduling() {
+		// Establish a recurring purge first.
+		$this->admin->purge_schedule_setup();
+		$this->assertNotFalse(
+			wp_next_scheduled( Admin::AUTO_PURGE_ACTION ),
+			'Recurring purge must be scheduled before the disable filter is applied'
+		);
+
+		add_filter( 'wp_stream_enable_auto_purge', '__return_false' );
+		$this->admin->purge_schedule_setup();
+
+		$this->assertFalse(
+			wp_next_scheduled( Admin::AUTO_PURGE_ACTION ),
+			'Disabling auto-purge must unschedule the recurring event'
+		);
+		$this->assertFalse(
+			get_option( Admin::SCHEDULER_BACKEND_OPTION ),
+			'Backend marker must be cleared when auto-purge is disabled'
+		);
+
+		remove_all_filters( 'wp_stream_enable_auto_purge' );
+	}
+
+	/**
+	 * On the WP-Cron fallback, queueing a large-table batch surfaces an admin
+	 * notice pointing the operator at a deterministic WP-CLI drain.
+	 */
+	public function test_large_table_on_cron_surfaces_admin_notice() {
+		add_filter( 'wp_stream_is_large_records_table', '__return_true' );
+
+		$this->admin->notices = array();
+
+		$this->seed_aged_records( 2, 5 );
+		$this->set_records_ttl( 1 );
+
+		$this->admin->purge_scheduled_action();
+
+		$messages = wp_list_pluck( $this->admin->notices, 'message' );
+		$matched  = array_filter(
+			$messages,
+			function ( $message ) {
+				return false !== strpos( $message, 'wp cron event run' );
+			}
+		);
+		$this->assertNotEmpty(
+			$matched,
+			'A WP-CLI guidance notice must be queued for large tables on the cron backend'
+		);
+
+		remove_all_filters( 'wp_stream_is_large_records_table' );
+	}
+
+	/**
+	 * The large-table notice must NOT fire when auto-purge is disabled via
+	 * `wp_stream_enable_auto_purge` — there is no purge to warn about.
+	 */
+	public function test_large_table_notice_suppressed_when_auto_purge_disabled() {
+		add_filter( 'wp_stream_is_large_records_table', '__return_true' );
+		add_filter( 'wp_stream_enable_auto_purge', '__return_false' );
+
+		$this->admin->notices = array();
+
+		$this->seed_aged_records( 2, 5 );
+		$this->set_records_ttl( 1 );
+
+		$this->admin->purge_scheduled_action();
+
+		$messages = wp_list_pluck( $this->admin->notices, 'message' );
+		$matched  = array_filter(
+			$messages,
+			function ( $message ) {
+				return false !== strpos( $message, 'wp cron event run' );
+			}
+		);
+		$this->assertEmpty(
+			$matched,
+			'No notice must be queued when auto-purge is disabled'
+		);
+
+		remove_all_filters( 'wp_stream_enable_auto_purge' );
+		remove_all_filters( 'wp_stream_is_large_records_table' );
+	}
+
+	/**
+	 * The large-table notice must NOT fire on the Action Scheduler backend,
+	 * which is built to drain long batch chains reliably.
+	 */
+	public function test_large_table_on_action_scheduler_does_not_warn() {
+		if ( ! class_exists( AS_Scheduler::class ) ) {
+			$this->markTestSkipped( 'Action Scheduler is not loaded in this environment.' );
+		}
+
+		$this->plugin->scheduler = new AS_Scheduler();
+		add_filter( 'wp_stream_is_large_records_table', '__return_true' );
+
+		$this->admin->notices = array();
+
+		$this->seed_aged_records( 2, 5 );
+		$this->set_records_ttl( 1 );
+
+		$this->admin->purge_scheduled_action();
+
+		$messages = wp_list_pluck( $this->admin->notices, 'message' );
+		$matched  = array_filter(
+			$messages,
+			function ( $message ) {
+				return false !== strpos( $message, 'wp cron event run' );
+			}
+		);
+		$this->assertEmpty(
+			$matched,
+			'No WP-CLI guidance notice must be queued when Action Scheduler is the backend'
+		);
+
+		remove_all_filters( 'wp_stream_is_large_records_table' );
+	}
+
+	/**
 	 * A running batch chain marks the overlap guard as busy via the cron
 	 * scheduler, so is_running_auto_purge() reports true even mid-chain.
 	 */

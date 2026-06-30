@@ -768,6 +768,53 @@ class Admin {
 		);
 
 		$this->plugin->scheduler->enqueue_async( self::ASYNC_DELETION_ACTION, $args );
+
+		$this->maybe_warn_large_table_without_action_scheduler( (int) $log_size );
+	}
+
+	/**
+	 * Warn when a large-table batched operation has to lean on WP-Cron.
+	 *
+	 * Action Scheduler is purpose-built to drain long self-chaining batch
+	 * jobs reliably; default WP-Cron fires opportunistically on traffic and
+	 * can stall a multi-hour chain on a low-traffic site. When Stream is
+	 * running the WP-Cron fallback (the `wp_stream_use_action_scheduler`
+	 * filter returned false, or the bundled AS library is absent) against a
+	 * table over the large-table threshold, surface a notice pointing the
+	 * operator at a deterministic WP-CLI drain instead of failing silently.
+	 *
+	 * Surfaces in both contexts via {@see Admin::notice()}: an admin notice in
+	 * the dashboard, a WP_CLI::warning under WP-CLI. The WP-CLI surface still
+	 * matters here — scheduling the batch chain onto WP-Cron does not drain it,
+	 * so a headless / low-traffic site is exactly where the chain can stall.
+	 *
+	 * No-op when Action Scheduler is the active backend (built to drain long
+	 * chains) or when auto-purge is disabled (no purge to warn about).
+	 *
+	 * @param int $record_count Number of rows the operation will touch.
+	 * @return void
+	 */
+	private function maybe_warn_large_table_without_action_scheduler( int $record_count ) {
+		if ( ! apply_filters( 'wp_stream_enable_auto_purge', true ) ) {
+			return;
+		}
+
+		if ( $this->plugin->scheduler instanceof AS_Scheduler ) {
+			return;
+		}
+
+		if ( ! $this->plugin->is_large_records_table( $record_count ) ) {
+			return;
+		}
+
+		$this->notice(
+			sprintf(
+				/* translators: 1: number of records, 2: WP-CLI command. */
+				__( 'Stream queued a large batch operation (%1$s records) to WP-Cron because Action Scheduler is disabled. On low-traffic sites WP-Cron may stall before the batch completes. To run it to completion deterministically, use WP-CLI: %2$s', 'stream' ),
+				number_format_i18n( $record_count ),
+				'<code>wp cron event run --due-now</code>'
+			)
+		);
 	}
 
 	/**
@@ -916,7 +963,26 @@ class Admin {
 		}
 
 		$scheduler = $this->plugin->scheduler;
-		$backend   = $scheduler instanceof AS_Scheduler ? 'action_scheduler' : 'wp_cron';
+
+		/**
+		 * Filter whether Stream schedules its TTL record auto-purge at all.
+		 *
+		 * Custom storage drivers that manage retention externally (TTL
+		 * indexes, partition rotation, a warehouse job, etc.) can return
+		 * false to disable all TTL purge scheduling regardless of the
+		 * scheduler backend. Any already-registered recurring purge is
+		 * unscheduled from both backends so it cannot keep firing.
+		 *
+		 * @param bool $enabled Whether auto-purge scheduling is enabled.
+		 */
+		if ( ! apply_filters( 'wp_stream_enable_auto_purge', true ) ) {
+			$scheduler->unschedule_all( self::AUTO_PURGE_ACTION );
+			wp_unschedule_hook( self::AUTO_PURGE_ACTION );
+			delete_option( self::SCHEDULER_BACKEND_OPTION );
+			return;
+		}
+
+		$backend = $scheduler instanceof AS_Scheduler ? 'action_scheduler' : 'wp_cron';
 
 		// Detect a backend switch and clear the inactive backend's copy of the
 		// recurring action exactly once. A site that switched schedulers (via
@@ -1108,6 +1174,8 @@ class Admin {
 			),
 			self::AUTO_PURGE_GROUP
 		);
+
+		$this->maybe_warn_large_table_without_action_scheduler( $record_count );
 	}
 
 	/**
