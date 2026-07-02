@@ -362,6 +362,9 @@ class Test_Alerts extends WP_StreamTestCase {
 	}
 
 	public function test_get_actions() {
+		$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
 		$alerts = new Alerts( $this->plugin );
 		try {
 			$_POST['connector'] = '';
