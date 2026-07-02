@@ -504,6 +504,9 @@ class Admin {
 				'admin-exclude',
 				array(
 					$this->plugin->with_select2(),
+				),
+				array(
+					'getActionsNonce' => wp_create_nonce( 'stream_get_actions' ),
 				)
 			);
 

@@ -183,7 +183,13 @@ class Live_Update {
 			return $response;
 		}
 
-		$enable_stream_update = ( 'off' !== get_user_meta( get_current_user_id(), $this->user_meta_key ) );
+		// Ensure the current user is allowed to view Stream records before
+		// exposing any activity data through the Heartbeat API.
+		if ( ! current_user_can( $this->plugin->admin->view_cap ) ) {
+			return $response;
+		}
+
+		$enable_stream_update = ( 'off' !== get_user_meta( get_current_user_id(), $this->user_meta_key, true ) );
 
 		// Register list table.
 		$this->list_table = new List_Table(

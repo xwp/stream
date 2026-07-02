@@ -124,7 +124,9 @@ class CLI extends \WP_CLI_Command {
 			$query_args[ $key ] = $value;
 		}
 
-		$query_args['fields'] = implode( ',', $fields );
+		// Pass fields as an array so the query builder can validate each
+		// column against its allowlist (column names cannot be prepared).
+		$query_args['fields'] = $fields;
 
 		$records = wp_stream_get_instance()->db->query( $query_args );
 
