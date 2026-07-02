@@ -776,7 +776,8 @@ class List_Table extends \WP_List_Table {
 		$query_vars = array();
 
 		if ( isset( $_SERVER['QUERY_STRING'] ) ) {
-			parse_str( urldecode( $_SERVER['QUERY_STRING'] ), $query_vars );
+			parse_str( wp_unslash( $_SERVER['QUERY_STRING'] ), $query_vars );
+			$query_vars = map_deep( $query_vars, 'sanitize_text_field' );
 		}
 
 		// Ignore certain query vars and query vars that are empty.
@@ -911,7 +912,7 @@ class List_Table extends \WP_List_Table {
 				<input type="submit" name="" id="search-submit" class="button" value="%3$s" />
 			</p>',
 			esc_html__( 'Search Records', 'stream' ),
-			esc_attr( ! empty( $_GET['search'] ) ? $_GET['search'] : '' ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			esc_attr( ! empty( $_GET['search'] ) ? sanitize_text_field( wp_unslash( $_GET['search'] ) ) : '' ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			esc_attr__( 'Search Records', 'stream' )
 		);
 	}

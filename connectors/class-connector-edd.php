@@ -161,7 +161,8 @@ class Connector_EDD extends Connector {
 			$posts_connector = new Connector_Posts();
 			$links           = $posts_connector->action_links( $links, $record );
 		} elseif ( in_array( $record->context, array( 'discounts' ), true ) ) {
-			$post_type_label = get_post_type_labels( get_post_type_object( 'edd_discount' ) )->singular_name;
+			$post_type       = get_post_type_object( 'edd_discount' );
+			$post_type_label = $post_type ? $post_type->labels->singular_name : esc_html__( 'Discount', 'stream' );
 			$base            = admin_url( 'edit.php?post_type=download&page=edd-discounts' );
 
 			/* translators: %s: a post type (e.g. "Post") */

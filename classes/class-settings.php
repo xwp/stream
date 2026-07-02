@@ -112,7 +112,7 @@ class Settings {
 		$search = '';
 		$input  = wp_stream_filter_input( INPUT_POST, 'find' );
 
-		if ( ! isset( $input['term'] ) ) {
+		if ( isset( $input['term'] ) ) {
 			$search = wp_unslash( trim( $input['term'] ) );
 		}
 

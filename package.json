@@ -6,7 +6,7 @@
   "author": "XWP",
   "license": "GPLv2+",
   "engines": {
-    "node": "^24.16.0"
+    "node": "^24.18.0"
   },
   "repository": {
     "type": "git",
@@ -24,16 +24,16 @@
     "track"
   ],
   "devDependencies": {
-    "@playwright/test": "^1.60.0",
-    "@types/node": "^24.12.4",
+    "@playwright/test": "^1.61.1",
+    "@types/node": "^24.13.2",
     "@wordpress/e2e-test-utils-playwright": "^1.46.0",
     "@wordpress/eslint-plugin": "^25.2.0",
     "@wordpress/scripts": "^32.2.0",
     "copy-webpack-plugin": "^14.0.0",
     "eslint-plugin-react-hooks": "^7.1.1",
-    "globals": "^17.6.0",
+    "globals": "^17.7.0",
     "jquery": "4.0.0",
-    "npm-run-all2": "^9.0.1"
+    "npm-run-all2": "^9.0.2"
   },
   "scripts": {
     "build": "wp-scripts build",

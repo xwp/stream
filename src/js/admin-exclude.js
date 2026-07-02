@@ -407,6 +407,7 @@ function getActions( row, connector ) {
 	const data = {
 		action: 'get_actions',
 		connector,
+		nonce: window[ 'wp-stream-admin-exclude' ].getActionsNonce,
 	};
 
 	$.post(

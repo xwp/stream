@@ -327,8 +327,9 @@ class Alerts {
 				'inline-edit-post',
 			),
 			array(
-				'any'        => __( 'Any', 'stream' ),
-				'anyContext' => __( 'Any Context', 'stream' ),
+				'any'             => __( 'Any', 'stream' ),
+				'anyContext'      => __( 'Any Context', 'stream' ),
+				'getActionsNonce' => wp_create_nonce( 'stream_get_actions' ),
 			)
 		);
 	}
@@ -363,6 +364,7 @@ class Alerts {
 			'description'         => __( 'Alerts for Stream.', 'stream' ),
 			'public'              => false,
 			'publicly_queryable'  => false,
+			'rewrite'             => false,
 			'exclude_from_search' => true,
 			'show_ui'             => true,
 			'show_in_menu'        => false, // @see modify_admin_menu
@@ -721,7 +723,7 @@ class Alerts {
 				</div>
 				<div id="publishing-action">
 					<span class="spinner"></span>
-					<?php submit_button( __( 'Save' ), 'primary button-large', 'publish', false ); ?>
+					<?php submit_button( __( 'Save', 'stream' ), 'primary button-large', 'publish', false ); ?>
 				</div>
 				<div class="clear"></div>
 			</div>
@@ -774,6 +776,16 @@ class Alerts {
 	 * Update actions dropdown options based on the connector selected.
 	 */
 	public function get_actions() {
+		if ( ! current_user_can( self::CAPABILITY ) ) {
+			wp_send_json_error(
+				array(
+					'message' => 'You do not have permission to do this.',
+				)
+			);
+		}
+
+		check_ajax_referer( 'stream_get_actions', 'nonce' );
+
 		$connector_name    = wp_stream_filter_input( INPUT_POST, 'connector' );
 		$stream_connectors = wp_stream_get_instance()->connectors;
 		if ( ! empty( $connector_name ) ) {

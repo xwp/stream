@@ -11,6 +11,8 @@ namespace WP_Stream;
  * Class - Query
  */
 class Query {
+	const ALLOWED_FIELDS = array( 'ID', 'site_id', 'blog_id', 'object_id', 'user_id', 'user_role', 'created', 'summary', 'connector', 'context', 'action', 'ip' );
+
 	/**
 	 * Hold the number of records found
 	 *
@@ -58,8 +60,7 @@ class Query {
 			$field = ! empty( $args['search_field'] ) ? $args['search_field'] : 'summary';
 
 			// Sanitize field.
-			$allowed_fields = array( 'ID', 'site_id', 'blog_id', 'object_id', 'user_id', 'user_role', 'created', 'summary', 'connector', 'context', 'action', 'ip' );
-			if ( in_array( $field, $allowed_fields, true ) ) {
+			if ( in_array( $field, self::ALLOWED_FIELDS, true ) ) {
 				$where .= $wpdb->prepare( " AND $wpdb->stream.{$field} LIKE %s", "%{$args['search']}%" ); // @codingStandardsIgnoreLine can't prepare column name
 			}
 		}
@@ -206,6 +207,9 @@ class Query {
 		$fields  = (array) $args['fields'];
 		$selects = array();
 
+		// Column names cannot be passed through $wpdb->prepare(), so restrict
+		// the selectable fields to a known allowlist to prevent SQL injection
+		// via the `fields` argument.
 		if ( ! empty( $fields ) ) {
 			foreach ( $fields as $field ) {
 				// We'll query the meta table later.
@@ -213,9 +217,15 @@ class Query {
 					continue;
 				}
 
+				if ( ! in_array( $field, self::ALLOWED_FIELDS, true ) ) {
+					continue;
+				}
+
 				$selects[] = sprintf( "$wpdb->stream.%s", $field );
 			}
-		} else {
+		}
+
+		if ( empty( $selects ) ) {
 			$selects[] = "$wpdb->stream.*";
 		}
 
