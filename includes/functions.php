@@ -4,6 +4,9 @@
  *
  * @package WP_Stream
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Gets a specific external variable by name and optionally filters it.

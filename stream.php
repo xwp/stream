@@ -34,6 +34,10 @@
 /**
  * Configuration Constants
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! defined( 'WP_STREAM_SETTINGS_CAPABILITY' ) ) {
 	define( 'WP_STREAM_SETTINGS_CAPABILITY', 'manage_options' );
 }

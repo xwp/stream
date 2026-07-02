@@ -209,7 +209,7 @@ class Alert_Type_IFTTT extends Alert_Type {
 			$recordarr,
 			array(
 				/* translators: %s: the Event Name of the Alert (e.g. "Update a post") */
-				'summary' => sprintf( __( 'The event %s was triggered' ), $alert->alert_meta['event_name'] ),
+				'summary' => sprintf( __( 'The event %s was triggered', 'stream' ), $alert->alert_meta['event_name'] ),
 				'user_id' => get_current_user_id(),
 				'created' => current_time( 'Y-m-d H:i:s' ),
 				// Blog's local time.

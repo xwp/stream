@@ -284,7 +284,7 @@ class Alerts_List {
 			$nonce_url = wp_nonce_url( $bare_url, 'trash-post_' . $post_id );
 			?>
 			<div class="row-actions">
-				<span class="inline hide-if-no-js"><a href="#" class="editinline" aria-label="Quick edit “Hello world!” inline"><?php esc_html_e( 'Edit' ); ?></a>&nbsp;|&nbsp;</span>
+				<span class="inline hide-if-no-js"><a href="#" class="editinline" aria-label="Quick edit “Hello world!” inline"><?php esc_html_e( 'Edit', 'stream' ); ?></a>&nbsp;|&nbsp;</span>
 				<span class="trash">
 					<a href="<?php echo esc_url( $nonce_url ); ?>" class="submitdelete"><?php esc_html_e( 'Trash', 'stream' ); ?></a>
 				</span>

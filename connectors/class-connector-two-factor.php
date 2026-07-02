@@ -325,7 +325,7 @@ class Connector_Two_Factor extends Connector {
 	 * @param \WP_Error $error WP_Error object.
 	 */
 	public function callback_wp_login_failed( $user_login, $error ) {
-		if ( ! str_starts_with( $error->get_error_code(), 'two_factor_' ) ) {
+		if ( 0 !== strpos( $error->get_error_code(), 'two_factor_' ) ) {
 			return;
 		}
 
