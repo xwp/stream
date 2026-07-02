@@ -1,5 +1,19 @@
 # Stream Changelog
 
+## 4.2.1 - July 2, 2026
+
+### Bug Fixes
+
+- Fix authorization checks for Stream activity access and harden related AJAX, export, and query paths ([#1915](https://github.com/xwp/stream/pull/1915)).
+- Fix inverted `isset()` check silently ignoring user search input in `get_users()` ([#1897](https://github.com/xwp/stream/pull/1897)).
+- Create missing database tables when resetting the database ([#1285](https://github.com/xwp/stream/pull/1285)).
+- Avoid generating rewrite rules for the alerts post type ([#1380](https://github.com/xwp/stream/pull/1380)).
+- Correct release event branch handling for `stream-dist` deployments ([#1894](https://github.com/xwp/stream/pull/1894)).
+
+### Development
+
+- Update Node.js, Playwright, and related JavaScript/PHP development dependencies ([#1887](https://github.com/xwp/stream/pull/1887), [#1892](https://github.com/xwp/stream/pull/1892), [#1895](https://github.com/xwp/stream/pull/1895), [#1898](https://github.com/xwp/stream/pull/1898), [#1899](https://github.com/xwp/stream/pull/1899), [#1901](https://github.com/xwp/stream/pull/1901), [#1903](https://github.com/xwp/stream/pull/1903), [#1904](https://github.com/xwp/stream/pull/1904), [#1908](https://github.com/xwp/stream/pull/1908), [#1910](https://github.com/xwp/stream/pull/1910), [#1912](https://github.com/xwp/stream/pull/1912), [#1913](https://github.com/xwp/stream/pull/1913)).
+
 ## 4.2.0 - May 28, 2026
 
 ### New Features
