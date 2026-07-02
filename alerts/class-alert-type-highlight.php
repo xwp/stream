@@ -281,6 +281,10 @@ class Alert_Type_Highlight extends Alert_Type {
 	public function ajax_remove_highlight() {
 		check_ajax_referer( self::REMOVE_ACTION_NONCE, 'security' );
 
+		if ( ! current_user_can( $this->plugin->admin->view_cap ) ) {
+			wp_send_json_error( __( 'You do not have permission to do this.', 'stream' ) );
+		}
+
 		$failure_message = __( 'Removing Highlight Failed', 'stream' );
 
 		if ( empty( $_POST['recordId'] ) ) {

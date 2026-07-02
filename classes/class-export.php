@@ -46,6 +46,12 @@ class Export {
 	 * @return void
 	 */
 	public function render_download() {
+		// Records are only viewable by users with the Stream view capability;
+		// don't rely on the nonce alone for authorization.
+		if ( ! current_user_can( $this->plugin->admin->view_cap ) ) {
+			return;
+		}
+
 		$nonce = wp_stream_filter_input( INPUT_GET, 'stream_record_actions_nonce' );
 		if ( ! wp_verify_nonce( $nonce, 'stream_record_actions_nonce' ) ) {
 			return;

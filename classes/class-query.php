@@ -206,6 +206,11 @@ class Query {
 		$fields  = (array) $args['fields'];
 		$selects = array();
 
+		// Column names cannot be passed through $wpdb->prepare(), so restrict
+		// the selectable fields to a known allowlist to prevent SQL injection
+		// via the `fields` argument.
+		$selectable_fields = array( 'ID', 'site_id', 'blog_id', 'object_id', 'user_id', 'user_role', 'created', 'summary', 'connector', 'context', 'action', 'ip' );
+
 		if ( ! empty( $fields ) ) {
 			foreach ( $fields as $field ) {
 				// We'll query the meta table later.
@@ -213,9 +218,15 @@ class Query {
 					continue;
 				}
 
+				if ( ! in_array( $field, $selectable_fields, true ) ) {
+					continue;
+				}
+
 				$selects[] = sprintf( "$wpdb->stream.%s", $field );
 			}
-		} else {
+		}
+
+		if ( empty( $selects ) ) {
 			$selects[] = "$wpdb->stream.*";
 		}
 

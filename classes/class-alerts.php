@@ -774,6 +774,14 @@ class Alerts {
 	 * Update actions dropdown options based on the connector selected.
 	 */
 	public function get_actions() {
+		if ( ! current_user_can( self::CAPABILITY ) ) {
+			wp_send_json_error(
+				array(
+					'message' => 'You do not have permission to do this.',
+				)
+			);
+		}
+
 		$connector_name    = wp_stream_filter_input( INPUT_POST, 'connector' );
 		$stream_connectors = wp_stream_get_instance()->connectors;
 		if ( ! empty( $connector_name ) ) {
