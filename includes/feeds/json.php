@@ -6,6 +6,7 @@
  *
  * @var $records
  */
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }

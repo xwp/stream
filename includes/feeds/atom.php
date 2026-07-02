@@ -4,6 +4,7 @@
  *
  * @package WP_Stream
  */
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }

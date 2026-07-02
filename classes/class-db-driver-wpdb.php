@@ -138,6 +138,10 @@ class DB_Driver_WPDB implements DB_Driver {
 	 */
 	public function get_column_values( $column ) {
 		global $wpdb;
+		if ( ! in_array( $column, Query::ALLOWED_FIELDS, true ) ) {
+			return array();
+		}
+
 		return (array) $wpdb->get_results(
 			"SELECT DISTINCT $column FROM $wpdb->stream", // @codingStandardsIgnoreLine can't prepare column name
 			'ARRAY_A'
