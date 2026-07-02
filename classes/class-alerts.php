@@ -327,8 +327,9 @@ class Alerts {
 				'inline-edit-post',
 			),
 			array(
-				'any'        => __( 'Any', 'stream' ),
-				'anyContext' => __( 'Any Context', 'stream' ),
+				'any'             => __( 'Any', 'stream' ),
+				'anyContext'      => __( 'Any Context', 'stream' ),
+				'getActionsNonce' => wp_create_nonce( 'stream_get_actions' ),
 			)
 		);
 	}
@@ -781,6 +782,8 @@ class Alerts {
 				)
 			);
 		}
+
+		check_ajax_referer( 'stream_get_actions', 'nonce' );
 
 		$connector_name    = wp_stream_filter_input( INPUT_POST, 'connector' );
 		$stream_connectors = wp_stream_get_instance()->connectors;

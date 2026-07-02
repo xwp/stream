@@ -368,6 +368,7 @@ class Test_Alerts extends WP_StreamTestCase {
 		$alerts = new Alerts( $this->plugin );
 		try {
 			$_POST['connector'] = '';
+			$_POST['nonce']     = wp_create_nonce( 'stream_get_actions' );
 			$this->_handleAjax( 'get_actions' );
 		} catch ( \WPAjaxDieContinueException $e ) {
 			$exception = $e;
