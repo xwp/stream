@@ -29,6 +29,11 @@ interface Scheduler {
 	 *
 	 * Values in $args are passed positionally to the hook callback, in the
 	 * order they appear in the array, mirroring Action Scheduler semantics.
+	 * How the args are *stored* is backend-specific: AS keeps the array as
+	 * given (preserving Stream's historical behavior and the keyed display
+	 * in Tools → Scheduled Actions), while cron stores array_values(). Args
+	 * therefore only round-trip through next_scheduled() on the backend
+	 * that scheduled them — which is the only supported usage.
 	 *
 	 * @param string $hook  Action hook name.
 	 * @param array  $args  Arguments passed positionally to the callback.
@@ -39,6 +44,12 @@ interface Scheduler {
 
 	/**
 	 * Schedule a recurring action if one is not already scheduled.
+	 *
+	 * The "already scheduled" probe may be hook-scoped (ignoring args and
+	 * group): the AS backend intentionally checks the hook only, preserving
+	 * Stream's historical behavior and preventing recurrences with differing
+	 * args from stacking. Callers must treat one recurring action per hook
+	 * as the contract; the sole caller schedules with empty args.
 	 *
 	 * @param int    $timestamp First run, as a Unix timestamp.
 	 * @param int    $interval  Recurrence interval in seconds.

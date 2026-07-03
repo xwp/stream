@@ -275,9 +275,16 @@ class Test_Admin_Cron_Purge extends WP_StreamTestCase {
 			$this->plugin->scheduler->has_scheduled( Admin::AUTO_PURGE_REAPER_ACTION ),
 			'Terminal reaper must be scheduled on WP-Cron'
 		);
+		$this->assertTrue(
+			(bool) get_transient( Cron_Scheduler::RUNNING_TRANSIENT ),
+			'Running marker must remain set until the reaper has executed'
+		);
+
+		// The reaper clears the marker when it finishes.
+		$this->admin->auto_purge_reaper();
 		$this->assertFalse(
 			(bool) get_transient( Cron_Scheduler::RUNNING_TRANSIENT ),
-			'Running marker must be cleared once the chain reaches the reaper'
+			'Running marker must be cleared once the reaper completes'
 		);
 	}
 

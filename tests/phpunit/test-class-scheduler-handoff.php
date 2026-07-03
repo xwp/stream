@@ -101,4 +101,41 @@ class Test_Scheduler_Handoff extends WP_StreamTestCase {
 			'Action Scheduler recurring action must be registered after the switch'
 		);
 	}
+
+	/**
+	 * Disabling auto-purge while the cron backend is active must also clear
+	 * a leftover Action Scheduler recurring action when the AS API is loaded
+	 * (e.g. provided by WooCommerce) — the filter promises teardown from
+	 * BOTH backends, and the active-backend unschedule cannot see AS's store.
+	 */
+	public function test_disable_clears_action_scheduler_store_when_cron_active() {
+		// Pre-existing AS recurring action (as if the site previously ran AS).
+		as_schedule_recurring_action(
+			time(),
+			12 * HOUR_IN_SECONDS,
+			Admin::AUTO_PURGE_ACTION,
+			array(),
+			Admin::AUTO_PURGE_GROUP
+		);
+		$this->assertNotFalse( as_next_scheduled_action( Admin::AUTO_PURGE_ACTION ) );
+
+		$this->plugin->scheduler = new Cron_Scheduler();
+		add_filter( 'wp_stream_enable_auto_purge', '__return_false' );
+		$this->admin->purge_schedule_setup();
+		remove_all_filters( 'wp_stream_enable_auto_purge' );
+
+		$this->assertFalse(
+			as_next_scheduled_action( Admin::AUTO_PURGE_ACTION ),
+			'Disabling auto-purge must clear the AS store even when cron is the active backend'
+		);
+		$this->assertFalse(
+			wp_next_scheduled( Admin::AUTO_PURGE_ACTION ),
+			'Disabling auto-purge must clear the WP-Cron store'
+		);
+		$this->assertSame(
+			'disabled',
+			get_option( Admin::SCHEDULER_BACKEND_OPTION ),
+			'Backend marker must record the disabled sentinel'
+		);
+	}
 }

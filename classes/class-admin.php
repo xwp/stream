@@ -999,6 +999,19 @@ class Admin {
 			if ( 'disabled' !== get_option( self::SCHEDULER_BACKEND_OPTION ) ) {
 				$scheduler->unschedule_all( self::AUTO_PURGE_ACTION );
 				wp_unschedule_hook( self::AUTO_PURGE_ACTION );
+
+				// Also clear the Action Scheduler store when its API is
+				// available but AS is not the active backend (e.g. the cron
+				// backend is selected while WooCommerce provides AS). The
+				// active-backend unschedule above cannot see AS's store, and
+				// this filter promises teardown from BOTH backends. When AS
+				// is entirely absent this is skipped — a stray AS entry
+				// cannot execute (no AS runner), and if AS appears later the
+				// action fires as a no-op thanks to the execute-path gate.
+				if ( ! $scheduler instanceof AS_Scheduler && function_exists( 'as_unschedule_all_actions' ) ) {
+					( new AS_Scheduler() )->unschedule_all( self::AUTO_PURGE_ACTION );
+				}
+
 				update_option( self::SCHEDULER_BACKEND_OPTION, 'disabled' );
 			}
 			return;
@@ -1334,8 +1347,12 @@ class Admin {
 
 		if ( empty( $start_from ) ) {
 			// Chain is done. Schedule the orphan reaper as the terminal step.
+			// The running marker is NOT cleared here: under WP-Cron the reaper
+			// event is removed from the cron array before its callback runs,
+			// so clearing now would let the overlap guard read "idle" while
+			// the reaper's orphan-meta DELETE is still executing. The reaper
+			// clears the marker itself when it finishes.
 			$this->plugin->scheduler->enqueue_async( self::AUTO_PURGE_REAPER_ACTION, array(), self::AUTO_PURGE_GROUP );
-			$this->plugin->scheduler->mark_done( 'auto_purge' );
 			return;
 		}
 
@@ -1404,7 +1421,17 @@ class Admin {
 	 * @return void
 	 */
 	public function auto_purge_reaper() {
+		// Keep the overlap guard reading "busy" while the orphan-meta DELETE
+		// runs. Under WP-Cron the event is removed from the cron array before
+		// this callback executes, so without the marker a recurring purge
+		// tick or a manual "clean orphaned meta" click could stack parallel
+		// work against the same rows. No-op under Action Scheduler, which
+		// tracks RUNNING state natively. Self-expires on a fatal.
+		$this->plugin->scheduler->mark_running( 'auto_purge' );
+
 		$this->delete_orphaned_meta();
+
+		$this->plugin->scheduler->mark_done( 'auto_purge' );
 	}
 
 	/**

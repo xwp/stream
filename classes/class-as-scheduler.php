@@ -21,6 +21,14 @@ class AS_Scheduler implements Scheduler {
 	/**
 	 * Enqueue a one-off asynchronous action.
 	 *
+	 * The args array is passed to Action Scheduler as-is (keys preserved),
+	 * intentionally NOT normalized to array_values(): this matches Stream's
+	 * pre-abstraction behavior exactly, keeps the keyed args display in
+	 * Tools → Scheduled Actions, and avoids breaking third-party code that
+	 * matches Stream's actions by keyed args. AS executes callbacks
+	 * positionally regardless, so callback behavior is identical to the
+	 * cron backend.
+	 *
 	 * @param string $hook  Action hook name.
 	 * @param array  $args  Arguments passed positionally to the callback.
 	 * @param string $group Optional grouping label.
@@ -32,6 +40,11 @@ class AS_Scheduler implements Scheduler {
 
 	/**
 	 * Schedule a recurring action if one is not already scheduled.
+	 *
+	 * The "already scheduled" probe is deliberately hook-scoped (args and
+	 * group ignored), preserving Stream's pre-abstraction behavior: one
+	 * recurring action per hook, and no stacking of recurrences that differ
+	 * only in args. See the {@see Scheduler::schedule_recurring()} contract.
 	 *
 	 * @param int    $timestamp First run, as a Unix timestamp.
 	 * @param int    $interval  Recurrence interval in seconds.
