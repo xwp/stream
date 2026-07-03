@@ -40,10 +40,16 @@ class Test_Cron_Scheduler extends WP_StreamTestCase {
 	}
 
 	/**
-	 * enqueue_async() schedules a one-off event detectable by next_scheduled().
+	 * Enqueue_async() schedules a one-off event detectable by next_scheduled().
 	 */
 	public function test_enqueue_async_schedules_single_event() {
-		$this->scheduler->enqueue_async( 'wp_stream_test_async', array( 'a' => 1, 'b' => 2 ) );
+		$this->scheduler->enqueue_async(
+			'wp_stream_test_async',
+			array(
+				'a' => 1,
+				'b' => 2,
+			)
+		);
 
 		// Args are passed positionally (array_values), mirroring AS.
 		$this->assertNotFalse(
@@ -53,7 +59,7 @@ class Test_Cron_Scheduler extends WP_StreamTestCase {
 	}
 
 	/**
-	 * schedule_recurring() registers a recurring event and is idempotent.
+	 * Schedule_recurring() registers a recurring event and is idempotent.
 	 */
 	public function test_schedule_recurring_is_idempotent() {
 		$this->scheduler->schedule_recurring( time(), 12 * HOUR_IN_SECONDS, Admin::AUTO_PURGE_ACTION );
@@ -69,10 +75,16 @@ class Test_Cron_Scheduler extends WP_StreamTestCase {
 	}
 
 	/**
-	 * any_pending_or_running() reports true for a pending hook regardless of args.
+	 * Any_pending_or_running() reports true for a pending hook regardless of args.
 	 */
 	public function test_any_pending_or_running_detects_pending_with_any_args() {
-		$this->scheduler->enqueue_async( 'wp_stream_test_async', array( 'cutoff' => '2026-01-01', 'blog_id' => 0 ) );
+		$this->scheduler->enqueue_async(
+			'wp_stream_test_async',
+			array(
+				'cutoff'  => '2026-01-01',
+				'blog_id' => 0,
+			)
+		);
 
 		$this->assertTrue(
 			$this->scheduler->any_pending_or_running( array( 'wp_stream_test_async' ) )
@@ -96,7 +108,7 @@ class Test_Cron_Scheduler extends WP_StreamTestCase {
 	}
 
 	/**
-	 * unschedule_all() clears every pending instance of a hook.
+	 * Unschedule_all() clears every pending instance of a hook.
 	 */
 	public function test_unschedule_all_clears_hook() {
 		$this->scheduler->enqueue_async( 'wp_stream_test_async', array( 1 ) );

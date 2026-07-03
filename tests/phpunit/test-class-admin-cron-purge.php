@@ -107,7 +107,8 @@ class Test_Admin_Cron_Purge extends WP_StreamTestCase {
 					'meta_value' => 'false',
 				)
 			);
-		}
+		}//end for
+
 		return $ids;
 	}
 
@@ -140,7 +141,7 @@ class Test_Admin_Cron_Purge extends WP_StreamTestCase {
 	}
 
 	/**
-	 * purge_schedule_setup() registers the recurring event on WP-Cron using
+	 * Purge_schedule_setup() registers the recurring event on WP-Cron using
 	 * the custom 12-hour recurrence, clears the legacy event, and is idempotent.
 	 */
 	public function test_schedule_setup_registers_recurring_cron_event() {
