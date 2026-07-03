@@ -174,8 +174,9 @@ class Plugin {
 		//
 		// Availability is tracked from a file_exists() check rather than
 		// function_exists(): AS only declares its as_*() API on `init`, but
-		// this constructor runs on `plugins_loaded`, so the functions are not
-		// defined yet. Scheduler methods are only ever called on/after `init`
+		// this constructor runs at plugin-file inclusion time (before the
+		// `plugins_loaded` action fires), so the functions are not defined
+		// yet. Scheduler methods are only ever called on/after `init`
 		// (wp_loaded, AJAX, cron), by which point the API is loaded.
 		$action_scheduler                 = $this->locations['dir'] . '/vendor/woocommerce/action-scheduler/action-scheduler.php';
 		$this->action_scheduler_available = file_exists( $action_scheduler );
@@ -255,6 +256,20 @@ class Plugin {
 	 * @return Scheduler
 	 */
 	public function create_scheduler() {
+		/**
+		 * Filter whether Stream uses Action Scheduler for its deferred work.
+		 *
+		 * IMPORTANT — timing: this filter is applied in Plugin::__construct(),
+		 * which runs when the Stream plugin file is included, i.e. BEFORE the
+		 * `plugins_loaded` action. Callbacks must therefore be registered from
+		 * code that loads before Stream: an mu-plugin, wp-config.php, or a
+		 * plugin guaranteed to load earlier. Registering it from a regular
+		 * plugin's `plugins_loaded` hook is too late and will be ignored.
+		 *
+		 * @param bool $use_action_scheduler Whether to use Action Scheduler.
+		 *                                   Defaults to true when the bundled
+		 *                                   AS library is present.
+		 */
 		$use_action_scheduler = apply_filters(
 			'wp_stream_use_action_scheduler',
 			$this->action_scheduler_available

@@ -300,12 +300,48 @@ class Test_Admin_Cron_Purge extends WP_StreamTestCase {
 			wp_next_scheduled( Admin::AUTO_PURGE_ACTION ),
 			'Disabling auto-purge must unschedule the recurring event'
 		);
-		$this->assertFalse(
+		$this->assertSame(
+			'disabled',
 			get_option( Admin::SCHEDULER_BACKEND_OPTION ),
-			'Backend marker must be cleared when auto-purge is disabled'
+			'Backend marker must record the disabled sentinel so the teardown runs only once'
 		);
 
+		// Re-enabling must recover: the sentinel differs from the active
+		// backend, so the switch cleanup re-registers the recurring purge.
 		remove_all_filters( 'wp_stream_enable_auto_purge' );
+		$this->admin->purge_schedule_setup();
+		$this->assertNotFalse(
+			wp_next_scheduled( Admin::AUTO_PURGE_ACTION ),
+			'Re-enabling auto-purge must re-register the recurring event'
+		);
+	}
+
+	/**
+	 * The executing path honors the master switch too: a purge callback that
+	 * fires while `wp_stream_enable_auto_purge` is false must be a no-op, so a
+	 * stale in-flight event cannot delete records the operator opted out of.
+	 */
+	public function test_enable_auto_purge_filter_blocks_executing_purge() {
+		global $wpdb;
+
+		$ids = $this->seed_aged_records( 2, 5 );
+		$this->set_records_ttl( 1 );
+
+		add_filter( 'wp_stream_enable_auto_purge', '__return_false' );
+		$this->admin->purge_scheduled_action();
+		remove_all_filters( 'wp_stream_enable_auto_purge' );
+
+		$remaining = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT COUNT(*) FROM ' . $wpdb->stream . ' WHERE ID IN (' . implode( ',', array_fill( 0, count( $ids ), '%d' ) ) . ')',
+				...$ids
+			)
+		);
+		$this->assertSame(
+			count( $ids ),
+			$remaining,
+			'No records may be purged while auto-purge is disabled'
+		);
 	}
 
 	/**
@@ -362,6 +398,38 @@ class Test_Admin_Cron_Purge extends WP_StreamTestCase {
 		$this->assertEmpty(
 			$matched,
 			'No notice must be queued when auto-purge is disabled'
+		);
+
+		remove_all_filters( 'wp_stream_enable_auto_purge' );
+		remove_all_filters( 'wp_stream_is_large_records_table' );
+	}
+
+	/**
+	 * The `wp_stream_enable_auto_purge` filter must NOT suppress the stall
+	 * warning for the manual database reset: it governs TTL retention purging
+	 * only, and an operator managing retention externally can still trigger a
+	 * large reset that needs the WP-Cron stall guidance.
+	 */
+	public function test_reset_warning_not_suppressed_by_auto_purge_filter() {
+		add_filter( 'wp_stream_is_large_records_table', '__return_true' );
+		add_filter( 'wp_stream_enable_auto_purge', '__return_false' );
+
+		$this->admin->notices = array();
+
+		$method = new \ReflectionMethod( Admin::class, 'maybe_warn_large_table_without_action_scheduler' );
+		$method->setAccessible( true );
+		$method->invoke( $this->admin, 2000000, 'reset the Stream database (delete all records for this site)' );
+
+		$messages = wp_list_pluck( $this->admin->notices, 'message' );
+		$matched  = array_filter(
+			$messages,
+			function ( $message ) {
+				return false !== strpos( $message, 'wp cron event run' );
+			}
+		);
+		$this->assertNotEmpty(
+			$matched,
+			'The reset stall warning must fire even when auto-purge is disabled'
 		);
 
 		remove_all_filters( 'wp_stream_enable_auto_purge' );
