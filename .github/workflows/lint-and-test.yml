@@ -120,6 +120,14 @@ jobs:
       - name: Install Composer dependencies
         run: composer install
 
+      - name: Refresh apt metadata
+        # `shivammathur/setup-php` adds the ondrej/php PPA, which recently
+        # changed its repository `Label`. `apt-get update` (invoked by
+        # Playwright's `--with-deps`) aborts with exit code 100 on such
+        # changes unless `--allow-releaseinfo-change` is passed. Refresh the
+        # metadata here so the subsequent Playwright dependency install works.
+        run: sudo apt-get update --allow-releaseinfo-change
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
