@@ -102,8 +102,12 @@ class Install {
 		}
 
 		$update = null;
-		if ( isset( $_REQUEST['wp_stream_update'] ) && wp_verify_nonce( 'wp_stream_update_db' ) ) {
-			$update = esc_attr( $_REQUEST['wp_stream_update'] );
+		if (
+			isset( $_REQUEST['wp_stream_update'], $_REQUEST['_wpnonce'] )
+			&&
+			wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'wp_stream_update_db' )
+		) {
+			$update = sanitize_key( wp_unslash( $_REQUEST['wp_stream_update'] ) );
 		}
 
 		if ( ! $update ) {
@@ -221,8 +225,12 @@ class Install {
 		}
 
 		$update = null;
-		if ( isset( $_REQUEST['wp_stream_update'] ) && wp_verify_nonce( 'wp_stream_update_db' ) ) {
-			$update = esc_attr( $_REQUEST['wp_stream_update'] );
+		if (
+			isset( $_REQUEST['wp_stream_update'], $_REQUEST['_wpnonce'] )
+			&&
+			wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'wp_stream_update_db' )
+		) {
+			$update = sanitize_key( wp_unslash( $_REQUEST['wp_stream_update'] ) );
 		}
 
 		if ( ! $update ) {

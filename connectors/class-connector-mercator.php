@@ -43,7 +43,7 @@ class Connector_Mercator extends Connector {
 	 * @return string
 	 */
 	public function get_label() {
-		return esc_html__( 'Mercator' );
+		return esc_html__( 'Mercator', 'stream' );
 	}
 
 	/**
@@ -92,13 +92,13 @@ class Connector_Mercator extends Connector {
 	 * @return array
 	 */
 	public function action_links( $links, $record ) {
-		$links [ esc_html__( 'Site Admin' ) ] = get_admin_url( $record->object_id );
+		$links [ esc_html__( 'Site Admin', 'stream' ) ] = get_admin_url( $record->object_id );
 
 		if ( $record->object_id ) {
 			$site_admin_link = get_admin_url( $record->object_id );
 
 			if ( $site_admin_link ) {
-				$links [ esc_html__( 'Site Admin' ) ] = $site_admin_link;
+				$links [ esc_html__( 'Site Admin', 'stream' ) ] = $site_admin_link;
 			}
 
 			$site_settings_link = add_query_arg(

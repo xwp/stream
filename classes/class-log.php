@@ -303,7 +303,7 @@ class Log {
 	 */
 	public function debug_backtrace( $recordarr ) {
 		if ( version_compare( PHP_VERSION, '5.3.6', '<' ) ) {
-			return __( 'Debug backtrace requires at least PHP 5.3.6', 'wp_stream' );
+			return __( 'Debug backtrace requires at least PHP 5.3.6', 'stream' );
 		}
 
 		// Record details.

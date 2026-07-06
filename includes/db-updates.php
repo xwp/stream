@@ -5,6 +5,10 @@
  * @package WP_Stream
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Version 3.0.8
  *

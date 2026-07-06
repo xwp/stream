@@ -84,12 +84,14 @@ class Network {
 	 * @see https://core.trac.wordpress.org/ticket/22589
 	 */
 	public function ajax_network_admin() {
+		$http_referer = isset( $_SERVER['HTTP_REFERER'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : '';
+
 		if (
 			defined( 'DOING_AJAX' )
 			&&
 			DOING_AJAX
 			&&
-			preg_match( '#^' . network_admin_url() . '#i', $_SERVER['HTTP_REFERER'] )
+			0 === stripos( $http_referer, network_admin_url() )
 		) {
 			define( 'WP_NETWORK_ADMIN', true );
 			return WP_NETWORK_ADMIN;
@@ -348,7 +350,11 @@ class Network {
 	public function network_options_action() {
 
 		// Check the nonce.
-		if ( empty( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], sprintf( '%s-options', $this->network_settings_option ) ) ) {
+		if (
+			empty( $_POST['_wpnonce'] )
+			||
+			! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), sprintf( '%s-options', $this->network_settings_option ) )
+		) {
 			return;
 		}
 
@@ -358,23 +364,25 @@ class Network {
 		}
 
 		// Check the action.
-		if ( ! isset( $_GET['action'] ) || $this->network_settings_page_slug !== $_GET['action'] ) {
+		$action = isset( $_GET['action'] ) ? sanitize_key( wp_unslash( $_GET['action'] ) ) : '';
+		if ( $this->network_settings_page_slug !== $action ) {
 			return;
 		}
 
-		$option = ! empty( $_POST['option_page'] ) ? $_POST['option_page'] : false;
+		$option = ! empty( $_POST['option_page'] ) ? sanitize_key( wp_unslash( $_POST['option_page'] ) ) : false;
 
 		if ( $option && $this->network_settings_option === $option ) {
 
-			$value    = array();
-			$sections = $this->plugin->settings->get_fields();
+			$value          = array();
+			$posted_options = isset( $_POST[ $option ] ) && is_array( $_POST[ $option ] ) ? wp_unslash( $_POST[ $option ] ) : array();
+			$sections       = $this->plugin->settings->get_fields();
 
 			foreach ( $sections as $section_name => $section ) {
 				foreach ( $section['fields'] as $field_idx => $field ) {
 					$option_key = $section_name . '_' . $field['name'];
 
-					if ( isset( $_POST[ $option ][ $option_key ] ) ) {
-						$value[ $option_key ] = $this->plugin->settings->sanitize_setting_by_field_type( $_POST[ $option ][ $option_key ], $field['type'] );
+					if ( isset( $posted_options[ $option_key ] ) ) {
+						$value[ $option_key ] = $this->plugin->settings->sanitize_setting_by_field_type( $posted_options[ $option_key ], $field['type'] );
 					} else {
 						$value[ $option_key ] = false;
 					}
