@@ -50,6 +50,9 @@ class Test_Live_Update extends WP_StreamTestCase {
 			// Expected: wp_send_json_success() terminates the AJAX request.
 		}
 
+		$response = json_decode( $this->_last_response );
+		$this->assertTrue( $response->success );
+
 		$this->assertSame( 'on', get_user_meta( $attacker_id, $this->live_update->user_meta_key, true ) );
 		$this->assertSame( 'off', get_user_meta( $victim_id, $this->live_update->user_meta_key, true ) );
 	}
@@ -74,6 +77,9 @@ class Test_Live_Update extends WP_StreamTestCase {
 		} catch ( \WPAjaxDieContinueException $e ) {
 			// Expected: wp_send_json_error() terminates the AJAX request.
 		}
+
+		$response = json_decode( $this->_last_response );
+		$this->assertFalse( $response->success );
 
 		$this->assertSame( 'off', get_user_meta( $user_id, $this->live_update->user_meta_key, true ) );
 	}
