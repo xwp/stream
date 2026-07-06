@@ -71,6 +71,8 @@ curl -sk https://stream.wpenv.net/wp-json/mcp/mcp-adapter-default-server
 
 To use MCP from Claude Desktop or another MCP client, follow the [mcp-adapter README's MCP client configuration section](https://github.com/WordPress/mcp-adapter#mcp-client-configuration). The HTTP transport requires the HTTPS setup above plus a WordPress Application Password.
 
+`stream/get-record` returns normalized record metadata. Records written before grouped meta sub-keys were preserved can return values such as `user_meta` as indexed arrays; newer records preserve one-level sub-keys and return those values as objects. MCP clients should handle both shapes.
+
 ### PHP Xdebug
 
 The WordPress container includes the [Xdebug PHP extension](https://xdebug.org). It is configured in the [`php.ini`](./local/docker/wordpress/php.ini) file to work in the [develop, debug and coverage modes](https://xdebug.org/docs/step_debug#mode).

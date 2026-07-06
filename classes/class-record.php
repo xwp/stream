@@ -175,9 +175,85 @@ class Record {
 			return null;
 		}
 
-		$row['meta'] = (array) get_metadata( 'record', $row['ID'] );
+		$row['meta'] = self::normalize_meta( get_metadata( 'record', $row['ID'] ) );
 
 		return $row;
+	}
+
+	/**
+	 * Normalize Stream's flat stored metadata into the public record shape.
+	 *
+	 * One-level keys in the form key[sub_key] are grouped into nested arrays.
+	 * Literal or nested brackets stay flat. When flat and grouped values exist
+	 * for the same key in one record, grouped values take precedence.
+	 *
+	 * @param array $meta Raw metadata from the database or get_metadata().
+	 * @return array
+	 */
+	public static function normalize_meta( $meta ) {
+		$normalized = array();
+
+		foreach ( (array) $meta as $key => $value ) {
+			$value = self::normalize_meta_value( $value );
+			$group = self::parse_grouped_meta_key( $key );
+
+			if ( null !== $group ) {
+				list( $main_key, $sub_key ) = $group;
+
+				if ( ! isset( $normalized[ $main_key ] ) || ! is_array( $normalized[ $main_key ] ) ) {
+					$normalized[ $main_key ] = array();
+				}
+
+				$normalized[ $main_key ][ $sub_key ] = $value;
+				continue;
+			}
+
+			if ( isset( $normalized[ $key ] ) && is_array( $normalized[ $key ] ) ) {
+				continue;
+			}
+
+			$normalized[ $key ] = $value;
+		}
+
+		return $normalized;
+	}
+
+	/**
+	 * Parse Stream's one-level grouped metadata key format.
+	 *
+	 * @param mixed $key Metadata key.
+	 * @return array|null Main and sub-key pair when grouped, otherwise null.
+	 */
+	protected static function parse_grouped_meta_key( $key ) {
+		if ( ! is_string( $key ) ) {
+			return null;
+		}
+
+		if ( 1 !== preg_match( '/^([^\[\]]+)\[([^\[\]]+)\]$/', $key, $matches ) ) {
+			return null;
+		}
+
+		return array( $matches[1], $matches[2] );
+	}
+
+	/**
+	 * Normalize a metadata value from direct SQL or get_metadata().
+	 *
+	 * @param mixed $value Metadata value.
+	 * @return mixed
+	 */
+	protected static function normalize_meta_value( $value ) {
+		if ( is_array( $value ) ) {
+			$value = array_map( 'maybe_unserialize', $value );
+
+			if ( 1 === count( $value ) ) {
+				return reset( $value );
+			}
+
+			return $value;
+		}
+
+		return maybe_unserialize( $value );
 	}
 
 	/**
@@ -223,7 +299,7 @@ class Record {
 	 * @param string $meta_key Meta key (optional).
 	 * @param bool   $single   Return only first found (optional).
 	 *
-	 * @return array
+	 * @return mixed
 	 */
 	public function get_meta( $meta_key = '', $single = false ) {
 		return get_metadata( 'record', $this->ID, $meta_key, $single );

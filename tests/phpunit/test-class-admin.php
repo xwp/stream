@@ -806,6 +806,41 @@ class Test_Admin extends WP_StreamTestCase {
 	}
 
 	/**
+	 * Display Metadata reads the network option on network-activated installs.
+	 *
+	 * @group ms-required
+	 */
+	public function test_list_table_display_metadata_setting_reads_network_option_when_network_activated() {
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'Requires multisite.' );
+		}
+
+		$network_key      = $this->plugin->settings->network_options_key;
+		$original_network = get_site_option( $network_key, false );
+
+		add_filter( 'wp_stream_is_network_activated', '__return_true' );
+		$this->plugin->settings->options['advanced_display_metadata'] = 0;
+
+		try {
+			update_site_option(
+				$network_key,
+				array( 'advanced_display_metadata' => 1 )
+			);
+
+			$this->admin->register_list_table();
+
+			$this->assertTrue( $this->admin->list_table->should_display_metadata() );
+		} finally {
+			remove_filter( 'wp_stream_is_network_activated', '__return_true' );
+			if ( false === $original_network ) {
+				delete_site_option( $network_key );
+			} else {
+				update_site_option( $network_key, $original_network );
+			}
+		}
+	}
+
+	/**
 	 * Also tests private method role_can_view
 	 */
 	public function test_filter_user_caps() {

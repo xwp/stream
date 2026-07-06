@@ -198,8 +198,10 @@ class DB {
 			// Order.
 			'order'            => 'desc',
 			'orderby'          => 'date',
-			// Fields selection.
+			// Fields selection. Accepts an array or a comma-separated string.
 			'fields'           => array(),
+			// Include record metadata in the query result.
+			'with_meta'        => false,
 		);
 
 		// Additional property fields.

@@ -1,5 +1,11 @@
 # Stream Changelog
 
+## Unreleased
+
+### Enhancements
+
+- Add an opt-in **Display Metadata** setting for Stream records. New records preserve one-level grouped metadata sub-keys in the display/API shape; older records can still return legacy grouped values as indexed arrays, so API and MCP clients should handle both shapes.
+
 ## 4.2.0 - May 28, 2026
 
 ### New Features

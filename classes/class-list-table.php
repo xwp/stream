@@ -278,9 +278,22 @@ class List_Table extends \WP_List_Table {
 		}
 		$args['records_per_page'] = apply_filters( 'stream_records_per_page', $args['records_per_page'] );
 
+		$args['with_meta'] = $this->should_display_metadata();
+
 		$items = $this->plugin->db->get_records( $args );
 
 		return $items;
+	}
+
+	/**
+	 * Whether metadata should be retrieved and displayed with records.
+	 *
+	 * @return bool
+	 */
+	public function should_display_metadata() {
+		// The setting field is named display_metadata inside the advanced tab,
+		// which Settings persists as advanced_display_metadata.
+		return (bool) $this->plugin->settings->get_setting_value( 'advanced_display_metadata', 0 );
 	}
 
 	/**
@@ -332,6 +345,12 @@ class List_Table extends \WP_List_Table {
 						null,
 						esc_attr( $view_all_text )
 					);
+				}
+				if ( $this->should_display_metadata() && $record->meta ) {
+					$meta = $record->meta;
+					$out .= '<details><summary>' . esc_html__( 'Metadata', 'stream' ) . '</summary><pre>';
+					$out .= esc_html( wp_json_encode( $meta, JSON_PRETTY_PRINT ) );
+					$out .= '</pre></details>';
 				}
 				$out .= $this->get_action_links( $record );
 				break;
