@@ -723,7 +723,7 @@ class Alerts {
 				</div>
 				<div id="publishing-action">
 					<span class="spinner"></span>
-					<?php submit_button( __( 'Save' ), 'primary button-large', 'publish', false ); ?>
+					<?php submit_button( __( 'Save', 'stream' ), 'primary button-large', 'publish', false ); ?>
 				</div>
 				<div class="clear"></div>
 			</div>
