@@ -1,5 +1,11 @@
 # Stream Changelog
 
+## 4.2.2 - July 6, 2026
+
+### Security
+
+- Harden authorization for the live update preference: enforce the Stream view capability and always target the current user in the `stream_enable_live_update` AJAX handler so a user can only change their own live update preference ([#1918](https://github.com/xwp/stream/pull/1918)).
+
 ## 4.2.1 - July 2, 2026
 
 ### Bug Fixes
