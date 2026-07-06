@@ -55,23 +55,15 @@ class Live_Update {
 	public function enable_live_update() {
 		check_ajax_referer( $this->user_meta_key . '_nonce', 'nonce' );
 
-		$input = array(
-			'checked'   => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-			'user'      => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-			'heartbeat' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-		);
-
-		$input = filter_input_array( INPUT_POST, $input );
-
-		if ( false === $input ) {
-			wp_send_json_error( 'Error in live update checkbox' );
+		if ( ! current_user_can( $this->plugin->admin->view_cap ) ) {
+			wp_send_json_error( esc_html__( 'You do not have permission to do this.', 'stream' ) );
 		}
 
-		$checked = ( 'checked' === $input['checked'] ) ? 'on' : 'off';
+		$checked = ( 'checked' === wp_stream_filter_input( INPUT_POST, 'checked' ) ) ? 'on' : 'off';
 
-		$user = (int) $input['user'];
+		$user = get_current_user_id();
 
-		if ( 'false' === $input['heartbeat'] ) {
+		if ( 'false' === wp_stream_filter_input( INPUT_POST, 'heartbeat' ) ) {
 			update_user_meta( $user, $this->user_meta_key, 'off' );
 
 			wp_send_json_error( esc_html__( "Live updates could not be enabled because Heartbeat is not loaded.\n\nYour hosting provider or another plugin may have disabled it for performance reasons.", 'stream' ) );
