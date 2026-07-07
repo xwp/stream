@@ -222,7 +222,6 @@ $( document ).ready(
 		$( '#enable_live_update' ).click(
 			function() {
 				const nonce = $( '#stream_live_update_nonce' ).val();
-				const user = $( '#enable_live_update_user' ).val();
 				let checked = 'unchecked';
 				let heartbeat = 'true';
 
@@ -239,7 +238,6 @@ $( document ).ready(
 						data: {
 							action: 'stream_enable_live_update',
 							nonce,
-							user,
 							checked,
 							heartbeat,
 						},

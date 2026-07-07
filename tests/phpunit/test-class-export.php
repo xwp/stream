@@ -14,6 +14,10 @@ class Test_Export extends WP_StreamTestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
+		$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+		$this->plugin->settings->options['general_role_access'] = array( 'administrator' );
+
 		$_GET['page'] = 'wp_stream';
 		$this->export = new Export( $this->plugin );
 		$this->assertNotEmpty( $this->export );

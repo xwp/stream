@@ -140,6 +140,7 @@ function getActions( connector ) {
 	const data = {
 		action: 'get_actions',
 		connector,
+		nonce: window[ 'wp-stream-alerts' ].getActionsNonce,
 	};
 
 	$.post(

@@ -533,8 +533,17 @@ class Admin {
 				'admin-exclude',
 				array(
 					$this->plugin->with_select2(),
+				),
+				array(
+					'getActionsNonce' => wp_create_nonce( 'stream_get_actions' ),
 				)
 			);
+
+			$current_order = isset( $_GET['order'] ) ? sanitize_key( wp_unslash( $_GET['order'] ) ) : 'desc'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( ! in_array( $current_order, array( 'asc', 'desc' ), true ) ) {
+				$current_order = 'desc';
+			}
+			$current_query = map_deep( wp_unslash( $_GET ), 'sanitize_text_field' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 			$this->plugin->enqueue_asset(
 				'live-updates',
@@ -542,11 +551,9 @@ class Admin {
 				array(
 					'current_screen'      => $hook,
 					'current_page'        => isset( $_GET['paged'] ) ? absint( wp_unslash( $_GET['paged'] ) ) : '1', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-					'current_order'       => isset( $_GET['order'] ) && in_array( strtolower( $_GET['order'] ), array( 'asc', 'desc' ), true ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-						? esc_js( $_GET['order'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-						: 'desc',
-					'current_query'       => wp_json_encode( $_GET ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-					'current_query_count' => count( $_GET ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					'current_order'       => $current_order,
+					'current_query'       => wp_json_encode( $current_query ),
+					'current_query_count' => count( $current_query ),
 				)
 			);
 		}
@@ -1640,7 +1647,7 @@ class Admin {
 			);
 		}
 
-		$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'default' ) );
+		$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'stream' ) );
 
 		return $links;
 	}
