@@ -279,13 +279,19 @@ class Plugin {
 			return new Cron_Scheduler();
 		}
 
-		// Load the bundled AS library before instantiating its scheduler.
-		// file_exists() guards an environment that omits AS; AS's own
-		// ActionScheduler_Versions arbitration handles a host that already
-		// provides its own copy.
-		if ( $this->action_scheduler_available ) {
-			require_once $this->locations['dir'] . '/vendor/woocommerce/action-scheduler/action-scheduler.php';
+		// Guard a forced `__return_true` override when the bundled AS library
+		// is absent: returning AS_Scheduler without loading AS would fatal on
+		// the first unguarded as_*() call. Fall back to the cron scheduler
+		// instead. The default path never hits this — the filter defaults to
+		// $this->action_scheduler_available.
+		if ( ! $this->action_scheduler_available ) {
+			return new Cron_Scheduler();
 		}
+
+		// Load the bundled AS library before instantiating its scheduler.
+		// AS's own ActionScheduler_Versions arbitration handles a host that
+		// already provides its own copy.
+		require_once $this->locations['dir'] . '/vendor/woocommerce/action-scheduler/action-scheduler.php';
 
 		return new AS_Scheduler();
 	}

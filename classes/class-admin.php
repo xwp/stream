@@ -66,6 +66,17 @@ class Admin {
 	const SCHEDULER_BACKEND_OPTION = 'wp_stream_scheduler_backend';
 
 	/**
+	 * Option persisting the "large batched operation queued to WP-Cron"
+	 * warning between requests. The contexts that queue the warning (the
+	 * recurring purge under DOING_CRON, the reset handler just before its
+	 * redirect) never render their own output, so the message is stored here
+	 * and displayed on the next admin page load instead. Deleted on render.
+	 *
+	 * @const string
+	 */
+	const LARGE_TABLE_CRON_NOTICE_OPTION = 'wp_stream_large_table_cron_notice';
+
+	/**
 	 * Holds Instance of plugin object
 	 *
 	 * @var Plugin
@@ -251,6 +262,12 @@ class Admin {
 		// arg set on post-action redirects (e.g. orphan_meta_cleanup_scheduled).
 		add_action( 'admin_notices', array( $this, 'maybe_display_message' ) );
 		add_action( 'network_admin_notices', array( $this, 'maybe_display_message' ) );
+
+		// Render the persisted "large batched operation queued to WP-Cron"
+		// warning on the next admin page load (see
+		// maybe_warn_large_table_without_action_scheduler()).
+		add_action( 'admin_notices', array( $this, 'display_large_table_cron_notice' ) );
+		add_action( 'network_admin_notices', array( $this, 'display_large_table_cron_notice' ) );
 
 		// Auto purge setup (Action Scheduler).
 		add_action( 'wp_loaded', array( $this, 'purge_schedule_setup' ) );
@@ -788,10 +805,15 @@ class Admin {
 	 * table over the large-table threshold, surface a notice pointing the
 	 * operator at a deterministic WP-CLI drain instead of failing silently.
 	 *
-	 * Surfaces in both contexts via {@see Admin::notice()}: an admin notice in
-	 * the dashboard, a WP_CLI::warning under WP-CLI. The WP-CLI surface still
-	 * matters here — scheduling the batch chain onto WP-Cron does not drain it,
-	 * so a headless / low-traffic site is exactly where the chain can stall.
+	 * Delivery depends on context. Under WP-CLI the warning is emitted
+	 * immediately via {@see Admin::notice()} (WP_CLI::warning) — scheduling
+	 * the batch chain onto WP-Cron does not drain it, so a headless /
+	 * low-traffic site is exactly where the chain can stall. Outside WP-CLI
+	 * neither call site renders its own output (the recurring purge runs
+	 * under DOING_CRON; the manual reset redirects and exits before its
+	 * shutdown hook output reaches the browser), so the message is persisted
+	 * to {@see Admin::LARGE_TABLE_CRON_NOTICE_OPTION} and rendered on the
+	 * next admin page load by {@see Admin::display_large_table_cron_notice()}.
 	 *
 	 * No-op when Action Scheduler is the active backend (built to drain long
 	 * chains). The `wp_stream_enable_auto_purge` filter deliberately does NOT
@@ -816,19 +838,71 @@ class Admin {
 			return;
 		}
 
-		$this->notice(
-			sprintf(
-				/* translators: 1: operation description (e.g. "delete records older than the retention period"), 2: number of records, 3: WP-CLI command. */
-				__( 'Stream queued a large batched operation to %1$s (%2$s records) to WP-Cron because Action Scheduler is disabled. The records are removed in chained batches as WP-Cron runs. This completes on its own where reliable cron is configured (a Linux crontab or third-party cron service triggering wp-cron.php on a fixed interval, without an execution timeout). On sites relying on default traffic-triggered WP-Cron the chain may stall before it finishes, leaving records only partly removed; to run it to completion deterministically, use WP-CLI: %3$s', 'stream' ),
-				$operation,
-				number_format_i18n( $record_count ),
-				'<code>wp cron event run --due-now</code>'
-			)
+		$message = sprintf(
+			/* translators: 1: operation description (e.g. "delete records older than the retention period"), 2: number of records, 3: WP-CLI command. */
+			__( 'Stream queued a large batched operation to %1$s (%2$s records) to WP-Cron because Action Scheduler is disabled. The records are removed in chained batches as WP-Cron runs. This completes on its own where reliable cron is configured (a Linux crontab or third-party cron service triggering wp-cron.php on a fixed interval, without an execution timeout). On sites relying on default traffic-triggered WP-Cron the chain may stall before it finishes, leaving records only partly removed; to run it to completion deterministically, use WP-CLI: %3$s', 'stream' ),
+			$operation,
+			number_format_i18n( $record_count ),
+			'<code>wp cron event run --due-now</code>'
+		);
+
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			// Immediate WP_CLI::warning — the operator is watching the terminal.
+			$this->notice( $message );
+			return;
+		}
+
+		// Persist for the next admin page load. Neither call site can render
+		// output itself: the recurring purge runs under DOING_CRON (response
+		// discarded) and the manual reset redirects + exits before shutdown
+		// output reaches the browser. No autoload — this is set rarely and
+		// read only in the admin.
+		update_option( self::LARGE_TABLE_CRON_NOTICE_OPTION, $message, false );
+	}
+
+	/**
+	 * Render (and clear) the persisted large-table WP-Cron warning.
+	 *
+	 * Counterpart to {@see Admin::maybe_warn_large_table_without_action_scheduler()}:
+	 * displays the stored warning on the first admin page an operator with
+	 * the Stream settings capability loads after a large batched operation
+	 * was queued onto WP-Cron.
+	 *
+	 * @action admin_notices
+	 * @action network_admin_notices
+	 *
+	 * @return void
+	 */
+	public function display_large_table_cron_notice() {
+		if ( ! current_user_can( $this->settings_cap ) ) {
+			return;
+		}
+
+		$message = get_option( self::LARGE_TABLE_CRON_NOTICE_OPTION );
+		if ( empty( $message ) ) {
+			return;
+		}
+
+		delete_option( self::LARGE_TABLE_CRON_NOTICE_OPTION );
+
+		printf(
+			'<div class="notice notice-warning">%s</div>',
+			wp_kses_post( wpautop( $message ) )
 		);
 	}
 
 	/**
 	 * Checks if the async deletion process is running.
+	 *
+	 * Checks pending AND in-flight state, mirroring
+	 * {@see Admin::is_running_auto_purge()}. Under WP-Cron the event is
+	 * removed from the cron array before its callback runs, so a
+	 * pending-only probe would momentarily read idle mid-chain and briefly
+	 * re-expose the reset link in Settings. The batch worker keeps the
+	 * best-effort running marker set for that window (see
+	 * {@see Admin::erase_large_records()}). The marker transient is shared
+	 * with the auto-purge chain, which only makes both guards more
+	 * conservative — never less safe.
 	 *
 	 * @return bool True if the async deletion process is running, false otherwise.
 	 */
@@ -837,7 +911,7 @@ class Admin {
 		if ( empty( $plugin->scheduler ) ) {
 			return false;
 		}
-		return $plugin->scheduler->has_scheduled( self::ASYNC_DELETION_ACTION );
+		return $plugin->scheduler->any_pending_or_running( array( self::ASYNC_DELETION_ACTION ) );
 	}
 
 	/**
@@ -886,6 +960,13 @@ class Admin {
 	public function erase_large_records( int $total, int $done, int $last_entry, int $blog_id ) {
 		global $wpdb;
 
+		// Best-effort "running" marker, mirroring auto_purge_batch(). Under
+		// WP-Cron the event is dequeued before this callback runs, so without
+		// the marker is_running_async_deletion() would momentarily read idle
+		// between batches and briefly re-expose the reset link in Settings.
+		// No-op under Action Scheduler; self-expires on a fatal.
+		$this->plugin->scheduler->mark_running( 'async_deletion' );
+
 		$start_from = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT ID FROM {$wpdb->stream} WHERE ID < %d AND `blog_id`=%d ORDER BY ID DESC LIMIT 1",
@@ -895,6 +976,11 @@ class Admin {
 		);
 
 		if ( empty( $start_from ) ) {
+			// Terminal batch: nothing left to delete, no further event will
+			// be chained, and no work follows within this callback — safe to
+			// clear the marker immediately (unlike the auto-purge chain,
+			// whose terminal batch hands off to the reaper).
+			$this->plugin->scheduler->mark_done( 'async_deletion' );
 			return;
 		}
 

@@ -151,28 +151,43 @@ class Cron_Scheduler implements Scheduler {
 	}
 
 	/**
-	 * Set the best-effort "purge running" marker.
+	 * Set the best-effort "running" marker, claiming it for $context.
 	 *
 	 * Bridges the window between a chained callback starting and the next
 	 * event being scheduled, so the overlap guard does not momentarily read
 	 * as idle mid-chain. Self-expires so a fatal mid-callback cannot wedge
 	 * the guard permanently.
 	 *
+	 * The marker is a single shared transient claimed by the last caller
+	 * (the context string is stored as its value). Multiple Stream chains
+	 * (auto-purge, manual reset) share it, which only makes the guards more
+	 * conservative: a chain can be reported as running while a sibling chain
+	 * is. {@see Cron_Scheduler::mark_done()} clears it only when the caller
+	 * is the current claimant, so one chain finishing cannot un-mark another
+	 * that is still mid-flight.
+	 *
 	 * @param string $context Short identifier for the running work.
 	 * @return void
 	 */
 	public function mark_running( $context ) {
-		set_transient( self::RUNNING_TRANSIENT, 1, 10 * MINUTE_IN_SECONDS );
+		set_transient( self::RUNNING_TRANSIENT, (string) $context, 10 * MINUTE_IN_SECONDS );
 	}
 
 	/**
-	 * Clear the "purge running" marker.
+	 * Clear the "running" marker, if $context is the current claimant.
+	 *
+	 * When another context has since claimed the marker, it is left alone
+	 * and self-expires — the conservative failure mode (guards read busy for
+	 * up to the transient TTL) rather than the unsafe one (a running chain
+	 * reported as idle).
 	 *
 	 * @param string $context Short identifier for the running work.
 	 * @return void
 	 */
 	public function mark_done( $context ) {
-		delete_transient( self::RUNNING_TRANSIENT );
+		if ( get_transient( self::RUNNING_TRANSIENT ) === (string) $context ) {
+			delete_transient( self::RUNNING_TRANSIENT );
+		}
 	}
 
 	/**

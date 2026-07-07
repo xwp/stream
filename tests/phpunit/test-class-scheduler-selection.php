@@ -55,4 +55,25 @@ class Test_Scheduler_Selection extends WP_StreamTestCase {
 
 		$this->assertInstanceOf( AS_Scheduler::class, $this->plugin->create_scheduler() );
 	}
+
+	/**
+	 * A forced `__return_true` override must NOT return the AS scheduler when
+	 * the bundled AS library is absent — AS_Scheduler's unguarded as_*()
+	 * calls would fatal. The guard falls back to the cron scheduler instead.
+	 */
+	public function test_filter_true_with_as_unavailable_falls_back_to_cron() {
+		add_filter( 'wp_stream_use_action_scheduler', '__return_true' );
+
+		// Simulate an environment that omits the bundled AS library.
+		$property = new \ReflectionProperty( Plugin::class, 'action_scheduler_available' );
+		$property->setAccessible( true );
+		$original = $property->getValue( $this->plugin );
+		$property->setValue( $this->plugin, false );
+
+		try {
+			$this->assertInstanceOf( Cron_Scheduler::class, $this->plugin->create_scheduler() );
+		} finally {
+			$property->setValue( $this->plugin, $original );
+		}
+	}
 }

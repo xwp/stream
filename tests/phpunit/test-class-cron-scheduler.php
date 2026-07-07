@@ -108,6 +108,29 @@ class Test_Cron_Scheduler extends WP_StreamTestCase {
 	}
 
 	/**
+	 * Mark_done() only clears the marker when the caller is the current
+	 * claimant, so one chain finishing cannot un-mark a sibling chain that
+	 * claimed the marker after it.
+	 */
+	public function test_mark_done_respects_claimant_context() {
+		$this->scheduler->mark_running( 'auto_purge' );
+		$this->scheduler->mark_running( 'async_deletion' );
+
+		// auto_purge no longer owns the marker; its mark_done must be a no-op.
+		$this->scheduler->mark_done( 'auto_purge' );
+		$this->assertTrue(
+			$this->scheduler->any_pending_or_running( array( 'wp_stream_idle_hook' ) ),
+			'A stale mark_done from a sibling context must not clear the marker'
+		);
+
+		// The current claimant can clear it.
+		$this->scheduler->mark_done( 'async_deletion' );
+		$this->assertFalse(
+			$this->scheduler->any_pending_or_running( array( 'wp_stream_idle_hook' ) )
+		);
+	}
+
+	/**
 	 * Unschedule_all() clears every pending instance of a hook.
 	 */
 	public function test_unschedule_all_clears_hook() {

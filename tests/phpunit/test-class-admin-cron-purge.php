@@ -68,6 +68,7 @@ class Test_Admin_Cron_Purge extends WP_StreamTestCase {
 		wp_unschedule_hook( Admin::ASYNC_DELETION_ACTION );
 		wp_clear_scheduled_hook( 'wp_stream_auto_purge' );
 		delete_transient( Cron_Scheduler::RUNNING_TRANSIENT );
+		delete_option( Admin::LARGE_TABLE_CRON_NOTICE_OPTION );
 	}
 
 	/**
@@ -353,32 +354,80 @@ class Test_Admin_Cron_Purge extends WP_StreamTestCase {
 	}
 
 	/**
-	 * On the WP-Cron fallback, queueing a large-table batch surfaces an admin
-	 * notice pointing the operator at a deterministic WP-CLI drain.
+	 * On the WP-Cron fallback, queueing a large-table batch persists a warning
+	 * pointing the operator at a deterministic WP-CLI drain, and the persisted
+	 * warning is rendered (once) on the next admin page load.
 	 */
-	public function test_large_table_on_cron_surfaces_admin_notice() {
+	public function test_large_table_on_cron_persists_and_renders_admin_notice() {
 		add_filter( 'wp_stream_is_large_records_table', '__return_true' );
 
-		$this->admin->notices = array();
+		delete_option( Admin::LARGE_TABLE_CRON_NOTICE_OPTION );
 
 		$this->seed_aged_records( 2, 5 );
 		$this->set_records_ttl( 1 );
 
 		$this->admin->purge_scheduled_action();
 
-		$messages = wp_list_pluck( $this->admin->notices, 'message' );
-		$matched  = array_filter(
-			$messages,
-			function ( $message ) {
-				return false !== strpos( $message, 'wp cron event run' );
-			}
-		);
+		$stored = get_option( Admin::LARGE_TABLE_CRON_NOTICE_OPTION );
 		$this->assertNotEmpty(
-			$matched,
-			'A WP-CLI guidance notice must be queued for large tables on the cron backend'
+			$stored,
+			'A WP-CLI guidance warning must be persisted for large tables on the cron backend'
+		);
+		$this->assertStringContainsString(
+			'wp cron event run',
+			$stored,
+			'The persisted warning must include the WP-CLI drain command'
 		);
 
+		// The persisted warning renders on the next admin page load for a
+		// capable user, then clears so it does not repeat.
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+		if ( is_multisite() ) {
+			grant_super_admin( get_current_user_id() );
+		}
+
+		ob_start();
+		$this->admin->display_large_table_cron_notice();
+		$rendered = ob_get_clean();
+
+		$this->assertStringContainsString(
+			'wp cron event run',
+			$rendered,
+			'The persisted warning must render as an admin notice'
+		);
+		$this->assertEmpty(
+			get_option( Admin::LARGE_TABLE_CRON_NOTICE_OPTION ),
+			'The persisted warning must be cleared after rendering'
+		);
+
+		ob_start();
+		$this->admin->display_large_table_cron_notice();
+		$second = ob_get_clean();
+		$this->assertEmpty( $second, 'The warning must render only once' );
+
 		remove_all_filters( 'wp_stream_is_large_records_table' );
+	}
+
+	/**
+	 * The persisted warning must not render for users without the Stream
+	 * settings capability.
+	 */
+	public function test_large_table_cron_notice_requires_capability() {
+		update_option( Admin::LARGE_TABLE_CRON_NOTICE_OPTION, 'run wp cron event run --due-now', false );
+
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'subscriber' ) ) );
+
+		ob_start();
+		$this->admin->display_large_table_cron_notice();
+		$rendered = ob_get_clean();
+
+		$this->assertEmpty( $rendered, 'Users without the settings capability must not see the warning' );
+		$this->assertNotEmpty(
+			get_option( Admin::LARGE_TABLE_CRON_NOTICE_OPTION ),
+			'The persisted warning must remain stored for a capable user'
+		);
+
+		delete_option( Admin::LARGE_TABLE_CRON_NOTICE_OPTION );
 	}
 
 	/**
@@ -389,23 +438,16 @@ class Test_Admin_Cron_Purge extends WP_StreamTestCase {
 		add_filter( 'wp_stream_is_large_records_table', '__return_true' );
 		add_filter( 'wp_stream_enable_auto_purge', '__return_false' );
 
-		$this->admin->notices = array();
+		delete_option( Admin::LARGE_TABLE_CRON_NOTICE_OPTION );
 
 		$this->seed_aged_records( 2, 5 );
 		$this->set_records_ttl( 1 );
 
 		$this->admin->purge_scheduled_action();
 
-		$messages = wp_list_pluck( $this->admin->notices, 'message' );
-		$matched  = array_filter(
-			$messages,
-			function ( $message ) {
-				return false !== strpos( $message, 'wp cron event run' );
-			}
-		);
 		$this->assertEmpty(
-			$matched,
-			'No notice must be queued when auto-purge is disabled'
+			get_option( Admin::LARGE_TABLE_CRON_NOTICE_OPTION ),
+			'No warning must be persisted when auto-purge is disabled'
 		);
 
 		remove_all_filters( 'wp_stream_enable_auto_purge' );
@@ -422,24 +464,20 @@ class Test_Admin_Cron_Purge extends WP_StreamTestCase {
 		add_filter( 'wp_stream_is_large_records_table', '__return_true' );
 		add_filter( 'wp_stream_enable_auto_purge', '__return_false' );
 
-		$this->admin->notices = array();
+		delete_option( Admin::LARGE_TABLE_CRON_NOTICE_OPTION );
 
 		$method = new \ReflectionMethod( Admin::class, 'maybe_warn_large_table_without_action_scheduler' );
 		$method->setAccessible( true );
 		$method->invoke( $this->admin, 2000000, 'reset the Stream database (delete all records for this site)' );
 
-		$messages = wp_list_pluck( $this->admin->notices, 'message' );
-		$matched  = array_filter(
-			$messages,
-			function ( $message ) {
-				return false !== strpos( $message, 'wp cron event run' );
-			}
-		);
+		$stored = get_option( Admin::LARGE_TABLE_CRON_NOTICE_OPTION );
 		$this->assertNotEmpty(
-			$matched,
+			$stored,
 			'The reset stall warning must fire even when auto-purge is disabled'
 		);
+		$this->assertStringContainsString( 'wp cron event run', $stored );
 
+		delete_option( Admin::LARGE_TABLE_CRON_NOTICE_OPTION );
 		remove_all_filters( 'wp_stream_enable_auto_purge' );
 		remove_all_filters( 'wp_stream_is_large_records_table' );
 	}
@@ -456,26 +494,66 @@ class Test_Admin_Cron_Purge extends WP_StreamTestCase {
 		$this->plugin->scheduler = new AS_Scheduler();
 		add_filter( 'wp_stream_is_large_records_table', '__return_true' );
 
-		$this->admin->notices = array();
+		delete_option( Admin::LARGE_TABLE_CRON_NOTICE_OPTION );
 
 		$this->seed_aged_records( 2, 5 );
 		$this->set_records_ttl( 1 );
 
 		$this->admin->purge_scheduled_action();
 
-		$messages = wp_list_pluck( $this->admin->notices, 'message' );
-		$matched  = array_filter(
-			$messages,
-			function ( $message ) {
-				return false !== strpos( $message, 'wp cron event run' );
-			}
-		);
 		$this->assertEmpty(
-			$matched,
-			'No WP-CLI guidance notice must be queued when Action Scheduler is the backend'
+			get_option( Admin::LARGE_TABLE_CRON_NOTICE_OPTION ),
+			'No WP-CLI guidance warning must be persisted when Action Scheduler is the backend'
 		);
 
 		remove_all_filters( 'wp_stream_is_large_records_table' );
+	}
+
+	/**
+	 * The manual-reset chain sets the running marker while a batch executes
+	 * (mirroring auto_purge_batch), so is_running_async_deletion() cannot
+	 * momentarily read idle mid-chain, and clears it on the terminal batch.
+	 */
+	public function test_erase_large_records_marks_running_and_clears_when_done() {
+		global $wpdb;
+
+		add_filter(
+			'wp_stream_batch_size',
+			function () {
+				return 2;
+			}
+		);
+
+		$ids  = $this->seed_aged_records( 5, 5 );
+		$last = max( $ids );
+
+		// Non-terminal batch: marker set, next batch chained.
+		$this->admin->erase_large_records( 5, 0, $last, get_current_blog_id() );
+
+		$this->assertTrue(
+			(bool) get_transient( Cron_Scheduler::RUNNING_TRANSIENT ),
+			'Running marker must be set while the reset chain is mid-flight'
+		);
+		$this->assertTrue(
+			Admin::is_running_async_deletion(),
+			'is_running_async_deletion() must read busy while the chain is pending'
+		);
+
+		// Drain: run remaining batches directly until the terminal one.
+		$wpdb->query( "DELETE FROM {$wpdb->stream}" );
+		wp_unschedule_hook( Admin::ASYNC_DELETION_ACTION );
+		$this->admin->erase_large_records( 5, 5, $last, get_current_blog_id() );
+
+		$this->assertFalse(
+			(bool) get_transient( Cron_Scheduler::RUNNING_TRANSIENT ),
+			'Terminal batch must clear the running marker'
+		);
+		$this->assertFalse(
+			Admin::is_running_async_deletion(),
+			'is_running_async_deletion() must read idle after the chain completes'
+		);
+
+		remove_all_filters( 'wp_stream_batch_size' );
 	}
 
 	/**
