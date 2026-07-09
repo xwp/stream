@@ -268,9 +268,13 @@ class Plugin {
 		 *
 		 * @param bool $use_action_scheduler Whether to use Action Scheduler.
 		 *                                   Defaults to true when the bundled
-		 *                                   AS library is present.
+		 *                                   AS library is present. Return a
+		 *                                   real boolean: the value is cast
+		 *                                   with (bool), so PHP string
+		 *                                   truthiness applies to strings
+		 *                                   (e.g. 'false' is truthy).
 		 */
-		$use_action_scheduler = apply_filters(
+		$use_action_scheduler = (bool) apply_filters(
 			'wp_stream_use_action_scheduler',
 			$this->action_scheduler_available
 		);
