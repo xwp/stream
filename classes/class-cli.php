@@ -211,7 +211,7 @@ class CLI extends \WP_CLI_Command {
 		$output = fopen( 'php://output', 'w' ); // @codingStandardsIgnoreLine Clever output for WP CLI using php://output
 
 		foreach ( $records as $line ) {
-			fputcsv( $output, $line );
+            fputcsv( $output, $line, ',', '"', '\\' );
 		}
 
 		fclose( $output ); // @codingStandardsIgnoreLine
