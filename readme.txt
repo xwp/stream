@@ -1,13 +1,13 @@
-=== Stream ===
+=== Stream – Activity Log & Audit Trail for WordPress ===
 Contributors: xwp
-Tags: wp stream, stream, activity, logs, track
+Tags: activity log, audit log, event log, user tracking, security
 Requires at least: 4.6
 Tested up to: 7.0
 Stable tag: 4.2.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-With Stream, you’re never left in the dark about changes to your WordPress site.
+Free real-time activity log and audit log for WordPress. Track every user action — logins, edits, plugin & settings changes — and get alerts.
 
 == Description ==
 
