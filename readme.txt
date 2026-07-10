@@ -7,7 +7,7 @@ Stable tag: 4.2.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Free real-time activity log and audit log for WordPress. Track every user action — logins, edits, plugin & settings changes — and get alerts.
+Real-time activity log and audit log for WordPress. Track every user action — logins, edits, plugin & settings changes — and get alerts.
 
 == Description ==
 
