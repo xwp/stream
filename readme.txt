@@ -11,15 +11,17 @@ Free real-time activity log and audit log for WordPress. Track every user action
 
 == Description ==
 
-With real-time notifications and third-party integrations, Stream can proactively alert you when something goes wrong with your WordPress site.
+Stream is a complete activity log and audit trail for your WordPress site: see what changed, who changed it, and when. From plugin activations to post edits, login attempts to new user creation, every user and system action is recorded in an audit log built for debugging, security monitoring, and compliance.
 
-Designed for debugging and compliance purposes, Stream is useful for keeping tabs on your WordPress users: From activating plugins to deleting posts, to login attempts and new user creation, you can see what’s changed, who changed it and when.
+Every logged action is displayed in an activity stream and organized for easy filtering by User, Role, Context, Action or IP address. Admins can highlight entries in the activity log—such as suspicious user activity—to investigate what’s happening in real time. Stream also lets you configure email alerts and webhooks for integrations like Slack and IFTTT, so your team knows the moment something goes wrong.
 
-The plugin records WordPress user and system action to the Stream logs.  Every logged-in user action is displayed in an activity stream and organized for easy filtering by User, Role, Context, Action or IP address. Admins can highlight entries in the Stream log—such as suspicious user activity—to investigate what’s happening in real time. Stream also allows you to configure email alerts and webhooks for integrations like Slack and IFTTT to notify you and your team when something has gone wrong.
+Stream keeps its own logs healthy too: records are automatically purged on the retention schedule you choose, with batched deletion and orphaned-data cleanup that stay reliable even on very large sites.
 
-For advanced users, Stream also supports a network view of all activity records on your Multisite, the ability to set exclude rules to ignore certain kinds of user activity, and a WP‑CLI command for querying records.
+Stream is also AI-ready: its abilities are exposed through the WordPress Abilities API and MCP Adapter, so AI assistants and other tools can securely query your site’s activity records.
 
-With Stream’s powerful logging, you’ll have the valuable information you need to responsibly manage your WordPress sites.
+For advanced users, Stream supports a network view of all activity records on your Multisite, exclude rules to ignore certain kinds of user activity, and a WP-CLI command for querying records.
+
+With Stream’s powerful activity logging, you’ll have the information you need to responsibly manage your WordPress sites.
 
 
 = Built-In Tracking Integrations For Popular Plugins: =
