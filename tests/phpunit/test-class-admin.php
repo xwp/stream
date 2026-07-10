@@ -1244,6 +1244,7 @@ class Test_Admin extends WP_StreamTestCase {
 			public $admin;
 			public $connectors;
 			public $network;
+			public $scheduler;
 			public function __construct( $real ) {
 				$this->settings   = $real->settings;
 				$this->db         = $real->db;
@@ -1251,6 +1252,7 @@ class Test_Admin extends WP_StreamTestCase {
 				$this->admin      = $real->admin;
 				$this->connectors = $real->connectors;
 				$this->network    = $real->network;
+				$this->scheduler  = $real->scheduler;
 			}
 			public function is_multisite_not_network_activated() {
 				return true;

@@ -54,6 +54,29 @@ class Admin {
 	const AUTO_PURGE_GROUP = 'stream-auto-purge';
 
 	/**
+	 * Option storing which scheduler backend last registered the recurring
+	 * auto-purge action ('action_scheduler' | 'wp_cron'), or 'disabled' when
+	 * the `wp_stream_enable_auto_purge` filter has torn scheduling down. Used
+	 * to detect a backend switch (or a disable/re-enable cycle) so the stale
+	 * recurring action is cleared exactly once, instead of probing for it on
+	 * every page load.
+	 *
+	 * @const string
+	 */
+	const SCHEDULER_BACKEND_OPTION = 'wp_stream_scheduler_backend';
+
+	/**
+	 * Option persisting the "large batched operation queued to WP-Cron"
+	 * warning between requests. The contexts that queue the warning (the
+	 * recurring purge under DOING_CRON, the reset handler just before its
+	 * redirect) never render their own output, so the message is stored here
+	 * and displayed on the next admin page load instead. Deleted on render.
+	 *
+	 * @const string
+	 */
+	const LARGE_TABLE_CRON_NOTICE_OPTION = 'wp_stream_large_table_cron_notice';
+
+	/**
 	 * Holds Instance of plugin object
 	 *
 	 * @var Plugin
@@ -239,6 +262,12 @@ class Admin {
 		// arg set on post-action redirects (e.g. orphan_meta_cleanup_scheduled).
 		add_action( 'admin_notices', array( $this, 'maybe_display_message' ) );
 		add_action( 'network_admin_notices', array( $this, 'maybe_display_message' ) );
+
+		// Render the persisted "large batched operation queued to WP-Cron"
+		// warning on the next admin page load (see
+		// maybe_warn_large_table_without_action_scheduler()).
+		add_action( 'admin_notices', array( $this, 'display_large_table_cron_notice' ) );
+		add_action( 'network_admin_notices', array( $this, 'display_large_table_cron_notice' ) );
 
 		// Auto purge setup (Action Scheduler).
 		add_action( 'wp_loaded', array( $this, 'purge_schedule_setup' ) );
@@ -764,16 +793,132 @@ class Admin {
 			'blog_id'    => (int) get_current_blog_id(),
 		);
 
-		as_enqueue_async_action( self::ASYNC_DELETION_ACTION, $args );
+		$this->plugin->scheduler->enqueue_async( self::ASYNC_DELETION_ACTION, $args );
+
+		$this->maybe_warn_large_table_without_action_scheduler(
+			(int) $log_size,
+			__( 'reset the Stream database (delete all records for this site)', 'stream' )
+		);
+	}
+
+	/**
+	 * Warn when a large-table batched operation has to lean on WP-Cron.
+	 *
+	 * Action Scheduler is purpose-built to drain long self-chaining batch
+	 * jobs reliably; default WP-Cron fires opportunistically on traffic and
+	 * can stall a multi-hour chain on a low-traffic site. When Stream is
+	 * running the WP-Cron fallback (the `wp_stream_use_action_scheduler`
+	 * filter returned false, or the bundled AS library is absent) against a
+	 * table over the large-table threshold, surface a notice pointing the
+	 * operator at a deterministic WP-CLI drain instead of failing silently.
+	 *
+	 * Delivery depends on context. Under WP-CLI the warning is emitted
+	 * immediately via {@see Admin::notice()} (WP_CLI::warning) — scheduling
+	 * the batch chain onto WP-Cron does not drain it, so a headless /
+	 * low-traffic site is exactly where the chain can stall. Outside WP-CLI
+	 * neither call site renders its own output (the recurring purge runs
+	 * under DOING_CRON; the manual reset redirects and exits before its
+	 * shutdown hook output reaches the browser), so the message is persisted
+	 * to {@see Admin::LARGE_TABLE_CRON_NOTICE_OPTION} and rendered on the
+	 * next admin page load by {@see Admin::display_large_table_cron_notice()}.
+	 *
+	 * No-op when Action Scheduler is the active backend (built to drain long
+	 * chains). The `wp_stream_enable_auto_purge` filter deliberately does NOT
+	 * gate this helper: it governs TTL retention purging only, while this
+	 * warning also covers the manual database reset — an operator who manages
+	 * retention externally can still click "Reset Stream Database" and needs
+	 * the stall warning. The auto-purge call site is already gated by the
+	 * filter's early return in {@see Admin::purge_scheduled_action()}.
+	 *
+	 * @param int    $record_count Number of rows the operation will touch.
+	 * @param string $operation    Human-readable, translated description of what the
+	 *                             batched work does (e.g. "delete records older than
+	 *                             the retention period"), interpolated into the notice.
+	 * @return void
+	 */
+	private function maybe_warn_large_table_without_action_scheduler( int $record_count, string $operation ) {
+		if ( $this->plugin->scheduler instanceof AS_Scheduler ) {
+			return;
+		}
+
+		if ( ! $this->plugin->is_large_records_table( $record_count ) ) {
+			return;
+		}
+
+		$message = sprintf(
+			/* translators: 1: operation description (e.g. "delete records older than the retention period"), 2: number of records, 3: WP-CLI command. */
+			__( 'Stream queued a large batched operation to %1$s (%2$s records) to WP-Cron because Action Scheduler is disabled. The records are removed in chained batches as WP-Cron runs. This completes on its own where reliable cron is configured (a Linux crontab or third-party cron service triggering wp-cron.php on a fixed interval, without an execution timeout). On sites relying on default traffic-triggered WP-Cron the chain may stall before it finishes, leaving records only partly removed; to run it to completion deterministically, use WP-CLI: %3$s', 'stream' ),
+			$operation,
+			number_format_i18n( $record_count ),
+			'<code>wp cron event run --due-now</code>'
+		);
+
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			// Immediate WP_CLI::warning — the operator is watching the terminal.
+			$this->notice( $message );
+			return;
+		}
+
+		// Persist for the next admin page load. Neither call site can render
+		// output itself: the recurring purge runs under DOING_CRON (response
+		// discarded) and the manual reset redirects + exits before shutdown
+		// output reaches the browser. No autoload — this is set rarely and
+		// read only in the admin.
+		update_option( self::LARGE_TABLE_CRON_NOTICE_OPTION, $message, false );
+	}
+
+	/**
+	 * Render (and clear) the persisted large-table WP-Cron warning.
+	 *
+	 * Counterpart to {@see Admin::maybe_warn_large_table_without_action_scheduler()}:
+	 * displays the stored warning on the first admin page an operator with
+	 * the Stream settings capability loads after a large batched operation
+	 * was queued onto WP-Cron.
+	 *
+	 * @action admin_notices
+	 * @action network_admin_notices
+	 *
+	 * @return void
+	 */
+	public function display_large_table_cron_notice() {
+		if ( ! current_user_can( $this->settings_cap ) ) {
+			return;
+		}
+
+		$message = get_option( self::LARGE_TABLE_CRON_NOTICE_OPTION );
+		if ( empty( $message ) ) {
+			return;
+		}
+
+		delete_option( self::LARGE_TABLE_CRON_NOTICE_OPTION );
+
+		printf(
+			'<div class="notice notice-warning">%s</div>',
+			wp_kses_post( wpautop( $message ) )
+		);
 	}
 
 	/**
 	 * Checks if the async deletion process is running.
 	 *
+	 * Checks pending AND in-flight state, mirroring
+	 * {@see Admin::is_running_auto_purge()}. Under WP-Cron the event is
+	 * removed from the cron array before its callback runs, so a
+	 * pending-only probe would momentarily read idle mid-chain and briefly
+	 * re-expose the reset link in Settings. The batch worker keeps the
+	 * best-effort running marker set for that window (see
+	 * {@see Admin::erase_large_records()}). The marker transient is shared
+	 * with the auto-purge chain, which only makes both guards more
+	 * conservative — never less safe.
+	 *
 	 * @return bool True if the async deletion process is running, false otherwise.
 	 */
 	public static function is_running_async_deletion() {
-		return as_has_scheduled_action( self::ASYNC_DELETION_ACTION );
+		$plugin = wp_stream_get_instance();
+		if ( empty( $plugin->scheduler ) ) {
+			return false;
+		}
+		return $plugin->scheduler->any_pending_or_running( array( self::ASYNC_DELETION_ACTION ) );
 	}
 
 	/**
@@ -795,28 +940,14 @@ class Admin {
 	 * @return bool
 	 */
 	public static function is_running_auto_purge() {
-		if ( ! function_exists( 'as_get_scheduled_actions' ) ) {
+		$plugin = wp_stream_get_instance();
+		if ( empty( $plugin->scheduler ) ) {
 			return false;
 		}
 
-		foreach ( array( self::AUTO_PURGE_BATCH_ACTION, self::AUTO_PURGE_REAPER_ACTION ) as $hook ) {
-			$found = as_get_scheduled_actions(
-				array(
-					'hook'     => $hook,
-					'status'   => array(
-						\ActionScheduler_Store::STATUS_PENDING,
-						\ActionScheduler_Store::STATUS_RUNNING,
-					),
-					'per_page' => 1,
-				),
-				'ids'
-			);
-			if ( ! empty( $found ) ) {
-				return true;
-			}
-		}
-
-		return false;
+		return $plugin->scheduler->any_pending_or_running(
+			array( self::AUTO_PURGE_BATCH_ACTION, self::AUTO_PURGE_REAPER_ACTION )
+		);
 	}
 
 	/**
@@ -836,6 +967,13 @@ class Admin {
 	public function erase_large_records( int $total, int $done, int $last_entry, int $blog_id ) {
 		global $wpdb;
 
+		// Best-effort "running" marker, mirroring auto_purge_batch(). Under
+		// WP-Cron the event is dequeued before this callback runs, so without
+		// the marker is_running_async_deletion() would momentarily read idle
+		// between batches and briefly re-expose the reset link in Settings.
+		// No-op under Action Scheduler; self-expires on a fatal.
+		$this->plugin->scheduler->mark_running( 'async_deletion' );
+
 		$start_from = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT ID FROM {$wpdb->stream} WHERE ID < %d AND `blog_id`=%d ORDER BY ID DESC LIMIT 1",
@@ -845,6 +983,11 @@ class Admin {
 		);
 
 		if ( empty( $start_from ) ) {
+			// Terminal batch: nothing left to delete, no further event will
+			// be chained, and no work follows within this callback — safe to
+			// clear the marker immediately (unlike the auto-purge chain,
+			// whose terminal batch hands off to the reaper).
+			$this->plugin->scheduler->mark_done( 'async_deletion' );
 			return;
 		}
 
@@ -878,7 +1021,7 @@ class Admin {
 
 		$done = $total - $remaining;
 
-		as_enqueue_async_action(
+		$this->plugin->scheduler->enqueue_async(
 			self::ASYNC_DELETION_ACTION,
 			array(
 				'total'      => (int) $total,
@@ -917,27 +1060,103 @@ class Admin {
 	 */
 	public function purge_schedule_setup() {
 		// Clear the legacy WP-Cron event scheduled by Stream <= 4.1.x so it
-		// cannot double-fire alongside the new AS recurring action.
+		// cannot double-fire alongside the new recurring action.
 		if ( wp_next_scheduled( 'wp_stream_auto_purge' ) ) {
 			wp_clear_scheduled_hook( 'wp_stream_auto_purge' );
 		}
 
-		if ( ! function_exists( 'as_schedule_recurring_action' ) ) {
-			// Action Scheduler not yet loaded (e.g. very early hook); bail.
-			// Plugin::__construct() loads it before init, so this should be unreachable.
+		$scheduler = $this->plugin->scheduler;
+
+		/**
+		 * Filter whether Stream schedules its TTL record auto-purge at all.
+		 *
+		 * Custom storage drivers that manage retention externally (TTL
+		 * indexes, partition rotation, a warehouse job, etc.) can return
+		 * false to disable all TTL purge scheduling regardless of the
+		 * scheduler backend. Any already-registered recurring purge is
+		 * unscheduled from both backends so it cannot keep firing.
+		 *
+		 * @param bool $enabled Whether auto-purge scheduling is enabled.
+		 */
+		if ( ! apply_filters( 'wp_stream_enable_auto_purge', true ) ) {
+			// Tear down only once, then record the 'disabled' sentinel in the
+			// backend marker. This runs on every wp_loaded, so without the
+			// guard a permanently-disabled site would pay the unschedule
+			// probes on every request; with it, steady state is a single
+			// in-memory compare (the marker is autoloaded). The sentinel also
+			// covers a site upgrading with the filter already active (no
+			// marker yet, but a recurring action left by a previous version).
+			// The executing path is independently gated by the same filter in
+			// purge_scheduled_action(), so a stray entry that somehow survives
+			// cannot purge anything anyway.
+			if ( 'disabled' !== get_option( self::SCHEDULER_BACKEND_OPTION ) ) {
+				$scheduler->unschedule_all( self::AUTO_PURGE_ACTION );
+				wp_unschedule_hook( self::AUTO_PURGE_ACTION );
+
+				// Also clear the Action Scheduler store when its API is
+				// available but AS is not the active backend (e.g. the cron
+				// backend is selected while WooCommerce provides AS). The
+				// active-backend unschedule above cannot see AS's store, and
+				// this filter promises teardown from BOTH backends. When AS
+				// is entirely absent this is skipped — a stray AS entry
+				// cannot execute (no AS runner), and if AS appears later the
+				// action fires as a no-op thanks to the execute-path gate.
+				if ( ! $scheduler instanceof AS_Scheduler && function_exists( 'as_unschedule_all_actions' ) ) {
+					( new AS_Scheduler() )->unschedule_all( self::AUTO_PURGE_ACTION );
+				}
+
+				update_option( self::SCHEDULER_BACKEND_OPTION, 'disabled' );
+			}
 			return;
 		}
 
-		if ( false === as_next_scheduled_action( self::AUTO_PURGE_ACTION ) ) {
-			// 12 hours == old `twicedaily` interval.
-			as_schedule_recurring_action(
-				time(),
-				12 * HOUR_IN_SECONDS,
-				self::AUTO_PURGE_ACTION,
-				array(),
-				self::AUTO_PURGE_GROUP
-			);
+		$backend = $scheduler instanceof AS_Scheduler ? 'action_scheduler' : 'wp_cron';
+
+		// Detect a backend switch and clear the inactive backend's copy of the
+		// recurring action exactly once. A site that switched schedulers (via
+		// the wp_stream_use_action_scheduler filter) would otherwise keep
+		// firing the purge from BOTH backends — the two stores are independent
+		// and neither overlap guard can see the other. The marker is an
+		// autoloaded option, so the steady-state cost on every wp_loaded is a
+		// single in-memory compare; the cleanup query runs only on the first
+		// page load after a switch. Idempotent and self-healing. No data is
+		// affected — only the redundant schedule entry.
+		if ( get_option( self::SCHEDULER_BACKEND_OPTION ) !== $backend ) {
+			$cleanup_done = true;
+
+			if ( 'action_scheduler' === $backend ) {
+				// Drop any leftover WP-Cron recurring event.
+				wp_unschedule_hook( self::AUTO_PURGE_ACTION );
+			} elseif ( function_exists( 'as_unschedule_all_actions' ) ) {
+				// Drop any leftover Action Scheduler recurring action. Routed
+				// through AS_Scheduler so the as_*() call stays contained there.
+				( new AS_Scheduler() )->unschedule_all( self::AUTO_PURGE_ACTION );
+			} else {
+				// Action Scheduler is not loaded (cron backend selected and no
+				// other plugin provides AS), so its store cannot be cleaned
+				// right now. Do NOT write the marker: if an AS-providing
+				// plugin (e.g. WooCommerce) is installed later, the stray
+				// Stream recurring action in the AS store would resume firing
+				// alongside the cron one — and the cron overlap guard cannot
+				// see it. Leaving the marker stale retries this cleanup on a
+				// later request once as_unschedule_all_actions() exists.
+				$cleanup_done = false;
+			}
+
+			if ( $cleanup_done ) {
+				update_option( self::SCHEDULER_BACKEND_OPTION, $backend );
+			}
 		}
+
+		// 12 hours == old `twicedaily` interval. The scheduler only schedules
+		// a fresh recurring action when one is not already registered.
+		$scheduler->schedule_recurring(
+			time(),
+			12 * HOUR_IN_SECONDS,
+			self::AUTO_PURGE_ACTION,
+			array(),
+			self::AUTO_PURGE_GROUP
+		);
 	}
 
 	/**
@@ -962,6 +1181,15 @@ class Admin {
 	 * @return void
 	 */
 	public function purge_scheduled_action() {
+		// Respect the auto-purge master switch on the executing path too, not
+		// just at scheduling time. A recurring action already in flight when
+		// the filter flips to false (or an args-specific entry the unschedule
+		// missed) would otherwise still run a purge cycle the operator opted
+		// out of. This filter is documented in Admin::purge_schedule_setup().
+		if ( ! apply_filters( 'wp_stream_enable_auto_purge', true ) ) {
+			return;
+		}
+
 		// Don't purge when in Network Admin unless Stream is network activated.
 		if (
 			$this->plugin->is_multisite_not_network_activated()
@@ -1084,18 +1312,23 @@ class Admin {
 				);
 			}
 
-			as_enqueue_async_action( self::AUTO_PURGE_REAPER_ACTION, array(), self::AUTO_PURGE_GROUP );
+			$this->plugin->scheduler->enqueue_async( self::AUTO_PURGE_REAPER_ACTION, array(), self::AUTO_PURGE_GROUP );
 			return;
 		}
 
 		// Large-table path: batched chain.
-		as_enqueue_async_action(
+		$this->plugin->scheduler->enqueue_async(
 			self::AUTO_PURGE_BATCH_ACTION,
 			array(
 				'cutoff'  => $cutoff,
 				'blog_id' => $blog_id,
 			),
 			self::AUTO_PURGE_GROUP
+		);
+
+		$this->maybe_warn_large_table_without_action_scheduler(
+			$record_count,
+			__( 'delete records older than the retention period', 'stream' )
 		);
 	}
 
@@ -1141,6 +1374,13 @@ class Admin {
 		if ( '' === $cutoff ) {
 			throw new \InvalidArgumentException( 'auto_purge_batch requires a non-empty cutoff.' );
 		}
+
+		// Best-effort "running" marker for schedulers without a native RUNNING
+		// store (cron). Bridges the gap between this batch starting and the
+		// next chained event being enqueued; self-expires on a fatal. No-op
+		// under Action Scheduler. Cleared when the chain reaches its terminal
+		// reaper (see the empty-$start_from branch below).
+		$this->plugin->scheduler->mark_running( 'auto_purge' );
 
 		/**
 		 * Filters the number of records to delete per batch.
@@ -1200,7 +1440,12 @@ class Admin {
 
 		if ( empty( $start_from ) ) {
 			// Chain is done. Schedule the orphan reaper as the terminal step.
-			as_enqueue_async_action( self::AUTO_PURGE_REAPER_ACTION, array(), self::AUTO_PURGE_GROUP );
+			// The running marker is NOT cleared here: under WP-Cron the reaper
+			// event is removed from the cron array before its callback runs,
+			// so clearing now would let the overlap guard read "idle" while
+			// the reaper's orphan-meta DELETE is still executing. The reaper
+			// clears the marker itself when it finishes.
+			$this->plugin->scheduler->enqueue_async( self::AUTO_PURGE_REAPER_ACTION, array(), self::AUTO_PURGE_GROUP );
 			return;
 		}
 
@@ -1247,7 +1492,7 @@ class Admin {
 
 		// Chain the next batch. Pass $window_low as the new upper bound so the
 		// next SELECT cannot pick up rows in or above the window we just touched.
-		as_enqueue_async_action(
+		$this->plugin->scheduler->enqueue_async(
 			self::AUTO_PURGE_BATCH_ACTION,
 			array(
 				'cutoff'     => $cutoff,
@@ -1269,7 +1514,17 @@ class Admin {
 	 * @return void
 	 */
 	public function auto_purge_reaper() {
+		// Keep the overlap guard reading "busy" while the orphan-meta DELETE
+		// runs. Under WP-Cron the event is removed from the cron array before
+		// this callback executes, so without the marker a recurring purge
+		// tick or a manual "clean orphaned meta" click could stack parallel
+		// work against the same rows. No-op under Action Scheduler, which
+		// tracks RUNNING state natively. Self-expires on a fatal.
+		$this->plugin->scheduler->mark_running( 'auto_purge' );
+
 		$this->delete_orphaned_meta();
+
+		$this->plugin->scheduler->mark_done( 'auto_purge' );
 	}
 
 	/**
@@ -1291,8 +1546,8 @@ class Admin {
 
 		check_ajax_referer( 'stream_nonce_clean_orphan_meta', 'wp_stream_nonce_clean_orphan_meta' );
 
-		if ( ! function_exists( 'as_get_scheduled_actions' ) || ! function_exists( 'as_enqueue_async_action' ) ) {
-			wp_die( esc_html__( 'Action Scheduler is not available.', 'stream' ), 500 );
+		if ( empty( $this->plugin->scheduler ) ) {
+			wp_die( esc_html__( 'No scheduler is available.', 'stream' ), 500 );
 		}
 
 		// Idempotency: skip enqueue when any auto-purge action is already
@@ -1301,7 +1556,7 @@ class Admin {
 		// its own terminal reaper is not duplicated by a manual click landing
 		// in the small CSRF/stale-URL window where the UI link is hidden.
 		if ( ! self::is_running_auto_purge() ) {
-			as_enqueue_async_action( self::AUTO_PURGE_REAPER_ACTION, array(), self::AUTO_PURGE_GROUP );
+			$this->plugin->scheduler->enqueue_async( self::AUTO_PURGE_REAPER_ACTION, array(), self::AUTO_PURGE_GROUP );
 		}
 
 		if ( defined( 'WP_STREAM_TESTS' ) && WP_STREAM_TESTS ) {
