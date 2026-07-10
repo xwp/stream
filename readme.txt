@@ -149,11 +149,33 @@ Security:
 
 = 4.2.1 - July 2, 2026 =
 
-[View the release notes.](https://github.com/xwp/stream/blob/master/changelog.md#421---july-2-2026)
+Bug Fixes:
+
+* Fix authorization checks for Stream activity access and harden related AJAX, export, and query paths.
+* Fix inverted `isset()` check silently ignoring user search input in `get_users()`.
+* Create missing database tables when resetting the database.
+* Avoid generating rewrite rules for the alerts post type.
+
+[View the full release notes on GitHub.](https://github.com/xwp/stream/blob/master/changelog.md#421---july-2-2026)
 
 = 4.2.0 - May 28, 2026 =
 
-[View the release notes.](https://github.com/xwp/stream/blob/master/changelog.md#420---may-28-2026)
+New Features:
+
+* Expose Stream abilities via the WordPress MCP Adapter when present, enabling AI tools to query Stream records through the Abilities API.
+
+Bug Fixes:
+
+* Fix unbounded growth of `stream` / `stream_meta` tables: the TTL-based auto-purge now runs via Action Scheduler with batched deletion, resolving database bloat on large sites.
+* Fix orphan `stream_meta` rows accumulating across repeated purge cycles with a terminal orphan reaper at the end of every auto-purge chain.
+* Skip Action Scheduler queries on front-end pageloads, eliminating unnecessary queries per pageview.
+
+Enhancements:
+
+* Add a Clean Orphaned Meta link under Settings → Advanced for one-shot cleanup on already-bloated installs.
+* Replace the legacy `wp_stream_auto_purge` WP-Cron event with a recurring Action Scheduler action, with run history visible under Tools → Scheduled Actions.
+
+[View the full release notes on GitHub.](https://github.com/xwp/stream/blob/master/changelog.md#420---may-28-2026)
 
 = 4.1.2 - February 19, 2026 =
 
