@@ -21,6 +21,8 @@ Stream is also AI-ready: its abilities are exposed through the WordPress Abiliti
 
 For advanced users, Stream supports a network view of all activity records on your Multisite, exclude rules to ignore certain kinds of user activity, and a WP-CLI command for querying records.
 
+Stream is free and fully open source — development happens in the open [on GitHub](https://github.com/xwp/stream), maintained by [XWP](https://xwp.co).
+
 With Stream’s powerful activity logging, you’ll have the information you need to responsibly manage your WordPress sites.
 
 
