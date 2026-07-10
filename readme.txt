@@ -141,7 +141,11 @@ Use only `$_SERVER['REMOTE_ADDR']` as the client IP address for event logs witho
 
 = 4.2.2 - July 6, 2026 =
 
-[View the release notes.](https://github.com/xwp/stream/blob/master/changelog.md#422---july-6-2026)
+Security:
+
+* Harden authorization for the live update preference: enforce the Stream view capability and always target the current user in the `stream_enable_live_update` AJAX handler so a user can only change their own live update preference.
+
+[View the full release notes on GitHub.](https://github.com/xwp/stream/blob/master/changelog.md#422---july-6-2026)
 
 = 4.2.1 - July 2, 2026 =
 
