@@ -3,7 +3,7 @@
 [![Lint and Test](https://github.com/xwp/stream/actions/workflows/ci.yml/badge.svg)](https://github.com/xwp/stream/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/xwp/stream/badge.svg?branch=develop)](https://coveralls.io/github/xwp/stream?branch=develop)
 
-**Track WordPress user and system actions for debugging, logging and compliance purposes.**
+**A free, open source activity log and audit trail for WordPress — track every user and system action for debugging, security, and compliance.**
 
 - [Product Website](https://xwp.co/work/stream/)
 - [Plugin on WordPress.org](https://wordpress.org/plugins/stream/)
