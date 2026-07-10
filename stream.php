@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Stream
  * Plugin URI: https://xwp.co/work/stream/
- * Description: Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
+ * Description: Stream is an activity log and audit trail for WordPress — track every change made on your site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
  * Version: 4.2.2
  * Author: XWP
  * Author URI: https://xwp.co
