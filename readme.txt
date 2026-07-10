@@ -32,6 +32,7 @@ With Stream’s powerful activity logging, you’ll have the information you nee
  * Easy Digital Downloads
  * Gravity Forms
  * Jetpack
+ * Two Factor
  * User Switching
  * WooCommerce
  * Yoast SEO
