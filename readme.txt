@@ -141,58 +141,22 @@ Use only `$_SERVER['REMOTE_ADDR']` as the client IP address for event logs witho
 
 = 4.2.2 - July 6, 2026 =
 
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#422---july-6-2026](https://github.com/xwp/stream/blob/develop/changelog.md#422---july-6-2026)
+[View the release notes.](https://github.com/xwp/stream/blob/master/changelog.md#422---july-6-2026)
 
 = 4.2.1 - July 2, 2026 =
 
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#421---july-2-2026](https://github.com/xwp/stream/blob/develop/changelog.md#421---july-2-2026)
+[View the release notes.](https://github.com/xwp/stream/blob/master/changelog.md#421---july-2-2026)
 
 = 4.2.0 - May 28, 2026 =
 
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#420---may-28-2026](https://github.com/xwp/stream/blob/develop/changelog.md#420---may-28-2026)
+[View the release notes.](https://github.com/xwp/stream/blob/master/changelog.md#420---may-28-2026)
 
 = 4.1.2 - February 19, 2026 =
 
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#412---february-19-2026](https://github.com/xwp/stream/blob/develop/changelog.md#412---february-19-2026)
+[View the release notes.](https://github.com/xwp/stream/blob/master/changelog.md#412---february-19-2026)
 
 = 4.1.1 - February 3, 2025 =
 
-See: [https://github.com/xwp/stream/blob/develop/changelog.md##410---february-3-2025](https://github.com/xwp/stream/blob/develop/changelog.md##410---february-3-2025)
+[View the release notes.](https://github.com/xwp/stream/blob/master/changelog.md#411---february-3-2025)
 
-= 4.1.0 - January 20, 2025 =
-
-See: [https://github.com/xwp/stream/blob/develop/changelog.md##410---january-15-2025](https://github.com/xwp/stream/blob/develop/changelog.md##410---january-15-2025)
-
-= 4.0.2 - August 22, 2024 =
-
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#402---august-22-2024](https://github.com/xwp/stream/blob/develop/changelog.md#402---august-22-2024)
-
-= 4.0.1 - July 30, 2024 =
-
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#401---july-30-2024](https://github.com/xwp/stream/blob/develop/changelog.md#401---july-30-2024)
-
-= 4.0.0 - January 9, 2024 =
-
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#400---january-9-2024](https://github.com/xwp/stream/blob/develop/changelog.md#400---january-9-2024)
-
-= 3.10.0 - October 9, 2023 =
-
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#3100---october-9-2023](https://github.com/xwp/stream/blob/develop/changelog.md#3100---october-9-2023)
-
-= 3.9.3 - April 25, 2023 =
-
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#393---april-25-2023](https://github.com/xwp/stream/blob/develop/changelog.md#393---april-25-2023)
-
-= 3.9.2 - January 10, 2023 =
-
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#392---january-10-2023](https://github.com/xwp/stream/blob/develop/changelog.md#392---january-10-2023)
-
-= 3.9.1 - August 23, 2022 =
-
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#391---august-23-2022](https://github.com/xwp/stream/blob/develop/changelog.md#391---august-23-2022)
-
-= 3.9.0 - March 8, 2022 =
-
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#390---march-8-2022](https://github.com/xwp/stream/blob/develop/changelog.md#390---march-8-2022)
-
-[See the full changelog here.](https://github.com/xwp/stream/blob/master/changelog.md)
+[See the full changelog for all releases.](https://github.com/xwp/stream/blob/master/changelog.md)
