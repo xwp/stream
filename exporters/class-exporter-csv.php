@@ -41,10 +41,10 @@ class Exporter_CSV extends Exporter {
 		ob_start();
 
 		$csv = fopen( 'php://output', 'w' );
-        fputcsv( $csv, array_values( $columns ), ',', '"', '\\' );
+		fputcsv( $csv, array_values( $columns ), ',', '"', '\\' );
 
 		foreach ( $data as $row ) {
-            fputcsv( $csv, $row, ',', '"', '\\' );
+			fputcsv( $csv, $row, ',', '"', '\\' );
 		}
 		fclose( $csv ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 
