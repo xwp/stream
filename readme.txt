@@ -1,25 +1,29 @@
-=== Stream ===
+=== Stream – Activity Log & Audit Trail ===
 Contributors: xwp
-Tags: wp stream, stream, activity, logs, track
+Tags: activity log, audit log, event log, user tracking, security
 Requires at least: 4.6
 Tested up to: 7.0
 Stable tag: 4.2.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-With Stream, you’re never left in the dark about changes to your WordPress site.
+Real-time activity log and audit log for WordPress. Track every user action — logins, edits, plugin & settings changes — and get alerts.
 
 == Description ==
 
-With real-time notifications and third-party integrations, Stream can proactively alert you when something goes wrong with your WordPress site.
+Stream is a complete activity log and audit trail for your WordPress site: see what changed, who changed it, and when. From plugin activations to post edits, login attempts to new user creation, every user and system action is recorded in an audit log built for debugging, security monitoring, and compliance.
 
-Designed for debugging and compliance purposes, Stream is useful for keeping tabs on your WordPress users: From activating plugins to deleting posts, to login attempts and new user creation, you can see what’s changed, who changed it and when.
+Every logged action is displayed in an activity stream and organized for easy filtering by User, Role, Context, Action or IP address. Admins can highlight entries in the activity log—such as suspicious user activity—to investigate what’s happening in real time. Stream also lets you configure email alerts and webhooks for integrations like Slack and IFTTT, so your team knows the moment something goes wrong.
 
-The plugin records WordPress user and system action to the Stream logs.  Every logged-in user action is displayed in an activity stream and organized for easy filtering by User, Role, Context, Action or IP address. Admins can highlight entries in the Stream log—such as suspicious user activity—to investigate what’s happening in real time. Stream also allows you to configure email alerts and webhooks for integrations like Slack and IFTTT to notify you and your team when something has gone wrong.
+Stream keeps its own logs healthy too: records are automatically purged on the retention schedule you choose, with batched deletion and orphaned-data cleanup that stay reliable even on very large sites.
 
-For advanced users, Stream also supports a network view of all activity records on your Multisite, the ability to set exclude rules to ignore certain kinds of user activity, and a WP‑CLI command for querying records.
+Stream is also AI-ready: its abilities are exposed through the WordPress Abilities API and MCP Adapter, so AI assistants and other tools can securely query your site’s activity records.
 
-With Stream’s powerful logging, you’ll have the valuable information you need to responsibly manage your WordPress sites.
+For advanced users, Stream supports a network view of all activity records on your Multisite, exclude rules to ignore certain kinds of user activity, and a WP-CLI command for querying records.
+
+Stream is free and fully open source — development happens in the open [on GitHub](https://github.com/xwp/stream), maintained by [XWP](https://xwp.co).
+
+With Stream’s powerful activity logging, you’ll have the information you need to responsibly manage your WordPress sites.
 
 
 = Built-In Tracking Integrations For Popular Plugins: =
@@ -30,6 +34,7 @@ With Stream’s powerful logging, you’ll have the valuable information you nee
  * Easy Digital Downloads
  * Gravity Forms
  * Jetpack
+ * Two Factor
  * User Switching
  * WooCommerce
  * Yoast SEO
@@ -136,58 +141,48 @@ Use only `$_SERVER['REMOTE_ADDR']` as the client IP address for event logs witho
 
 = 4.2.2 - July 6, 2026 =
 
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#422---july-6-2026](https://github.com/xwp/stream/blob/develop/changelog.md#422---july-6-2026)
+Security:
+
+* Harden authorization for the live update preference: enforce the Stream view capability and always target the current user in the `stream_enable_live_update` AJAX handler so a user can only change their own live update preference.
+
+[View the full release notes on GitHub.](https://github.com/xwp/stream/blob/master/changelog.md#422---july-6-2026)
 
 = 4.2.1 - July 2, 2026 =
 
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#421---july-2-2026](https://github.com/xwp/stream/blob/develop/changelog.md#421---july-2-2026)
+Bug Fixes:
+
+* Fix authorization checks for Stream activity access and harden related AJAX, export, and query paths.
+* Fix inverted `isset()` check silently ignoring user search input in `get_users()`.
+* Create missing database tables when resetting the database.
+* Avoid generating rewrite rules for the alerts post type.
+
+[View the full release notes on GitHub.](https://github.com/xwp/stream/blob/master/changelog.md#421---july-2-2026)
 
 = 4.2.0 - May 28, 2026 =
 
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#420---may-28-2026](https://github.com/xwp/stream/blob/develop/changelog.md#420---may-28-2026)
+New Features:
+
+* Expose Stream abilities via the WordPress MCP Adapter when present, enabling AI tools to query Stream records through the Abilities API.
+
+Bug Fixes:
+
+* Fix unbounded growth of `stream` / `stream_meta` tables: the TTL-based auto-purge now runs via Action Scheduler with batched deletion, resolving database bloat on large sites.
+* Fix orphan `stream_meta` rows accumulating across repeated purge cycles with a terminal orphan reaper at the end of every auto-purge chain.
+* Skip Action Scheduler queries on front-end pageloads, eliminating unnecessary queries per pageview.
+
+Enhancements:
+
+* Add a Clean Orphaned Meta link under Settings → Advanced for one-shot cleanup on already-bloated installs.
+* Replace the legacy `wp_stream_auto_purge` WP-Cron event with a recurring Action Scheduler action, with run history visible under Tools → Scheduled Actions.
+
+[View the full release notes on GitHub.](https://github.com/xwp/stream/blob/master/changelog.md#420---may-28-2026)
 
 = 4.1.2 - February 19, 2026 =
 
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#412---february-19-2026](https://github.com/xwp/stream/blob/develop/changelog.md#412---february-19-2026)
+[View the release notes.](https://github.com/xwp/stream/blob/master/changelog.md#412---february-19-2026)
 
 = 4.1.1 - February 3, 2025 =
 
-See: [https://github.com/xwp/stream/blob/develop/changelog.md##410---february-3-2025](https://github.com/xwp/stream/blob/develop/changelog.md##410---february-3-2025)
+[View the release notes.](https://github.com/xwp/stream/blob/master/changelog.md#411---february-3-2025)
 
-= 4.1.0 - January 20, 2025 =
-
-See: [https://github.com/xwp/stream/blob/develop/changelog.md##410---january-15-2025](https://github.com/xwp/stream/blob/develop/changelog.md##410---january-15-2025)
-
-= 4.0.2 - August 22, 2024 =
-
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#402---august-22-2024](https://github.com/xwp/stream/blob/develop/changelog.md#402---august-22-2024)
-
-= 4.0.1 - July 30, 2024 =
-
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#401---july-30-2024](https://github.com/xwp/stream/blob/develop/changelog.md#401---july-30-2024)
-
-= 4.0.0 - January 9, 2024 =
-
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#400---january-9-2024](https://github.com/xwp/stream/blob/develop/changelog.md#400---january-9-2024)
-
-= 3.10.0 - October 9, 2023 =
-
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#3100---october-9-2023](https://github.com/xwp/stream/blob/develop/changelog.md#3100---october-9-2023)
-
-= 3.9.3 - April 25, 2023 =
-
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#393---april-25-2023](https://github.com/xwp/stream/blob/develop/changelog.md#393---april-25-2023)
-
-= 3.9.2 - January 10, 2023 =
-
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#392---january-10-2023](https://github.com/xwp/stream/blob/develop/changelog.md#392---january-10-2023)
-
-= 3.9.1 - August 23, 2022 =
-
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#391---august-23-2022](https://github.com/xwp/stream/blob/develop/changelog.md#391---august-23-2022)
-
-= 3.9.0 - March 8, 2022 =
-
-See: [https://github.com/xwp/stream/blob/develop/changelog.md#390---march-8-2022](https://github.com/xwp/stream/blob/develop/changelog.md#390---march-8-2022)
-
-[See the full changelog here.](https://github.com/xwp/stream/blob/master/changelog.md)
+[See the full changelog for all releases.](https://github.com/xwp/stream/blob/master/changelog.md)
