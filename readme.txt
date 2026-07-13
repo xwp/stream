@@ -1,4 +1,4 @@
-=== Stream – Activity Log & Audit Trail for WordPress ===
+=== Stream – Activity Log & Audit Trail ===
 Contributors: xwp
 Tags: activity log, audit log, event log, user tracking, security
 Requires at least: 4.6
