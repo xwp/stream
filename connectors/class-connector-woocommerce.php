@@ -495,7 +495,7 @@ class Connector_Woocommerce extends Connector {
 			'stream'
 		);
 
-		$order_id        = \WC_Order_Factory::get_order( $order_id );
+		$order_id        = \WC_Order_Factory::get_order_id( $order_id );
 		$order_title     = esc_html__( 'Order number', 'stream' ) . ' ' . esc_html( $order_id );
 		$order_type_name = esc_html__( 'order', 'stream' );
 
