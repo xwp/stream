@@ -1,6 +1,6 @@
 # Stream Changelog
 
-## Unreleased
+## 4.3.0 - July 18, 2026
 
 ### Enhancements
 
@@ -8,6 +8,16 @@
 - Guard the Action Scheduler `require_once` so an environment that already provides or deliberately omits Action Scheduler no longer fatals on load. When the WP-Cron fallback is selected, Action Scheduler is no longer loaded at all.
 - Add the `wp_stream_enable_auto_purge` filter (default `true`). Returning `false` disables all TTL record auto-purge scheduling regardless of backend — for storage drivers that manage retention externally — and clears any already-registered recurring purge ([#1907](https://github.com/xwp/stream/issues/1907)).
 - On the WP-Cron fallback, surface a warning when a large-table purge or reset is queued, recommending `wp cron event run` to drain the batch chain deterministically. Under WP-CLI this is an immediate `WP_CLI::warning`; in the dashboard the warning is persisted and rendered as an admin notice on the next admin page load, since the queueing contexts (cron callback, reset redirect) produce no visible output themselves ([#1907](https://github.com/xwp/stream/issues/1907)).
+
+### Bug Fixes
+
+- Log the WooCommerce order ID instead of the `WC_Order` object in order event records ([#1929](https://github.com/xwp/stream/pull/1929)).
+- Fix PHP 8.4 deprecation warnings ([#1923](https://github.com/xwp/stream/pull/1923)).
+- Fix PHPCS violations in the BuddyPress connector ([#1925](https://github.com/xwp/stream/pull/1925)).
+
+### Development
+
+- Refresh the readme.txt description, tags, and SEO copy ([#1924](https://github.com/xwp/stream/pull/1924)).
 
 ## 4.2.2 - July 6, 2026
 
