@@ -139,6 +139,21 @@ Use only `$_SERVER['REMOTE_ADDR']` as the client IP address for event logs witho
 
 == Changelog ==
 
+= 4.3.0 - July 18, 2026 =
+
+Enhancements:
+
+* Make Action Scheduler usage optional at runtime: deferred purge / reset work now runs through a scheduler abstraction that defaults to Action Scheduler but can fall back to WP-Cron via the `wp_stream_use_action_scheduler` filter.
+* Add the `wp_stream_enable_auto_purge` filter (default `true`) to disable all TTL record auto-purge scheduling regardless of backend.
+* Surface a warning on the WP-Cron fallback when a large-table purge or reset is queued.
+
+Bug Fixes:
+
+* Log the WooCommerce order ID instead of the order object in order event records.
+* Fix PHP 8.4 deprecation warnings.
+
+[View the full release notes on GitHub.](https://github.com/xwp/stream/blob/master/changelog.md#430---july-18-2026)
+
 = 4.2.2 - July 6, 2026 =
 
 Security:
