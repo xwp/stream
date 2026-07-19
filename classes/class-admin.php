@@ -105,6 +105,13 @@ class Admin {
 	public $export;
 
 	/**
+	 * Holds Alert_Port class
+	 *
+	 * @var Alert_Port
+	 */
+	public $alert_port;
+
+	/**
 	 * Menu page screen id
 	 *
 	 * @var string
@@ -316,6 +323,7 @@ class Admin {
 		$this->network     = new Network( $this->plugin );
 		$this->live_update = new Live_Update( $this->plugin );
 		$this->export      = new Export( $this->plugin );
+		$this->alert_port  = new Alert_Port( $this->plugin );
 
 		// Check if the host has configured the `REMOTE_ADDR` correctly.
 		$client_ip = $this->plugin->get_client_ip_address();
