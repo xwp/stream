@@ -242,9 +242,23 @@ class Log {
 			}
 
 			if ( 'ip_address' === $exclude_key ) {
-				$ip_addresses = explode( ',', $exclude_value );
+				// Stored value shape varies: the admin form posts one
+				// comma-joined string per row, while a direct API or test
+				// caller can hand us an array of IPs. Normalize first, then
+				// trim and drop empties so a stored "1.1.1.1, 8.8.8.8" or
+				// ["1.1.1.1", " 8.8.8.8"] both match a real client IP.
+				$ip_addresses = is_array( $exclude_value )
+					? $exclude_value
+					: explode( ',', (string) $exclude_value );
 
-				if ( in_array( $record['ip_address'], $ip_addresses, true ) ) {
+				$ip_addresses = array_filter(
+					array_map( 'trim', $ip_addresses ),
+					function ( $value ) {
+						return '' !== $value;
+					}
+				);
+
+				if ( ! empty( $record['ip_address'] ) && in_array( $record['ip_address'], $ip_addresses, true ) ) {
 					++$matches_found;
 				}
 			} elseif ( $record[ $exclude_key ] === $exclude_value ) {
