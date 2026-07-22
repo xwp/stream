@@ -1,5 +1,24 @@
 # Stream Changelog
 
+## 4.3.0 - July 18, 2026
+
+### Enhancements
+
+- Make Action Scheduler usage optional at runtime: Stream now dispatches its deferred purge / reset work through a scheduler abstraction that defaults to Action Scheduler but can fall back to WP-Cron. Hosts that bundle Stream and run reliable cron (e.g. Cavalcade) can force the WP-Cron path with `add_filter( 'wp_stream_use_action_scheduler', '__return_false' )`. Note the filter is applied when the Stream plugin file loads — before `plugins_loaded` — so it must be registered from an mu-plugin, `wp-config.php`, or a plugin that loads before Stream; a regular plugin hooking `plugins_loaded` is too late. Switching backends needs no migration — the recurring purge action left by the previous backend is cleared automatically on the next page load, so only one scheduler ever fires. Action Scheduler remains a bundled dependency for the WordPress.org build ([#1907](https://github.com/xwp/stream/issues/1907)).
+- Guard the Action Scheduler `require_once` so an environment that already provides or deliberately omits Action Scheduler no longer fatals on load. When the WP-Cron fallback is selected, Action Scheduler is no longer loaded at all.
+- Add the `wp_stream_enable_auto_purge` filter (default `true`). Returning `false` disables all TTL record auto-purge scheduling regardless of backend — for storage drivers that manage retention externally — and clears any already-registered recurring purge ([#1907](https://github.com/xwp/stream/issues/1907)).
+- On the WP-Cron fallback, surface a warning when a large-table purge or reset is queued, recommending `wp cron event run` to drain the batch chain deterministically. Under WP-CLI this is an immediate `WP_CLI::warning`; in the dashboard the warning is persisted and rendered as an admin notice on the next admin page load, since the queueing contexts (cron callback, reset redirect) produce no visible output themselves ([#1907](https://github.com/xwp/stream/issues/1907)).
+
+### Bug Fixes
+
+- Log the WooCommerce order ID instead of the `WC_Order` object in order event records ([#1929](https://github.com/xwp/stream/pull/1929)).
+- Fix PHP 8.4 deprecation warnings ([#1923](https://github.com/xwp/stream/pull/1923)).
+- Fix PHPCS violations in the BuddyPress connector ([#1925](https://github.com/xwp/stream/pull/1925)).
+
+### Development
+
+- Refresh the readme.txt description, tags, and SEO copy ([#1924](https://github.com/xwp/stream/pull/1924)).
+
 ## 4.2.2 - July 6, 2026
 
 ### Security
