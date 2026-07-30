@@ -232,6 +232,9 @@ abstract class Connector {
 	 * removes useful audit detail for no benefit. Matched as substrings so the
 	 * various plugin prefixes are covered.
 	 *
+	 * Only consulted after SECRET_KEY_PATTERNS, so a name containing an
+	 * explicit secret marker is never exempted by appearing "public" too.
+	 *
 	 * @const array
 	 */
 	const PUBLIC_KEY_PATTERNS = array(
@@ -243,9 +246,13 @@ abstract class Connector {
 	/**
 	 * Placeholder stored in place of a redacted value.
 	 *
+	 * A distinct marker rather than an empty string, so a reader of the audit
+	 * trail can tell "this credential changed, value withheld" apart from "this
+	 * field was cleared" -- an empty string would conflate the two.
+	 *
 	 * @const string
 	 */
-	const REDACTED_PLACEHOLDER = '';
+	const REDACTED_PLACEHOLDER = '[redacted]';
 
 	/**
 	 * Whether a setting/field name looks like it holds a credential.
@@ -260,15 +267,20 @@ abstract class Connector {
 
 		$needle = strtolower( $key );
 
-		foreach ( self::PUBLIC_KEY_PATTERNS as $pattern ) {
-			if ( false !== strpos( $needle, $pattern ) ) {
-				return false;
-			}
-		}
-
+		// An explicit secret marker always wins. The public-name exemption
+		// below is only there to stop the broad "_key" suffix rule from
+		// swallowing published key halves, so it must not be able to rescue a
+		// name that also says "secret", "private_key" or "webhook" -- that
+		// would invert the over-redact-rather-than-under-redact preference.
 		foreach ( self::SECRET_KEY_PATTERNS as $pattern ) {
 			if ( false !== strpos( $needle, $pattern ) ) {
 				return true;
+			}
+		}
+
+		foreach ( self::PUBLIC_KEY_PATTERNS as $pattern ) {
+			if ( false !== strpos( $needle, $pattern ) ) {
+				return false;
 			}
 		}
 

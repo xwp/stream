@@ -622,8 +622,8 @@ class Connector_Jetpack extends Connector {
 
 			$settings['meta'] += array(
 				'option'    => $option,
-				'old_value' => $old_value,
-				'value'     => $new_value,
+				'old_value' => $this->redact_secret_values( $old_value, $option ),
+				'value'     => $this->redact_secret_values( $new_value, $option ),
 			);
 
 			$this->log(

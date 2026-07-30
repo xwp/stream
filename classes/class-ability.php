@@ -166,7 +166,24 @@ abstract class Ability {
 			return new \stdClass();
 		}
 
-		foreach ( self::SECRET_ALERT_META_KEYS as $key ) {
+		/**
+		 * Filters the alert_meta keys treated as credentials and withheld from
+		 * ability output.
+		 *
+		 * Third-party alert types registered via `wp_stream_alert_types` may
+		 * store their own destination secrets under names Stream cannot know
+		 * about; add them here so they are redacted too.
+		 *
+		 * @param array $keys       Meta keys to redact.
+		 * @param array $alert_meta The alert meta being redacted.
+		 */
+		$secret_keys = (array) apply_filters(
+			'wp_stream_secret_alert_meta_keys',
+			self::SECRET_ALERT_META_KEYS,
+			$alert_meta
+		);
+
+		foreach ( $secret_keys as $key ) {
 			if ( ! array_key_exists( $key, $alert_meta ) ) {
 				continue;
 			}

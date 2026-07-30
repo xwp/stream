@@ -167,12 +167,15 @@ class Test_Connector_Settings extends WP_StreamTestCase {
 		$add_method    = is_multisite() ? 'add_site_option' : 'add_option';
 		$update_method = is_multisite() ? 'update_site_option' : 'update_option';
 
+		// Core seeds this option as an empty string, so add_option() would be a
+		// no-op; write the prior value before the logging expectation is set so
+		// both sides of the observed change are non-empty.
+		call_user_func( $update_method, 'mailserver_pass', 'old-secret-password' );
+
 		$this->register_writing_options();
 
-		call_user_func( $add_method, 'mailserver_pass', 'old-secret-password' );
-
 		$logged = array();
-		$this->mock->expects( $this->once() )
+		$this->mock->expects( $this->atLeastOnce() )
 			->method( 'log' )
 			->willReturnCallback(
 				function ( $message, $args ) use ( &$logged ) {
@@ -188,8 +191,8 @@ class Test_Connector_Settings extends WP_StreamTestCase {
 			$logged['option'],
 			'The setting change must still be recorded.'
 		);
-		$this->assertSame( '', $logged['old_value'], 'The previous password must not be retained.' );
-		$this->assertSame( '', $logged['value'], 'The new password must not be retained.' );
+		$this->assertSame( Connector::REDACTED_PLACEHOLDER, $logged['old_value'], 'The previous password must not be retained.' );
+		$this->assertSame( Connector::REDACTED_PLACEHOLDER, $logged['value'], 'The new password must not be retained.' );
 
 		$serialized = maybe_serialize( $logged );
 		$this->assertStringNotContainsString( 'old-secret-password', $serialized );

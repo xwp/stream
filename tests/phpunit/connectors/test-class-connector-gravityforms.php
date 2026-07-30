@@ -60,8 +60,8 @@ class Test_Connector_GravityForms extends WP_StreamTestCase {
 			$logged['option'],
 			'The setting change must still be recorded.'
 		);
-		$this->assertSame( '', $logged['old_value'] );
-		$this->assertSame( '', $logged['new_value'] );
+		$this->assertSame( Connector::REDACTED_PLACEHOLDER, $logged['old_value'] );
+		$this->assertSame( Connector::REDACTED_PLACEHOLDER, $logged['new_value'] );
 
 		$serialized = maybe_serialize( $logged );
 		$this->assertStringNotContainsString( 'old-private-key', $serialized );
@@ -109,8 +109,8 @@ class Test_Connector_GravityForms extends WP_StreamTestCase {
 		$this->mock->check_rg_gforms_key( 'old-license', 'new-license' );
 
 		$this->assertSame( 'rg_gforms_key', $logged['option'] );
-		$this->assertSame( '', $logged['old_value'] );
-		$this->assertSame( '', $logged['new_value'] );
+		$this->assertSame( Connector::REDACTED_PLACEHOLDER, $logged['old_value'] );
+		$this->assertSame( Connector::REDACTED_PLACEHOLDER, $logged['new_value'] );
 
 		// The update/delete distinction is derived before redaction, so it must
 		// still report an update here.

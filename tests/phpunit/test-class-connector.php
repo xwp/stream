@@ -324,6 +324,24 @@ class Test_Connector extends WP_StreamTestCase {
 	}
 
 	/**
+	 * The public-name exemption exists only to stop the broad "_key" suffix
+	 * rule from catching published key halves. It must not rescue a name that
+	 * also carries an explicit secret marker, or the exemption would become a
+	 * bypass.
+	 *
+	 * @return void
+	 */
+	public function test_explicit_secret_marker_beats_public_name() {
+		$this->assertTrue( $this->connector->is_secret_key( 'secret_site_key' ) );
+		$this->assertTrue( $this->connector->is_secret_key( 'webhook_public_key' ) );
+		$this->assertTrue( $this->connector->is_secret_key( 'private_key_public_key' ) );
+
+		// Still exempt when nothing marks them as secret.
+		$this->assertFalse( $this->connector->is_secret_key( 'recaptcha_site_key' ) );
+		$this->assertFalse( $this->connector->is_secret_key( 'rg_gforms_captcha_public_key' ) );
+	}
+
+	/**
 	 * A scalar is redacted based on its own key, which is the shape used by the
 	 * settings and Gravity Forms connectors.
 	 *
@@ -331,7 +349,7 @@ class Test_Connector extends WP_StreamTestCase {
 	 */
 	public function test_redact_secret_values_scalar() {
 		$this->assertSame(
-			'',
+			Connector::REDACTED_PLACEHOLDER,
 			$this->connector->redact_secret_values( 'hunter2', 'mailserver_pass' )
 		);
 		$this->assertSame(
@@ -341,13 +359,19 @@ class Test_Connector extends WP_StreamTestCase {
 	}
 
 	/**
-	 * An empty value is left alone so the audit trail can still distinguish
-	 * "was never set" from "set but redacted".
+	 * An unset credential stays an empty string rather than gaining the
+	 * placeholder, so a reader can distinguish "was never set" from "set but
+	 * withheld" -- the latter carries the marker.
 	 *
 	 * @return void
 	 */
 	public function test_redact_secret_values_leaves_empty_values() {
 		$this->assertSame( '', $this->connector->redact_secret_values( '', 'password' ) );
+		$this->assertNotSame(
+			Connector::REDACTED_PLACEHOLDER,
+			$this->connector->redact_secret_values( '', 'password' ),
+			'An empty credential must not look like a withheld one.'
+		);
 	}
 
 	/**
@@ -373,8 +397,8 @@ class Test_Connector extends WP_StreamTestCase {
 
 		$this->assertSame( 'yes', $redacted['enabled'] );
 		$this->assertSame( 'Credit Card', $redacted['title'] );
-		$this->assertSame( '', $redacted['secret_key'], 'A live API secret must not be persisted.' );
-		$this->assertSame( '', $redacted['nested']['webhook'], 'Nested credentials must be redacted too.' );
+		$this->assertSame( Connector::REDACTED_PLACEHOLDER, $redacted['secret_key'], 'A live API secret must not be persisted.' );
+		$this->assertSame( Connector::REDACTED_PLACEHOLDER, $redacted['nested']['webhook'], 'Nested credentials must be redacted too.' );
 		$this->assertSame( 'Pay by card', $redacted['nested']['description'] );
 
 		// The publishable half of a key pair is designed to be public, so

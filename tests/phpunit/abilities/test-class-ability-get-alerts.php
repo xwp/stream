@@ -234,6 +234,49 @@ class Test_Ability_Get_Alerts extends Abilities_TestCase {
 	}
 
 	/**
+	 * Third-party alert types can store destination secrets under names Stream
+	 * does not know, so the redaction list is filterable.
+	 */
+	public function test_secret_alert_meta_keys_are_filterable() {
+		wp_set_current_user( $this->admin_user_id );
+
+		$post_id = wp_insert_post(
+			array(
+				'post_type'   => Alerts::POST_TYPE,
+				'post_status' => 'wp_stream_enabled',
+				'post_title'  => 'Third-party alert',
+			)
+		);
+		update_post_meta( $post_id, 'alert_type', 'custom' );
+		update_post_meta(
+			$post_id,
+			'alert_meta',
+			array(
+				'custom_api_secret' => 'super-secret-value',
+				'endpoint'          => 'https://example.com/notify',
+			)
+		);
+
+		$add_key = static function ( $keys ) {
+			$keys[] = 'custom_api_secret';
+			return $keys;
+		};
+		add_filter( 'wp_stream_secret_alert_meta_keys', $add_key );
+
+		try {
+			$row  = $this->find_alert_row( $this->ability->execute( array( 'status' => 'any' ) ), $post_id );
+			$meta = (array) $row['alert_meta'];
+
+			$this->assertArrayNotHasKey( 'custom_api_secret', $meta );
+			$this->assertTrue( $meta['custom_api_secret_configured'] );
+			$this->assertSame( 'https://example.com/notify', $meta['endpoint'] );
+			$this->assertStringNotContainsString( 'super-secret-value', (string) wp_json_encode( $row ) );
+		} finally {
+			remove_filter( 'wp_stream_secret_alert_meta_keys', $add_key );
+		}
+	}
+
+	/**
 	 * Locate a single alert row in the ability output by post ID.
 	 *
 	 * @param array $result  Ability output.
