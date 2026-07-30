@@ -97,6 +97,40 @@ abstract class Ability {
 	}
 
 	/**
+	 * Permission check for abilities that persist Stream settings.
+	 *
+	 * On network-activated multisite, Settings::update_all_setting_values()
+	 * writes the authoritative network option (wp_stream_network), so the write
+	 * affects every site on the network. WP_STREAM_SETTINGS_CAPABILITY defaults
+	 * to 'manage_options', which every single-site administrator holds -- on its
+	 * own it is not sufficient authority for a network-wide change. Require a
+	 * network capability whenever the write is going to be network-scoped.
+	 *
+	 * The network capability is required in addition to the settings
+	 * capability, not instead of it: on multisite a super admin passes every
+	 * capability check by definition, so returning the network check alone
+	 * would silently ignore a deployment that narrowed
+	 * WP_STREAM_SETTINGS_CAPABILITY.
+	 *
+	 * @return bool
+	 */
+	protected function can_write_settings() {
+		$can_write_settings = current_user_can( WP_STREAM_SETTINGS_CAPABILITY );
+
+		// Mirrors the branch in Settings::update_all_setting_values(): when the
+		// write lands on the network option it additionally requires network
+		// authority. This is an extra requirement, never a substitute -- the
+		// settings capability is a site-overridable constant, so a deployment
+		// that restricts or revokes it must keep being honoured for super
+		// admins too.
+		if ( is_multisite() && $this->plugin->is_network_activated() ) {
+			return $can_write_settings && current_user_can( 'manage_network_options' );
+		}
+
+		return $can_write_settings;
+	}
+
+	/**
 	 * Annotation flags for the ability (readonly, destructive, idempotent).
 	 *
 	 * @return array
