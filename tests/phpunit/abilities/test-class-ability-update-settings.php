@@ -48,6 +48,87 @@ class Test_Ability_Update_Settings extends Abilities_TestCase {
 		$this->assertTrue( $this->ability->permission_callback() );
 	}
 
+	/**
+	 * The update_all_setting_values() helper writes the network option when
+	 * Stream is network activated, so the write hits every site. A plain site
+	 * administrator holds manage_options but has no network authority and must
+	 * be refused.
+	 *
+	 * @group ms-required
+	 */
+	public function test_site_admin_cannot_write_network_settings() {
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'Requires multisite.' );
+		}
+
+		wp_set_current_user( $this->admin_user_id );
+		$this->assertFalse(
+			is_super_admin( $this->admin_user_id ),
+			'Guard: this test is only meaningful for a non-super-admin.'
+		);
+
+		add_filter( 'wp_stream_is_network_activated', '__return_true' );
+
+		try {
+			$this->assertFalse(
+				$this->ability->permission_callback(),
+				'A site administrator must not be able to write network-wide Stream settings.'
+			);
+		} finally {
+			remove_filter( 'wp_stream_is_network_activated', '__return_true' );
+		}
+	}
+
+	/**
+	 * The network capability is an additional requirement, not a replacement
+	 * for the Stream settings capability. On multisite a super admin passes
+	 * every current_user_can() check by definition, so a permission callback
+	 * that only consulted manage_network_options would silently ignore a
+	 * deployment that locked Stream settings down.
+	 *
+	 * WP_User::has_cap() returns early for super admins, before the
+	 * user_has_cap filter runs, so the only way a deployment can restrict them
+	 * is 'do_not_allow' via map_meta_cap -- which is exactly the escape hatch
+	 * that early return honours. That is what is simulated here.
+	 *
+	 * @group ms-required
+	 */
+	public function test_super_admin_denied_when_settings_capability_revoked() {
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'Requires multisite.' );
+		}
+
+		wp_set_current_user( $this->admin_user_id );
+		grant_super_admin( $this->admin_user_id );
+
+		add_filter( 'wp_stream_is_network_activated', '__return_true' );
+
+		// Baseline: an unrestricted super admin is allowed.
+		$this->assertTrue(
+			$this->ability->permission_callback(),
+			'Guard: a super admin should be allowed before the capability is revoked.'
+		);
+
+		$deny_settings_cap = static function ( $caps, $cap ) {
+			if ( WP_STREAM_SETTINGS_CAPABILITY === $cap ) {
+				return array( 'do_not_allow' );
+			}
+			return $caps;
+		};
+		add_filter( 'map_meta_cap', $deny_settings_cap, 10, 2 );
+
+		try {
+			$this->assertFalse(
+				$this->ability->permission_callback(),
+				'Revoking the Stream settings capability must deny the write even for a super admin.'
+			);
+		} finally {
+			remove_filter( 'map_meta_cap', $deny_settings_cap, 10 );
+			remove_filter( 'wp_stream_is_network_activated', '__return_true' );
+			revoke_super_admin( $this->admin_user_id );
+		}
+	}
+
 	public function test_partial_update_preserves_other_keys() {
 		wp_set_current_user( $this->admin_user_id );
 
