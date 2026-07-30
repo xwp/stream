@@ -271,4 +271,112 @@ class Test_Connector extends WP_StreamTestCase {
 			$escaped_value
 		);
 	}
+
+	/**
+	 * Credential-looking setting names are recognised regardless of case or
+	 * surrounding words, since connectors log arbitrary third-party option
+	 * names that an allowlist could not anticipate.
+	 *
+	 * @return void
+	 */
+	public function test_is_secret_key() {
+		$secret = array(
+			'mailserver_pass',
+			'password',
+			'rg_gforms_captcha_private_key',
+			'stripe_secret_key',
+			'API_KEY',
+			'publishable_token',
+			'webhook',
+			'client_secret',
+			'rg_gforms_key',
+		);
+		foreach ( $secret as $key ) {
+			$this->assertTrue(
+				$this->connector->is_secret_key( $key ),
+				"$key should be treated as a secret."
+			);
+		}
+
+		$safe = array(
+			'blogname',
+			'general_records_ttl',
+			'title',
+			'enabled',
+			'email_recipient',
+			'default_category',
+			// Words merely ending in "key" must not be caught; only the "_key"
+			// suffix used by real credential option names.
+			'monkey',
+			'turkey',
+			'',
+		);
+		foreach ( $safe as $key ) {
+			$this->assertFalse(
+				$this->connector->is_secret_key( $key ),
+				"$key should not be treated as a secret."
+			);
+		}
+	}
+
+	/**
+	 * A scalar is redacted based on its own key, which is the shape used by the
+	 * settings and Gravity Forms connectors.
+	 *
+	 * @return void
+	 */
+	public function test_redact_secret_values_scalar() {
+		$this->assertSame(
+			'',
+			$this->connector->redact_secret_values( 'hunter2', 'mailserver_pass' )
+		);
+		$this->assertSame(
+			'My Site',
+			$this->connector->redact_secret_values( 'My Site', 'blogname' )
+		);
+	}
+
+	/**
+	 * An empty value is left alone so the audit trail can still distinguish
+	 * "was never set" from "set but redacted".
+	 *
+	 * @return void
+	 */
+	public function test_redact_secret_values_leaves_empty_values() {
+		$this->assertSame( '', $this->connector->redact_secret_values( '', 'password' ) );
+	}
+
+	/**
+	 * Whole settings arrays (payment gateways, integration configs) are
+	 * redacted member-wise and recursively, keeping non-secret settings intact
+	 * so the record still describes what changed.
+	 *
+	 * @return void
+	 */
+	public function test_redact_secret_values_array() {
+		$gateway = array(
+			'enabled'         => 'yes',
+			'title'           => 'Credit Card',
+			'secret_key'      => 'sk_live_deadbeefdeadbeef',
+			'publishable_key' => 'pk_live_public',
+			'nested'          => array(
+				'webhook'     => 'https://example.com/hook/abcdef',
+				'description' => 'Pay by card',
+			),
+		);
+
+		$redacted = $this->connector->redact_secret_values( $gateway, 'woocommerce_stripe_settings' );
+
+		$this->assertSame( 'yes', $redacted['enabled'] );
+		$this->assertSame( 'Credit Card', $redacted['title'] );
+		$this->assertSame( '', $redacted['secret_key'], 'A live API secret must not be persisted.' );
+		$this->assertSame( '', $redacted['nested']['webhook'], 'Nested credentials must be redacted too.' );
+		$this->assertSame( 'Pay by card', $redacted['nested']['description'] );
+
+		$this->assertStringNotContainsString(
+			'sk_live_deadbeefdeadbeef',
+			maybe_serialize( $redacted ),
+			'The secret must not survive serialization into record metadata.'
+		);
+	}
 }

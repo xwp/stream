@@ -131,6 +131,54 @@ abstract class Ability {
 	}
 
 	/**
+	 * Alert meta keys holding reusable credentials rather than configuration.
+	 *
+	 * Alert destinations are configured by users with the Stream settings
+	 * capability, but alerts are readable through get-alerts by anyone with
+	 * `view_stream`. These values are bearer credentials -- a Slack incoming
+	 * webhook URL is sufficient on its own to post into the target channel, and
+	 * an IFTTT Maker key is sufficient to fire that account's applets -- so they
+	 * must not cross that privilege boundary.
+	 *
+	 * @const array
+	 */
+	const SECRET_ALERT_META_KEYS = array(
+		'webhook',
+		'maker_key',
+	);
+
+	/**
+	 * Replace credential values in an alert_meta array with a boolean marker.
+	 *
+	 * Callers still need to know whether a destination is configured, so each
+	 * secret key is replaced by `{key}_configured` rather than dropped. The
+	 * value itself never leaves the site.
+	 *
+	 * Returns stdClass for empty input so wp_json_encode() emits `{}` and
+	 * satisfies the `alert_meta: object` output schema (an empty PHP array
+	 * encodes as `[]`).
+	 *
+	 * @param mixed $alert_meta Raw alert meta, usually an array.
+	 * @return array|\stdClass
+	 */
+	protected function redact_alert_meta( $alert_meta ) {
+		if ( ! is_array( $alert_meta ) || empty( $alert_meta ) ) {
+			return new \stdClass();
+		}
+
+		foreach ( self::SECRET_ALERT_META_KEYS as $key ) {
+			if ( ! array_key_exists( $key, $alert_meta ) ) {
+				continue;
+			}
+
+			$alert_meta[ $key . '_configured' ] = ! empty( $alert_meta[ $key ] );
+			unset( $alert_meta[ $key ] );
+		}
+
+		return empty( $alert_meta ) ? new \stdClass() : $alert_meta;
+	}
+
+	/**
 	 * Annotation flags for the ability (readonly, destructive, idempotent).
 	 *
 	 * @return array

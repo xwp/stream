@@ -187,6 +187,108 @@ abstract class Connector {
 	}
 
 	/**
+	 * Substrings that mark a setting name as holding a credential.
+	 *
+	 * Deliberately matched as substrings so unknown third-party settings are
+	 * covered by default: connectors log arbitrary option arrays from other
+	 * plugins, and an allowlist cannot anticipate every field a payment gateway
+	 * or integration might add. Over-redacting a harmless field only costs a
+	 * little detail in the audit log; under-redacting persists a live credential
+	 * in a table that lower-privileged Stream viewers can read.
+	 *
+	 * @const array
+	 */
+	const SECRET_KEY_PATTERNS = array(
+		'pass',
+		'secret',
+		'private_key',
+		'apikey',
+		'token',
+		'webhook',
+		'license',
+		'salt',
+		'credential',
+		'oauth',
+	);
+
+	/**
+	 * Setting names, or suffixes of them, that hold a credential but do not
+	 * contain any of the substrings above.
+	 *
+	 * Matched against the end of the name so option prefixes used by individual
+	 * plugins (rg_gforms_key, woocommerce_..._key) are covered without treating
+	 * every name that merely contains "key" as sensitive.
+	 *
+	 * @const array
+	 */
+	const SECRET_KEY_SUFFIXES = array(
+		'_key',
+	);
+
+	/**
+	 * Placeholder stored in place of a redacted value.
+	 *
+	 * @const string
+	 */
+	const REDACTED_PLACEHOLDER = '';
+
+	/**
+	 * Whether a setting/field name looks like it holds a credential.
+	 *
+	 * @param string $key Setting or field name.
+	 * @return bool
+	 */
+	public function is_secret_key( $key ) {
+		if ( ! is_string( $key ) || '' === $key ) {
+			return false;
+		}
+
+		$needle = strtolower( $key );
+
+		foreach ( self::SECRET_KEY_PATTERNS as $pattern ) {
+			if ( false !== strpos( $needle, $pattern ) ) {
+				return true;
+			}
+		}
+
+		foreach ( self::SECRET_KEY_SUFFIXES as $suffix ) {
+			if ( substr( $needle, -strlen( $suffix ) ) === $suffix ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Redact credential values before they are persisted as record metadata.
+	 *
+	 * Accepts either a scalar (redacted when $key itself looks secret) or an
+	 * array of settings (each secret-looking member redacted, recursively).
+	 * Values are replaced rather than removed so the audit trail still shows
+	 * that the field changed, without retaining the credential.
+	 *
+	 * @param mixed  $value Value about to be logged.
+	 * @param string $key   Setting or field name the value belongs to.
+	 * @return mixed
+	 */
+	public function redact_secret_values( $value, $key = '' ) {
+		if ( is_array( $value ) ) {
+			foreach ( $value as $child_key => $child_value ) {
+				$value[ $child_key ] = $this->redact_secret_values( $child_value, (string) $child_key );
+			}
+
+			return $value;
+		}
+
+		if ( $this->is_secret_key( $key ) && ! empty( $value ) ) {
+			return self::REDACTED_PLACEHOLDER;
+		}
+
+		return $value;
+	}
+
+	/**
 	 * Save log data till shutdown, so other callbacks would be able to override
 	 *
 	 * @param string $handle Special slug to be shared with other actions.

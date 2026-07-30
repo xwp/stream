@@ -126,4 +126,127 @@ class Test_Ability_Get_Alerts extends Abilities_TestCase {
 		// Schema validates as well — exercises the live contract.
 		$this->assert_matches_schema( $result, $this->ability->get_output_schema() );
 	}
+
+	/**
+	 * Alert destinations are configured behind the Stream settings capability
+	 * but listed behind view_stream, so credentials in alert_meta would cross a
+	 * privilege boundary. A Slack incoming webhook URL is a bearer credential:
+	 * possession alone is enough to post into the channel.
+	 */
+	public function test_slack_webhook_is_redacted() {
+		wp_set_current_user( $this->admin_user_id );
+
+		// Deliberately not shaped like a real Slack webhook URL: the redaction
+		// keys off the alert_meta key name, not the value, and a realistic
+		// looking URL trips secret scanning on push.
+		$webhook = 'https://example.test/redaction-fixture/not-a-real-webhook';
+
+		$post_id = wp_insert_post(
+			array(
+				'post_type'   => Alerts::POST_TYPE,
+				'post_status' => 'wp_stream_enabled',
+				'post_title'  => 'Slack alert',
+			)
+		);
+		update_post_meta( $post_id, 'alert_type', 'slack' );
+		update_post_meta(
+			$post_id,
+			'alert_meta',
+			array(
+				'webhook'        => $webhook,
+				'channel'        => '#general',
+				'trigger_action' => 'any',
+			)
+		);
+
+		$row = $this->find_alert_row( $this->ability->execute( array( 'status' => 'any' ) ), $post_id );
+
+		$this->assertArrayNotHasKey( 'webhook', (array) $row['alert_meta'], 'The webhook URL must not be returned.' );
+		$this->assertTrue(
+			( (array) $row['alert_meta'] )['webhook_configured'],
+			'Callers still need to know a webhook is configured.'
+		);
+
+		// Non-secret configuration must survive untouched.
+		$this->assertSame( '#general', ( (array) $row['alert_meta'] )['channel'] );
+
+		$this->assertStringNotContainsString(
+			$webhook,
+			(string) wp_json_encode( $row ),
+			'The webhook URL must not appear anywhere in the serialized response.'
+		);
+	}
+
+	/**
+	 * Same boundary for the IFTTT Maker key, which is reusable across every
+	 * applet on the owning account.
+	 */
+	public function test_ifttt_maker_key_is_redacted() {
+		wp_set_current_user( $this->admin_user_id );
+
+		$maker_key = 'dxxxxxxxxxxxxxxxxxxxxxx';
+
+		$post_id = wp_insert_post(
+			array(
+				'post_type'   => Alerts::POST_TYPE,
+				'post_status' => 'wp_stream_enabled',
+				'post_title'  => 'IFTTT alert',
+			)
+		);
+		update_post_meta( $post_id, 'alert_type', 'ifttt' );
+		update_post_meta(
+			$post_id,
+			'alert_meta',
+			array(
+				'maker_key'  => $maker_key,
+				'event_name' => 'stream_event',
+			)
+		);
+
+		$row = $this->find_alert_row( $this->ability->execute( array( 'status' => 'any' ) ), $post_id );
+
+		$this->assertArrayNotHasKey( 'maker_key', (array) $row['alert_meta'] );
+		$this->assertTrue( ( (array) $row['alert_meta'] )['maker_key_configured'] );
+		$this->assertSame( 'stream_event', ( (array) $row['alert_meta'] )['event_name'] );
+		$this->assertStringNotContainsString( $maker_key, (string) wp_json_encode( $row ) );
+	}
+
+	/**
+	 * An unconfigured secret reports false rather than being reported as
+	 * present, so the marker is meaningful either way.
+	 */
+	public function test_unconfigured_secret_reports_false() {
+		wp_set_current_user( $this->admin_user_id );
+
+		$post_id = wp_insert_post(
+			array(
+				'post_type'   => Alerts::POST_TYPE,
+				'post_status' => 'wp_stream_enabled',
+				'post_title'  => 'Slack alert without webhook',
+			)
+		);
+		update_post_meta( $post_id, 'alert_type', 'slack' );
+		update_post_meta( $post_id, 'alert_meta', array( 'webhook' => '' ) );
+
+		$row = $this->find_alert_row( $this->ability->execute( array( 'status' => 'any' ) ), $post_id );
+
+		$this->assertFalse( ( (array) $row['alert_meta'] )['webhook_configured'] );
+	}
+
+	/**
+	 * Locate a single alert row in the ability output by post ID.
+	 *
+	 * @param array $result  Ability output.
+	 * @param int   $post_id Alert post ID.
+	 * @return array
+	 */
+	private function find_alert_row( $result, $post_id ) {
+		foreach ( $result as $entry ) {
+			if ( $entry['id'] === $post_id ) {
+				return $entry;
+			}
+		}
+
+		$this->fail( 'Seeded alert missing from get-alerts output.' );
+	}
 }
