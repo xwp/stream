@@ -156,4 +156,104 @@ class Test_Connector_Settings extends WP_StreamTestCase {
 			$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_update_option' ) );
 		}
 	}
+
+	/**
+	 * The mailserver_pass core setting is tracked, so both its previous and new
+	 * value would otherwise be persisted verbatim in record metadata --
+	 * sanitize_value() only casts to string. The change must still be recorded,
+	 * but without the mailbox password.
+	 */
+	public function test_mailserver_pass_is_redacted() {
+		$add_method    = is_multisite() ? 'add_site_option' : 'add_option';
+		$update_method = is_multisite() ? 'update_site_option' : 'update_option';
+
+		$this->register_writing_options();
+
+		call_user_func( $add_method, 'mailserver_pass', 'old-secret-password' );
+
+		$logged = array();
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->willReturnCallback(
+				function ( $message, $args ) use ( &$logged ) {
+					$logged = $args;
+					return true;
+				}
+			);
+
+		call_user_func( $update_method, 'mailserver_pass', 'new-secret-password' );
+
+		$this->assertSame(
+			'mailserver_pass',
+			$logged['option'],
+			'The setting change must still be recorded.'
+		);
+		$this->assertSame( '', $logged['old_value'], 'The previous password must not be retained.' );
+		$this->assertSame( '', $logged['value'], 'The new password must not be retained.' );
+
+		$serialized = maybe_serialize( $logged );
+		$this->assertStringNotContainsString( 'old-secret-password', $serialized );
+		$this->assertStringNotContainsString( 'new-secret-password', $serialized );
+	}
+
+	/**
+	 * Redaction is keyed on the setting name, so ordinary settings are logged
+	 * with their values intact.
+	 */
+	public function test_non_secret_setting_is_not_redacted() {
+		$add_method    = is_multisite() ? 'add_site_option' : 'add_option';
+		$update_method = is_multisite() ? 'update_site_option' : 'update_option';
+
+		$this->register_writing_options();
+
+		// This option is seeded by the WP test fixture, so read the existing
+		// value rather than assuming add_option() sets it.
+		call_user_func( $add_method, 'mailserver_login', 'old-login' );
+		$previous = is_multisite() ? get_site_option( 'mailserver_login' ) : get_option( 'mailserver_login' );
+
+		$logged = array();
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->willReturnCallback(
+				function ( $message, $args ) use ( &$logged ) {
+					$logged = $args;
+					return true;
+				}
+			);
+
+		call_user_func( $update_method, 'mailserver_login', 'new-login' );
+
+		$this->assertSame( $previous, $logged['old_value'] );
+		$this->assertSame( 'new-login', $logged['value'] );
+		$this->assertNotSame( '', $logged['value'], 'A non-secret setting must keep its value.' );
+	}
+
+	/**
+	 * Connector_Settings::callback_update_option() only forwards to the logging
+	 * path when the request looks like a real settings save -- either WP-CLI or
+	 * inside customize_save. Mirrors the setup already used by
+	 * test_callback_updated_option().
+	 *
+	 * Also registers the mail server options under the "writing" group the way
+	 * wp-admin/options.php does, so callback_updated_option() resolves a context
+	 * for them.
+	 *
+	 * @return void
+	 */
+	private function register_writing_options() {
+		global $whitelist_options;
+
+		if ( ! is_array( $whitelist_options ) ) {
+			$whitelist_options = array(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		}
+
+		$whitelist_options['writing'] = array_merge( // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+			isset( $whitelist_options['writing'] ) ? (array) $whitelist_options['writing'] : array(),
+			array( 'mailserver_pass', 'mailserver_login' )
+		);
+
+		// Simulate being on a settings save request.
+		require_once ABSPATH . WPINC . '/class-wp-customize-manager.php';
+		do_action( 'customize_save', new \WP_Customize_Manager( array() ) );
+	}
 }

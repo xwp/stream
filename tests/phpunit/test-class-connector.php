@@ -309,6 +309,10 @@ class Test_Connector extends WP_StreamTestCase {
 			// suffix used by real credential option names.
 			'monkey',
 			'turkey',
+			// Public halves of key pairs are meant to be published.
+			'rg_gforms_captcha_public_key',
+			'stripe_publishable_key',
+			'recaptcha_site_key',
 			'',
 		);
 		foreach ( $safe as $key ) {
@@ -372,6 +376,10 @@ class Test_Connector extends WP_StreamTestCase {
 		$this->assertSame( '', $redacted['secret_key'], 'A live API secret must not be persisted.' );
 		$this->assertSame( '', $redacted['nested']['webhook'], 'Nested credentials must be redacted too.' );
 		$this->assertSame( 'Pay by card', $redacted['nested']['description'] );
+
+		// The publishable half of a key pair is designed to be public, so
+		// redacting it would remove audit detail for no benefit.
+		$this->assertSame( 'pk_live_public', $redacted['publishable_key'] );
 
 		$this->assertStringNotContainsString(
 			'sk_live_deadbeefdeadbeef',

@@ -226,6 +226,21 @@ abstract class Connector {
 	);
 
 	/**
+	 * Names that end in a secret-looking suffix but are not credentials.
+	 *
+	 * Public halves of key pairs are meant to be published, and redacting them
+	 * removes useful audit detail for no benefit. Matched as substrings so the
+	 * various plugin prefixes are covered.
+	 *
+	 * @const array
+	 */
+	const PUBLIC_KEY_PATTERNS = array(
+		'public_key',
+		'publishable_key',
+		'site_key',
+	);
+
+	/**
 	 * Placeholder stored in place of a redacted value.
 	 *
 	 * @const string
@@ -244,6 +259,12 @@ abstract class Connector {
 		}
 
 		$needle = strtolower( $key );
+
+		foreach ( self::PUBLIC_KEY_PATTERNS as $pattern ) {
+			if ( false !== strpos( $needle, $pattern ) ) {
+				return false;
+			}
+		}
 
 		foreach ( self::SECRET_KEY_PATTERNS as $pattern ) {
 			if ( false !== strpos( $needle, $pattern ) ) {
