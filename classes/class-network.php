@@ -86,10 +86,13 @@ class Network {
 	public function ajax_network_admin() {
 		$http_referer = isset( $_SERVER['HTTP_REFERER'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : '';
 
+		// Prefer filterable `wp_doing_ajax()` (WP 4.7+); the plugin supports 4.6.
+		$doing_ajax = function_exists( 'wp_doing_ajax' )
+			? wp_doing_ajax()
+			: ( defined( 'DOING_AJAX' ) && DOING_AJAX );
+
 		if (
-			defined( 'DOING_AJAX' )
-			&&
-			DOING_AJAX
+			$doing_ajax
 			&&
 			0 === stripos( $http_referer, network_admin_url() )
 			&&

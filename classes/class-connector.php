@@ -209,6 +209,8 @@ abstract class Connector {
 		'salt',
 		'credential',
 		'oauth',
+		// PayPal NVP `api_signature`; over-matches e.g. `email_signature`.
+		'signature',
 	);
 
 	/**
@@ -307,8 +309,15 @@ abstract class Connector {
 	 */
 	public function redact_secret_values( $value, $key = '' ) {
 		if ( is_array( $value ) ) {
+			// A secret parent may key credentials by opaque IDs (e.g. Jetpack
+			// `user_tokens` by user ID), so pass it down over child names.
+			$inherited_key = $this->is_secret_key( $key ) ? $key : null;
+
 			foreach ( $value as $child_key => $child_value ) {
-				$value[ $child_key ] = $this->redact_secret_values( $child_value, (string) $child_key );
+				$value[ $child_key ] = $this->redact_secret_values(
+					$child_value,
+					null !== $inherited_key ? $inherited_key : (string) $child_key
+				);
 			}
 
 			return $value;

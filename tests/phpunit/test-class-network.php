@@ -161,6 +161,79 @@ class Test_Network extends WP_StreamTestCase {
 	}
 
 	/**
+	 * End-to-end form of the same rule: an ajax request that carries a
+	 * network-admin Referer, from a user with no network capability, must not
+	 * become network-admin context.
+	 *
+	 * WP_NETWORK_ADMIN is a constant, thus a true result would stay for all
+	 * later tests in the process. The assertion is that the method refuses,
+	 * which keeps the constant undefined.
+	 *
+	 * @group ms-required
+	 */
+	public function test_spoofed_referer_does_not_set_network_admin_over_ajax() {
+		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$original_referer        = isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : null;
+		$_SERVER['HTTP_REFERER'] = network_admin_url(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+		add_filter( 'wp_doing_ajax', '__return_true' );
+
+		try {
+			$this->assertFalse(
+				$this->network->ajax_network_admin(),
+				'A spoofed Referer must not grant network-admin context.'
+			);
+			$this->assertFalse(
+				defined( 'WP_NETWORK_ADMIN' ),
+				'WP_NETWORK_ADMIN must stay undefined for a site-level user.'
+			);
+		} finally {
+			remove_filter( 'wp_doing_ajax', '__return_true' );
+
+			if ( null === $original_referer ) {
+				unset( $_SERVER['HTTP_REFERER'] );
+			} else {
+				$_SERVER['HTTP_REFERER'] = $original_referer; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+			}
+		}
+	}
+
+	/**
+	 * Counterpart: a super admin on the same ajax request does get network
+	 * context. The check runs through can_view_network_records() to avoid the
+	 * WP_NETWORK_ADMIN constant, which would stay for all later tests.
+	 *
+	 * @group ms-required
+	 */
+	public function test_super_admin_gets_network_context_over_ajax() {
+		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+		grant_super_admin( $user_id );
+
+		$original_referer        = isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : null;
+		$_SERVER['HTTP_REFERER'] = network_admin_url(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+		add_filter( 'wp_doing_ajax', '__return_true' );
+
+		try {
+			$this->assertTrue(
+				0 === stripos( $_SERVER['HTTP_REFERER'], network_admin_url() ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+				&& $this->network->can_view_network_records(),
+				'A super admin must keep network-admin context over ajax.'
+			);
+		} finally {
+			remove_filter( 'wp_doing_ajax', '__return_true' );
+			revoke_super_admin( $user_id );
+
+			if ( null === $original_referer ) {
+				unset( $_SERVER['HTTP_REFERER'] );
+			} else {
+				$_SERVER['HTTP_REFERER'] = $original_referer; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+			}
+		}
+	}
+
+	/**
 	 * Counterpart to the above: a genuine super admin is recognised.
 	 *
 	 * @group ms-required

@@ -290,6 +290,9 @@ class Test_Connector extends WP_StreamTestCase {
 			'webhook',
 			'client_secret',
 			'rg_gforms_key',
+			// PayPal NVP gateways match none of the other patterns.
+			'api_signature',
+			'paypal_pro_signature',
 		);
 		foreach ( $secret as $key ) {
 			$this->assertTrue(
@@ -410,5 +413,71 @@ class Test_Connector extends WP_StreamTestCase {
 			maybe_serialize( $redacted ),
 			'The secret must not survive serialization into record metadata.'
 		);
+	}
+
+	/**
+	 * A secret parent can hold credentials under opaque keys. Jetpack keys
+	 * `user_tokens` by user ID, so no child name shows that the value is a
+	 * token. The parent name must make all children secret.
+	 *
+	 * @return void
+	 */
+	public function test_redact_secret_values_secret_parent_map() {
+		$input = array(
+			'1'  => 'user.token.one',
+			'42' => 'user.token.forty.two',
+		);
+
+		$redacted = $this->connector->redact_secret_values( $input, 'user_tokens' );
+
+		$this->assertSame( Connector::REDACTED_PLACEHOLDER, $redacted['1'] );
+		$this->assertSame( Connector::REDACTED_PLACEHOLDER, $redacted['42'] );
+		$this->assertStringNotContainsString(
+			'user.token.one',
+			maybe_serialize( $redacted ),
+			'A token under an opaque key must not reach record metadata.'
+		);
+	}
+
+	/**
+	 * The parent name goes down through every level, so a deep tree under a
+	 * secret parent cannot keep a credential.
+	 *
+	 * @return void
+	 */
+	public function test_redact_secret_values_secret_parent_nested_map() {
+		$input = array(
+			'facebook_1' => array(
+				'id'           => '1234',
+				'access_token' => 'live.access.token',
+				'profile'      => array(
+					'name' => 'Example Page',
+				),
+			),
+		);
+
+		$redacted = $this->connector->redact_secret_values( $input, 'publicize_credentials' );
+
+		$this->assertSame( Connector::REDACTED_PLACEHOLDER, $redacted['facebook_1']['id'] );
+		$this->assertSame( Connector::REDACTED_PLACEHOLDER, $redacted['facebook_1']['access_token'] );
+		$this->assertSame( Connector::REDACTED_PLACEHOLDER, $redacted['facebook_1']['profile']['name'] );
+	}
+
+	/**
+	 * A parent that is not secret keeps the current behaviour: each child is
+	 * judged by its own name, so non-secret settings stay readable.
+	 *
+	 * @return void
+	 */
+	public function test_redact_secret_values_keeps_children_of_safe_parent() {
+		$input = array(
+			'blogname' => 'My Site',
+			'api_key'  => 'live-key',
+		);
+
+		$redacted = $this->connector->redact_secret_values( $input, 'jetpack_options' );
+
+		$this->assertSame( 'My Site', $redacted['blogname'] );
+		$this->assertSame( Connector::REDACTED_PLACEHOLDER, $redacted['api_key'] );
 	}
 }
