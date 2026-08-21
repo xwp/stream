@@ -1,11 +1,11 @@
 # Keep in sync with the default value of XDEBUG_VERSION below!
-ARG PHP_VERSION=7.4
+ARG PHP_VERSION=8.3
 
 FROM wordpress:php${PHP_VERSION}-apache
 
-# The latest Xdebug version which supports PHP 7.4 is 3.1.6.
+# Xdebug 3.3.x supports PHP 8.3.
 # @link https://xdebug.org/docs/compat
-ARG XDEBUG_VERSION=3.1.6
+ARG XDEBUG_VERSION=3.3.2
 
 # Include our Composer vendor binary path into global path.
 ENV PATH="/var/www/html/wp-content/plugins/stream-src/vendor/bin:${PATH}"

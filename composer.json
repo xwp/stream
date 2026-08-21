@@ -47,7 +47,7 @@
     "process-timeout": 600,
     "sort-packages": true,
     "platform": {
-      "php": "7.4"
+      "php": "8.3"
     },
     "allow-plugins": {
       "composer/installers": true,
