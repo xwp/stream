@@ -1,5 +1,15 @@
 # Stream Changelog
 
+## [Unreleased]
+
+### New Features
+
+- Add AI Client connector for WordPress 7.0+: logs every AI generation call (operation, provider, model, token counts, duration, finish reason, and extended metadata) to Stream when `WP_AI_Client_Event_Dispatcher` is available (XWPENG-20).
+
+### Enhancements
+
+- Show only the first line of multiline summaries in the Stream list table so long entries stay readable in the activity feed.
+
 ## 4.3.0 - July 18, 2026
 
 ### Enhancements

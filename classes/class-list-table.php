@@ -317,7 +317,7 @@ class List_Table extends \WP_List_Table {
 				break;
 
 			case 'summary':
-				$out          = $record->summary;
+				$out          = self::format_summary_preview_html( (string) $record->summary );
 				$object_title = $record->get_object_title();
 				/* translators: %s: the title of any object, like a Post (e.g. "Hello World") */
 				$view_all_text = $object_title ? sprintf( esc_html__( 'View all activity for "%s"', 'stream' ), esc_attr( $object_title ) ) : esc_html__( 'View all activity for this object', 'stream' );
@@ -428,6 +428,27 @@ class List_Table extends \WP_List_Table {
 		$allowed_tags['img']['srcset'] = true;
 
 		echo wp_kses( $out, $allowed_tags );
+	}
+
+	/**
+	 * Formats a summary for the admin list table: first line only.
+	 *
+	 * @param string $summary Full summary stored in the database.
+	 * @return string Summary preview text.
+	 */
+	public static function format_summary_preview_html( $summary ) {
+		if ( '' === $summary ) {
+			return '';
+		}
+
+		$lines = preg_split( '/\R/u', $summary, 2 );
+		$first = isset( $lines[0] ) ? $lines[0] : $summary;
+
+		if ( ! isset( $lines[1] ) || '' === $lines[1] ) {
+			return $summary;
+		}
+
+		return $first;
 	}
 
 	/**

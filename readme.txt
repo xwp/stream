@@ -41,6 +41,7 @@ With Stream’s powerful activity logging, you’ll have the information you nee
 
 = Built-In Tracking For Core Actions: =
 
+ * WordPress AI Client (WP 7.0+)
  * Posts
  * Pages
  * Custom Post Types
@@ -101,6 +102,20 @@ As a workaround, you can use the `wp_stream_client_ip_address` filter to adapt t
 ⚠️ **WARNING:** The above is an insecure workaround that you should only use when you fully understand what this implies. Relying on any variable with the `HTTP_*` prefix is prone to spoofing and cannot be trusted!
 
 
+= AI Client (WordPress 7.0+) =
+
+When WordPress 7.0+ provides the AI Client event dispatcher (`WP_AI_Client_Event_Dispatcher`), Stream logs each AI generation as an activity record under **AI Client → Prompts → Generated**. If the dispatcher is not available, the connector registers no hooks and has no effect.
+
+By default, Stream stores metadata for every generation: operation, provider, model, input/output/thought token counts, duration, finish reason, and other extended fields when present. The activity summary shows a one-line preview (for example, `chat via openai/gpt-4o (tokens: 120/0/45) in 842ms`). Multiline summaries display only the first line in the list table; open a record to see the full text.
+
+Prompt and response text are **not** logged by default. To opt in, enable **Log Prompt and Response text** under **Stream → Settings → AI Client**. When enabled, prompt and response text are appended to the activity summary (not stored in meta, which is size-limited). **Privacy Warning:** This content may include personally identifiable information (PII). Ensure your privacy policy covers AI data collection before enabling.
+
+Developers can filter stored text when the setting is enabled:
+
+* `wp_stream_ai_client_log_prompt` — filter prompt text before it is stored; return an empty string to omit it.
+* `wp_stream_ai_client_log_response` — filter response text before it is stored; return an empty string to omit it.
+
+
 == Known Issues ==
 
  * We have temporarily disabled the data removal feature through plugin uninstallation, starting with version 3.9.3. We identified a few edge cases that did not behave as expected and we decided that a temporary removal is preferable at this time for such an impactful and irreversible operation. Our team is actively working on refining this feature to ensure it performs optimally and securely. We plan to reintroduce it in a future update with enhanced safeguards.
@@ -138,6 +153,18 @@ Use only `$_SERVER['REMOTE_ADDR']` as the client IP address for event logs witho
 
 
 == Changelog ==
+
+= Unreleased =
+
+New Features:
+
+* Add AI Client connector for WordPress 7.0+: logs AI generation metadata (operation, provider, model, tokens, duration, and more) when the WordPress AI Client event dispatcher is available.
+
+Enhancements:
+
+* Show only the first line of multiline summaries in the Stream list table.
+
+[View the full release notes on GitHub.](https://github.com/xwp/stream/blob/master/changelog.md#unreleased)
 
 = 4.3.0 - July 18, 2026 =
 

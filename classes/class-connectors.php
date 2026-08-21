@@ -71,6 +71,7 @@ class Connectors {
 			/**
 			 * Core Connectors
 			 */
+			'ai-client',
 			'blogs',
 			'comments',
 			'editor',
@@ -325,6 +326,7 @@ class Connectors {
 		// Same canonical slug list load_connectors() uses. Keep in sync.
 		$connectors = array(
 			// Core Connectors.
+			'ai-client',
 			'blogs',
 			'comments',
 			'editor',
