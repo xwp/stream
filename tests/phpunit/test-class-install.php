@@ -56,6 +56,39 @@ class Test_Install extends WP_StreamTestCase {
 	}
 
 	/**
+	 * Missing wp_stream_db during construction uses Install::install() (AC 9 clean install).
+	 *
+	 * An empty string option is the same empty() branch as a missing option.
+	 */
+	public function test_check_with_empty_db_version_during_construction_installs() {
+		delete_site_option( 'wp_stream_db' );
+		$this->simulate_construction_window();
+
+		$install = new Install( $this->plugin );
+
+		$this->assertInstanceOf( Install::class, $install );
+		$this->assertSame( Plugin::VERSION, get_site_option( 'wp_stream_db' ) );
+		$this->assert_stream_schema_present();
+	}
+
+	/**
+	 * Leftover 3.0.0 skips auto_300 (not < 3.0.0) and uses the same auto_308 dbDelta path as 3.0.7.
+	 *
+	 * Skipped: wp_stream_db < 3.0.0. wp_stream_update_auto_300() RENAME/DROPs stream and
+	 * stream_context and would destroy the PHPUnit schema.
+	 */
+	public function test_check_with_leftover_db_version_3_0_0_during_construction_does_not_fatal() {
+		update_site_option( 'wp_stream_db', '3.0.0' );
+		$this->simulate_construction_window();
+
+		$install = new Install( $this->plugin );
+
+		$this->assertInstanceOf( Install::class, $install );
+		$this->assertSame( Plugin::VERSION, get_site_option( 'wp_stream_db' ) );
+		$this->assert_stream_schema_present();
+	}
+
+	/**
 	 * Stream tables exist and user_role is present (dbDelta / 3.0.8 column-width path).
 	 */
 	protected function assert_stream_schema_present() {
