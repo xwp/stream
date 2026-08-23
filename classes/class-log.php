@@ -251,12 +251,7 @@ class Log {
 					? $exclude_value
 					: explode( ',', (string) $exclude_value );
 
-				$ip_addresses = array_filter(
-					array_map( 'trim', $ip_addresses ),
-					function ( $value ) {
-						return '' !== $value;
-					}
-				);
+				$ip_addresses = array_filter( array_map( 'trim', $ip_addresses ) );
 
 				if ( ! empty( $record['ip_address'] ) && in_array( $record['ip_address'], $ip_addresses, true ) ) {
 					++$matches_found;
