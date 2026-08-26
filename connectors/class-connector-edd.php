@@ -394,14 +394,16 @@ class Connector_EDD extends Connector {
 				continue;
 			}
 
+			// EDD settings include payment gateway API keys and secrets, so
+			// redact credential-looking fields before they are persisted.
 			$this->log(
 				/* translators: %s: a setting title (e.g. "Language") */
 				__( '"%s" setting updated', 'stream' ),
 				array(
 					'option_title' => $field['name'],
 					'option'       => $option,
-					'old_value'    => isset( $old_value[ $option ] ) ? $old_value[ $option ] : null,
-					'value'        => isset( $new_value[ $option ] ) ? $new_value[ $option ] : null,
+					'old_value'    => isset( $old_value[ $option ] ) ? $this->redact_secret_values( $old_value[ $option ], $option ) : null,
+					'value'        => isset( $new_value[ $option ] ) ? $this->redact_secret_values( $new_value[ $option ], $option ) : null,
 					'tab'          => $tab,
 				),
 				null,

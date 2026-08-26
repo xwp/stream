@@ -309,4 +309,135 @@ class Test_WP_Stream_Connector_Jetpack extends WP_StreamTestCase {
 		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_wp_ajax_jetpack_post_by_email_regenerate' ) );
 		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_wp_ajax_jetpack_post_by_email_disable' ) );
 	}
+
+	/**
+	 * `jetpack_options` holds all Jetpack credentials in one blob. A record
+	 * about one changed setting must carry only that field, and no token from
+	 * the other fields.
+	 */
+	public function test_check_jetpack_options_logs_only_the_changed_field() {
+		$logged = array();
+
+		$connector = $this->getMockBuilder( Connector_Jetpack::class )
+			->setMethods( array( 'log' ) )
+			->getMock();
+
+		$connector->method( 'log' )->willReturnCallback(
+			function ( $message, $meta ) use ( &$logged ) {
+				$logged[] = $meta;
+			}
+		);
+
+		$old_value = array(
+			'videopress'            => array(
+				'access' => 'edit_posts',
+			),
+			'user_tokens'           => array(
+				'1' => 'user.token.one',
+			),
+			'publicize_connections' => array(
+				'facebook' => array(
+					'id_1' => array(
+						'access_token' => 'facebook.access.token',
+					),
+				),
+			),
+		);
+
+		$new_value                         = $old_value;
+		$new_value['videopress']['access'] = 'read';
+
+		$connector->check_jetpack_options( $old_value, $new_value );
+
+		$this->assertNotEmpty( $logged, 'A VideoPress setting change must be logged.' );
+
+		$serialized = maybe_serialize( $logged );
+
+		$this->assertStringNotContainsString( 'user.token.one', $serialized, 'A user token must not reach record metadata.' );
+		$this->assertStringNotContainsString( 'facebook.access.token', $serialized, 'A Publicize token must not reach record metadata.' );
+
+		$this->assertSame( 'edit_posts', $logged[0]['old_value'] );
+		$this->assertSame( 'read', $logged[0]['value'] );
+	}
+
+	/**
+	 * A Publicize connection holds only credentials, thus the value payload is
+	 * withheld. The service label still says what changed.
+	 */
+	public function test_check_jetpack_options_withholds_publicize_connection_payload() {
+		$logged = array();
+
+		$connector = $this->getMockBuilder( Connector_Jetpack::class )
+			->setMethods( array( 'log' ) )
+			->getMock();
+
+		$connector->method( 'log' )->willReturnCallback(
+			function ( $message, $meta ) use ( &$logged ) {
+				$logged[] = $meta;
+			}
+		);
+
+		// The connector reads the service label from Publicize's UI global,
+		// which only exists when the module is active.
+		global $publicize_ui;
+
+		$original_publicize_ui = $publicize_ui;
+		$publicize_ui          = new class() { // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+			/**
+			 * Publicize stub.
+			 *
+			 * @var object
+			 */
+			public $publicize;
+
+			/**
+			 * Give the label lookup the connector needs.
+			 */
+			public function __construct() {
+				$this->publicize = new class() {
+					/**
+					 * Service label for a connection name.
+					 *
+					 * @param string $name Service name.
+					 * @return string
+					 */
+					public function get_service_label( $name ) {
+						return ucfirst( $name );
+					}
+				};
+			}
+		};
+
+		$old_value = array(
+			'publicize_connections' => array(),
+		);
+
+		$new_value = array(
+			'publicize_connections' => array(
+				'facebook' => array(
+					'id_1' => array(
+						'access_token'        => 'facebook.access.token',
+						'access_token_secret' => 'facebook.token.secret',
+					),
+				),
+			),
+		);
+
+		try {
+			$connector->check_jetpack_options( $old_value, $new_value );
+		} finally {
+			$publicize_ui = $original_publicize_ui; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		}
+
+		$serialized = maybe_serialize( $logged );
+
+		$this->assertStringNotContainsString( 'facebook.access.token', $serialized );
+		$this->assertStringNotContainsString( 'facebook.token.secret', $serialized );
+
+		$this->assertNotEmpty( $logged, 'A new Publicize connection must be logged.' );
+
+		foreach ( $logged as $meta ) {
+			$this->assertSame( Connector::REDACTED_PLACEHOLDER, $meta['value'] );
+		}
+	}
 }
