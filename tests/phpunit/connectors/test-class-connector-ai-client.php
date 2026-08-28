@@ -209,6 +209,7 @@ class Test_WP_Stream_Connector_AI_Client extends WP_StreamTestCase {
 		$this->assertSame( 'gpt-4o', $captured_args['model'] );
 		$this->assertIsInt( $captured_args['input_tokens'] );
 		$this->assertIsInt( $captured_args['output_tokens'] );
+		$this->assertIsInt( $captured_args['thought_tokens'] );
 		$this->assertIsInt( $captured_args['duration_ms'] );
 		$this->assertSame( 'stop', $captured_args['finish_reason'] );
 	}
@@ -492,7 +493,7 @@ class Test_WP_Stream_Connector_AI_Client extends WP_StreamTestCase {
 		do_action( 'wp_ai_client_before_generate_result', $pair['before'] );
 		do_action( 'wp_ai_client_after_generate_result', $pair['after'] );
 
-		// Plain text, no "--- User ---" heading.
+		// Plain text, no "[User]" heading.
 		$this->assertSame( 'Single user turn', $captured_args['prompt_text'] );
 	}
 
@@ -526,8 +527,8 @@ class Test_WP_Stream_Connector_AI_Client extends WP_StreamTestCase {
 		do_action( 'wp_ai_client_after_generate_result', $pair['after'] );
 
 		$prompt = $captured_args['prompt_text'];
-		$this->assertStringContainsString( '--- User ---', $prompt );
-		$this->assertStringContainsString( '--- Assistant ---', $prompt );
+		$this->assertStringContainsString( '[User]', $prompt );
+		$this->assertStringContainsString( '[Assistant]', $prompt );
 		$this->assertStringContainsString( 'Hello', $prompt );
 		$this->assertStringContainsString( 'Hi there!', $prompt );
 	}
@@ -666,6 +667,50 @@ class Test_WP_Stream_Connector_AI_Client extends WP_StreamTestCase {
 	}
 
 	/**
+	 * Summary token placeholders render as input/output/thought in that order.
+	 */
+	public function test_log_message_token_order_is_input_output_thought() {
+		self::$captured_log_message = null;
+		self::$captured_log_args    = null;
+
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->willReturnCallback( array( self::class, 'capture_log_call' ) );
+
+		$pair = $this->make_event_pair(
+			array(
+				'provider'      => 'openai',
+				'model'         => 'gpt-4o',
+				'operation'     => 'text_generation',
+				'input_tokens'  => 10,
+				'output_tokens' => 5,
+			)
+		);
+		do_action( 'wp_ai_client_before_generate_result', $pair['before'] );
+		do_action( 'wp_ai_client_after_generate_result', $pair['after'] );
+
+		$this->assertIsString( self::$captured_log_message );
+		$this->assertIsArray( self::$captured_log_args );
+		$this->assertSame( 10, self::$captured_log_args['input_tokens'] );
+		$this->assertSame( 5, self::$captured_log_args['output_tokens'] );
+		$this->assertSame( 0, self::$captured_log_args['thought_tokens'] );
+
+		$rendered = vsprintf( self::$captured_log_message, array_values( self::$captured_log_args ) );
+		$this->assertStringContainsString( '(tokens: 10/5/0)', $rendered );
+		$this->assertStringNotContainsString( '(tokens: 10/0/5)', $rendered );
+	}
+
+	/**
+	 * filter_wp_stream_record_array passes through non-array values unchanged.
+	 */
+	public function test_filter_record_array_passes_through_non_array() {
+		$connector = $this->make_filter_connector_mock( true );
+
+		$this->assertFalse( $connector->filter_wp_stream_record_array( false ) );
+		$this->assertNull( $connector->filter_wp_stream_record_array( null ) );
+	}
+
+	/**
 	 * filter_wp_stream_record_array removes prompt/response meta when logging is enabled.
 	 */
 	public function test_filter_record_array_removes_text_meta_when_logging_enabled() {
@@ -747,6 +792,11 @@ class Test_WP_Stream_Connector_AI_Client extends WP_StreamTestCase {
 		foreach ( $fields['ai-client']['fields'] as $field ) {
 			$this->assertSame( 0, $field['default'] );
 		}
+
+		$desc = $fields['ai-client']['fields'][0]['desc'];
+		$this->assertStringContainsString( 'Privacy Warning:', $desc );
+		$this->assertStringContainsString( 'alerts', $desc );
+		$this->assertStringContainsString( 'wp_stream_ai_client_log_prompt', $desc );
 	}
 
 	// -------------------------------------------------------------------------

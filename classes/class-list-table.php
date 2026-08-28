@@ -317,7 +317,7 @@ class List_Table extends \WP_List_Table {
 				break;
 
 			case 'summary':
-				$out          = self::format_summary_preview_html( (string) $record->summary );
+				$out          = self::format_summary_preview( (string) $record->summary );
 				$object_title = $record->get_object_title();
 				/* translators: %s: the title of any object, like a Post (e.g. "Hello World") */
 				$view_all_text = $object_title ? sprintf( esc_html__( 'View all activity for "%s"', 'stream' ), esc_attr( $object_title ) ) : esc_html__( 'View all activity for this object', 'stream' );
@@ -433,10 +433,13 @@ class List_Table extends \WP_List_Table {
 	/**
 	 * Formats a summary for the admin list table: first line only.
 	 *
+	 * When the summary contains additional lines, an ellipsis is appended so it
+	 * is clear the stored record has more text than the feed preview shows.
+	 *
 	 * @param string $summary Full summary stored in the database.
-	 * @return string Summary preview text.
+	 * @return string Summary preview text (plain text, not HTML).
 	 */
-	public static function format_summary_preview_html( $summary ) {
+	public static function format_summary_preview( $summary ) {
 		if ( '' === $summary ) {
 			return '';
 		}
@@ -448,7 +451,7 @@ class List_Table extends \WP_List_Table {
 			return $summary;
 		}
 
-		return $first;
+		return $first . '…';
 	}
 
 	/**

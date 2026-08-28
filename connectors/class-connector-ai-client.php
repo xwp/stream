@@ -132,14 +132,19 @@ class Connector_AI_Client extends Connector {
 	 * Adds opt-in checkbox — log_prompt_and_response_text — under
 	 * a dedicated "AI Client" section in Stream → Settings. Both default to off.
 	 *
-	 * @param array<string, array{title: string, fields: list<array<string, mixed>>}> $fields Stream settings fields.
-	 * @return array<string, array{title: string, fields: list<array<string, mixed>>}>
+	 * @param array<string, array{title: string, fields: list<array<string, mixed>>}>|mixed $fields Stream settings fields.
+	 * @return array<string, array{title: string, fields: list<array<string, mixed>>}>|mixed
 	 */
-	public function add_settings_fields( array $fields ) {
+	public function add_settings_fields( $fields ) {
+		if ( ! is_array( $fields ) ) {
+			return $fields;
+		}
+
 		$pii_warning = sprintf(
-			'<strong>%s</strong> %s',
+			'<strong>%s</strong> %s %s',
 			esc_html__( 'Privacy Warning:', 'stream' ),
-			esc_html__( 'This content may include personally identifiable information (PII). Ensure your privacy policy covers AI data collection before enabling.', 'stream' )
+			esc_html__( 'This content may include personally identifiable information (PII). Ensure your privacy policy covers AI data collection before enabling.', 'stream' ),
+			esc_html__( 'When enabled, prompt and response text are stored in the record summary and may be forwarded verbatim to any configured Stream alerts or webhooks (e.g. Slack, IFTTT). Use the wp_stream_ai_client_log_prompt and wp_stream_ai_client_log_response filters to redact or omit text before it is stored.', 'stream' )
 		);
 
 		$fields[ $this->name ] = array(
@@ -178,10 +183,14 @@ class Connector_AI_Client extends Connector {
 	/**
 	 * Removes unnecessary meta data from the record array.
 	 *
-	 * @param array<string, mixed> $record Record about to be inserted.
-	 * @return array<string, mixed>
+	 * @param array<string, mixed>|mixed $record Record about to be inserted.
+	 * @return array<string, mixed>|mixed
 	 */
-	public function filter_wp_stream_record_array( array $record ) {
+	public function filter_wp_stream_record_array( $record ) {
+		if ( ! is_array( $record ) ) {
+			return $record;
+		}
+
 		if ( ( isset( $record['connector'] ) ? $record['connector'] : '' ) !== $this->name || ! is_array( isset( $record['meta'] ) ? $record['meta'] : null ) ) {
 			return $record;
 		}
@@ -225,9 +234,11 @@ class Connector_AI_Client extends Connector {
 			$prompt_text = '';
 			// If prompt logged is enabled, extract the prompt text from the event.
 			if ( $this->is_prompt_and_response_logging_enabled() ) {
+				$extracted   = $this->extract_prompt_text( $event->getMessages() );
 				$prompt_text = $this->merge_model_system_instruction_into_prompt(
-					$this->extract_prompt_text( $event->getMessages() ),
-					$this->extract_model_system_instruction( $model )
+					$extracted['text'],
+					$this->extract_model_system_instruction( $model ),
+					$extracted['has_sections']
 				);
 
 				/**
@@ -312,6 +323,7 @@ class Connector_AI_Client extends Connector {
 			$input_tokens   = (int) $token_usage->getPromptTokens();
 			$output_tokens  = (int) $token_usage->getCompletionTokens();
 			$thought_tokens = (int) $token_usage->getThoughtTokens();
+			$total_tokens   = (int) $token_usage->getTotalTokens();
 			$finish_reason  = $this->extract_finish_reason( $result );
 			$response_model = (string) $result->getModelMetadata()->getId();
 
@@ -326,15 +338,17 @@ class Connector_AI_Client extends Connector {
 				'prompt_text'    => $pending['prompt_text'],
 				'response_text'  => $response_text,
 				'finish_reason'  => $finish_reason,
+				'total_tokens'   => $total_tokens,
 			);
 
 			$log_args = $this->append_result_context_to_log_args( $log_args, $event, $model, $result );
-			/* translators: 1: AI operation (e.g. "chat"), 2: provider slug, 3: model ID */
-			$message = esc_html__( '%1$s via %2$s/%3$s (tokens: %4$d/%6$d/%5$d) in %7$dms', 'stream' );
+			/* translators: 1: AI operation (e.g. "chat"), 2: provider slug, 3: model ID, 4: input token count, 5: output token count, 6: thought token count, 7: duration in milliseconds */
+			$message = __( '%1$s via %2$s/%3$s (tokens: %4$d/%6$d/%5$d) in %7$dms', 'stream' );
 
 			// Add the prompt and response text to the message if enabled.
 			if ( $this->is_prompt_and_response_logging_enabled() ) {
-				$message .= sprintf( "\n\n[%s]\n%s\n\n[%s]\n%s", esc_html__( 'Prompt', 'stream' ), '%8$s', esc_html__( 'Response', 'stream' ), '%9$s' );
+				/* translators: Placeholders %8$s and %9$s are the prompt and response text bodies. */
+				$message .= sprintf( "\n\n[%s]\n%s\n\n[%s]\n%s", __( 'Prompt', 'stream' ), '%8$s', __( 'Response', 'stream' ), '%9$s' );
 			}
 
 			$this->log(
@@ -368,7 +382,7 @@ class Connector_AI_Client extends Connector {
 	 * other enum-like objects — narrow fallbacks are kept for those.
 	 *
 	 * @param object[] $messages Array of Message DTOs from BeforeGenerateResultEvent.
-	 * @return string
+	 * @return array{text: string, has_sections: bool} Assembled prompt text and whether section headings were used.
 	 */
 	private function extract_prompt_text( array $messages ) {
 		$sections = array();
@@ -399,12 +413,18 @@ class Connector_AI_Client extends Connector {
 		}
 
 		if ( array() === $sections ) {
-			return '';
+			return array(
+				'text'         => '',
+				'has_sections' => false,
+			);
 		}
 
 		// Single user message — plain text, no heading.
 		if ( 1 === count( $sections ) && 'user' === $sections[0]['key'] ) {
-			return $sections[0]['body'];
+			return array(
+				'text'         => $sections[0]['body'],
+				'has_sections' => false,
+			);
 		}
 
 		$label_map = array(
@@ -420,10 +440,13 @@ class Connector_AI_Client extends Connector {
 			if ( '' === $label ) {
 				continue;
 			}
-			$blocks[] = '--- ' . $label . " ---\n" . $section['body'];
+			$blocks[] = '[' . $label . ']' . "\n" . $section['body'];
 		}
 
-		return implode( "\n\n", $blocks );
+		return array(
+			'text'         => implode( "\n\n", $blocks ),
+			'has_sections' => true,
+		);
 	}
 
 	/**
@@ -605,28 +628,31 @@ class Connector_AI_Client extends Connector {
 	 * text (no section headings), the user text is wrapped in a User heading so
 	 * both blocks are visually distinct in Stream's UI.
 	 *
-	 * @param string $message_prompt Text assembled from getMessages().
+	 * @param string $message_prompt    Text assembled from getMessages().
 	 * @param string $model_instruction Text from model/config getSystemInstruction().
+	 * @param bool   $has_sections      Whether $message_prompt already uses [Label] section headings.
 	 * @return string
 	 */
-	private function merge_model_system_instruction_into_prompt( $message_prompt, $model_instruction ) {
+	private function merge_model_system_instruction_into_prompt( $message_prompt, $model_instruction, $has_sections = false ) {
 		if ( '' === $model_instruction ) {
 			return $message_prompt;
 		}
 
-		$system_block = "\n[System]\n" . $model_instruction;
+		$system_label = __( 'System', 'stream' );
+		$user_label   = __( 'User', 'stream' );
+		$system_block = '[' . $system_label . ']' . "\n" . $model_instruction;
 
 		if ( '' === $message_prompt ) {
 			return $system_block;
 		}
 
 		// Already has section headings — prepend system block directly.
-		if ( false !== strpos( $message_prompt, '--- ' ) ) {
+		if ( $has_sections ) {
 			return $system_block . "\n\n" . $message_prompt;
 		}
 
 		// Plain user text — add a User heading for visual consistency.
-		return $system_block . "\n[User]\n" . $message_prompt;
+		return $system_block . sprintf( "\n[%s]\n", $user_label ) . $message_prompt;
 	}
 
 	// -------------------------------------------------------------------------
@@ -661,7 +687,7 @@ class Connector_AI_Client extends Connector {
 	 *
 	 * Supports AbstractEnum (WP AI Client), BackedEnum, UnitEnum, and objects
 	 * with a ->value property. Unknown values pass through as the operation label;
-	 * null or unresolvable capabilities fall back to 'chat'.
+	 * null or unresolvable capabilities fall back to 'unknown'.
 	 *
 	 * @param object|null $capability CapabilityEnum instance or null.
 	 * @return string
@@ -674,7 +700,7 @@ class Connector_AI_Client extends Connector {
 		$raw = strtolower( $this->enum_like_to_string( $capability ) );
 
 		if ( '' === $raw ) {
-			return 'unknown_operation';
+			return 'unknown';
 		}
 
 		return $raw;
@@ -682,11 +708,6 @@ class Connector_AI_Client extends Connector {
 
 	/**
 	 * Normalises a role or capability value to a string.
-	 *
-	 * WP AI Client AbstractEnum stores a private $value with __get() and
-	 * __toString() but no __isset(), so isset( $enum->value ) is always false.
-	 * Native PHP 8.1 BackedEnum throws if cast to string, so UnitEnum is
-	 * checked first.
 	 *
 	 * @param mixed $value Role or capability value.
 	 * @return string Empty string when nothing usable is found.
@@ -698,10 +719,6 @@ class Connector_AI_Client extends Connector {
 
 		if ( ! is_object( $value ) ) {
 			return is_scalar( $value ) ? (string) $value : '';
-		}
-
-		if ( $value instanceof \WordPress\AiClient\Common\AbstractEnum ) {
-			return isset( $value->value ) ? (string) $value->value : (string) $value->name;
 		}
 
 		if ( method_exists( $value, '__toString' ) ) {
@@ -766,20 +783,6 @@ class Connector_AI_Client extends Connector {
 				$log_args['candidate_count'] = (int) $result->getCandidateCount();
 			} elseif ( method_exists( $result, 'getCandidates' ) ) {
 				$log_args['candidate_count'] = count( $result->getCandidates() );
-			}
-		} catch ( \Throwable $e ) {
-			unset( $e );
-		}
-
-		// Total and thought tokens.
-		try {
-			$tu = $result->getTokenUsage();
-			if ( method_exists( $tu, 'getTotalTokens' ) ) {
-				$log_args['total_tokens'] = (int) $tu->getTotalTokens();
-			}
-			if ( method_exists( $tu, 'getThoughtTokens' ) ) {
-				$thought_tokens             = $tu->getThoughtTokens();
-				$log_args['thought_tokens'] = null === $thought_tokens ? null : (int) $thought_tokens;
 			}
 		} catch ( \Throwable $e ) {
 			unset( $e );

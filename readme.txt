@@ -154,18 +154,6 @@ Use only `$_SERVER['REMOTE_ADDR']` as the client IP address for event logs witho
 
 == Changelog ==
 
-= Unreleased =
-
-New Features:
-
-* Add AI Client connector for WordPress 7.0+: logs AI generation metadata (operation, provider, model, tokens, duration, and more) when the WordPress AI Client event dispatcher is available.
-
-Enhancements:
-
-* Show only the first line of multiline summaries in the Stream list table.
-
-[View the full release notes on GitHub.](https://github.com/xwp/stream/blob/master/changelog.md#unreleased)
-
 = 4.3.0 - July 18, 2026 =
 
 Enhancements:
