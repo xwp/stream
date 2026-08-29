@@ -99,11 +99,13 @@ class Ability_Get_Connectors extends Ability {
 			return array();
 		}
 
-		// Use the metadata-only accessor that includes admin-only connectors
-		// (settings, editor, menus, etc.) so REST/MCP callers see the same
-		// connector inventory an admin sees in wp-admin. The plain get_all()
-		// reflects only connectors registered for the current request type,
-		// which is the wrong frame for the abilities-facing "what exists on this site" answer.
-		return $this->plugin->connectors->get_all_including_admin_only();
+		// Get all available connectors so REST/MCP callers see the same
+		// connector inventory an admin sees in wp-admin.
+		$connectors = apply_filters(
+			'wp_stream_abilities_connectors',
+			$this->plugin->connectors->get_all( true )
+		);
+
+		return $connectors;
 	}
 }

@@ -102,7 +102,9 @@ We use npm as the canonical task runner for the project. The following commands 
 - `npm run lint` to check JS and PHP files for syntax and style issues.
 - `npm run deploy` to deploy the plugin to the WordPress.org repository.
 - `npm run cli -- wp info` where `wp info` is the CLI command to run inside the WordPress container. For example, use `npm run cli -- ls -lah` to list all files in the root of the WordPress installation.
-- `npm run test` to run PHPunit tests inside the WordPress container.
+- `npm run test` to run PHPunit unit and integration tests inside the WordPress container.
+- `composer test-unit` to run the fast PHP unit suite on the host (no Docker, no WordPress bootstrap).
+- `npm run test-unit` to run the fast PHP unit suite on docker container.
 - `npm run test-xdebug` will run the PHPunit tests with Xdebug enabled.
 - `npm run test-e2e` will run the Playwright E2E tests.
 - `npm run test-e2e-debug` will run the Playwright E2E tests in a debug mode (with Chromium browser and dev tools open).

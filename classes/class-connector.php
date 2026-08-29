@@ -62,6 +62,27 @@ abstract class Connector {
 	private $is_registered = false;
 
 	/**
+	 * Return translated connector label.
+	 *
+	 * @return string
+	 */
+	abstract public function get_label();
+
+	/**
+	 * Return translated context labels.
+	 *
+	 * @return array<string, string>
+	 */
+	abstract public function get_context_labels();
+
+	/**
+	 * Return translated action labels.
+	 *
+	 * @return array<string, string>
+	 */
+	abstract public function get_action_labels();
+
+	/**
 	 * Is the connector currently registered?
 	 *
 	 * @return boolean

@@ -13,11 +13,59 @@ namespace WP_Stream;
  */
 class Connectors {
 	/**
+	 * Built-in and integrated connector slugs.
+	 *
+	 * @var string[]
+	 */
+	const BUILTIN_CONNECTOR_SLUGS = array(
+		// Core Connectors.
+		'blogs',
+		'comments',
+		'editor',
+		'installer',
+		'media',
+		'menus',
+		'posts',
+		'settings',
+		'taxonomies',
+		'users',
+		'widgets',
+
+		// Integrated Connectors.
+		'acf',
+		'bbpress',
+		'buddypress',
+		'edd',
+		'gravityforms',
+		'jetpack',
+		'mercator',
+		'two-factor',
+		'user-switching',
+		'woocommerce',
+		'wordpress-seo',
+	);
+
+	/**
 	 * Holds instance of plugin object
 	 *
 	 * @var Plugin
 	 */
 	public $plugin;
+
+
+	/**
+	 * Fully-qualified builtin connector class names after files are included.
+	 *
+	 * @var string[]|null
+	 */
+	private $available_connectors = null;
+
+	/**
+	 * Instantiated connectors, keyed by slug. Filled once by instantiate_connector_classes().
+	 *
+	 * @var array<string, Connector>|null
+	 */
+	private $connector_instances = null;
 
 	/**
 	 * Registered connectors.
@@ -64,72 +112,68 @@ class Connectors {
 	}
 
 	/**
-	 * Load built-in connectors
+	 * Include builtin connector files and return structurally valid class names.
+	 *
+	 * @return string[] Fully-qualified class names.
 	 */
-	public function load_connectors() {
-		$connectors = array(
-			/**
-			 * Core Connectors
-			 */
-			'blogs',
-			'comments',
-			'editor',
-			'installer',
-			'media',
-			'menus',
-			'posts',
-			'settings',
-			'taxonomies',
-			'users',
-			'widgets',
+	private function get_available_connectors() {
+		if ( is_array( $this->available_connectors ) ) {
+			return $this->available_connectors;
+		}
 
-			/**
-			 * Integrated Connectors
-			 */
-			'acf',
-			'bbpress',
-			'buddypress',
-			'edd',
-			'gravityforms',
-			'jetpack',
-			'mercator',
-			'two-factor',
-			'user-switching',
-			'woocommerce',
-			'wordpress-seo',
-		);
+		$class_names = array();
 
-		// Get excluded connectors.
-		$excluded_connectors = array();
+		foreach ( self::BUILTIN_CONNECTOR_SLUGS as $slug ) {
+			include_once $this->plugin->locations['dir'] . '/connectors/class-connector-' . $slug . '.php';
 
-		$classes = array();
-		foreach ( $connectors as $connector ) {
-			// Load connector class file.
-			include_once $this->plugin->locations['dir'] . '/connectors/class-connector-' . $connector . '.php';
+			$class_name = sprintf( '\WP_Stream\Connector_%s', str_replace( '-', '_', $slug ) );
 
-			// Set fully qualified class name.
-			$class_name = sprintf( '\WP_Stream\Connector_%s', str_replace( '-', '_', $connector ) );
-
-			// Bail if no class loaded.
-			if ( ! class_exists( $class_name ) ) {
+			// We only add classes that extend Connector abstract class with required methods.
+			if ( ! class_exists( $class_name ) || ! is_subclass_of( $class_name, Connector::class ) ) {
 				continue;
 			}
 
-			// Initialize connector.
-			$class                   = new $class_name();
-			$classes[ $class->name ] = $class;
+			$class_names[] = $class_name;
 		}
 
-		/**
-		 * Allows for adding additional connectors via classes that extend Connector.
-		 *
-		 * @param array $classes An array of Connector objects.
-		 */
-		$connector_classes = apply_filters( 'wp_stream_connectors', $classes );
+		$this->available_connectors = $class_names;
 
-		foreach ( $connector_classes as $connector ) {
-			// Check if the connector class extends WP_Stream\Connector.
-			if ( ! is_subclass_of( $connector, 'WP_Stream\Connector' ) ) {
+		return $this->available_connectors;
+	}
+
+	/**
+	 * Instantiate connector classes. Memoizes so abilities do not new twice.
+	 *
+	 * @param string[] $class_names Fully-qualified class names.
+	 * @return array<string, Connector>
+	 */
+	private function instantiate_connector_classes( $class_names ) {
+		if ( is_array( $this->connector_instances ) ) {
+			return $this->connector_instances;
+		}
+
+		$classes = array();
+
+		foreach ( $class_names as $class_name ) {
+			$instance                   = new $class_name();
+			$classes[ $instance->name ] = $instance;
+		}
+
+		$this->connector_instances = $classes;
+
+		return $this->connector_instances;
+	}
+
+	/**
+	 * Filter, gate, and register connector instances.
+	 *
+	 * @param array $classes Connector instances keyed by slug.
+	 */
+	public function register_connector_instances( $classes ) {
+		$excluded_connectors = array();
+
+		foreach ( (array) $classes as $connector ) {
+			if ( ! $connector->is_dependency_satisfied() ) {
 				continue;
 			}
 
@@ -143,30 +187,9 @@ class Connectors {
 				continue;
 			}
 
-			// Run any final validations the connector may have before used.
-			if ( ! $connector->is_dependency_satisfied() ) {
-				continue;
-			}
-
-			// Register error for invalid any connector class.
-			if ( ! method_exists( $connector, 'get_label' ) ) {
-				/* translators: %s: connector class name, intended to provide help to developers (e.g. "Connector_BuddyPress") */
-				$this->plugin->admin->notice( sprintf( __( '%s class wasn\'t loaded because it doesn\'t implement the get_label method.', 'stream' ), $connector->name, 'Connector' ), true );
-				continue;
-			}
 			if ( ! method_exists( $connector, 'register' ) ) {
 				/* translators: %s: connector class name, intended to provide help to developers (e.g. "Connector_BuddyPress") */
 				$this->plugin->admin->notice( sprintf( __( '%s class wasn\'t loaded because it doesn\'t implement the register method.', 'stream' ), $connector->name, 'Connector' ), true );
-				continue;
-			}
-			if ( ! method_exists( $connector, 'get_context_labels' ) ) {
-				/* translators: %s: connector class name, intended to provide help to developers (e.g. "Connector_BuddyPress") */
-				$this->plugin->admin->notice( sprintf( __( '%s class wasn\'t loaded because it doesn\'t implement the get_context_labels method.', 'stream' ), $connector->name, 'Connector' ), true );
-				continue;
-			}
-			if ( ! method_exists( $connector, 'get_action_labels' ) ) {
-				/* translators: %s: connector class name, intended to provide help to developers (e.g. "Connector_BuddyPress") */
-				$this->plugin->admin->notice( sprintf( __( '%s class wasn\'t loaded because it doesn\'t implement the get_action_labels method.', 'stream' ), $connector->name, 'Connector' ), true );
 				continue;
 			}
 
@@ -223,166 +246,60 @@ class Connectors {
 	}
 
 	/**
+	 * Load built-in connectors
+	 */
+	public function load_connectors() {
+		$class_names = $this->get_available_connectors();
+		$instances   = $this->instantiate_connector_classes( $class_names );
+
+		/**
+		 * Allows for adding additional connectors via classes that extend Connector.
+		 *
+		 * @param array $instances An array of Connector objects.
+		 */
+		$instances = apply_filters( 'wp_stream_connectors', $instances );
+
+		$valid = array();
+		foreach ( (array) $instances as $connector ) {
+			// We only add classes that extend Connector abstract class with required methods.
+			if ( is_subclass_of( $connector, Connector::class ) ) {
+				$valid[ $connector->name ] = $connector;
+			}
+		}
+
+		$this->connector_instances = $valid;
+
+		$this->register_connector_instances( $this->connector_instances );
+	}
+
+	/**
 	 * Return the slugs of all registered connectors.
 	 *
+	 * @param bool $include_inactive Whether to include inactive connectors.
 	 * @return string[]
 	 */
-	public function get_slugs() {
-		return array_keys( (array) $this->connectors );
+	public function get_slugs( $include_inactive = false ) {
+		return array_keys( $include_inactive ? (array) $this->connector_instances : (array) $this->connectors );
 	}
 
 	/**
 	 * Return a normalized list of all registered connectors and their
 	 * context/action labels.
 	 *
+	 * @param bool $include_inactive Whether to include inactive connectors.
 	 * @return array<int, array{slug:string,label:string,contexts:array<string,string>,actions:array<string,string>}>
 	 */
-	public function get_all() {
-		$out = array();
+	public function get_all( $include_inactive = false ) {
+		$out        = array();
+		$connectors = $include_inactive ? (array) $this->connector_instances : (array) $this->connectors;
 
-		foreach ( (array) $this->connectors as $slug => $connector ) {
+		foreach ( $connectors as $slug => $connector ) {
 			$out[] = array(
 				'slug'     => (string) $slug,
 				'label'    => method_exists( $connector, 'get_label' ) ? (string) $connector->get_label() : (string) $slug,
 				'contexts' => method_exists( $connector, 'get_context_labels' ) ? (array) $connector->get_context_labels() : array(),
 				'actions'  => method_exists( $connector, 'get_action_labels' ) ? (array) $connector->get_action_labels() : array(),
 			);
-		}
-
-		return $out;
-	}
-
-	/**
-	 * Return metadata for every Stream connector, including ones that
-	 * load_connectors() skipped because their `register_frontend` is false
-	 * and the current request isn't wp-admin (REST is `! is_admin()`, so
-	 * connectors like "settings", "editor", "menus" are otherwise invisible
-	 * to abilities). Walks the connector class list once and asks each
-	 * instance for its identity, never calling register() — so no hooks
-	 * fire and the live $this->connectors registry stays exactly as
-	 * load_connectors() built it.
-	 *
-	 * Intended for the abilities layer (stream/get-connectors,
-	 * stream/create-exclusion-rule validation) where the answer should
-	 * reflect "what connectors exist on this site" rather than "what
-	 * connectors loaded their hooks for this specific request".
-	 *
-	 * @return array<int, array{slug:string,label:string,contexts:array<string,string>,actions:array<string,string>}>
-	 */
-	public function get_all_including_admin_only() {
-		$out = array();
-
-		foreach ( $this->build_full_connector_classes() as $connector ) {
-			$out[] = array(
-				'slug'     => (string) $connector->name,
-				'label'    => method_exists( $connector, 'get_label' ) ? (string) $connector->get_label() : (string) $connector->name,
-				'contexts' => method_exists( $connector, 'get_context_labels' ) ? (array) $connector->get_context_labels() : array(),
-				'actions'  => method_exists( $connector, 'get_action_labels' ) ? (array) $connector->get_action_labels() : array(),
-			);
-		}
-
-		/**
-		 * Filter the connector list surfaced to the Abilities API.
-		 *
-		 * Mirrors `wp_stream_connectors` for the abilities-facing list so
-		 * third parties can add/remove entries shown to REST/MCP callers
-		 * without affecting which connectors actually register hooks.
-		 *
-		 * @param array $out Connector metadata entries.
-		 */
-		return apply_filters( 'wp_stream_abilities_connectors', $out );
-	}
-
-	/**
-	 * Return slugs of every Stream connector, including admin-only ones.
-	 * Companion to get_all_including_admin_only(); used by abilities that
-	 * need to validate an incoming connector slug (e.g. stream/create-
-	 * exclusion-rule) against the full site-wide list rather than the
-	 * request-context-gated $this->connectors registry.
-	 *
-	 * @return string[]
-	 */
-	public function get_all_slugs_including_admin_only() {
-		$slugs = array();
-
-		foreach ( $this->build_full_connector_classes() as $connector ) {
-			$slugs[] = (string) $connector->name;
-		}
-
-		return $slugs;
-	}
-
-	/**
-	 * Instantiate every built-in and integrated connector class and return
-	 * the ones whose dependencies are satisfied, regardless of the
-	 * `register_admin` / `register_frontend` gates that load_connectors()
-	 * applies. Helper for the metadata-only accessors above; does not
-	 * register hooks and does not mutate $this->connectors.
-	 *
-	 * @return Connector[]
-	 */
-	protected function build_full_connector_classes() {
-		// Same canonical slug list load_connectors() uses. Keep in sync.
-		$connectors = array(
-			// Core Connectors.
-			'blogs',
-			'comments',
-			'editor',
-			'installer',
-			'media',
-			'menus',
-			'posts',
-			'settings',
-			'taxonomies',
-			'users',
-			'widgets',
-
-			// Integrated Connectors.
-			'acf',
-			'bbpress',
-			'buddypress',
-			'edd',
-			'gravityforms',
-			'jetpack',
-			'mercator',
-			'two-factor',
-			'user-switching',
-			'woocommerce',
-			'wordpress-seo',
-		);
-
-		$classes = array();
-		foreach ( $connectors as $connector ) {
-			include_once $this->plugin->locations['dir'] . '/connectors/class-connector-' . $connector . '.php';
-
-			$class_name = sprintf( '\WP_Stream\Connector_%s', str_replace( '-', '_', $connector ) );
-			if ( ! class_exists( $class_name ) ) {
-				continue;
-			}
-
-			$class                   = new $class_name();
-			$classes[ $class->name ] = $class;
-		}
-
-		/** This filter is documented in classes/class-connectors.php */
-		$connector_classes = apply_filters( 'wp_stream_connectors', $classes );
-
-		$out = array();
-		foreach ( $connector_classes as $connector ) {
-			if ( ! is_subclass_of( $connector, 'WP_Stream\Connector' ) ) {
-				continue;
-			}
-			if ( ! $connector->is_dependency_satisfied() ) {
-				continue;
-			}
-			if (
-				! method_exists( $connector, 'get_label' )
-				|| ! method_exists( $connector, 'get_context_labels' )
-				|| ! method_exists( $connector, 'get_action_labels' )
-			) {
-				continue;
-			}
-			$out[] = $connector;
 		}
 
 		return $out;
