@@ -88,8 +88,8 @@ class Query {
 		FROM $wpdb->stream
 		{$join}
 		WHERE 1=1 {$where}
-		{$orderby}
 		{$groupby}
+		{$orderby}
 		{$limits}";
 
 		/**
