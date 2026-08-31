@@ -6,7 +6,7 @@ use ReflectionProperty;
 use WP_CLI;
 use WP_CLI\ExitException;
 
-class Test_CLI extends WP_StreamTestCase {
+class CLI_Test extends WP_StreamTestCase {
 	/**
 	 * Invokes the private CLI::connection() method, capturing any
 	 * WP_CLI::error() exit as an ExitException instead of terminating
@@ -30,6 +30,16 @@ class Test_CLI extends WP_StreamTestCase {
 	}
 
 	/**
+	 * Appends a never-true predicate so the connection check matches no rows.
+	 *
+	 * @param string $where Existing WHERE fragment.
+	 * @return string
+	 */
+	public static function force_no_query_matches( $where ) {
+		return $where . ' AND 1=0';
+	}
+
+	/**
 	 * A query that legitimately matches zero records is not a disconnection.
 	 */
 	public function test_connection_does_not_error_on_empty_result() {
@@ -37,15 +47,12 @@ class Test_CLI extends WP_StreamTestCase {
 
 		// Force the connection check's query to match nothing, without
 		// touching any actual data other tests rely on.
-		$force_no_matches = function ( $where ) {
-			return $where . ' AND 1=0';
-		};
-		add_filter( 'wp_stream_db_query_where', $force_no_matches );
+		add_filter( 'wp_stream_db_query_where', array( self::class, 'force_no_query_matches' ) );
 
 		try {
 			$this->invoke_connection();
 		} finally {
-			remove_filter( 'wp_stream_db_query_where', $force_no_matches );
+			remove_filter( 'wp_stream_db_query_where', array( self::class, 'force_no_query_matches' ) );
 		}
 
 		// Reaching this line means WP_CLI::error() was never triggered.
