@@ -64,7 +64,7 @@ class Connector_Media_Test extends WP_StreamTestCase {
 	}
 
 	public function test_callback_add_attachment_with_parent() {
-		$post_id = self::factory()->post->create( array( 'post_title' => 'Test post' ) );
+		$post_id                  = self::factory()->post->create( array( 'post_title' => 'Test post' ) );
 		self::$expected_parent_id = $post_id;
 
 		$this->mock->expects( $this->once() )
@@ -112,7 +112,7 @@ class Connector_Media_Test extends WP_StreamTestCase {
 		return is_array( $context )
 			&& 'Document one' === ( $context['name'] ?? null )
 			&& 'Test post' === ( $context['parent_title'] ?? null )
-			&& self::$expected_parent_id === ( $context['parent_id'] ?? null );
+			&& ( $context['parent_id'] ?? null ) === self::$expected_parent_id;
 	}
 
 	public function test_callback_add_attachment_with_invalid_parent() {

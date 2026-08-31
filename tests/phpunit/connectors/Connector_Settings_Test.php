@@ -290,7 +290,7 @@ class Connector_Settings_Test extends WP_StreamTestCase {
 	 */
 	public static function assert_mailserver_login_not_redacted( $logged ): bool {
 		return is_array( $logged )
-			&& self::$expected_mailserver_login_old === ( $logged['old_value'] ?? null )
+			&& ( $logged['old_value'] ?? null ) === self::$expected_mailserver_login_old
 			&& 'new-login' === ( $logged['value'] ?? null )
 			&& '' !== ( $logged['value'] ?? null );
 	}

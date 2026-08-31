@@ -64,7 +64,7 @@ class Connector_Comments_Test extends WP_StreamTestCase {
 	}
 
 	public function test_callback_wp_insert_comment_reply() {
-		$post_id = wp_insert_post(
+		$post_id    = wp_insert_post(
 			array(
 				'post_title'   => 'Test post',
 				'post_content' => 'Lorem ipsum dolor...',

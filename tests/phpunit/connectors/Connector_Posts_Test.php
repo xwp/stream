@@ -48,13 +48,12 @@ class Connector_Posts_Test extends WP_StreamTestCase {
 	 */
 	public function test_callback_transition_post_status_drafted() {
 
-
 		self::$expected_post_context = array(
-							'post_title'    => 'Test post',
-							'singular_name' => 'post',
-							'new_status'    => 'draft',
-							'old_status'    => 'new',
-						);
+			'post_title'    => 'Test post',
+			'singular_name' => 'post',
+			'new_status'    => 'draft',
+			'old_status'    => 'new',
+		);
 
 		$this->mock->expects( $this->once() )
 			->method( 'log' )
@@ -89,7 +88,7 @@ class Connector_Posts_Test extends WP_StreamTestCase {
 	 * Tests transition_post_status: published.
 	 */
 	public function test_callback_transition_post_status_published() {
-$post_id = wp_insert_post(
+		$post_id = wp_insert_post(
 			array(
 				'post_title'    => 'Test post',
 				'post_content'  => 'Lorem ipsum dolor...',
@@ -100,11 +99,11 @@ $post_id = wp_insert_post(
 		);
 
 		self::$expected_post_context = array(
-							'post_title'    => 'Test post',
-							'singular_name' => 'post',
-							'new_status'    => 'publish',
-							'old_status'    => 'draft',
-						);
+			'post_title'    => 'Test post',
+			'singular_name' => 'post',
+			'new_status'    => 'publish',
+			'old_status'    => 'draft',
+		);
 
 		$this->mock->expects( $this->once() )
 			->method( 'log' )
@@ -136,7 +135,7 @@ $post_id = wp_insert_post(
 	 * Tests transition_post_status: unpublished.
 	 */
 	public function test_callback_transition_post_status_unpublished() {
-$post_id = wp_insert_post(
+		$post_id = wp_insert_post(
 			array(
 				'post_title'    => 'Test post',
 				'post_content'  => 'Lorem ipsum dolor...',
@@ -147,11 +146,11 @@ $post_id = wp_insert_post(
 		);
 
 		self::$expected_post_context = array(
-							'post_title'    => 'Test post',
-							'singular_name' => 'post',
-							'new_status'    => 'draft',
-							'old_status'    => 'publish',
-						);
+			'post_title'    => 'Test post',
+			'singular_name' => 'post',
+			'new_status'    => 'draft',
+			'old_status'    => 'publish',
+		);
 
 		$this->mock->expects( $this->once() )
 			->method( 'log' )
@@ -183,7 +182,7 @@ $post_id = wp_insert_post(
 	 * Tests transition_post_status: draft_saved.
 	 */
 	public function test_callback_transition_post_status_draft_saved() {
-$post_id = wp_insert_post(
+		$post_id = wp_insert_post(
 			array(
 				'post_title'    => 'Test post',
 				'post_content'  => 'Lorem ipsum dolor...',
@@ -194,11 +193,11 @@ $post_id = wp_insert_post(
 		);
 
 		self::$expected_post_context = array(
-							'post_title'    => 'Test post',
-							'singular_name' => 'post',
-							'new_status'    => 'draft',
-							'old_status'    => 'draft',
-						);
+			'post_title'    => 'Test post',
+			'singular_name' => 'post',
+			'new_status'    => 'draft',
+			'old_status'    => 'draft',
+		);
 
 		$this->mock->expects( $this->once() )
 			->method( 'log' )
@@ -230,7 +229,7 @@ $post_id = wp_insert_post(
 	 * Tests transition_post_status: pending.
 	 */
 	public function test_callback_transition_post_status_pending() {
-$post_id = wp_insert_post(
+		$post_id = wp_insert_post(
 			array(
 				'post_title'    => 'Test post',
 				'post_content'  => 'Lorem ipsum dolor...',
@@ -241,11 +240,11 @@ $post_id = wp_insert_post(
 		);
 
 		self::$expected_post_context = array(
-							'post_title'    => 'Test post',
-							'singular_name' => 'post',
-							'new_status'    => 'pending',
-							'old_status'    => 'draft',
-						);
+			'post_title'    => 'Test post',
+			'singular_name' => 'post',
+			'new_status'    => 'pending',
+			'old_status'    => 'draft',
+		);
 
 		$this->mock->expects( $this->once() )
 			->method( 'log' )
@@ -277,7 +276,7 @@ $post_id = wp_insert_post(
 	 * Tests transition_post_status: scheduled.
 	 */
 	public function test_callback_transition_post_status_scheduled() {
-$post_id = wp_insert_post(
+		$post_id = wp_insert_post(
 			array(
 				'post_title'    => 'Test post',
 				'post_content'  => 'Lorem ipsum dolor...',
@@ -288,11 +287,11 @@ $post_id = wp_insert_post(
 		);
 
 		self::$expected_post_context = array(
-							'post_title'    => 'Test post',
-							'singular_name' => 'post',
-							'new_status'    => 'future',
-							'old_status'    => 'pending',
-						);
+			'post_title'    => 'Test post',
+			'singular_name' => 'post',
+			'new_status'    => 'future',
+			'old_status'    => 'pending',
+		);
 
 		$this->mock->expects( $this->once() )
 			->method( 'log' )
@@ -327,7 +326,7 @@ $post_id = wp_insert_post(
 	 * Tests transition_post_status: scheduled_published.
 	 */
 	public function test_callback_transition_post_status_scheduled_published() {
-$time = strtotime( 'tomorrow' );
+		$time    = strtotime( 'tomorrow' );
 		$post_id = wp_insert_post(
 			array(
 				'post_title'    => 'Test post',
@@ -339,11 +338,11 @@ $time = strtotime( 'tomorrow' );
 		);
 
 		self::$expected_post_context = array(
-							'post_title'    => 'Test post',
-							'singular_name' => 'post',
-							'new_status'    => 'publish',
-							'old_status'    => 'future',
-						);
+			'post_title'    => 'Test post',
+			'singular_name' => 'post',
+			'new_status'    => 'publish',
+			'old_status'    => 'future',
+		);
 
 		$this->mock->expects( $this->once() )
 			->method( 'log' )
@@ -378,7 +377,7 @@ $time = strtotime( 'tomorrow' );
 	 * Tests transition_post_status: private.
 	 */
 	public function test_callback_transition_post_status_private() {
-$post_id = wp_insert_post(
+		$post_id = wp_insert_post(
 			array(
 				'post_title'    => 'Test post',
 				'post_content'  => 'Lorem ipsum dolor...',
@@ -389,11 +388,11 @@ $post_id = wp_insert_post(
 		);
 
 		self::$expected_post_context = array(
-							'post_title'    => 'Test post',
-							'singular_name' => 'post',
-							'new_status'    => 'private',
-							'old_status'    => 'publish',
-						);
+			'post_title'    => 'Test post',
+			'singular_name' => 'post',
+			'new_status'    => 'private',
+			'old_status'    => 'publish',
+		);
 
 		$this->mock->expects( $this->once() )
 			->method( 'log' )
@@ -425,7 +424,7 @@ $post_id = wp_insert_post(
 	 * Tests transition_post_status: trashed.
 	 */
 	public function test_callback_transition_post_status_trashed() {
-$post_id = wp_insert_post(
+		$post_id = wp_insert_post(
 			array(
 				'post_title'    => 'Test post',
 				'post_content'  => 'Lorem ipsum dolor...',
@@ -436,11 +435,11 @@ $post_id = wp_insert_post(
 		);
 
 		self::$expected_post_context = array(
-							'post_title'    => 'Test post',
-							'singular_name' => 'post',
-							'new_status'    => 'trash',
-							'old_status'    => 'private',
-						);
+			'post_title'    => 'Test post',
+			'singular_name' => 'post',
+			'new_status'    => 'trash',
+			'old_status'    => 'private',
+		);
 
 		$this->mock->expects( $this->once() )
 			->method( 'log' )
@@ -472,7 +471,7 @@ $post_id = wp_insert_post(
 	 * Tests transition_post_status: untrashed.
 	 */
 	public function test_callback_transition_post_status_untrashed() {
-$post_id = wp_insert_post(
+		$post_id = wp_insert_post(
 			array(
 				'post_title'    => 'Test post',
 				'post_content'  => 'Lorem ipsum dolor...',
@@ -483,11 +482,11 @@ $post_id = wp_insert_post(
 		);
 
 		self::$expected_post_context = array(
-							'post_title'    => 'Test post',
-							'singular_name' => 'post',
-							'new_status'    => 'publish',
-							'old_status'    => 'trash',
-						);
+			'post_title'    => 'Test post',
+			'singular_name' => 'post',
+			'new_status'    => 'publish',
+			'old_status'    => 'trash',
+		);
 
 		$this->mock->expects( $this->once() )
 			->method( 'log' )
@@ -519,7 +518,7 @@ $post_id = wp_insert_post(
 	 * Tests transition_post_status: updated.
 	 */
 	public function test_callback_transition_post_status_updated() {
-$post_id = wp_insert_post(
+		$post_id = wp_insert_post(
 			array(
 				'post_title'    => 'Test post',
 				'post_content'  => 'Lorem ipsum dolor...',
@@ -530,11 +529,11 @@ $post_id = wp_insert_post(
 		);
 
 		self::$expected_post_context = array(
-							'post_title'    => 'Test post',
-							'singular_name' => 'post',
-							'new_status'    => 'publish',
-							'old_status'    => 'publish',
-						);
+			'post_title'    => 'Test post',
+			'singular_name' => 'post',
+			'new_status'    => 'publish',
+			'old_status'    => 'publish',
+		);
 
 		$this->mock->expects( $this->once() )
 			->method( 'log' )
@@ -567,13 +566,12 @@ $post_id = wp_insert_post(
 	 */
 	public function test_callback_transition_post_status_created_published() {
 
-
 		self::$expected_post_context = array(
-							'post_title'    => 'Test post',
-							'singular_name' => 'post',
-							'new_status'    => 'publish',
-							'old_status'    => 'new',
-						);
+			'post_title'    => 'Test post',
+			'singular_name' => 'post',
+			'new_status'    => 'publish',
+			'old_status'    => 'new',
+		);
 
 		$this->mock->expects( $this->once() )
 			->method( 'log' )
