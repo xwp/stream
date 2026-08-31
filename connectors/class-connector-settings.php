@@ -739,6 +739,10 @@ class Connector_Settings extends Connector {
 
 		$changed_options = array();
 
+		// sanitize_value() only flattens complex types to strings, so on its own
+		// it happily persists credential settings such as mailserver_pass in
+		// record metadata. Redaction is applied per field, keyed on the setting
+		// name, before the value reaches the log.
 		if ( $this->is_option_group( $value ) ) {
 			foreach ( $this->get_changed_keys( $old_value, $value ) as $field_key ) {
 				if ( ! $this->is_key_ignored( $option, $field_key ) ) {
@@ -748,8 +752,8 @@ class Connector_Settings extends Connector {
 						'option'     => $option,
 						'option_key' => $field_key,
 						'context'    => ( false !== $key_context ? $key_context : $context ),
-						'old_value'  => isset( $old_value[ $field_key ] ) ? $this->sanitize_value( $old_value[ $field_key ] ) : null,
-						'value'      => isset( $value[ $field_key ] ) ? $this->sanitize_value( $value[ $field_key ] ) : null,
+						'old_value'  => isset( $old_value[ $field_key ] ) ? $this->redact_secret_values( $this->sanitize_value( $old_value[ $field_key ] ), $field_key ) : null,
+						'value'      => isset( $value[ $field_key ] ) ? $this->redact_secret_values( $this->sanitize_value( $value[ $field_key ] ), $field_key ) : null,
 					);
 				}
 			}
@@ -758,8 +762,8 @@ class Connector_Settings extends Connector {
 				'label'     => $this->get_field_label( $option ),
 				'option'    => $option,
 				'context'   => $context,
-				'old_value' => $this->sanitize_value( $old_value ),
-				'value'     => $this->sanitize_value( $value ),
+				'old_value' => $this->redact_secret_values( $this->sanitize_value( $old_value ), $option ),
+				'value'     => $this->redact_secret_values( $this->sanitize_value( $value ), $option ),
 			);
 		}
 

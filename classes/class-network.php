@@ -86,18 +86,51 @@ class Network {
 	public function ajax_network_admin() {
 		$http_referer = isset( $_SERVER['HTTP_REFERER'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : '';
 
+		// Prefer filterable `wp_doing_ajax()` (WP 4.7+); the plugin supports 4.6.
+		$doing_ajax = function_exists( 'wp_doing_ajax' )
+			? wp_doing_ajax()
+			: ( defined( 'DOING_AJAX' ) && DOING_AJAX );
+
 		if (
-			defined( 'DOING_AJAX' )
-			&&
-			DOING_AJAX
+			$doing_ajax
 			&&
 			0 === stripos( $http_referer, network_admin_url() )
+			&&
+			$this->can_view_network_records()
 		) {
 			define( 'WP_NETWORK_ADMIN', true );
 			return WP_NETWORK_ADMIN;
 		}
 
 		return false;
+	}
+
+	/**
+	 * Whether the current user is allowed to read records across the whole
+	 * network (and to be treated as being in the Network Admin).
+	 *
+	 * The Referer prefix checked in ajax_network_admin() is caller-controlled,
+	 * so it can only ever be a UI hint about where a request came from -- never
+	 * a source of authority. Network-wide record access additionally requires a
+	 * real network capability, otherwise a site-level Stream viewer could spoof
+	 * the header to lift the per-blog restriction applied in
+	 * network_query_args() or to have their actions logged against blog_id 0.
+	 *
+	 * @return bool
+	 */
+	public function can_view_network_records() {
+		if ( ! is_multisite() ) {
+			return false;
+		}
+
+		// WP-CLI runs with shell-level access and usually with no logged-in
+		// user, so capability checks would fail for a legitimate operator and
+		// break `wp stream query --blog_id=N`. It sits outside this boundary.
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			return true;
+		}
+
+		return current_user_can( 'manage_network_options' );
 	}
 
 	/**
@@ -501,6 +534,19 @@ class Network {
 	 */
 	public function network_query_args( $args ) {
 		$args['site_id'] = is_numeric( $args['site_id'] ) ? $args['site_id'] : get_current_site()->id;
+
+		// Only users with a network capability may choose which blog to read
+		// from. For everyone else the requested blog_id is ignored entirely and
+		// forced to the current blog: a numeric type check is not an
+		// authorization check, and the Stream tables are shared across the
+		// whole network, so honouring an arbitrary ?blog_id= would let a
+		// site-level viewer read another site's activity.
+		if ( ! $this->can_view_network_records() ) {
+			$args['blog_id'] = get_current_blog_id();
+
+			return $args;
+		}
+
 		$args['blog_id'] = is_numeric( $args['blog_id'] ) ? $args['blog_id'] : ( is_network_admin() ? null : get_current_blog_id() );
 
 		return $args;
