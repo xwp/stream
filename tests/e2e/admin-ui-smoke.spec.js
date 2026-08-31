@@ -4,6 +4,11 @@
 import { test, expect } from '@wordpress/e2e-test-utils-playwright';
 
 /**
+ * Internal dependencies
+ */
+import { newAuthedPage } from './helpers/stream-plugin';
+
+/**
  * Admin UI smoke test for the Stream plugin.
  *
  * Loads the main Stream admin screens and asserts that core
@@ -20,7 +25,7 @@ const consoleErrors = [];
 const pageErrors = [];
 
 test.beforeAll( async ( { browser } ) => {
-	page = await browser.newPage();
+	page = await newAuthedPage( browser );
 
 	page.on( 'console', ( msg ) => {
 		if ( msg.type() === 'error' ) {
@@ -30,29 +35,9 @@ test.beforeAll( async ( { browser } ) => {
 	page.on( 'pageerror', ( err ) => {
 		pageErrors.push( err.message );
 	} );
-
-	// The setup fixture deactivates Stream network-wide before the suite.
-	// Reactivate it so the Stream admin pages are reachable.
-	await page.goto( '/wp-admin/network/plugins.php' );
-	const activate = page.getByLabel( 'Network Activate Stream' );
-	if ( await activate.isVisible() ) {
-		// eslint-disable-next-line no-console
-		console.log( 'Activating Stream for admin UI smoke tests.' );
-		await activate.click();
-	}
 } );
 
 test.afterAll( async () => {
-	// Deactivate Stream again so other suites start from the same state
-	// as the shared setup fixture.
-	await page.goto( '/wp-admin/network/plugins.php' );
-	const deactivate = page.getByLabel( 'Network Deactivate Stream' );
-	if ( await deactivate.isVisible() ) {
-		// eslint-disable-next-line no-console
-		console.log( 'Deactivating Stream after admin UI smoke tests.' );
-		await deactivate.click();
-	}
-
 	// eslint-disable-next-line no-console
 	console.log( `Console errors captured: ${ consoleErrors.length }` );
 	consoleErrors.forEach( ( e, i ) => {
@@ -66,6 +51,8 @@ test.afterAll( async () => {
 			' | ',
 		) }`,
 	).toEqual( [] );
+
+	await page.context().close();
 } );
 
 test.describe( 'Admin UI smoke', () => {
