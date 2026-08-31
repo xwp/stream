@@ -667,9 +667,9 @@ class Test_WP_Stream_Connector_AI_Client extends WP_StreamTestCase {
 	}
 
 	/**
-	 * Summary token placeholders render as input/output/thought in that order.
+	 * Summary token placeholders render as input/thought/output (%4$d/%6$d/%5$d).
 	 */
-	public function test_log_message_token_order_is_input_output_thought() {
+	public function test_log_message_token_order_is_input_thought_output() {
 		self::$captured_log_message = null;
 		self::$captured_log_args    = null;
 
@@ -696,8 +696,8 @@ class Test_WP_Stream_Connector_AI_Client extends WP_StreamTestCase {
 		$this->assertSame( 0, self::$captured_log_args['thought_tokens'] );
 
 		$rendered = vsprintf( self::$captured_log_message, array_values( self::$captured_log_args ) );
-		$this->assertStringContainsString( '(tokens: 10/5/0)', $rendered );
-		$this->assertStringNotContainsString( '(tokens: 10/0/5)', $rendered );
+		$this->assertStringContainsString( '(tokens: 10/0/5)', $rendered );
+		$this->assertStringNotContainsString( '(tokens: 10/5/0)', $rendered );
 	}
 
 	/**
