@@ -133,6 +133,49 @@ class Test_WP_Stream_Connector_Users extends WP_StreamTestCase {
 		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_retrieve_password' ) );
 	}
 
+	/**
+	 * Email-shaped login that is not the user_email must still log.
+	 *
+	 * Core passes user_login to retrieve_password. Looking up by email first
+	 * returns false when login looks like an email but differs from user_email.
+	 */
+	public function test_callback_retrieve_password_with_email_shaped_login() {
+		$user_id = self::factory()->user->create(
+			array(
+				'user_login'   => 'john@example.com',
+				'user_email'   => 'different@example.com',
+				'display_name' => 'EmailLoginGuy',
+			)
+		);
+		$user    = get_user_by( 'id', $user_id );
+
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->with(
+				$this->equalTo( __( '%s\'s password was requested to be reset', 'stream' ) ),
+				$this->equalTo( array( 'display_name' => 'EmailLoginGuy' ) ),
+				$this->equalTo( $user_id ),
+				$this->equalTo( 'sessions' ),
+				$this->equalTo( 'forgot-password' ),
+				$this->equalTo( $user_id )
+			);
+
+		do_action( 'retrieve_password', $user->user_login );
+
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_retrieve_password' ) );
+	}
+
+	/**
+	 * Unknown login must not call log or trigger property-on-bool warnings.
+	 */
+	public function test_callback_retrieve_password_with_unknown_user() {
+		$this->mock->expects( $this->never() )->method( 'log' );
+
+		do_action( 'retrieve_password', 'nonexistent-user-xyz' );
+
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_retrieve_password' ) );
+	}
+
 	public function test_callback_set_logged_in_cookie() {
 		// Create user.
 		$user_id = self::factory()->user->create( array( 'display_name' => 'TestGuy' ) );
