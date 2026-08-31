@@ -5,6 +5,8 @@ on: [push, workflow_call]
 env:
   # Opt into Node.js 24 for JavaScript actions that still ship a Node 20 runtime.
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+  # PHPUnit 11 needs PHP ≥ 8.2. Pin the wordpress image until ghcr latest is rebuilt.
+  WORDPRESS_IMAGE_VERSION: php8.2
 
 jobs:
 
@@ -29,7 +31,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: '8.2'
           tools: composer:v2
 
       - name: Get Composer cache directory
@@ -90,7 +92,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: '8.2'
           tools: composer:v2
 
       - name: Get Composer cache directory

@@ -17,6 +17,7 @@
 
 	<rule ref="WordPress-Core">
 		<exclude name="WordPress.Files.FileName.InvalidClassFileName" />
+		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase" />
 		<exclude name="WordPress.WP.I18n.MissingTranslatorsComment" />
 	</rule>
 
