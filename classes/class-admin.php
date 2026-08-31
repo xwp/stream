@@ -1748,16 +1748,20 @@ class Admin {
 	/**
 	 * Check if a particular role has access
 	 *
+	 * The user_has_cap/role_has_cap filters that call this are registered in the
+	 * constructor, but the Settings object is not constructed until init priority 9.
+	 * A capability check fired before then (e.g. by a security plugin evaluating
+	 * firewall rules on plugins_loaded) must be denied rather than fatal on the
+	 * null options chain.
+	 *
 	 * @param string $role  User role.
 	 *
 	 * @return bool
 	 */
 	private function role_can_view( $role ) {
-		if ( in_array( $role, $this->plugin->settings->options['general_role_access'], true ) ) {
-			return true;
-		}
+		$allowed_roles = $this->plugin->settings->options['general_role_access'] ?? array();
 
-		return false;
+		return in_array( $role, (array) $allowed_roles, true );
 	}
 
 	/**

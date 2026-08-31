@@ -260,10 +260,14 @@ class Connector_Users extends Connector {
 	 * @param string $user_login  User login.
 	 */
 	public function callback_retrieve_password( $user_login ) {
-		if ( wp_stream_filter_var( $user_login, FILTER_VALIDATE_EMAIL ) ) {
+		// Core passes user_login; try login first so email-shaped logins resolve.
+		$user = get_user_by( 'login', $user_login );
+		if ( ! $user && is_email( $user_login ) ) {
 			$user = get_user_by( 'email', $user_login );
-		} else {
-			$user = get_user_by( 'login', $user_login );
+		}
+
+		if ( ! is_a( $user, 'WP_User' ) ) {
+			return;
 		}
 
 		$this->log(

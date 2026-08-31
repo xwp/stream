@@ -3,7 +3,7 @@ Contributors: xwp
 Tags: activity log, audit log, event log, user tracking, security
 Requires at least: 4.6
 Tested up to: 7.0
-Stable tag: 4.3.0
+Stable tag: 4.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -147,12 +147,32 @@ Thank you for wanting to make Stream better for everyone!
 
 == Upgrade Notice ==
 
+= 4.4.0 =
+
+On multisite, access to the records of another site and changes to network-wide settings now need the `manage_network_options` capability. Stream no longer writes integration credentials, such as API keys and tokens, into option-change records. See the changelog for details.
+
 = 4.0.0 =
 
 Use only `$_SERVER['REMOTE_ADDR']` as the client IP address for event logs without additional support for `X-Forwarded-For` HTTP request header value which could be spoofed. See the changelog for additional details.
 
 
 == Changelog ==
+
+= 4.4.0 - August 31, 2026 =
+
+Security:
+
+* Keep multisite record reads inside the current site, and make a network capability necessary for changes to network-wide settings.
+* Remove integration credentials from option-change records. Secret values now show as `[redacted]`.
+* Withhold alert destination credentials, such as Slack webhook URLs, from the `stream/get-alerts` ability.
+
+Bug Fixes:
+
+* Correct a false "SITE IS DISCONNECTED" error from `wp stream query` on a site with no records.
+* Correct a fatal error when a Stream capability check runs before `init`.
+* Correct a PHP warning for a password reset request that gives an unknown user.
+
+[View the full release notes on GitHub.](https://github.com/xwp/stream/blob/master/changelog.md#440---august-31-2026)
 
 = 4.3.0 - July 18, 2026 =
 
@@ -190,29 +210,6 @@ Bug Fixes:
 
 = 4.2.0 - May 28, 2026 =
 
-New Features:
-
-* Expose Stream abilities via the WordPress MCP Adapter when present, enabling AI tools to query Stream records through the Abilities API.
-
-Bug Fixes:
-
-* Fix unbounded growth of `stream` / `stream_meta` tables: the TTL-based auto-purge now runs via Action Scheduler with batched deletion, resolving database bloat on large sites.
-* Fix orphan `stream_meta` rows accumulating across repeated purge cycles with a terminal orphan reaper at the end of every auto-purge chain.
-* Skip Action Scheduler queries on front-end pageloads, eliminating unnecessary queries per pageview.
-
-Enhancements:
-
-* Add a Clean Orphaned Meta link under Settings → Advanced for one-shot cleanup on already-bloated installs.
-* Replace the legacy `wp_stream_auto_purge` WP-Cron event with a recurring Action Scheduler action, with run history visible under Tools → Scheduled Actions.
-
-[View the full release notes on GitHub.](https://github.com/xwp/stream/blob/master/changelog.md#420---may-28-2026)
-
-= 4.1.2 - February 19, 2026 =
-
-[View the release notes.](https://github.com/xwp/stream/blob/master/changelog.md#412---february-19-2026)
-
-= 4.1.1 - February 3, 2025 =
-
-[View the release notes.](https://github.com/xwp/stream/blob/master/changelog.md#411---february-3-2025)
+[View the release notes.](https://github.com/xwp/stream/blob/master/changelog.md#420---may-28-2026)
 
 [See the full changelog for all releases.](https://github.com/xwp/stream/blob/master/changelog.md)

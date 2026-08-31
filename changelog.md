@@ -10,6 +10,35 @@
 
 - Show only the first line of multiline summaries in the Stream list table so long entries stay readable in the activity feed.
 
+## 4.4.0 - August 31, 2026
+
+### Security
+
+- Keep multisite record reads inside the current site. `Network::network_query_args()` kept any numeric `blog_id` from the request. Because the Stream tables are shared across the network, a site-level `view_stream` user could read the activity of another site with `?blog_id=N`. Stream now accepts a requested blog ID only from users with `manage_network_options`. All other users get the current blog. WP-CLI keeps its exemption ([#1958](https://github.com/xwp/stream/pull/1958)).
+- Stop the use of `HTTP_REFERER` as proof of network-admin authority in `ajax_network_admin()`. The Referer comes from the caller. A site user could use it to remove the per-blog query restriction, and, through `blog_id_logged()`, record their actions against `blog_id` 0. This made the site attribution incorrect. Stream now uses the Referer only as a hint about the user interface. A true network capability is also necessary ([#1958](https://github.com/xwp/stream/pull/1958)).
+- Make a network capability necessary for the `update-settings` and `create-exclusion-rule` abilities when the write goes to `update_site_option()` on a network-activated multisite. Both abilities used the default `manage_options` permission callback before ([#1958](https://github.com/xwp/stream/pull/1958)).
+- Remove secret values from option-change records. The WooCommerce, EDD, Jetpack, Gravity Forms, and Settings connectors wrote integration credentials into `stream_meta` as cleartext. This included payment gateway API keys, webhook signing keys, the `mailserver_pass` mailbox password, and the Gravity Forms license and reCAPTCHA private keys. Any user who can read the activity log or export it could read these values. Stream now replaces a secret value with `[redacted]`. A credential that was never set continues to log as an empty value, so you can tell the difference between "not set" and "set but withheld" ([#1958](https://github.com/xwp/stream/pull/1958)).
+- Withhold alert destination credentials from the `stream/get-alerts` ability. The ability needs only `view_stream`, but you configure alert destinations behind the Stream settings capability. The ability returned `alert_meta` without change, which moved Slack webhook URLs and IFTTT Maker keys across a privilege boundary. Stream now replaces each secret with a `{key}_configured` boolean, so a caller can still see if a destination is configured. Non-secret configuration, such as the channel, the user name, and the event name, does not change ([#1958](https://github.com/xwp/stream/pull/1958)).
+- Log only the changed field for Jetpack options, and withhold Publicize connection payloads. Jetpack attached the complete `jetpack_options` value to a record about one field, so a single miss could expose all tokens ([#1958](https://github.com/xwp/stream/pull/1958)).
+- Correct the GHCR publish condition in `docker-images.yml`. The `contains( github.ref_name, 'master' )` guard also matched an unprotected branch name such as `feature-master-publish`. The workflow now compares the ref exactly ([#1958](https://github.com/xwp/stream/pull/1958)).
+
+### Bug Fixes
+
+- Correct a false "SITE IS DISCONNECTED" error from `wp stream query`. The CLI treated every empty result as a disconnected site, because `db->query()` returns an empty array both for "no matching records" and for a failure. The CLI now reads `$wpdb->last_error`, which WordPress sets only after a true database error. A site with no records no longer reports the error. This affected new installations and multisite subsites with no activity ([#1829](https://github.com/xwp/stream/issues/1829), [#1966](https://github.com/xwp/stream/pull/1966)).
+- Correct a fatal error in `role_can_view()` when the capability check runs before `init` and the `general_role_access` setting is not yet available ([#1963](https://github.com/xwp/stream/pull/1963)).
+- Correct a PHP warning for a password reset request that gives an unknown user. The `retrieve_password` handler now stops when `get_user_by()` returns `false`. Before, it read properties from `false` ([#1838](https://github.com/xwp/stream/issues/1838), [#1931](https://github.com/xwp/stream/pull/1931)).
+
+### Enhancements
+
+- Add the `wp_stream_secret_alert_meta_keys` filter. Use it to declare the destination secrets of a custom alert type that you register with `wp_stream_alert_types`, so Stream removes them from ability output ([#1958](https://github.com/xwp/stream/pull/1958)).
+- Add `Connector::is_secret_key()` and `Connector::redact_secret_values()`, with the `SECRET_KEY_PATTERNS`, `SECRET_KEY_SUFFIXES`, `PUBLIC_KEY_PATTERNS`, and `REDACTED_PLACEHOLDER` constants. Custom connectors can use these helpers for the same redaction. Matching uses substrings and suffixes, because connectors log option values that belong to plugins Stream does not control. `PUBLIC_KEY_PATTERNS` keeps the published half of a key pair, such as `public_key`, `publishable_key`, and `site_key`, unless the name also holds a secret marker ([#1958](https://github.com/xwp/stream/pull/1958)).
+- Add `Network::can_view_network_records()` as the single authority check for access to network-scoped records ([#1958](https://github.com/xwp/stream/pull/1958)).
+
+### Development
+
+- Add PHPUnit coverage for the hardened paths: `Network`, the `Connector` redaction helpers, `CLI::connection()`, `Admin`, the Gravity Forms, Jetpack, Settings, and Users connectors, and the `get-alerts` and `update-settings` abilities. `Network` had almost no direct coverage before ([#1958](https://github.com/xwp/stream/pull/1958), [#1966](https://github.com/xwp/stream/pull/1966)).
+- Update Node.js to `^24.20.0` ([#1951](https://github.com/xwp/stream/pull/1951), [#1954](https://github.com/xwp/stream/pull/1954), [#1970](https://github.com/xwp/stream/pull/1970)), `globals` to `^17.11.0` ([#1947](https://github.com/xwp/stream/pull/1947), [#1953](https://github.com/xwp/stream/pull/1953), [#1964](https://github.com/xwp/stream/pull/1964), [#1965](https://github.com/xwp/stream/pull/1965)), `@playwright/test` to `^1.62.1` ([#1943](https://github.com/xwp/stream/pull/1943), [#1952](https://github.com/xwp/stream/pull/1952)), `npm-run-all2` to `^9.0.3` ([#1949](https://github.com/xwp/stream/pull/1949)), and `squizlabs/php_codesniffer` to 3.13.6 ([#1960](https://github.com/xwp/stream/pull/1960)).
+
 ## 4.3.0 - July 18, 2026
 
 ### Enhancements
