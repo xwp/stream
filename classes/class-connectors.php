@@ -58,37 +58,31 @@ class Connectors {
 	 *
 	 * @var string[]|null
 	 */
-	private $available_connectors = null;
+	private ?array $available_connectors = null;
 
 	/**
 	 * Instantiated connectors, keyed by slug. Filled once by instantiate_connector_classes().
 	 *
 	 * @var array<string, Connector>|null
 	 */
-	private $connector_instances = null;
+	private ?array $connector_instances = null;
 
 	/**
 	 * Registered connectors.
-	 *
-	 * @var array
 	 */
-	public $connectors = array();
+	public array $connectors = array();
 
 	/**
 	 * Contexts registered to Connectors
-	 *
-	 * @var array
 	 */
-	public $contexts = array();
+	public array $contexts = array();
 
 	/**
 	 * Action taxonomy terms
 	 *
 	 * Holds slug to localized label association
-	 *
-	 * @var array
 	 */
-	public $term_labels = array(
+	public array $term_labels = array(
 		'stream_connector' => array(),
 		'stream_context'   => array(),
 		'stream_action'    => array(),
@@ -96,10 +90,8 @@ class Connectors {
 
 	/**
 	 * Admin notice messages
-	 *
-	 * @var array
 	 */
-	protected $admin_notices = array();
+	protected array $admin_notices = array();
 
 	/**
 	 * Class constructor.

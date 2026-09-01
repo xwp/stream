@@ -32,10 +32,8 @@ class Settings {
 
 	/**
 	 * Network settings key/identifier
-	 *
-	 * @var string
 	 */
-	public $network_options_key = 'wp_stream_network';
+	public string $network_options_key = 'wp_stream_network';
 
 	/**
 	 * Plugin settings
