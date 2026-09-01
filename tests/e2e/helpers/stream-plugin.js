@@ -3,8 +3,11 @@
  */
 import { execFileSync } from 'child_process';
 
-/** @type {string} Local multisite origin (default HTTPS, no port). */
-export const E2E_SITE_URL = 'https://stream.wpenv.net';
+/** @type {string} wp-env development origin (HTTP on localhost). */
+export const E2E_SITE_URL =
+	process.env.PLAYWRIGHT_BASE_URL ||
+	process.env.E2E_SITE_URL ||
+	`http://localhost:${ process.env.WP_ENV_PORT || '8888' }`;
 
 /**
  * Shared helpers for Stream Playwright specs.
@@ -15,7 +18,7 @@ export const E2E_SITE_URL = 'https://stream.wpenv.net';
  * own serial project and restores activation in afterAll.
  *
  * Use newAuthedPage() instead of browser.newPage() so the page gets
- * storageState and ignoreHTTPSErrors (Playwright's Browser.newPage() does not).
+ * storageState (Playwright's Browser.newPage() does not).
  */
 
 /**
@@ -53,7 +56,7 @@ export async function loginAsAdmin( page ) {
 }
 
 /**
- * Open a logged-in page with the same HTTPS and auth settings as the project.
+ * Open a logged-in page with the same origin and auth settings as the project.
  *
  * @param {import('@playwright/test').Browser} browser Browser.
  * @return {Promise<import('@playwright/test').Page>} Page.
@@ -61,7 +64,6 @@ export async function loginAsAdmin( page ) {
 export async function newAuthedPage( browser ) {
 	const context = await browser.newContext( {
 		storageState: 'playwright/.auth/user.json',
-		ignoreHTTPSErrors: true,
 		baseURL: E2E_SITE_URL,
 	} );
 	return context.newPage();
@@ -103,35 +105,18 @@ export async function networkActivateStream( page ) {
 }
 
 /**
- * Network-activate Stream via wp-cli (`stream-src` in Docker, `stream` on CI).
+ * Network-activate Stream via wp-cli (`stream` in wp-env).
  *
  * Use when the spec must wait until connectors are loaded (e.g. before a
  * wp-cli seed). The plugins-row click can finish before Stream is actually
  * active; this call is synchronous.
  */
 export function networkActivateStreamViaWpCli() {
-	const siteUrl = playwrightSiteUrl();
-	const slugs = [ 'stream-src', 'stream' ];
+	const slugs = [ 'stream', 'stream-src' ];
 	let lastError;
 	for ( const slug of slugs ) {
 		try {
-			execFileSync(
-				'docker',
-				[
-					'compose',
-					'exec',
-					'-T',
-					'wordpress',
-					'wp',
-					'plugin',
-					'activate',
-					slug,
-					'--network',
-					'--allow-root',
-					`--url=${ siteUrl }`,
-				],
-				{ encoding: 'utf8' },
-			);
+			runWpCli( [ 'plugin', 'activate', slug, '--network' ] );
 			return;
 		} catch ( error ) {
 			lastError = error;
@@ -156,9 +141,9 @@ export async function networkDeactivateStream( page ) {
 /**
  * Create a subdirectory site if it is not already on the network.
  *
- * Prefers `docker compose exec wordpress wp site create` (same stack as
- * `wp site list`). Falls back to Network Admin → Add New, posting the form
- * to the current origin when WordPress emits a portless absolute URL.
+ * Prefers `wp-env run cli wp site create` (same stack as `wp site list`).
+ * Falls back to Network Admin → Add New, posting the form to the current
+ * origin when WordPress emits a portless absolute URL.
  *
  * @param {import('@playwright/test').Page} page Page.
  * @param {string}                          slug Path slug (no slashes).
@@ -222,22 +207,11 @@ async function saveOptionsGeneral( page ) {
  * copy instead of the idle-state link.
  */
 export function clearAutoPurgeQueueViaWpCli() {
-	execFileSync(
-		'docker',
-		[
-			'compose',
-			'exec',
-			'-T',
-			'wordpress',
-			'wp',
-			'db',
-			'query',
-			"UPDATE wp_actionscheduler_actions SET status = 'canceled' WHERE hook IN ('stream_auto_purge_batch_action','stream_auto_purge_reaper_action') AND status IN ('pending','in-progress');",
-			'--allow-root',
-			`--url=${ playwrightSiteUrl() }`,
-		],
-		{ encoding: 'utf8' },
-	);
+	runWpCli( [
+		'db',
+		'query',
+		"UPDATE wp_actionscheduler_actions SET status = 'canceled' WHERE hook IN ('stream_auto_purge_batch_action','stream_auto_purge_reaper_action') AND status IN ('pending','in-progress');",
+	] );
 }
 
 /**
@@ -254,21 +228,7 @@ export function clearAutoPurgeQueueViaWpCli() {
 export function clearNetworkExcludeRulesViaWpCli( ipAddress = '203.0.113.44' ) {
 	const dropIp = JSON.stringify( ipAddress || '' );
 	const php = `$opt = (array) get_site_option( "wp_stream_network", array() ); if ( empty( $opt["exclude_rules"] ) || ! is_array( $opt["exclude_rules"] ) ) { return; } $rules = $opt["exclude_rules"]; $rows = isset( $rules["exclude_row"] ) && is_array( $rules["exclude_row"] ) ? $rules["exclude_row"] : array(); $drop_ip = ${ dropIp }; $keys = array( "exclude_row", "author_or_role", "connector", "context", "action", "ip_address" ); $keep = array(); foreach ( $rows as $row_id => $marker ) { $ip = isset( $rules["ip_address"][ $row_id ] ) ? (string) $rules["ip_address"][ $row_id ] : ""; $is_empty = true; foreach ( $keys as $key ) { if ( ! empty( $rules[ $key ][ $row_id ] ) ) { $is_empty = false; break; } } if ( $is_empty || ( "" !== $drop_ip && $ip === $drop_ip ) ) { continue; } $keep[] = $row_id; } if ( empty( $keep ) ) { unset( $opt["exclude_rules"] ); } else { $filtered = array(); foreach ( $keys as $key ) { if ( ! isset( $rules[ $key ] ) || ! is_array( $rules[ $key ] ) ) { continue; } foreach ( $keep as $row_id ) { if ( array_key_exists( $row_id, $rules[ $key ] ) ) { $filtered[ $key ][ $row_id ] = $rules[ $key ][ $row_id ]; } } } $opt["exclude_rules"] = $filtered; } update_site_option( "wp_stream_network", $opt );`;
-	execFileSync(
-		'docker',
-		[
-			'compose',
-			'exec',
-			'-T',
-			'wordpress',
-			'wp',
-			'eval',
-			php,
-			'--allow-root',
-			`--url=${ playwrightSiteUrl() }`,
-		],
-		{ encoding: 'utf8' },
-	);
+	runWpCli( [ 'eval', php ] );
 }
 
 /**
@@ -283,23 +243,15 @@ export function clearNetworkExcludeRulesViaWpCli( ipAddress = '203.0.113.44' ) {
 export function seedSubsitePostViaWpCli( slug ) {
 	const title = `e2e-sub-${ Date.now() }`;
 	const siteUrl = `${ playwrightSiteUrl().replace( /\/$/, '' ) }/${ slug }/`;
-	execFileSync(
-		'docker',
+	runWpCli(
 		[
-			'compose',
-			'exec',
-			'-T',
-			'wordpress',
-			'wp',
 			'post',
 			'create',
 			`--post_title=${ title }`,
 			'--post_status=publish',
 			'--user=admin',
-			'--allow-root',
-			`--url=${ siteUrl }`,
 		],
-		{ encoding: 'utf8' },
+		siteUrl,
 	);
 	return title;
 }
@@ -343,77 +295,53 @@ function playwrightSiteUrl() {
 }
 
 /**
+ * Run a WP-CLI command in the wp-env development CLI container.
+ *
+ * @param {string[]} args  Arguments after `wp`.
+ * @param {string}   [url] `--url` value. Defaults to the Playwright origin.
+ * @return {string}        Command stdout.
+ */
+function runWpCli( args, url = playwrightSiteUrl() ) {
+	return execFileSync(
+		'npx',
+		[ 'wp-env', 'run', 'cli', '--', 'wp', ...args, `--url=${ url }` ],
+		{ encoding: 'utf8', timeout: 60_000 },
+	);
+}
+
+/**
  * Grant the e2e `admin` user a role on a subdirectory site.
  *
  * @param {string} slug Path slug.
  */
 function addAdminToSite( slug ) {
 	const siteUrl = `${ playwrightSiteUrl().replace( /\/$/, '' ) }/${ slug }/`;
-	execFileSync(
-		'docker',
-		[
-			'compose',
-			'exec',
-			'-T',
-			'wordpress',
-			'wp',
-			'user',
-			'set-role',
-			'admin',
-			'administrator',
-			'--allow-root',
-			`--url=${ siteUrl }`,
-		],
-		{ encoding: 'utf8' },
+	runWpCli(
+		[ 'user', 'set-role', 'admin', 'administrator' ],
+		siteUrl,
 	);
 }
 
 /**
- * Create or reuse a subdirectory site via wp-cli in the WordPress container.
+ * Create or reuse a subdirectory site via wp-cli in the wp-env CLI container.
  *
  * @param {string} slug Path slug.
  * @return {boolean} True when the site exists or was created.
  */
 function ensureSubdirectorySiteWithWpCli( slug ) {
 	try {
-		const listed = execFileSync(
-			'docker',
-			[
-				'compose',
-				'exec',
-				'-T',
-				'wordpress',
-				'wp',
-				'site',
-				'list',
-				'--field=url',
-				'--allow-root',
-				`--url=${ playwrightSiteUrl() }`,
-			],
-			{ encoding: 'utf8' },
-		);
+		const listed = runWpCli( [ 'site', 'list', '--field=url' ] );
 		if ( listed.includes( `/${ slug }/` ) ) {
 			addAdminToSite( slug );
 			return true;
 		}
-		execFileSync(
-			'docker',
-			[
-				'compose',
-				'exec',
-				'-T',
-				'wordpress',
-				'wp',
-				'site',
-				'create',
-				`--slug=${ slug }`,
-				'--title=Stream E2E Records',
-				'--email=admin@example.com',
-				'--allow-root',
-				`--url=${ playwrightSiteUrl() }`,
-			],
-			{ encoding: 'utf8' },
-		);
+		runWpCli( [
+			'site',
+			'create',
+			`--slug=${ slug }`,
+			'--title=Stream E2E Records',
+			'--email=admin@example.com',
+		] );
 		addAdminToSite( slug );
 		return true;
 	} catch {

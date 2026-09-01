@@ -145,12 +145,14 @@ class Connector_Installer_Test extends WP_StreamTestCase {
 	}
 
 	public function test_callback_switch_theme() {
+		$theme_name = wp_get_theme( 'twentytwenty' )->display( 'Name' );
+
 		// Expected log calls.
 		$this->mock->expects( $this->once() )
 			->method( 'log' )
 			->with(
 				$this->equalTo( __( '"%s" theme activated', 'stream' ) ),
-				$this->equalTo( array( 'name' => 'twentytwenty' ) ),
+				$this->equalTo( array( 'name' => $theme_name ) ),
 				$this->equalTo( null ),
 				$this->equalTo( 'themes' ),
 				$this->equalTo( 'activated' )

@@ -270,7 +270,6 @@ class Abilities_REST_Integration_Test extends Abilities_TestCase {
 	 * Unknown ability slugs route to a 404 from the core run controller.
 	 */
 	public function test_unknown_ability_returns_404() {
-		$this->setExpectedIncorrectUsage( 'WP_Abilities_Registry::get_registered' );
 		wp_set_current_user( $this->admin_user_id );
 
 		$request  = new \WP_REST_Request( 'POST', '/wp-abilities/v1/abilities/stream/no-such-ability/run' );

@@ -52,16 +52,10 @@ module.exports = defineConfig( {
 	reporter: 'html',
 	/* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
 	use: {
-		/* Base URL to use in actions like `await page.goto('/')`. */
-		baseURL: 'https://stream.wpenv.net',
-
-		/* Accept the locally-issued mkcert certificate without prompting.
-		 * The dev environment serves https://stream.wpenv.net using a
-		 * cert signed by a CA that's only trusted on hosts that have run
-		 * `mkcert -install`. CI runners never do that, and Playwright's
-		 * bundled Chromium won't either. Ignoring HTTPS errors here is
-		 * safe because the entire stack is local. */
-		ignoreHTTPSErrors: true,
+		/* wp-env development site. Override with PLAYWRIGHT_BASE_URL or WP_ENV_PORT. */
+		baseURL:
+			process.env.PLAYWRIGHT_BASE_URL ||
+			`http://localhost:${ process.env.WP_ENV_PORT || '8888' }`,
 
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: 'on-first-retry',

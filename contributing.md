@@ -3,122 +3,129 @@
 
 ## Development Environment
 
-Stream uses [npm](https://npmjs.com) for javascript dependencies, [Composer](https://getcomposer.org) for PHP dependencies and the [Grunt](https://gruntjs.com) task runner to minimize and compile scripts and styles and to deploy to the WordPress.org plugin repository.
+Stream uses [npm](https://npmjs.com) for JavaScript dependencies, [Composer](https://getcomposer.org) for PHP dependencies, and [@wordpress/scripts](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-scripts/) to build assets.
 
-Included is a local development environment built with [Docker](https://www.docker.com).
+Local WordPress — daily development, PHPUnit, and Playwright — runs on [@wordpress/env](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/) (`wp-env`). You need **Node.js** and **Docker**. Keep using Composer for PHP packages (`composer install`).
 
 ### Requirements
 
-- [Node.js](https://nodejs.org)
+- [Node.js](https://nodejs.org) (see `.nvmrc`)
 - [Composer](https://getcomposer.org)
+- [Docker](https://www.docker.com) Desktop or Engine, running
 
-We suggest using the [Homebrew package manager](https://brew.sh) on macOS to install the dependencies:
+We suggest using the [Homebrew package manager](https://brew.sh) on macOS:
 
-	brew install node@20 composer
+	brew install node composer
 	brew install --cask docker
 
 ### Environment Setup
 
 1. See the [Git Flow](#git-flow) section below for how to fork the repository.
-2. Run `npm install` and `composer install` to setup all project dependencies.
-3. Run `npm build` to build the assets.
-3. Run `npm start` to start the development environment.
-4. Run `npm run install-wordpress` to set up the WordPress multisite network.
-5. Visit [stream.wpenv.net](https://stream.wpenv.net) and login using `admin` / `password`. The dev environment forces HTTPS; if you haven't run `mkcert -install` on your host yet (see the HTTPS section below), your browser will show a "not secure" warning that you can dismiss.
-6. Activate the Stream plugin.
+2. Run `npm install` and `composer install` to set up project dependencies. PHPUnit helper plugins (ACF, EDD, Jetpack, …) are Composer dev dependencies installed under `local/public/wp-content/` and mapped into the wp-env tests environment via `env.tests.mappings` in `.wp-env.json`.
+3. Run `npm run build` to build the assets.
+4. Run `npm start` to start wp-env. The repo is mapped in via `"plugins": ["."]` in [`.wp-env.json`](.wp-env.json); multisite is enabled there too. Stream and Email Logger are network-activated automatically via the `lifecycleScripts.afterStart` hook in `.wp-env.json`.
+5. Visit [http://localhost:8888](http://localhost:8888) and log in with `admin` / `password`.
 
-### HTTPS for the dev environment
+Override the development port with `WP_ENV_PORT`. Playwright and the E2E helpers read `PLAYWRIGHT_BASE_URL` or `WP_ENV_PORT` (default `http://localhost:8888`).
 
-The development environment also serves the site over HTTPS at https://stream.wpenv.net. HTTPS is required for testing WordPress Application Passwords and the Abilities API + MCP integration.
+The testing site (used by PHPUnit via `wp-env run tests-cli`) is [http://localhost:8889](http://localhost:8889). DB settings for that container are in [`tests/wp-tests-config-wp-env.php`](tests/wp-tests-config-wp-env.php).
 
-Cert generation runs in a dedicated `mkcert` Docker service (defined in `docker-compose.yml`), so no host-side mkcert install is needed to **generate** the cert. The `mkcert` container runs once at `npm start`, writes `local/certs/cert.pem` and `local/certs/key.pem` (gitignored), and exits. The WordPress container picks them up via the SSL Apache vhost.
+### HTTPS, Application Passwords, and MCP
 
-To make the browser **trust** the locally-issued cert without a security warning, install the mkcert local CA in your host trust store once (this part still happens on the host because it needs access to the keychain / NSS DB):
-
-- macOS: `brew install mkcert nss && mkcert -install`
-- Linux: install mkcert via your package manager, then `mkcert -install`
-- Windows: `choco install mkcert && mkcert -install`
-
-If you skip the trust-store step, HTTPS still works; the browser just shows a "not secure" warning you can dismiss. Tools that don't perform cert validation (curl with `-k`, Playwright with `ignoreHTTPSErrors: true`, most MCP clients via app-password auth) are unaffected.
-
-Once the cert is generated and (optionally) trusted, visit https://stream.wpenv.net.
-
-**Existing environments** (set up before HTTPS was forced) still have `http://stream.wpenv.net` in their database. Upgrade with:
-
-```sh
-docker compose run --rm --user $(id -u) wordpress -- \
-  wp search-replace 'http://stream.wpenv.net' 'https://stream.wpenv.net' \
-  --network --skip-columns=guid --report-changed-only
-```
-
-New `npm run install-wordpress` runs use the HTTPS URL from `local/public/wp-cli.yml` and don't need this step.
+The default wp-env stack is **HTTP** on localhost. WordPress Application Passwords work on `http://localhost` (core treats local environments as an exception to the HTTPS requirement). Production MCP clients that insist on HTTPS need a reverse proxy or another TLS terminator; that is not part of this environment.
 
 ### MCP (Model Context Protocol) integration
 
 Stream exposes its abilities as MCP-discoverable tools by tagging each registered ability with `meta.mcp.public = true`. The [WordPress MCP Adapter](https://github.com/WordPress/mcp-adapter) does the actual MCP server work; Stream does not load or initialize the adapter itself.
 
-The MCP Adapter is a `require-dev` Composer dependency declared as `"type": "wordpress-plugin"`, so `composer install` automatically drops it into `local/public/wp-content/plugins/mcp-adapter/`. You just need to activate it:
+The MCP Adapter is a `require-dev` Composer dependency declared as `"type": "wordpress-plugin"`, so `composer install` drops it into `local/public/wp-content/plugins/mcp-adapter/`. Map it into wp-env with a gitignored `.wp-env.override.json`:
 
-```sh
-docker compose run --rm --user $(id -u) wordpress -- wp plugin activate mcp-adapter --network
+```json
+{
+  "env": {
+    "development": {
+      "mappings": {
+        "wp-content/plugins/mcp-adapter": "./local/public/wp-content/plugins/mcp-adapter"
+      }
+    }
+  }
+}
 ```
 
-Then enable the "Enable Abilities API and MCP" toggle in Stream → Settings → Advanced (network admin on network-activated multisite). Verify the MCP default server route responds:
+Then restart wp-env (`npm start`) and network-activate the adapter:
 
 ```sh
-curl -sk https://stream.wpenv.net/wp-json/mcp/mcp-adapter-default-server
+npm run cli -- wp plugin activate mcp-adapter --network
 ```
 
-To use MCP from Claude Desktop or another MCP client, follow the [mcp-adapter README's MCP client configuration section](https://github.com/WordPress/mcp-adapter#mcp-client-configuration). The HTTP transport requires the HTTPS setup above plus a WordPress Application Password.
+Enable the "Enable Abilities API and MCP" toggle in Stream → Settings → Advanced (network admin on network-activated multisite). Verify the default server route:
+
+```sh
+curl http://localhost:8888/wp-json/mcp/mcp-adapter-default-server
+```
+
+To use MCP from Claude Desktop or another MCP client, follow the [mcp-adapter README's MCP client configuration section](https://github.com/WordPress/mcp-adapter#mcp-client-configuration). On this HTTP localhost stack you can create an Application Password in the user profile and point the client at `http://localhost:8888`.
 
 ### PHP Xdebug
 
-The WordPress container includes the [Xdebug PHP extension](https://xdebug.org). It is configured in the [`php.ini`](./local/docker/wordpress/php.ini) file to work in the [develop, debug and coverage modes](https://xdebug.org/docs/step_debug#mode).
+Start the environment with Xdebug enabled:
 
-[Step Debugging](https://xdebug.org/docs/step_debug) should work out of the box in VSCode thanks to the configuration file, [`.vscode/launch.json`](.vscode/launch.json). It contains the directory mapping from the WordPress container to the project directory in your code editor.
+```sh
+npm run start-xdebug
+```
 
-In order to set up Step Debugging in PhpStorm, follow the [official guide](https://www.jetbrains.com/help/phpstorm/configuring-xdebug.html). Make sure to set up the same directory mappings as defined for VSCode in [`.vscode/launch.json`](.vscode/launch.json), e.g.:
-- `${workspaceRoot}` -> `/var/www/html/wp-content/plugins/stream-src`,
-- `${workspaceRoot}/build` -> `/var/www/html/wp-content/plugins/stream`,
-- `${workspaceRoot}/local/public` -> `/var/www/html`
+That runs `wp-env start --xdebug`. [Step Debugging](https://xdebug.org/docs/step_debug) should work in VS Code via [`.vscode/launch.json`](.vscode/launch.json). The container path for this plugin is `/var/www/html/wp-content/plugins/stream`.
 
-### Mail Catcher
+For PhpStorm, follow the [official guide](https://www.jetbrains.com/help/phpstorm/configuring-xdebug.html) and use the same mapping: `${workspaceRoot}` → `/var/www/html/wp-content/plugins/stream`.
 
-We use a [MailHog](https://github.com/mailhog/MailHog) container to capture all emails sent by the WordPress container, available at [stream.wpenv.net:8025](https://stream.wpenv.net:8025).
+### Mail
+
+The wp-env stack includes the [Email Logger](https://make.wordpress.org/test/handbook/get-setup-for-testing/email-testing/) plugin from the WordPress Test Handbook. It hooks into `wp_mail` and stores the last 50 outgoing emails in the database.
+
+- **Plugin slug:** `wp-email-logger` (installed from the handbook zip, not WordPress.org)
+- **View logs:** In wp-admin, open **Email Log** in the admin menu
+- **Multisite:** Network-activated alongside Stream via `lifecycleScripts.afterStart` in `.wp-env.json`
+
+Playwright specs that need a notifier can use Stream's Highlight alert type instead of email when that is simpler for the test.
 
 ### phpMyAdmin
 
-[phpMyAdmin ](https://www.phpmyadmin.net/) is available at [stream.wpenv.net:8080](http://stream.wpenv.net:8080/).
+[phpMyAdmin](https://www.phpmyadmin.net/) is available at [http://localhost:9001](http://localhost:9001/). Login: `root` / `password`.
 
 ### Scripts and Commands
 
 We use npm as the canonical task runner for the project. The following commands are available:
 
-- `npm run start` to start the project's Docker containers.
-- `npm run stop` to stop the project's Docker containers.
+- `npm run start` / `npx wp-env start` to start the wp-env development and tests containers (network-activates Stream and Email Logger via `lifecycleScripts.afterStart`).
+- `npm run stop` / `npx wp-env stop` to stop them.
 - `npm run stop-all` to stop _all_ Docker containers.
 - `npm run build` to build the plugin JS and CSS files.
 - `npm run dev` to watch and build the plugin assets continuously.
 - `npm run lint` to check JS and PHP files for syntax and style issues.
 - `npm run deploy` to deploy the plugin to the WordPress.org repository.
-- `npm run cli -- wp info` where `wp info` is the CLI command to run inside the WordPress container. For example, use `npm run cli -- ls -lah` to list all files in the root of the WordPress installation.
-- `npm run test` to run PHPunit unit and integration tests inside the WordPress container.
+- `npm run cli -- wp info` runs WP-CLI inside the wp-env CLI container. For example, `npm run cli -- wp plugin list`.
+- `npm run test` to run PHPUnit (single-site + multisite) inside `wp-env run tests-cli`.
 - `composer test-unit` to run the fast PHP unit suite on the host (no Docker, no WordPress bootstrap). Requires PHP ≥ 8.2 (PHPUnit 11).
-- `npm run test:php-unit` to run the fast PHP unit suite in the Docker container (use `WORDPRESS_IMAGE_VERSION=php8.2` if your default image is older).
-- `npm run test-xdebug` will run the PHPunit tests with Xdebug enabled.
-- `npm run test-e2e` will run the Playwright E2E tests.
-- `npm run test-e2e-debug` will run the Playwright E2E tests in a debug mode (with Chromium browser and dev tools open).
-- `npm run switch-to:php7.4` and `npm run switch-to:php8.2` will switch you to either PHP 7.4 or PHP 8.2
-- `npm run document:connectors` generates [connectors.md](connectors.md). This runs via your local php.
+- `npm run test:php-unit` to run the fast PHP unit suite in the wp-env tests container.
+- `npm run test:php` / `npm run test:php-multisite` to run one integration PHPUnit suite only.
+- `npm run test-xdebug` will run PHPUnit after starting wp-env with Xdebug.
+- `npm run test-e2e` will run the Playwright E2E tests against `http://localhost:8888`.
+- `npm run test-e2e-debug` will run the Playwright E2E tests in debug mode (Chromium + dev tools).
+- `npm run switch-to:php7.4` and `npm run switch-to:php8.2` restart wp-env with `WP_ENV_PHP_VERSION` set.
+- `npm run document:connectors` generates [connectors.md](connectors.md). This runs via your local PHP.
 - `npm run large-records-generate` inserts ~1.6M rows to `wp_stream` and ~8.4M rows to `wp_streammeta` for testing
 - `npm run large-records-remove` removes the test data only
 - `npm run large-records-show` shows how much test data is in the tables, this does not include non-test entries
 
-By default, tests have `WP_DEBUG` as false. You can override this if necessary by setting `WP_STREAM_TEST_DEBUG` to "yes".
+By default, tests have `WP_DEBUG` as false. To enable it, prefix the PHPUnit command with `WP_STREAM_TEST_DEBUG=yes`, for example:
 
-### Docker issues
+```sh
+WP_STREAM_TEST_DEBUG=yes npm run test:php
+```
 
-If you are having issues with incorrect versions of Xdebug or other Docker issues, first try rebuilding with no cache and up to date images using the command `docker compose build --no-cache --pull`. Then run `npm run start` as normal.
+### wp-env issues
+
+If the environment is stale, try `npx wp-env start --update`. To reset databases, `npx wp-env clean all` (this deletes local WordPress data). `npx wp-env destroy` removes containers and downloaded sources — only use it when you intend to wipe the environment.
 
 ## Issues Tracker
 

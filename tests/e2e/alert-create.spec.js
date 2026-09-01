@@ -13,8 +13,8 @@ import { newAuthedPage, seedSettingsRecord } from './helpers/stream-plugin';
  * records row). Empty triggers mean "any" event. Then fire a real Settings
  * update and assert the records list shows the highlight class.
  *
- * Email alerts go through wp_mail → MailHog (stream.wpenv.net:8025). Highlight
- * is asserted here instead because it does not depend on an extra service.
+ * Email alerts go through wp_mail. Highlight is asserted here instead
+ * of querying Email Logger, which keeps the E2E flow simpler.
  */
 
 test.describe.configure( { mode: 'serial' } );

@@ -18,8 +18,8 @@ import {
  * menu / settings link when Stream is off vs on (its own serial project).
  *
  * The stack is subdirectory multisite (`SUBDOMAIN_INSTALL` false). Paths are
- * resolved against Playwright's baseURL (`https://stream.wpenv.net`), e.g.
- * `https://stream.wpenv.net/<slug>/wp-admin/`.
+ * resolved against Playwright's baseURL (`http://localhost:8888` by default),
+ * e.g. `http://localhost:8888/<slug>/wp-admin/`.
  */
 
 const SUBSITE_SLUG = 'e2e-records';
