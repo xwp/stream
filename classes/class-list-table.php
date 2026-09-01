@@ -1167,25 +1167,14 @@ class List_Table extends \WP_List_Table {
 	 * @return string setting name for that column
 	 */
 	public function get_column_excluded_setting_key( $column ) {
-		switch ( $column ) {
-			case 'connector':
-				$output = 'connectors';
-				break;
-			case 'context':
-				$output = 'contexts';
-				break;
-			case 'action':
-				$output = 'action';
-				break;
-			case 'ip':
-				$output = 'ip_addresses';
-				break;
-			case 'user_id':
-				$output = 'users';
-				break;
-			default:
-				$output = false;
-		}
+		$output = match ( $column ) {
+			'connector' => 'connectors',
+			'context' => 'contexts',
+			'action' => 'action',
+			'ip' => 'ip_addresses',
+			'user_id' => 'users',
+			default => false,
+		};
 
 		return $output;
 	}

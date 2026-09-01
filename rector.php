@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
 use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
+use Rector\Php80\Rector\Switch_\ChangeSwitchToMatchRector;
 use Rector\TypeDeclaration\Rector\Property\TypedPropertyFromAssignsRector;
 use Rector\ValueObject\PhpVersion;
 
@@ -41,7 +42,7 @@ return RectorConfig::configure()
 	)
 	->withPhpVersion( PhpVersion::PHP_82 )
 	->withCache( __DIR__ . '/artifacts/rector' )
-	->withRules( array() )
+	->withRules( array( ChangeSwitchToMatchRector::class ) )
 	->withConfiguredRule(
 		TypedPropertyFromAssignsRector::class,
 		array( TypedPropertyFromAssignsRector::INLINE_PUBLIC => true )
