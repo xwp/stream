@@ -4,7 +4,7 @@ Tags: activity log, audit log, event log, user tracking, security
 Requires at least: 4.6
 Requires PHP: 8.2
 Tested up to: 7.0
-Stable tag: 4.4.0
+Stable tag: 5.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
