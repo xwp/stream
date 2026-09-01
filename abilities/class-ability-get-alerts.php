@@ -99,16 +99,11 @@ class Ability_Get_Alerts extends Ability {
 	public function execute( $input = null ) {
 		$requested = isset( $input['status'] ) ? $input['status'] : 'any';
 
-		switch ( $requested ) {
-			case 'enabled':
-				$statuses = array( Alerts::STATUS_ENABLED );
-				break;
-			case 'disabled':
-				$statuses = array( Alerts::STATUS_DISABLED );
-				break;
-			default:
-				$statuses = array( Alerts::STATUS_ENABLED, Alerts::STATUS_DISABLED );
-		}
+		$statuses = match ( $requested ) {
+			'enabled' => array( Alerts::STATUS_ENABLED ),
+			'disabled' => array( Alerts::STATUS_DISABLED ),
+			default => array( Alerts::STATUS_ENABLED, Alerts::STATUS_DISABLED ),
+		};
 
 		$alerts = $this->plugin->alerts->get_alerts( $statuses );
 
