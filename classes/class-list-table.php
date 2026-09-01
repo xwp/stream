@@ -13,21 +13,12 @@ namespace WP_Stream;
 class List_Table extends \WP_List_Table {
 
 	/**
-	 * Holds Instance of plugin object
-	 *
-	 * @var Plugin
-	 */
-	public $plugin;
-
-	/**
 	 * Class constructor.
 	 *
 	 * @param Plugin $plugin Instance of plugin object.
 	 * @param array  $args   Argument to filter rows by.
 	 */
-	public function __construct( $plugin, $args = array() ) {
-		$this->plugin = $plugin;
-
+	public function __construct( public $plugin, $args = array() ) {
 		$screen_id = isset( $args['screen'] ) ? $args['screen'] : null;
 
 		/**

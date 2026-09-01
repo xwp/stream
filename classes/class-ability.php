@@ -18,17 +18,11 @@ namespace WP_Stream;
 abstract class Ability {
 
 	/**
-	 * Holds instance of plugin object.
-	 */
-	protected Plugin $plugin;
-
-	/**
 	 * Class constructor.
 	 *
 	 * @param Plugin $plugin Instance of plugin object.
 	 */
-	public function __construct( Plugin $plugin ) {
-		$this->plugin = $plugin;
+	public function __construct( protected Plugin $plugin ) {
 	}
 
 	/**

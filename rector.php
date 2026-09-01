@@ -12,6 +12,7 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
+use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
 use Rector\TypeDeclaration\Rector\Property\TypedPropertyFromAssignsRector;
 use Rector\ValueObject\PhpVersion;
 
@@ -44,4 +45,8 @@ return RectorConfig::configure()
 	->withConfiguredRule(
 		TypedPropertyFromAssignsRector::class,
 		array( TypedPropertyFromAssignsRector::INLINE_PUBLIC => true )
+	)
+	->withConfiguredRule(
+		ClassPropertyAssignToConstructorPromotionRector::class,
+		array( ClassPropertyAssignToConstructorPromotionRector::RENAME_PROPERTY => false )
 	);

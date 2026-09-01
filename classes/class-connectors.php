@@ -46,13 +46,6 @@ class Connectors {
 		'wordpress-seo',
 	);
 
-	/**
-	 * Holds instance of plugin object
-	 *
-	 * @var Plugin
-	 */
-	public $plugin;
-
 
 	/**
 	 * Fully-qualified builtin connector class names after files are included.
@@ -102,8 +95,7 @@ class Connectors {
 	 *
 	 * @param Plugin $plugin Instance of plugin object.
 	 */
-	public function __construct( $plugin ) {
-		$this->plugin = $plugin;
+	public function __construct( public $plugin ) {
 		$this->load_connectors();
 	}
 
