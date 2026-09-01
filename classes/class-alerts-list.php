@@ -14,20 +14,11 @@ namespace WP_Stream;
  */
 class Alerts_List {
 	/**
-	 * Holds instance of plugin object
-	 *
-	 * @var Plugin
-	 */
-	public $plugin;
-
-	/**
 	 * Class constructor.
 	 *
 	 * @param Plugin $plugin Instance of plugin object.
 	 */
-	public function __construct( $plugin ) {
-		$this->plugin = $plugin;
-
+	public function __construct( public $plugin ) {
 		add_filter( 'bulk_actions-edit-wp_stream_alerts', array( $this, 'suppress_bulk_actions' ), 10, 1 );
 		add_filter( 'disable_months_dropdown', array( $this, 'suppress_months_dropdown' ), 10, 2 );
 		add_filter( 'post_row_actions', array( $this, 'suppress_quick_edit' ), 10, 1 );

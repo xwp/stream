@@ -12,13 +12,6 @@ namespace WP_Stream;
  */
 class Export {
 	/**
-	 * Holds instance of plugin object
-	 *
-	 * @var Plugin
-	 */
-	public $plugin;
-
-	/**
 	 * Hold registered exporters
 	 *
 	 * @var array
@@ -30,9 +23,7 @@ class Export {
 	 *
 	 * @param Plugin $plugin The plugin object.
 	 */
-	public function __construct( $plugin ) {
-		$this->plugin = $plugin;
-
+	public function __construct( public $plugin ) {
 		if ( 'wp_stream' === wp_stream_filter_input( INPUT_GET, 'page' ) ) {
 			add_action( 'admin_init', array( $this, 'render_download' ) );
 			add_action( 'wp_stream_record_actions_menu', array( $this, 'actions_menu_export_items' ) );

@@ -17,13 +17,6 @@ namespace WP_Stream;
 abstract class Alert_Type {
 
 	/**
-	 * Holds instance of plugin object
-	 *
-	 * @var Plugin
-	 */
-	public $plugin;
-
-	/**
 	 * Unique identifier.
 	 *
 	 * @var string
@@ -35,8 +28,7 @@ abstract class Alert_Type {
 	 *
 	 * @param Plugin $plugin Plugin object.
 	 */
-	public function __construct( $plugin ) {
-		$this->plugin = $plugin;
+	public function __construct( public $plugin ) {
 	}
 
 	/**

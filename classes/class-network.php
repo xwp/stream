@@ -13,13 +13,6 @@ namespace WP_Stream;
  */
 class Network {
 	/**
-	 * Holds instance of plugin object
-	 *
-	 * @var Plugin
-	 */
-	public $plugin;
-
-	/**
 	 * Network page slug
 	 */
 	public string $network_settings_page_slug = 'wp_stream_network_settings';
@@ -34,9 +27,7 @@ class Network {
 	 *
 	 * @param Plugin $plugin  Instance of plugin object.
 	 */
-	public function __construct( $plugin ) {
-		$this->plugin = $plugin;
-
+	public function __construct( public $plugin ) {
 		// Always add default site_id/blog_id params when multisite.
 		if ( is_multisite() ) {
 			add_filter( 'wp_stream_query_args', array( $this, 'network_query_args' ) );
