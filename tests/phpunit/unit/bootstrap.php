@@ -33,3 +33,7 @@ function wp_stream_unit_autoload( $class_name ) {
 }
 
 spl_autoload_register( 'wp_stream_unit_autoload' );
+
+if ( ! defined( 'WP_STREAM_SETTINGS_CAPABILITY' ) ) {
+	define( 'WP_STREAM_SETTINGS_CAPABILITY', 'manage_options' );
+}
