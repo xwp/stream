@@ -2,6 +2,7 @@
 Contributors: xwp
 Tags: activity log, audit log, event log, user tracking, security
 Requires at least: 4.6
+Requires PHP: 8.2
 Tested up to: 7.0
 Stable tag: 4.4.0
 License: GPLv2 or later
@@ -131,6 +132,10 @@ Thank you for wanting to make Stream better for everyone!
 
 
 == Upgrade Notice ==
+
+= 5.0.0 =
+
+Stream now requires PHP 8.2 or newer. Sites on PHP 7.2–8.1 will see an admin notice and Stream will remain inactive until PHP is upgraded. See the changelog for details.
 
 = 4.4.0 =
 

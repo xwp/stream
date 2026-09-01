@@ -12,6 +12,7 @@ Local WordPress — daily development, PHPUnit, and Playwright — runs on [@wor
 - [Node.js](https://nodejs.org) (see `.nvmrc`)
 - [Composer](https://getcomposer.org)
 - [Docker](https://www.docker.com) Desktop or Engine, running
+- **PHP 8.2+** on the host for `composer test-unit` and other Composer scripts (PHPUnit 11). wp-env defaults to PHP 8.2; use the `switch-to:php*` scripts to test other supported versions locally.
 
 We suggest using the [Homebrew package manager](https://brew.sh) on macOS:
 
@@ -105,13 +106,13 @@ We use npm as the canonical task runner for the project. The following commands 
 - `npm run deploy` to deploy the plugin to the WordPress.org repository.
 - `npm run cli -- wp info` runs WP-CLI inside the wp-env CLI container. For example, `npm run cli -- wp plugin list`.
 - `npm run test` to run PHPUnit (single-site + multisite) inside `wp-env run tests-cli`.
-- `composer test-unit` to run the fast PHP unit suite on the host (no Docker, no WordPress bootstrap). Requires PHP ≥ 8.2 (PHPUnit 11).
+- `composer test-unit` to run the fast PHP unit suite on the host (no Docker, no WordPress bootstrap). Requires PHP 8.2+ (plugin minimum; PHPUnit 11).
 - `npm run test:php-unit` to run the fast PHP unit suite in the wp-env tests container.
 - `npm run test:php` / `npm run test:php-multisite` to run one integration PHPUnit suite only.
 - `npm run test-xdebug` will run PHPUnit after starting wp-env with Xdebug.
 - `npm run test-e2e` will run the Playwright E2E tests against `http://localhost:8888`.
 - `npm run test-e2e-debug` will run the Playwright E2E tests in debug mode (Chromium + dev tools).
-- `npm run switch-to:php7.4` and `npm run switch-to:php8.2` restart wp-env with `WP_ENV_PHP_VERSION` set.
+- `npm run switch-to:php8.2`, `npm run switch-to:php8.3`, and `npm run switch-to:php8.4` restart wp-env with `WP_ENV_PHP_VERSION` set (supported runtime versions).
 - `npm run document:connectors` generates [connectors.md](connectors.md). This runs via your local PHP.
 - `npm run large-records-generate` inserts ~1.6M rows to `wp_stream` and ~8.4M rows to `wp_streammeta` for testing
 - `npm run large-records-remove` removes the test data only

@@ -57,6 +57,8 @@ class Connectors_Unit_Test extends TestCase {
 	}
 
 	/**
+	 * Skip registration when admin, frontend, dependency, or exclusion gates fail.
+	 *
 	 * @param bool   $is_admin             Whether to treat the request as admin.
 	 * @param string $slug                 Connector slug.
 	 * @param bool   $register_admin       Connector register_admin flag.
@@ -88,6 +90,8 @@ class Connectors_Unit_Test extends TestCase {
 	}
 
 	/**
+	 * Data provider for test_register_connector_instances_skips.
+	 *
 	 * @return array<string, array{0: bool, 1: string, 2: bool, 3: bool, 4: bool, 5: bool}>
 	 */
 	public static function data_register_connector_instances_skips() {
@@ -190,6 +194,8 @@ class Connectors_Unit_Test extends TestCase {
 	}
 
 	/**
+	 * Return registered slugs and payloads, optionally including inactive connectors.
+	 *
 	 * @param bool  $include_inactive Whether to include skipped connectors.
 	 * @param array $expected_slugs   Expected slugs from get_slugs().
 	 * @param array $expected_all     Expected payloads from get_all().
@@ -222,6 +228,8 @@ class Connectors_Unit_Test extends TestCase {
 	}
 
 	/**
+	 * Data provider for test_get_slugs_and_get_all.
+	 *
 	 * @return array<string, array{0: bool, 1: string[], 2: array<int, array{slug: string, label: string, contexts: array<string, string>, actions: array<string, string>}>}>
 	 */
 	public static function data_get_slugs_and_get_all() {
