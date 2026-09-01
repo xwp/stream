@@ -13,24 +13,18 @@ namespace WP_Stream;
 class DB_Driver_WPDB implements DB_Driver {
 	/**
 	 * Holds Query class
-	 *
-	 * @var Query
 	 */
-	protected $query;
+	protected Query $query;
 
 	/**
 	 * Hold records table name
-	 *
-	 * @var string
 	 */
-	public $table;
+	public string $table;
 
 	/**
 	 * Hold meta table name
-	 *
-	 * @var string
 	 */
-	public $table_meta;
+	public string $table_meta;
 
 	/**
 	 * Class constructor.

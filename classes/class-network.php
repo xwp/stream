@@ -21,17 +21,13 @@ class Network {
 
 	/**
 	 * Network page slug
-	 *
-	 * @var string
 	 */
-	public $network_settings_page_slug = 'wp_stream_network_settings';
+	public string $network_settings_page_slug = 'wp_stream_network_settings';
 
 	/**
 	 * The option name for the network settings.
-	 *
-	 * @var string
 	 */
-	public $network_settings_option = 'wp_stream_network';
+	public string $network_settings_option = 'wp_stream_network';
 
 	/**
 	 * Class constructor

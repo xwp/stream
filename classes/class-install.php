@@ -20,10 +20,8 @@ class Install {
 
 	/**
 	 * Option key to store database version
-	 *
-	 * @var string
 	 */
-	public $option_key = 'wp_stream_db';
+	public string $option_key = 'wp_stream_db';
 
 	/**
 	 * Holds version of database at last update
@@ -48,10 +46,8 @@ class Install {
 
 	/**
 	 * Holds status of whether it's safe to run Stream or not
-	 *
-	 * @var bool
 	 */
-	public $update_required = false;
+	public bool $update_required = false;
 
 	/**
 	 * Holds status of whether the database update worked
