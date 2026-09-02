@@ -13,10 +13,8 @@ namespace WP_Stream;
 class Connector_BbPress extends Connector {
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'bbpress';
+	public string $name = 'bbpress';
 
 	/**
 	 * Holds tracked plugin minimum version required
@@ -27,49 +25,37 @@ class Connector_BbPress extends Connector {
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'bbp_toggle_topic_admin',
 	);
 
 	/**
 	 * Tracked option keys
-	 *
-	 * @var array
 	 */
-	public $options = array(
+	public array $options = array(
 		'bbpress' => null,
 	);
 
 	/**
 	 * Flag to stop logging update logic twice
-	 *
-	 * @var bool
 	 */
-	public $is_update = false;
+	public bool $is_update = false;
 
 	/**
 	 * Stores an activity to be deleted for use across multiple callbacks.
-	 *
-	 * @var bool
 	 */
-	public $deleted_activity = false;
+	public bool $deleted_activity = false;
 
 	/**
 	 * Stores post data of an activity to be deleted for use across multiple callbacks.
-	 *
-	 * @var array
 	 */
-	public $delete_activity_args = array();
+	public array $delete_activity_args = array();
 
 	/**
 	 * Flag for ignoring irrelevant activity deletions.
-	 *
-	 * @var bool
 	 */
-	public $ignore_activity_bulk_deletion = false;
+	public bool $ignore_activity_bulk_deletion = false;
 
 	/**
 	 * Check if plugin dependencies are satisfied and add an admin notice if not

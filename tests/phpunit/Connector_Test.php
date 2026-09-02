@@ -18,14 +18,14 @@ class Connector_Test extends WP_StreamTestCase {
 			 *
 			 * @var string
 			 */
-			public $name = 'maintenance';
+			public string $name = 'maintenance';
 
 			/**
 			 * Actions registered for this connector
 			 *
 			 * @var array
 			 */
-			public $actions = array(
+			public array $actions = array(
 				'simulate_fault',
 				'hyphenated-action',
 			);

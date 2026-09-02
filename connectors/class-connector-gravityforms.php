@@ -13,10 +13,8 @@ namespace WP_Stream;
 class Connector_GravityForms extends Connector {
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'gravityforms';
+	public string $name = 'gravityforms';
 
 	/**
 	 * Holds tracked plugin minimum version required
@@ -27,10 +25,8 @@ class Connector_GravityForms extends Connector {
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'gform_after_save_form',
 		'gform_pre_confirmation_save',
 		'gform_pre_notification_save',
@@ -61,17 +57,13 @@ class Connector_GravityForms extends Connector {
 
 	/**
 	 * Tracked option keys
-	 *
-	 * @var array
 	 */
-	public $options = array();
+	public array $options = array();
 
 	/**
 	 * Tracking registered Settings, with overridden data
-	 *
-	 * @var array
 	 */
-	public $options_override = array();
+	public array $options_override = array();
 
 	/**
 	 * Check if plugin dependencies are satisfied and add an admin notice if not
