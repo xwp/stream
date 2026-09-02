@@ -13,17 +13,13 @@ namespace WP_Stream;
 class Exporter_CSV extends Exporter {
 	/**
 	 * Exporter name
-	 *
-	 * @var string
 	 */
-	public $name = 'CSV';
+	public string $name = 'CSV';
 
 	/**
 	 * Exporter slug
-	 *
-	 * @var string
 	 */
-	public $slug = 'csv';
+	public string $slug = 'csv';
 
 	/**
 	 * Outputs CSV data for download

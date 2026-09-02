@@ -33,17 +33,13 @@ class Alert_Type_Highlight extends Alert_Type {
 
 	/**
 	 * Alert type name
-	 *
-	 * @var string
 	 */
-	public $name = 'Highlight';
+	public string $name = 'Highlight';
 
 	/**
 	 * Alert type slug
-	 *
-	 * @var string
 	 */
-	public $slug = 'highlight';
+	public string $slug = 'highlight';
 
 	/**
 	 * The single Alert ID.
