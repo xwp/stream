@@ -52,17 +52,13 @@ class Alert_Type_IFTTT extends Alert_Type {
 
 	/**
 	 * Alert type name
-	 *
-	 * @var string
 	 */
-	public $name = 'IFTTT';
+	public string $name = 'IFTTT';
 
 	/**
 	 * Alert type slug
-	 *
-	 * @var string
 	 */
-	public $slug = 'ifttt';
+	public string $slug = 'ifttt';
 
 	/**
 	 * Class Constructor

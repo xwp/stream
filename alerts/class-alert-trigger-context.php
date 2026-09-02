@@ -16,17 +16,13 @@ class Alert_Trigger_Context extends Alert_Trigger {
 
 	/**
 	 * Unique identifier
-	 *
-	 * @var string
 	 */
-	public $slug = 'context';
+	public string $slug = 'context';
 
 	/**
 	 * Field key used in database
-	 *
-	 * @var string
 	 */
-	public $field_key = 'wp_stream_trigger_context';
+	public string $field_key = 'wp_stream_trigger_context';
 
 	/**
 	 * Checks if a record matches the criteria from the trigger.

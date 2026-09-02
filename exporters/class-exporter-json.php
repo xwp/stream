@@ -13,17 +13,13 @@ namespace WP_Stream;
 class Exporter_JSON extends Exporter {
 	/**
 	 * Exporter name
-	 *
-	 * @var string
 	 */
-	public $name = 'JSON';
+	public string $name = 'JSON';
 
 	/**
 	 * Exporter slug
-	 *
-	 * @var string
 	 */
-	public $slug = 'json';
+	public string $slug = 'json';
 
 	/**
 	 * Outputs JSON data for download
