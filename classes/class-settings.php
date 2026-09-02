@@ -286,7 +286,12 @@ class Settings {
 			$option_key = $this->network_options_key;
 		}
 
-		return apply_filters( 'wp_stream_settings_option_key', $option_key );
+		$filtered_key = apply_filters( 'wp_stream_settings_option_key', $option_key );
+
+		// Guard against filters returning a non-string: the result is assigned
+		// to the string-typed Settings::$option_key property, where anything but
+		// a string would throw a TypeError (XWPENG-47).
+		return is_string( $filtered_key ) ? $filtered_key : $option_key;
 	}
 
 	/**
@@ -412,9 +417,16 @@ class Settings {
 		/**
 		 * Filter allows for modification of options fields
 		 *
-		 * @return array  Array of option fields
+		 * @param array $fields Option fields.
+		 *
+		 * @return array Array of option fields
 		 */
-		$this->fields = apply_filters( 'wp_stream_settings_option_fields', $fields );
+		$filtered_fields = apply_filters( 'wp_stream_settings_option_fields', $fields );
+
+		// Guard against filters returning a non-array: the value feeds the
+		// Settings::$fields property, which becomes array-typed in XWPENG-47 —
+		// a non-array would throw a TypeError once typed.
+		$this->fields = is_array( $filtered_fields ) ? $filtered_fields : $fields;
 
 		// Sort option fields in each tab by title ASC.
 		foreach ( $this->fields as $tab => $options ) {
@@ -607,21 +619,25 @@ class Settings {
 		$option_key = $this->option_key;
 		$defaults   = $this->get_defaults( $option_key );
 
+		$options = wp_parse_args(
+			is_network_admin() ? (array) get_site_option( $option_key, array() ) : (array) get_option( $option_key, array() ),
+			$defaults
+		);
+
 		/**
 		 * Filter allows for modification of options
 		 *
-		 * @param array
+		 * @param array  $options    Options.
+		 * @param string $option_key Option key.
 		 *
 		 * @return array Updated array of options
 		 */
-		return apply_filters(
-			'wp_stream_settings_options',
-			wp_parse_args(
-				is_network_admin() ? (array) get_site_option( $option_key, array() ) : (array) get_option( $option_key, array() ),
-				$defaults
-			),
-			$option_key
-		);
+		$filtered = apply_filters( 'wp_stream_settings_options', $options, $option_key );
+
+		// Guard against filters returning a non-array: the result is assigned
+		// to the array-typed Settings::$options property, where anything but an
+		// array would throw a TypeError (XWPENG-47).
+		return is_array( $filtered ) ? $filtered : $options;
 	}
 
 	/**
