@@ -37,15 +37,11 @@ return RectorConfig::configure()
 			__DIR__ . '/tests',
 			__DIR__ . '/vendor',
 			TypedPropertyFromAssignsRector::class => array(
-				// Public extension-point bases. Children are typed with the
-				// parent in later PRs (Q7). Directory skips keep this PR inside
-				// classes/ so a first-pass run cannot type a child while its
-				// parent stays untyped (T1.3).
-				__DIR__ . '/classes/class-connector.php',
+				// Remaining extension-point bases. Alert/exporter families
+				// are typed with their children in PR 3 (Q7).
 				__DIR__ . '/classes/class-alert-type.php',
 				__DIR__ . '/classes/class-alert-trigger.php',
 				__DIR__ . '/classes/class-exporter.php',
-				__DIR__ . '/connectors',
 				__DIR__ . '/alerts',
 				__DIR__ . '/exporters',
 			),
