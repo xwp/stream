@@ -13,10 +13,8 @@ namespace WP_Stream;
 class Connector_Jetpack extends Connector {
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'jetpack';
+	public string $name = 'jetpack';
 
 	/**
 	 * Holds tracked plugin minimum version required
@@ -27,10 +25,8 @@ class Connector_Jetpack extends Connector {
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'jetpack_log_entry',
 		'sharing_get_services_state',
 		'update_option',
@@ -44,24 +40,18 @@ class Connector_Jetpack extends Connector {
 
 	/**
 	 * Register connector in the WP Frontend
-	 *
-	 * @var bool
 	 */
-	public $register_frontend = false;
+	public bool $register_frontend = false;
 
 	/**
 	 * Tracked option keys
-	 *
-	 * @var array
 	 */
-	public $options = array();
+	public array $options = array();
 
 	/**
 	 * Tracking registered Settings, with overridden data
-	 *
-	 * @var array
 	 */
-	public $options_override = array();
+	public array $options_override = array();
 
 	/**
 	 * Check if plugin dependencies are satisfied and add an admin notice if not

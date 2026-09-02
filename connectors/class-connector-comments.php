@@ -13,17 +13,13 @@ namespace WP_Stream;
 class Connector_Comments extends Connector {
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'comments';
+	public string $name = 'comments';
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'comment_flood_trigger',
 		'wp_insert_comment',
 		'edit_comment',
