@@ -160,7 +160,7 @@ class DB_Driver_WPDB implements DB_Driver {
 	 * @param \WP_Stream\Plugin $plugin Instance of the plugin.
 	 * @return \WP_Stream\Install
 	 */
-	public function setup_storage( $plugin ) {
+	public function setup_storage( $plugin ): Install {
 		return new Install( $plugin );
 	}
 

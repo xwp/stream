@@ -51,8 +51,10 @@ interface DB_Driver {
 	 * Init storage.
 	 *
 	 * @param \WP_Stream\Plugin $plugin Instance of the plugin.
+	 *
+	 * @return \WP_Stream\Install
 	 */
-	public function setup_storage( $plugin );
+	public function setup_storage( $plugin ): Install;
 
 	/**
 	 * Purge storage.
