@@ -16,24 +16,18 @@ class Alert_Trigger_Action extends Alert_Trigger {
 
 	/**
 	 * Unique identifier
-	 *
-	 * @var string
 	 */
-	public $slug = 'action';
+	public string $slug = 'action';
 
 	/**
 	 * Meta key used in forms.
-	 *
-	 * @var string
 	 */
-	public $meta_key = 'trigger_action';
+	public string $meta_key = 'trigger_action';
 
 	/**
 	 * Field key used in database
-	 *
-	 * @var string
 	 */
-	public $field_key = 'wp_stream_trigger_action';
+	public string $field_key = 'wp_stream_trigger_action';
 
 	/**
 	 * Checks if a record matches the criteria from the trigger.

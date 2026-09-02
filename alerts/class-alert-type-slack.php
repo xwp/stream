@@ -16,17 +16,13 @@ class Alert_Type_Slack extends Alert_Type {
 
 	/**
 	 * Alert type name
-	 *
-	 * @var string
 	 */
-	public $name = 'Slack';
+	public string $name = 'Slack';
 
 	/**
 	 * Alert type slug
-	 *
-	 * @var string
 	 */
-	public $slug = 'slack';
+	public string $slug = 'slack';
 
 	/**
 	 * Class Constructor
