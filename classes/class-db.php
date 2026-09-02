@@ -12,13 +12,6 @@ namespace WP_Stream;
  */
 class DB {
 	/**
-	 * Holds the driver instance
-	 *
-	 * @var DB_Driver
-	 */
-	public $driver;
-
-	/**
 	 * Number of records in last request
 	 *
 	 * @var int
@@ -30,8 +23,7 @@ class DB {
 	 *
 	 * @param DB_Driver $driver Driver we want to use.
 	 */
-	public function __construct( $driver ) {
-		$this->driver = $driver;
+	public function __construct( public $driver ) {
 	}
 
 	/**

@@ -13,13 +13,6 @@ namespace WP_Stream;
 class Log {
 
 	/**
-	 * Holds Instance of plugin object
-	 *
-	 * @var Plugin
-	 */
-	public $plugin;
-
-	/**
 	 * Previous Stream record ID, used for chaining same-session records
 	 *
 	 * @var int
@@ -31,9 +24,7 @@ class Log {
 	 *
 	 * @param Plugin $plugin Instance of plugin object.
 	 */
-	public function __construct( $plugin ) {
-		$this->plugin = $plugin;
-
+	public function __construct( public $plugin ) {
 		// Ensure function used in various methods is pre-loaded.
 		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
 			require_once ABSPATH . '/wp-admin/includes/plugin.php';

@@ -77,13 +77,6 @@ class Admin {
 	const LARGE_TABLE_CRON_NOTICE_OPTION = 'wp_stream_large_table_cron_notice';
 
 	/**
-	 * Holds Instance of plugin object
-	 *
-	 * @var Plugin
-	 */
-	public $plugin;
-
-	/**
 	 * Holds Network class
 	 */
 	public ?Network $network = null;
@@ -158,9 +151,7 @@ class Admin {
 	 *
 	 * @param Plugin $plugin Instance of plugin object.
 	 */
-	public function __construct( $plugin ) {
-		$this->plugin = $plugin;
-
+	public function __construct( public $plugin ) {
 		add_action( 'init', array( $this, 'init' ) );
 
 		// Ensure function used in various methods is pre-loaded.

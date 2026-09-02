@@ -34,11 +34,6 @@ class Abilities {
 	const SETTING_NAME = 'enable_abilities_api';
 
 	/**
-	 * Holds instance of plugin object.
-	 */
-	public Plugin $plugin;
-
-	/**
 	 * Registered ability objects keyed by namespaced name.
 	 *
 	 * @var array<string, Ability>
@@ -50,9 +45,7 @@ class Abilities {
 	 *
 	 * @param Plugin $plugin Instance of plugin object.
 	 */
-	public function __construct( Plugin $plugin ) {
-		$this->plugin = $plugin;
-
+	public function __construct( public Plugin $plugin ) {
 		if ( ! $this->is_available() ) {
 			return;
 		}
