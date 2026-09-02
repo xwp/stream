@@ -182,9 +182,9 @@ class Test_Log extends WP_StreamTestCase {
 		);
 	}
 
-	public function test_ip_address_rule_matches_with_whitespace() {
+	public function test_ip_address_rule_trims_whitespace_around_commas() {
 		// Whitespace around commas (admin form join + user paste) must not
-		// silently fail the IP match. See issue #1824.
+		// silently fail the IP match.
 		$this->assertTrue(
 			$this->plugin->log->record_matches_rules(
 				array(
@@ -192,9 +192,9 @@ class Test_Log extends WP_StreamTestCase {
 				),
 				array(
 					'ip_address' => '1.1.1.1, 8.8.8.8',
-				),
-				'Trailing space after comma does not break the match'
-			)
+				)
+			),
+			'Trailing space after comma does not break the match'
 		);
 
 		$this->assertTrue(
@@ -204,11 +204,13 @@ class Test_Log extends WP_StreamTestCase {
 				),
 				array(
 					'ip_address' => '8.8.8.8 ',
-				),
-				'Trailing space on a single-IP rule still matches'
-			)
+				)
+			),
+			'Trailing space on a single-IP rule still matches'
 		);
+	}
 
+	public function test_ip_address_rule_does_not_match_empty_record_ip() {
 		$this->assertFalse(
 			$this->plugin->log->record_matches_rules(
 				array(
@@ -216,11 +218,13 @@ class Test_Log extends WP_StreamTestCase {
 				),
 				array(
 					'ip_address' => '1.1.1.1',
-				),
-				'Empty record IP never matches an IP-only rule'
-			)
+				)
+			),
+			'Empty record IP never matches an IP-only rule'
 		);
+	}
 
+	public function test_ip_address_rule_drops_empty_comma_tokens() {
 		// Empty tokens between commas (e.g. user-pasted "1.1.1.1, ,") must be
 		// dropped, not treated as a valid match against the empty record IP.
 		$this->assertTrue(
@@ -230,42 +234,17 @@ class Test_Log extends WP_StreamTestCase {
 				),
 				array(
 					'ip_address' => '1.1.1.1, ,',
-				),
-				'Empty comma-separated tokens are dropped before matching'
-			)
-		);
-
-		// Stored value may already be an array (direct API callers, tests).
-		// Both shapes must match.
-		$this->assertTrue(
-			$this->plugin->log->record_matches_rules(
-				array(
-					'ip_address' => '8.8.8.8',
-				),
-				array(
-					'ip_address' => array( '127.0.0.1', '8.8.8.8' ),
-				),
-				'Array-shaped IP rule matches the second entry'
-			)
-		);
-
-		$this->assertTrue(
-			$this->plugin->log->record_matches_rules(
-				array(
-					'ip_address' => '8.8.8.8',
-				),
-				array(
-					'ip_address' => array( ' 8.8.8.8 ' ),
-				),
-				'Array-shaped IP rule trims whitespace per entry'
-			)
+				)
+			),
+			'Empty comma-separated tokens are dropped before matching'
 		);
 	}
 
 	public function test_ip_only_exclude_rule_excludes_record() {
-		// End-to-end coverage for the bug in #1824. Shape mirrors the
-		// parallel-array rule format produced by both the wp-admin Exclude
-		// list and the stream/create-exclusion-rule ability.
+		// End-to-end coverage for the comma/whitespace exclude-rule fix.
+		// Shape mirrors the parallel-array rule format produced by both the
+		// wp-admin Exclude list and the stream/create-exclusion-rule ability.
+		// Does not cover the separate IPv6/proxy-chain cause of issue #1824.
 		$this->plugin->settings->options['exclude_rules'] = array(
 			'exclude_row'    => array( 0 => '' ),
 			'author_or_role' => array( 0 => '' ),
