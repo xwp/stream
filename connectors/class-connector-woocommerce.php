@@ -13,10 +13,8 @@ namespace WP_Stream;
 class Connector_Woocommerce extends Connector {
 	/**
 	 * Context name
-	 *
-	 * @var string
 	 */
-	public $name = 'woocommerce';
+	public string $name = 'woocommerce';
 
 	/**
 	 * Holds tracked plugin minimum version required
@@ -27,10 +25,8 @@ class Connector_Woocommerce extends Connector {
 
 	/**
 	 * Actions registered for this context
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'wp_stream_record_array',
 		'updated_option',
 		'transition_post_status',
@@ -46,10 +42,8 @@ class Connector_Woocommerce extends Connector {
 
 	/**
 	 * Taxonomies tracked by this connector.
-	 *
-	 * @var array
 	 */
-	public $taxonomies = array(
+	public array $taxonomies = array(
 		'product_type',
 		'product_cat',
 		'product_tag',
@@ -59,10 +53,8 @@ class Connector_Woocommerce extends Connector {
 
 	/**
 	 * Post-types tracked by this connector.
-	 *
-	 * @var array
 	 */
-	public $post_types = array(
+	public array $post_types = array(
 		'product',
 		'product_variation',
 		'shop_order',
@@ -85,17 +77,15 @@ class Connector_Woocommerce extends Connector {
 
 	/**
 	 * Caches WooCommerce settings.
-	 *
-	 * @var array
 	 */
-	private $settings = array();
+	private array $settings = array();
 
 	/**
 	 * Stores the WooCommerce version number.
 	 *
 	 * @var string|null
 	 */
-	private $plugin_version = null;
+	private ?string $plugin_version = null;
 
 	/**
 	 * Register connection

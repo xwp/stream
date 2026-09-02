@@ -13,17 +13,13 @@ namespace WP_Stream;
 class Connector_Posts extends Connector {
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'posts';
+	public string $name = 'posts';
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'transition_post_status',
 		'deleted_post',
 	);

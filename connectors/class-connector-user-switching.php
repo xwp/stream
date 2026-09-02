@@ -14,17 +14,13 @@ class Connector_User_Switching extends Connector {
 
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'userswitching';
+	public string $name = 'userswitching';
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'wp_stream_after_connectors_registration',
 		'switch_to_user',
 		'switch_back_user',

@@ -14,10 +14,8 @@ class Connector_WordPress_SEO extends Connector {
 
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'wordpressseo';
+	public string $name = 'wordpressseo';
 
 	/**
 	 * Holds tracked plugin minimum version required
@@ -28,10 +26,8 @@ class Connector_WordPress_SEO extends Connector {
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'wpseo_handle_import',
 		'wpseo_import',
 		'seo_page_wpseo_files',
@@ -42,10 +38,8 @@ class Connector_WordPress_SEO extends Connector {
 
 	/**
 	 * Tracking registered Settings, with overridden data
-	 *
-	 * @var array
 	 */
-	public $option_groups = array();
+	public array $option_groups = array();
 
 	/**
 	 * Check if plugin dependencies are satisfied and add an admin notice if not

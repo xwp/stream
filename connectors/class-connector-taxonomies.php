@@ -13,17 +13,13 @@ namespace WP_Stream;
 class Connector_Taxonomies extends Connector {
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'taxonomies';
+	public string $name = 'taxonomies';
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'created_term',
 		'delete_term',
 		'edit_term',
@@ -46,10 +42,8 @@ class Connector_Taxonomies extends Connector {
 
 	/**
 	 * Register connector in the WP Frontend
-	 *
-	 * @var bool
 	 */
-	public $register_frontend = false;
+	public bool $register_frontend = false;
 
 	/**
 	 * Return translated connector label
