@@ -12,6 +12,7 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
+use Rector\TypeDeclaration\Rector\Property\TypedPropertyFromAssignsRector;
 use Rector\ValueObject\PhpVersion;
 
 return RectorConfig::configure()
@@ -35,9 +36,25 @@ return RectorConfig::configure()
 			__DIR__ . '/node_modules',
 			__DIR__ . '/tests',
 			__DIR__ . '/vendor',
-			// Per-rule skips are appended by the PR that registers the rule (§3, §4).
+			TypedPropertyFromAssignsRector::class => array(
+				// Public extension-point bases. Children are typed with the
+				// parent in later PRs (Q7). Directory skips keep this PR inside
+				// classes/ so a first-pass run cannot type a child while its
+				// parent stays untyped (T1.3).
+				__DIR__ . '/classes/class-connector.php',
+				__DIR__ . '/classes/class-alert-type.php',
+				__DIR__ . '/classes/class-alert-trigger.php',
+				__DIR__ . '/classes/class-exporter.php',
+				__DIR__ . '/connectors',
+				__DIR__ . '/alerts',
+				__DIR__ . '/exporters',
+			),
 		)
 	)
 	->withPhpVersion( PhpVersion::PHP_82 )
 	->withCache( __DIR__ . '/artifacts/rector' )
-	->withRules( array() );
+	->withRules( array() )
+	->withConfiguredRule(
+		TypedPropertyFromAssignsRector::class,
+		array( TypedPropertyFromAssignsRector::INLINE_PUBLIC => true )
+	);

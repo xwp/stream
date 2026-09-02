@@ -14,10 +14,8 @@ class Filter_Input {
 
 	/**
 	 * Callbacks to be used for input validation/sanitation.
-	 *
-	 * @var array
 	 */
-	public static $filter_callbacks = array(
+	public static array $filter_callbacks = array(
 		FILTER_DEFAULT                     => null,
 		// Validate.
 		FILTER_VALIDATE_BOOLEAN            => 'is_bool',

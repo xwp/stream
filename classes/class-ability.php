@@ -19,10 +19,8 @@ abstract class Ability {
 
 	/**
 	 * Holds instance of plugin object.
-	 *
-	 * @var Plugin
 	 */
-	protected $plugin;
+	protected Plugin $plugin;
 
 	/**
 	 * Class constructor.

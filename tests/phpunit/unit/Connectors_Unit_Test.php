@@ -331,11 +331,11 @@ class Connectors_Unit_Test extends TestCase {
 	 * @return Connectors
 	 */
 	private function make_connectors() {
-		$plugin            = Mockery::mock();
+		$plugin            = Mockery::mock( Plugin::class );
 		$plugin->locations = array(
 			'dir' => '',
 		);
-		$plugin->admin     = Mockery::mock();
+		$plugin->admin     = Mockery::mock( Admin::class );
 
 		$connectors         = ( new ReflectionClass( Connectors::class ) )->newInstanceWithoutConstructor();
 		$connectors->plugin = $plugin;

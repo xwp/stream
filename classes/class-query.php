@@ -26,10 +26,8 @@ class Query {
 
 	/**
 	 * Hold the number of records found
-	 *
-	 * @var int
 	 */
-	public $found_records = 0;
+	public int $found_records = 0;
 
 	/**
 	 * Database handle. Set from the global $wpdb in the constructor.
