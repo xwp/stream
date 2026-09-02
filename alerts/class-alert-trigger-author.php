@@ -16,17 +16,13 @@ class Alert_Trigger_Author extends Alert_Trigger {
 
 	/**
 	 * Unique identifier
-	 *
-	 * @var string
 	 */
-	public $slug = 'author';
+	public string $slug = 'author';
 
 	/**
 	 * Field key used in database
-	 *
-	 * @var string
 	 */
-	public $field_key = 'wp_stream_trigger_author';
+	public string $field_key = 'wp_stream_trigger_author';
 
 	/**
 	 * Checks if a record matches the criteria from the trigger.

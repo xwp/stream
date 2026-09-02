@@ -16,17 +16,13 @@ class Alert_Type_Die extends Alert_Type {
 
 	/**
 	 * Alert type name
-	 *
-	 * @var string
 	 */
-	public $name = 'Die Notifier';
+	public string $name = 'Die Notifier';
 
 	/**
 	 * Alert type slug
-	 *
-	 * @var string
 	 */
-	public $slug = 'die';
+	public string $slug = 'die';
 
 	/**
 	 * Triggers a script exit when an alert is triggered. Debugging use only.

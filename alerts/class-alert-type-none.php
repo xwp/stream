@@ -15,17 +15,13 @@ namespace WP_Stream;
 class Alert_Type_None extends Alert_Type {
 	/**
 	 * Notifier name
-	 *
-	 * @var string
 	 */
-	public $name = 'Do Nothing';
+	public string $name = 'Do Nothing';
 
 	/**
 	 * Notifier slug
-	 *
-	 * @var string
 	 */
-	public $slug = 'none';
+	public string $slug = 'none';
 
 	/**
 	 * Does not notify user.

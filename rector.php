@@ -36,15 +36,6 @@ return RectorConfig::configure()
 			__DIR__ . '/node_modules',
 			__DIR__ . '/tests',
 			__DIR__ . '/vendor',
-			TypedPropertyFromAssignsRector::class => array(
-				// Remaining extension-point bases. Alert/exporter families
-				// are typed with their children in PR 3 (Q7).
-				__DIR__ . '/classes/class-alert-type.php',
-				__DIR__ . '/classes/class-alert-trigger.php',
-				__DIR__ . '/classes/class-exporter.php',
-				__DIR__ . '/alerts',
-				__DIR__ . '/exporters',
-			),
 		)
 	)
 	->withPhpVersion( PhpVersion::PHP_82 )
