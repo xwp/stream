@@ -197,8 +197,8 @@ class Live_Update {
 
 		if ( isset( $data['wp-stream-heartbeat'] ) && isset( $total_items ) ) {
 			$response['total_items'] = $total_items;
-			/* translators: %d: number of items (e.g. "42") */
-			$response['total_items_i18n'] = sprintf( _n( '%d item', '%d items', $total_items, 'stream' ), number_format_i18n( $total_items ) );
+			/* translators: %s: number of items (e.g. "1,234") */
+			$response['total_items_i18n'] = sprintf( _n( '%s item', '%s items', $total_items, 'stream' ), number_format_i18n( $total_items ) );
 		}
 
 		if ( isset( $data['wp-stream-heartbeat'] ) && 'live-update' === $data['wp-stream-heartbeat'] && $enable_stream_update ) {
