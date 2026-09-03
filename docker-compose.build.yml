@@ -37,6 +37,14 @@ services:
         PHP_VERSION: "8.2"
         XDEBUG_VERSION: "3.2.1"
 
+  wordpress_php8.3:
+    image: ghcr.io/xwp/stream-wordpress:php8.3
+    build:
+      context: ./local/docker/wordpress
+      args:
+        PHP_VERSION: "8.3"
+        XDEBUG_VERSION: "3.3.2"
+
   # Helper image that generates a locally-trusted TLS cert via mkcert for
   # the Apache HTTPS vhost on the wordpress service. Pre-built and pushed
   # to ghcr.io so CI and contributors don't rebuild it on every fresh

@@ -72,8 +72,8 @@ function wp_stream_fail_php_version() {
 /**
  * Helper for external plugins which wish to use Stream.
  *
- * @return WP_Stream\Plugin
+ * @return WP_Stream\Plugin|null Plugin instance, or null if Stream has not finished constructing.
  */
 function wp_stream_get_instance() {
-	return $GLOBALS['wp_stream'];
+	return $GLOBALS['wp_stream'] ?? null;
 }
