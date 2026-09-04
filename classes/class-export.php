@@ -58,7 +58,7 @@ class Export {
 			return;
 		}
 
-		$this->plugin->admin->register_list_table();
+		$this->plugin->admin->records->register_list_table();
 		$list_table = $this->plugin->admin->list_table;
 		$list_table->prepare_items();
 		add_filter( 'stream_records_per_page', array( $this, 'disable_paginate' ) );
