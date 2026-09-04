@@ -81,5 +81,4 @@ class Admin_Menu_Test extends WP_StreamTestCase {
 		$this->assertNotEmpty( $this->menu->screen_id['main'] );
 		$this->assertNotEmpty( $this->menu->screen_id['settings'] );
 	}
-
 }

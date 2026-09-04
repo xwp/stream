@@ -48,5 +48,4 @@ class Admin_Screen_Records_Test extends WP_StreamTestCase {
 		$this->assertNotEmpty( $this->admin->list_table );
 		$this->assertInstanceOf( '\WP_Stream\List_Table', $this->admin->list_table );
 	}
-
 }

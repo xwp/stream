@@ -125,5 +125,4 @@ class Admin_Assets_Test extends WP_StreamTestCase {
 		$this->assertNotEmpty( $dependency->extra['after'] );
 		$this->assertStringContainsString( "body.{$this->admin->admin_body_class}", $dependency->extra['after'][0] );
 	}
-
 }
