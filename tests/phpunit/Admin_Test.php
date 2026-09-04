@@ -236,7 +236,7 @@ class Admin_Test extends WP_StreamTestCase {
 
 	/**
 	 * Integration test for the running-state UI swap. Asserts that the
-	 * "Clean Orphaned Meta" field in Settings::get_fields() flips from
+	 * "Clean Orphaned Meta" field in Settings_Registry::get_fields() flips from
 	 * type=link to type=none and swaps its description when an auto-purge
 	 * chain is active. Admin_Purge::is_running_auto_purge() is covered in
 	 * isolation in Admin_Purge_Test; this test closes the loop on the
@@ -252,7 +252,7 @@ class Admin_Test extends WP_StreamTestCase {
 		}
 
 		$find_field = function () {
-			$fields = $this->plugin->settings->get_fields();
+			$fields = $this->plugin->settings->registry->get_fields();
 			foreach ( $fields['advanced']['fields'] as $field ) {
 				if ( isset( $field['name'] ) && 'clean_orphan_meta' === $field['name'] ) {
 					return $field;
@@ -310,7 +310,7 @@ class Admin_Test extends WP_StreamTestCase {
 		}
 
 		$find_field = function () {
-			$fields = $this->plugin->settings->get_fields();
+			$fields = $this->plugin->settings->registry->get_fields();
 			foreach ( $fields['advanced']['fields'] as $field ) {
 				if ( isset( $field['name'] ) && 'delete_all_records' === $field['name'] ) {
 					return $field;
@@ -357,9 +357,9 @@ class Admin_Test extends WP_StreamTestCase {
 	}
 
 	/**
-	 * Verifies that get_deletion_warning() honours the pre-computed deletion
-	 * state passed by build_delete_all_records_field(), avoiding a duplicate
-	 * Action Scheduler query inside a single render.
+	 * Verifies that Settings_Registry::get_deletion_warning() honours the
+	 * pre-computed deletion state passed by build_delete_all_records_field(),
+	 * avoiding a duplicate Action Scheduler query inside a single render.
 	 */
 	public function test_get_deletion_warning_respects_precomputed_state() {
 		if ( function_exists( 'as_unschedule_all_actions' ) ) {
@@ -369,7 +369,7 @@ class Admin_Test extends WP_StreamTestCase {
 		// No deletion scheduled, but caller asserts "running" — message must reflect the argument.
 		$this->assertStringContainsString(
 			'Currently deleting records',
-			$this->plugin->settings->get_deletion_warning( true ),
+			$this->plugin->settings->registry->get_deletion_warning( true ),
 			'When caller passes true, message must reflect running deletion regardless of AS state'
 		);
 
@@ -385,7 +385,7 @@ class Admin_Test extends WP_StreamTestCase {
 		);
 		$this->assertStringNotContainsString(
 			'Currently deleting records',
-			$this->plugin->settings->get_deletion_warning( false ),
+			$this->plugin->settings->registry->get_deletion_warning( false ),
 			'When caller passes false, message must reflect idle state regardless of AS state'
 		);
 
