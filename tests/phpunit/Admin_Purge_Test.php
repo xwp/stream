@@ -37,7 +37,7 @@ class Admin_Purge_Test extends WP_StreamTestCase {
 
 		$this->admin = $this->plugin->admin;
 		$this->assertNotEmpty( $this->admin );
-		$this->purge = $this->get_admin_collaborator( $this->admin, 'purge' );
+		$this->purge          = $this->get_admin_collaborator( $this->admin, 'purge' );
 		self::$bc_action_hits = 0;
 	}
 
@@ -920,5 +920,4 @@ class Admin_Purge_Test extends WP_StreamTestCase {
 			'After unscheduling: not running'
 		);
 	}
-
 }

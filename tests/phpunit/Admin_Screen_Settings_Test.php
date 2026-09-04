@@ -42,5 +42,4 @@ class Admin_Screen_Settings_Test extends WP_StreamTestCase {
 
 		$this->assertArrayHasKey( 'wp-stream-settings', $wp_scripts->registered );
 	}
-
 }
