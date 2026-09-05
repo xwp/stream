@@ -56,29 +56,65 @@ require_once dirname( __DIR__ ) . '/abilities/trait-view-stream-permission.php';
 require_once $_tests_dir . '/includes/functions.php';
 
 /**
- * Force plugins defined in a constant (supplied by phpunit.xml) to be active at runtime.
+ * Plugins forced active during PHPUnit runs via WP_TEST_ACTIVATED_PLUGINS.
  *
- * @filter site_option_active_sitewide_plugins
- * @filter option_active_plugins
- *
- * @param array $active_plugins
- * @return array
+ * @return string[] Plugin basenames (e.g. jetpack/jetpack.php).
  */
-function wp_stream_filter_active_plugins_for_phpunit( $active_plugins ) {
-	$forced_active_plugins = array();
-	if ( defined( 'WP_TEST_ACTIVATED_PLUGINS' ) ) {
-		$forced_active_plugins = preg_split( '/\s*,\s*/', WP_TEST_ACTIVATED_PLUGINS );
+function wp_stream_get_forced_active_plugins_for_phpunit() {
+	if ( ! defined( 'WP_TEST_ACTIVATED_PLUGINS' ) ) {
+		return array();
 	}
 
-	if ( ! empty( $forced_active_plugins ) ) {
-		foreach ( $forced_active_plugins as $forced_active_plugin ) {
-			$active_plugins[] = $forced_active_plugin;
-		}
+	$plugins = preg_split( '/\s*,\s*/', WP_TEST_ACTIVATED_PLUGINS );
+	if ( ! is_array( $plugins ) ) {
+		return array();
 	}
+
+	return array_values( array_filter( $plugins ) );
+}
+
+/**
+ * Force WP_TEST_ACTIVATED_PLUGINS onto the per-site active list.
+ *
+ * @filter option_active_plugins
+ *
+ * @param string[] $active_plugins Plugin basenames.
+ * @return string[]
+ */
+function wp_stream_filter_active_plugins_for_phpunit( $active_plugins ) {
+	foreach ( wp_stream_get_forced_active_plugins_for_phpunit() as $plugin ) {
+		$active_plugins[] = $plugin;
+	}
+
 	return $active_plugins;
 }
-tests_add_filter( 'site_option_active_sitewide_plugins', 'wp_stream_filter_active_plugins_for_phpunit' );
+
+/**
+ * Force WP_TEST_ACTIVATED_PLUGINS onto the network-wide map.
+ *
+ * WordPress stores sitewide plugins as path => activation timestamp. Appending
+ * list items (0, 1, 2...) makes Jetpack treat those keys as plugin paths.
+ *
+ * @filter site_option_active_sitewide_plugins
+ *
+ * @param array<string, int>|false $active_sitewide_plugins Plugin path => timestamp.
+ * @return array<string, int>
+ */
+function wp_stream_filter_active_sitewide_plugins_for_phpunit( $active_sitewide_plugins ) {
+	if ( ! is_array( $active_sitewide_plugins ) ) {
+		$active_sitewide_plugins = array();
+	}
+
+	foreach ( wp_stream_get_forced_active_plugins_for_phpunit() as $plugin ) {
+		if ( ! isset( $active_sitewide_plugins[ $plugin ] ) ) {
+			$active_sitewide_plugins[ $plugin ] = time();
+		}
+	}
+
+	return $active_sitewide_plugins;
+}
 tests_add_filter( 'option_active_plugins', 'wp_stream_filter_active_plugins_for_phpunit' );
+tests_add_filter( 'site_option_active_sitewide_plugins', 'wp_stream_filter_active_sitewide_plugins_for_phpunit' );
 
 tests_add_filter(
 	'muplugins_loaded',

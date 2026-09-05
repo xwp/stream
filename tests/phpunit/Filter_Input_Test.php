@@ -40,8 +40,10 @@ class Filter_Input_Test extends WP_StreamTestCase {
 	}
 
 	/**
-	 * is_regex() intentionally probes invalid patterns with @preg_match; disable
-	 * PHPUnit's error handler so the silenced warning is not promoted.
+	 * Disable PHPUnit's error handler so is_regex() can probe invalid patterns.
+	 *
+	 * The method uses @preg_match; without this attribute the silenced warning
+	 * is promoted.
 	 */
 	#[WithoutErrorHandler]
 	public function test_is_regex() {

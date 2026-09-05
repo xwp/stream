@@ -11,7 +11,7 @@
     }
   ],
   "require": {
-    "php": ">=7.2",
+    "php": "^8.2",
     "ext-json": "*",
     "composer/installers": "^1.0 || ^2.0",
     "woocommerce/action-scheduler": "^3.9"

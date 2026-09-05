@@ -7,13 +7,16 @@
 	<arg value="sp" /><!-- Show sniff codes in all reports and progress. -->
 
 	<rule ref="PHPCompatibilityWP" />
-	<config name="testVersion" value="8.1-" />
+	<config name="testVersion" value="8.2-" />
 
 	<rule ref="WordPress-Docs">
 		<type>warning</type><!-- FIXME Report but ignore for now. -->
 	</rule>
 
-	<rule ref="WordPress-Extra" />
+	<rule ref="WordPress-Extra">
+		<!-- PHPCS 3.12+ deprecated this sniff; PHPCompatibility already covers the check. -->
+		<exclude name="Generic.Functions.CallTimePassByReference" />
+	</rule>
 
 	<rule ref="WordPress-Core">
 		<exclude name="WordPress.Files.FileName.InvalidClassFileName" />

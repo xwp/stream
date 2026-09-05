@@ -33,6 +33,108 @@ class WP_StreamTestCase extends \WP_Ajax_UnitTestCase {
 		$this->plugin = $GLOBALS['wp_stream'];
 		$this->assertNotEmpty( $this->plugin );
 		self::ensure_mercator_mapping_table();
+		self::silence_cli_header_output();
+		self::silence_yoast_indexable_option_watchers();
+	}
+
+	/**
+	 * Keep header() and setcookie() from warning after WP's test bootstrap has printed.
+	 *
+	 * WordPress PHPUnit bootstrap.php:261 runs install.php via system(),
+	 * which writes "Installing..." to stdout and marks headers sent. PHPUnit 11
+	 * still reports those E_WARNINGs even though WP_Ajax_UnitTestCase masks
+	 * error_reporting. Stream tests assert on logs/JSON/user meta, not cookies
+	 * or Referrer-Policy. Skip cookie emission via the plugins' own filters and
+	 * drop wp_admin_headers() (no headers_sent() guard) before admin_init runs.
+	 *
+	 * Do not add send_auth_cookies => __return_false here: Connector_Two_Factor
+	 * treats that filter as "2FA interstitial, do not log login".
+	 *
+	 * @return void
+	 */
+	protected static function silence_cli_header_output(): void {
+		add_action( 'admin_init', array( self::class, 'remove_admin_http_headers' ), 0 );
+		add_filter( 'user_switching_send_auth_cookies', '__return_false' );
+	}
+
+	/**
+	 * Remove admin_init callbacks that call header() without checking headers_sent().
+	 *
+	 * @return void
+	 */
+	public static function remove_admin_http_headers(): void {
+		remove_action( 'admin_init', 'wp_admin_headers' );
+	}
+
+	/**
+	 * Unhook Yoast indexable watchers from option updates on multisite.
+	 *
+	 * Yoast is forced active via WP_TEST_ACTIVATED_PLUGINS (network map on
+	 * multisite), but activate_plugin() — and therefore per-site schema — runs
+	 * only in the single-site bootstrap. Factory blogs never get
+	 * {prefix}{blog_id}_yoast_indexable.
+	 *
+	 * Several Indexable_* watchers then hit that missing table on option
+	 * updates, and Yoast's should_index_indexables filter is too late:
+	 * Indexable_Home_Page_Watcher::build_indexable() queries first;
+	 * Indexable_HomeUrl_Watcher::reset_permalinks() → reset_permalink()
+	 * issues UPDATE with no filter at all. Typical Stream triggers:
+	 * wp_update_site( public ) → update_option( blog_public ); Mercator
+	 * Mapping::make_primary() → update_option( home ).
+	 *
+	 * Stream does not test Yoast indexables on multisite
+	 * (Connector_WordPress_SEO_Test skips). Drop every Indexable_* watcher
+	 * on update_option_* so later option writes cannot reopen the noise.
+	 *
+	 * @return void
+	 */
+	protected static function silence_yoast_indexable_option_watchers(): void {
+		if ( ! is_multisite() || empty( $GLOBALS['wp_filter'] ) ) {
+			return;
+		}
+
+		foreach ( $GLOBALS['wp_filter'] as $hook_name => $hook ) {
+			if ( ! is_string( $hook_name ) || 0 !== strpos( $hook_name, 'update_option_' ) ) {
+				continue;
+			}
+
+			if ( ! $hook instanceof \WP_Hook ) {
+				continue;
+			}
+
+			self::remove_yoast_indexable_watchers_from_hook( $hook_name, $hook );
+		}
+	}
+
+	/**
+	 * Remove Yoast Indexable_* watcher callbacks from one option-update hook.
+	 *
+	 * @param string   $hook_name Hook name (update_option_*).
+	 * @param \WP_Hook $hook      Hook object.
+	 * @return void
+	 */
+	protected static function remove_yoast_indexable_watchers_from_hook( $hook_name, $hook ): void {
+		$prefix    = 'Yoast\\WP\\SEO\\Integrations\\Watchers\\Indexable_';
+		$to_remove = array();
+
+		foreach ( $hook->callbacks as $priority => $callbacks ) {
+			foreach ( $callbacks as $callback ) {
+				$function = isset( $callback['function'] ) ? $callback['function'] : null;
+				if ( ! is_array( $function ) || ! isset( $function[0] ) || ! is_object( $function[0] ) ) {
+					continue;
+				}
+
+				if ( 0 !== strpos( get_class( $function[0] ), $prefix ) ) {
+					continue;
+				}
+
+				$to_remove[] = array( $function, (int) $priority );
+			}
+		}
+
+		foreach ( $to_remove as $item ) {
+			remove_action( $hook_name, $item[0], $item[1] );
+		}
 	}
 
 	/**
