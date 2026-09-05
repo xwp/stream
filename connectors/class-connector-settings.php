@@ -482,7 +482,7 @@ class Connector_Settings extends Connector {
 					$url_tab    = null;
 
 					if ( '' !== $option_key ) {
-						foreach ( $plugin->settings->get_fields() as $tab_name => $tab_properties ) {
+						foreach ( $plugin->settings->registry->get_fields() as $tab_name => $tab_properties ) {
 							foreach ( $tab_properties['fields'] as $field ) {
 								$field_key = sprintf( '%s_%s', $tab_name, $field['name'] );
 								if ( $field_key === $option_key ) {
