@@ -23,6 +23,13 @@ class Scheduler_Handoff_Test extends WP_StreamTestCase {
 	protected $admin;
 
 	/**
+	 * Purge collaborator under test.
+	 *
+	 * @var Admin_Purge
+	 */
+	protected $purge;
+
+	/**
 	 * Scheduler active before a test swapped it.
 	 *
 	 * @var Scheduler
@@ -32,6 +39,7 @@ class Scheduler_Handoff_Test extends WP_StreamTestCase {
 	public function setUp(): void {
 		parent::setUp();
 		$this->admin              = $this->plugin->admin;
+		$this->purge              = $this->get_admin_collaborator( $this->admin, 'purge' );
 		$this->original_scheduler = $this->plugin->scheduler;
 		$this->clear();
 	}
@@ -68,7 +76,7 @@ class Scheduler_Handoff_Test extends WP_StreamTestCase {
 		$this->assertNotFalse( as_next_scheduled_action( Admin::AUTO_PURGE_ACTION ) );
 
 		$this->plugin->scheduler = new Cron_Scheduler();
-		$this->admin->purge_schedule_setup();
+		$this->purge->purge_schedule_setup();
 
 		$this->assertFalse(
 			as_next_scheduled_action( Admin::AUTO_PURGE_ACTION ),
@@ -90,7 +98,7 @@ class Scheduler_Handoff_Test extends WP_StreamTestCase {
 		$this->assertNotFalse( wp_next_scheduled( Admin::AUTO_PURGE_ACTION ) );
 
 		$this->plugin->scheduler = new AS_Scheduler();
-		$this->admin->purge_schedule_setup();
+		$this->purge->purge_schedule_setup();
 
 		$this->assertFalse(
 			wp_next_scheduled( Admin::AUTO_PURGE_ACTION ),
@@ -121,7 +129,7 @@ class Scheduler_Handoff_Test extends WP_StreamTestCase {
 
 		$this->plugin->scheduler = new Cron_Scheduler();
 		add_filter( 'wp_stream_enable_auto_purge', '__return_false' );
-		$this->admin->purge_schedule_setup();
+		$this->purge->purge_schedule_setup();
 		remove_all_filters( 'wp_stream_enable_auto_purge' );
 
 		$this->assertFalse(
