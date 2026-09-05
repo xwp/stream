@@ -130,7 +130,7 @@ class Connector_AI_Client extends Connector {
 	 * Injects the AI Client settings section into Stream's settings fields array.
 	 *
 	 * Adds opt-in checkbox — log_prompt_and_response_text — under
-	 * a dedicated "AI Client" section in Stream → Settings. Both default to off.
+	 * a dedicated "AI Client" section in Stream → Settings. Defaults to off.
 	 *
 	 * @param array<string, array{title: string, fields: list<array<string, mixed>>}>|mixed $fields Stream settings fields.
 	 * @return array<string, array{title: string, fields: list<array<string, mixed>>}>|mixed
@@ -144,7 +144,7 @@ class Connector_AI_Client extends Connector {
 			'<strong>%s</strong> %s %s',
 			esc_html__( 'Privacy Warning:', 'stream' ),
 			esc_html__( 'This content may include personally identifiable information (PII). Ensure your privacy policy covers AI data collection before enabling.', 'stream' ),
-			esc_html__( 'When enabled, prompt and response text are stored in the record summary and may be forwarded verbatim to any configured Stream alerts or webhooks (e.g. Slack, IFTTT). Use the wp_stream_ai_client_log_prompt and wp_stream_ai_client_log_response filters to redact or omit text before it is stored.', 'stream' )
+			esc_html__( 'When enabled, prompt and response text are stored in the record summary and may be forwarded to any configured Stream alerts or webhooks (e.g. Slack, IFTTT). HTML is stripped on insert, so stored and forwarded text is not a byte-for-byte copy of the generation. Use the wp_stream_ai_client_log_prompt and wp_stream_ai_client_log_response filters to redact or omit text before it is stored.', 'stream' )
 		);
 
 		$fields[ $this->name ] = array(
