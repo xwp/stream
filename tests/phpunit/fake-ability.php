@@ -1,6 +1,6 @@
 <?php
 /**
- * Concrete subclass of the Ability abstract base used by Test_Ability.
+ * Concrete subclass of the Ability abstract base used by Ability_Test.
  *
  * Lives in its own file so the WPCS Generic.Files.OneObjectStructurePerFile
  * sniff is satisfied and so PHPUnit does not auto-discover it as a test.

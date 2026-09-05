@@ -4,15 +4,15 @@
 	bootstrap="tests/phpunit/unit/bootstrap.php"
 	backupGlobals="false"
 	colors="true"
-	verbose="true"
-	convertErrorsToExceptions="true"
-	convertNoticesToExceptions="true"
-	convertWarningsToExceptions="true"
-	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+	cacheDirectory=".phpunit.cache"
+	failOnWarning="true"
+	failOnNotice="true"
+	failOnDeprecation="false"
+	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.5/phpunit.xsd"
 	>
 	<testsuites>
-	<testsuite name="stream-unit">
-		<directory prefix="test-" suffix=".php">tests/phpunit/unit</directory>
-	</testsuite>
+		<testsuite name="unit">
+			<directory suffix="Test.php">tests/phpunit/unit</directory>
+		</testsuite>
 	</testsuites>
 </phpunit>

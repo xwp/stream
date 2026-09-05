@@ -13,6 +13,7 @@ npm-debug.log
 debug.log
 package.lock
 .phpunit.result.cache
+.phpunit.cache/
 
 # Locally-generated TLS cert + key for the dev environment HTTPS vhost.
 # Created by local/scripts/setup-https.sh via mkcert.

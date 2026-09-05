@@ -24,7 +24,7 @@
     "php-coveralls/php-coveralls": "^2.5",
     "phpcompatibility/php-compatibility": "dev-develop as 9.99.99",
     "phpcompatibility/phpcompatibility-wp": "^2.1",
-    "phpunit/phpunit": "^9.6",
+    "phpunit/phpunit": "^11.3.3",
     "roots/wordpress": "^6.9",
     "wordpress/mcp-adapter": "^0.5",
     "wp-cli/wp-cli-bundle": "^2.6",
@@ -41,14 +41,14 @@
     "wp-plugin/wp-crontrol": "1.21.0",
     "wp-theme/twentytwentythree": "^1.0",
     "xwp/wait-for": "^0.0.1",
-    "yoast/phpunit-polyfills": "^1.1",
+    "yoast/phpunit-polyfills": "4.0.0 as 1.1.5",
     "yoast/wp-test-utils": "^1.2"
   },
   "config": {
     "process-timeout": 600,
     "sort-packages": true,
     "platform": {
-      "php": "7.4"
+      "php": "8.2"
     },
     "allow-plugins": {
       "composer/installers": true,
