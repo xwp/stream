@@ -88,7 +88,7 @@ class Alerts_List_Test extends WP_StreamTestCase {
 		$_POST['wp_stream_trigger_action']               = 'action';
 		$_POST['wp_stream_alert_type']                   = 'type';
 		$_POST['wp_stream_alert_status']                 = 'status';
-		$_POST[ Alerts::POST_TYPE . '_edit_nonce' ]      = wp_create_nonce( 'stream-src/classes/class-alerts-list.php' );
+		$_POST[ Alerts::POST_TYPE . '_edit_nonce' ]      = wp_create_nonce( plugin_basename( $this->plugin->locations['dir'] . 'classes/class-alerts-list.php' ) );
 
 		$alerts_list->save_alert_inline_edit( $data, $postarr );
 

@@ -3,35 +3,42 @@
  */
 import { test as setup } from '@playwright/test';
 
+/**
+ * Internal dependencies
+ */
+import {
+	clearAutoPurgeQueueViaWpCli,
+	clearNetworkExcludeRulesViaWpCli,
+	followAdminLink,
+	loginAsAdmin,
+} from '../helpers/stream-plugin';
+
 const authFile = 'playwright/.auth/user.json';
 
 /**
- * Log in before all the tests.
+ * Log in and ensure Stream is network-activated before all tests.
+ * Specs assume the plugin stays active and must not toggle it.
  * @see https://playwright.dev/docs/auth
  */
 setup( 'authenticate', async ( { page } ) => {
-	// Log in.
-	await page.goto( '/wp-login.php' );
-	await page.getByLabel( 'Username or Email Address' ).fill( 'admin' );
-	await page.getByLabel( 'Password', { exact: true } ).fill( 'password' );
-	await page.getByRole( 'button', { name: 'Log In' } ).click();
-	// Wait until the page receives the cookies.
-
-	// Sometimes login flow sets cookies in the process of several redirects.
-	// Wait for the final URL to ensure that the cookies are actually set.
-	await page.waitForURL( '/wp-admin/' );
+	await loginAsAdmin( page );
 
 	await page.goto( '/wp-admin/network/plugins.php' );
-	const isActive = await page.getByLabel( 'Network Deactivate Stream' ).isVisible();
+	const isActive = await page.locator( '#deactivate-stream' ).isVisible();
 
 	// eslint-disable-next-line no-console
 	console.log( `Stream is currently active: ${ isActive }` );
 
-	if ( isActive ) {
+	if ( ! isActive ) {
 		// eslint-disable-next-line no-console
-		console.log( 'Deactivating Stream before tests.' );
-		await page.getByLabel( 'Network Deactivate Stream' ).click();
+		console.log( 'Activating Stream before tests.' );
+		await followAdminLink( page, page.locator( '#activate-stream' ) );
 	}
+
+	// Interrupted headed/debug runs can leave a reaper or empty exclude
+	// rows that hide the orphan-cleanup link or swallow later records.
+	clearAutoPurgeQueueViaWpCli();
+	clearNetworkExcludeRulesViaWpCli();
 
 	// End of authentication steps.
 	await page.context().storageState( { path: authFile } );

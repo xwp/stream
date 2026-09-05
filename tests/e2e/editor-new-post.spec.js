@@ -3,27 +3,24 @@
  */
 import { test, expect, Editor } from '@wordpress/e2e-test-utils-playwright';
 
+/**
+ * Internal dependencies
+ */
+import { followAdminLink, newAuthedPage } from './helpers/stream-plugin';
+
 test.describe( 'Editor: saving a new post', () => {
 	let page, editor, postTitle, postId;
 
 	test.beforeAll( async ( { browser } ) => {
 		test.setTimeout( 90_000 );
 
-		page = await browser.newPage();
+		page = await newAuthedPage( browser );
 		editor = new Editor( { page } );
 
 		postTitle = `Test Post ${ crypto.randomUUID() }`; // Sometimes this runs more than once within a microsecond so it's a UUID.
 
 		// eslint-disable-next-line no-console
 		console.log( `New post ${ postTitle }` );
-
-		// The shared setup deactivates Stream. Reactivate it so the publish action is logged.
-		await page.goto( '/wp-admin/network/plugins.php' );
-		const activateLink = page.getByLabel( 'Network Activate Stream' );
-		if ( await activateLink.isVisible().catch( () => false ) ) {
-			await activateLink.click();
-			await page.waitForURL( /plugins\.php/ );
-		}
 
 		await page.goto( '/wp-admin/post-new.php' );
 
@@ -56,23 +53,17 @@ test.describe( 'Editor: saving a new post', () => {
 
 	test.afterAll( async () => {
 		// Clean up the published post so it doesn't accumulate in the posts table.
+		// WP 7.1 row-actions expose "Edit “Title”" / "Move “Title” to the Trash"
+		// (not "“Title” (Edit)"). Use the trash href so we do not need a hover.
 		if ( postId ) {
-			await page.goto( `/wp-admin/post.php?post=${ postId }&action=trash&_wpnonce=` ).catch( () => {} );
 			await page.goto( '/wp-admin/edit.php?post_type=post' );
 			const trashLink = page.getByRole( 'link', { name: `Move “${ postTitle }” to the Trash` } );
-			if ( await trashLink.isVisible().catch( () => false ) ) {
-				await page.getByRole( 'link', { name: `“${ postTitle }” (Edit)` } ).hover();
-				await trashLink.click();
+			if ( await trashLink.count() ) {
+				await followAdminLink( page, trashLink );
 			}
 		}
 
-		// Restore the deactivated state expected by other test files.
-		await page.goto( '/wp-admin/network/plugins.php' );
-		const deactivateLink = page.getByLabel( 'Network Deactivate Stream' );
-		if ( await deactivateLink.isVisible().catch( () => false ) ) {
-			await deactivateLink.click();
-		}
-		await page.close();
+		await page.context().close();
 	} );
 
 	test( 'has published row', async () => {

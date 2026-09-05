@@ -1,0 +1,30 @@
+{
+  "phpVersion": "8.2",
+  "plugins": [".", "https://make.wordpress.org/test/files/2026/02/wp-email-logger.zip"],
+  "multisite": true,
+  "config": {
+    "WP_DEBUG": true,
+    "WP_DEBUG_LOG": true,
+    "SCRIPT_DEBUG": true
+  },
+  "lifecycleScripts": {
+    "afterStart": "wp-env run cli -- wp plugin activate stream wp-email-logger --network"
+  },
+  "env": {
+    "development": {
+      "phpmyadminPort": 9001
+    },
+    "tests": {
+      "plugins": [".", "https://make.wordpress.org/test/files/2026/02/wp-email-logger.zip"],
+      "mappings": {
+        "wp-content/plugins/advanced-custom-fields": "./local/public/wp-content/plugins/advanced-custom-fields",
+        "wp-content/plugins/easy-digital-downloads": "./local/public/wp-content/plugins/easy-digital-downloads",
+        "wp-content/plugins/jetpack": "./local/public/wp-content/plugins/jetpack",
+        "wp-content/plugins/user-switching": "./local/public/wp-content/plugins/user-switching",
+        "wp-content/plugins/wordpress-seo": "./local/public/wp-content/plugins/wordpress-seo",
+        "wp-content/plugins/two-factor": "./local/public/wp-content/plugins/two-factor",
+        "wp-content/mu-plugins/mercator": "./local/public/wp-content/mu-plugins/mercator"
+      }
+    }
+  }
+}

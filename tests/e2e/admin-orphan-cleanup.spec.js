@@ -4,6 +4,15 @@
 import { test, expect } from '@wordpress/e2e-test-utils-playwright';
 
 /**
+ * Internal dependencies
+ */
+import {
+	clearAutoPurgeQueueViaWpCli,
+	followAdminLink,
+	newAuthedPage,
+} from './helpers/stream-plugin';
+
+/**
  * Settings → Advanced manual "Clean Orphaned Meta" link.
  *
  * Asserts the idle-state UX: the link renders, its href points at admin-ajax.php
@@ -23,29 +32,16 @@ let page;
 test.describe.configure( { mode: 'serial' } );
 
 test.beforeAll( async ( { browser } ) => {
-	page = await browser.newPage();
+	page = await newAuthedPage( browser );
 
-	// The shared setup fixture deactivates Stream network-wide before the
-	// suite. Reactivate so the settings page is reachable.
-	await page.goto( '/wp-admin/network/plugins.php' );
-	const activate = page.getByLabel( 'Network Activate Stream' );
-	if ( await activate.isVisible() ) {
-		await activate.click();
-		await page.waitForURL( /plugins\.php/ );
-	}
-
-	await expect(
-		page.getByLabel( 'Network Deactivate Stream' ),
-	).toBeVisible();
+	// Idle-state UX is what this spec asserts. A leftover reaper from a
+	// previous run hides the link (`is_running_auto_purge()`).
+	clearAutoPurgeQueueViaWpCli();
 } );
 
 test.afterAll( async () => {
-	// Restore the deactivated state other suites expect.
-	await page.goto( '/wp-admin/network/plugins.php' );
-	const deactivate = page.getByLabel( 'Network Deactivate Stream' );
-	if ( await deactivate.isVisible() ) {
-		await deactivate.click();
-	}
+	clearAutoPurgeQueueViaWpCli();
+	await page.context().close();
 } );
 
 test.describe( 'Manual orphan-meta cleanup link', () => {
@@ -73,11 +69,9 @@ test.describe( 'Manual orphan-meta cleanup link', () => {
 		await page.goto( ADVANCED_TAB_URL );
 
 		const link = page.getByRole( 'link', { name: /Clean Orphaned Meta/i } );
-		await Promise.all( [
-			page.waitForURL(
-				/wp_stream_message=orphan_meta_cleanup_scheduled/,
-			),
-			link.click(),
-		] );
+		await followAdminLink( page, link );
+		await page.waitForURL(
+			/wp_stream_message=orphan_meta_cleanup_scheduled/,
+		);
 	} );
 } );

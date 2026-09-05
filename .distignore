@@ -7,8 +7,6 @@
 .nvmrc
 .phpunit.result.cache
 composer.lock
-docker-compose.build.yml
-docker-compose.yml
 Gruntfile.js
 connectors.md
 package.json

@@ -17,7 +17,7 @@
 		</report>
 	</coverage>
 	<php>
-		<const name="WP_TEST_ACTIVATED_PLUGINS" value="advanced-custom-fields/acf.php,easy-digital-downloads/easy-digital-downloads.php,jetpack/jetpack.php,user-switching/user-switching.php,wordpress-seo/wp-seo.php,two-factor/two-factor.php"/>
+		<const name="WP_TEST_ACTIVATED_PLUGINS" value="advanced-custom-fields/acf.php,easy-digital-downloads/easy-digital-downloads.php,jetpack/jetpack.php,user-switching/user-switching.php,wordpress-seo/wp-seo.php,two-factor/two-factor.php,wp-email-logger/wp-email-logger.php"/>
 	</php>
 	<testsuites>
 		<testsuite name="stream">

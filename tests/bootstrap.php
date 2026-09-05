@@ -5,11 +5,39 @@
  * @package WP_Stream
  */
 
-// Defined in docker-compose.yml for the container running the tests.
-$_tests_dir = getenv( 'WP_TESTS_DIR' );
+/**
+ * Resolve the WordPress PHPUnit library directory.
+ *
+ * Prefers `WP_TESTS_DIR` (wp-env tests-cli), then wp-env's bundled
+ * `/wordpress-phpunit`, then Composer `wp-phpunit`.
+ *
+ * @return string Path containing `includes/`, or empty when not found.
+ */
+function wp_stream_resolve_wp_tests_dir() {
+	$candidates = array(
+		getenv( 'WP_TESTS_DIR' ),
+		'/wordpress-phpunit',
+		dirname( __DIR__ ) . '/vendor/wp-phpunit/wp-phpunit',
+	);
 
-if ( empty( $_tests_dir ) || ! file_exists( $_tests_dir . '/includes' ) ) {
+	foreach ( $candidates as $dir ) {
+		if ( ! empty( $dir ) && is_string( $dir ) && file_exists( $dir . '/includes' ) ) {
+			return $dir;
+		}
+	}
+
+	return '';
+}
+
+$_tests_dir = wp_stream_resolve_wp_tests_dir();
+
+if ( empty( $_tests_dir ) ) {
 	trigger_error( 'Unable to locate WP_TESTS_DIR', E_USER_ERROR ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
+}
+
+$wp_env_tests_config = __DIR__ . '/wp-tests-config-wp-env.php';
+if ( ! defined( 'WP_TESTS_CONFIG_FILE_PATH' ) && file_exists( '/wordpress-phpunit/includes' ) && file_exists( $wp_env_tests_config ) ) {
+	define( 'WP_TESTS_CONFIG_FILE_PATH', $wp_env_tests_config );
 }
 
 // Use in code to trigger custom actions.
