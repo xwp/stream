@@ -40,6 +40,28 @@
 </details>
 
 
+## Connector: WP_Stream\Connector_AI_Client
+
+### Actions
+
+	- wp_ai_client_before_generate_result
+	- wp_ai_client_after_generate_result
+
+### Class register()
+
+<details>
+<summary>This is the register method for the Connector. Occasionally there are additional actions in here.</summary>
+
+```php
+	public function register() {
+		parent::register();
+		add_filter( 'wp_stream_settings_option_fields', array( $this, 'add_settings_fields' ) );
+		add_filter( 'wp_stream_record_array', array( $this, 'filter_wp_stream_record_array' ), 10, 1 );
+	}
+```
+</details>
+
+
 ## Connector: WP_Stream\Connector_BbPress
 
 ### Actions
@@ -289,9 +311,8 @@
 ```php
 	public function register() {
 		parent::register();
-		add_action( 'load-theme-editor.php', array( $this, 'get_edition_data' ) );
-		add_action( 'load-plugin-editor.php', array( $this, 'get_edition_data' ) );
-		add_filter( 'wp_redirect', array( $this, 'log_changes' ) );
+
+		add_action( 'wp_ajax_edit-theme-plugin-file', array( $this, 'get_edition_data' ), 1 );
 	}
 ```
 </details>
