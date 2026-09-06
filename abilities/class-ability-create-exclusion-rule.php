@@ -166,7 +166,7 @@ class Ability_Create_Exclusion_Rule extends Ability {
 		}
 
 		// Validate connector against all available connectors, including non-active connectors (eg: admin-only).
-		if ( '' !== $sanitized['connector'] ) {
+		if ( '' !== $sanitized['connector'] && isset( $this->plugin->connectors ) ) {
 			$known = $this->plugin->connectors->get_slugs( true );
 			if ( ! in_array( $sanitized['connector'], $known, true ) ) {
 				return new \WP_Error(

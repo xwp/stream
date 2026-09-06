@@ -41,10 +41,11 @@ class Query {
 	/**
 	 * Class constructor.
 	 *
-	 * @param mixed $unused Existing callers pass the DB driver; ignored.
+	 * @param DB_Driver|null $driver Existing callers pass the DB driver; unused. Kept for BC
+	 *                               because DB_Driver_WPDB still calls `new Query( $this )`.
 	 */
-	public function __construct( $unused = null ) {
-		unset( $unused );
+	public function __construct( $driver = null ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- BC signature; Query reads $wpdb, not the driver.
+		unset( $driver );
 		global $wpdb;
 		$this->wpdb = isset( $wpdb ) ? $wpdb : null;
 	}
@@ -297,6 +298,10 @@ class Query {
 	/**
 	 * ORDER BY clause.
 	 *
+	 * Meta sorts use MAX() so duplicate stream_meta rows for the same
+	 * (record_id, meta_key) produce a deterministic key and remain valid
+	 * under ONLY_FULL_GROUP_BY.
+	 *
 	 * @param array $args Arguments to filter the records by.
 	 * @return string
 	 */
@@ -309,9 +314,12 @@ class Query {
 		if ( in_array( $args['orderby'], self::ORDERABLE_FIELDS, true ) ) {
 			$orderby = sprintf( '%s.%s', $wpdb->stream, $args['orderby'] );
 		} elseif ( 'meta_value_num' === $args['orderby'] && ! empty( $args['meta_key'] ) ) {
-			$orderby = "CAST($wpdb->streammeta.meta_value AS SIGNED)";
+			// MAX() is required: stream_meta has no unique (record_id, meta_key),
+			// so the JOIN can emit multiple rows per record. Without an aggregate
+			// the sort key is arbitrary and ONLY_FULL_GROUP_BY rejects the query.
+			$orderby = "MAX( CAST($wpdb->streammeta.meta_value AS SIGNED) )";
 		} elseif ( 'meta_value' === $args['orderby'] && ! empty( $args['meta_key'] ) ) {
-			$orderby = "$wpdb->streammeta.meta_value";
+			$orderby = "MAX( $wpdb->streammeta.meta_value )";
 		}
 
 		$order = 'DESC';

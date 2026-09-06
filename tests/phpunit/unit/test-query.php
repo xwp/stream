@@ -420,14 +420,14 @@ class Test_Query_Unit extends TestCase {
 					'orderby'  => 'meta_value_num',
 					'meta_key' => 'foo',
 				),
-				'ORDER BY CAST(wp_streammeta.meta_value AS SIGNED) DESC',
+				'ORDER BY MAX( CAST(wp_streammeta.meta_value AS SIGNED) ) DESC',
 			),
 			'meta_value_with_key'           => array(
 				array(
 					'orderby'  => 'meta_value',
 					'meta_key' => 'foo',
 				),
-				'ORDER BY wp_streammeta.meta_value DESC',
+				'ORDER BY MAX( wp_streammeta.meta_value ) DESC',
 			),
 		);
 	}
@@ -510,7 +510,12 @@ class Test_Query_Unit extends TestCase {
 			"LEFT JOIN wp_streammeta ON wp_streammeta.record_id = wp_stream.ID AND wp_streammeta.meta_key = 'foo'",
 			self::$captured_db_query_sql
 		);
-		$this->assertStringContainsString( 'ORDER BY wp_streammeta.meta_value DESC', self::$captured_db_query_sql );
+		$this->assertStringContainsString( 'GROUP BY wp_stream.ID', self::$captured_db_query_sql );
+		$this->assertStringContainsString( 'ORDER BY MAX( wp_streammeta.meta_value ) DESC', self::$captured_db_query_sql );
+		$this->assertTrue(
+			strpos( self::$captured_db_query_sql, 'GROUP BY wp_stream.ID' ) < strpos( self::$captured_db_query_sql, 'ORDER BY' ),
+			'GROUP BY must precede ORDER BY'
+		);
 	}
 
 	/**

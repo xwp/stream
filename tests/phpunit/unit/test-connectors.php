@@ -130,13 +130,14 @@ class Test_Connectors_Unit extends TestCase {
 		$this->assertArrayNotHasKey( 'unit-no-register', $connectors->connectors );
 	}
 
-	public function test_load_connectors_registers_seeded_instances() {
+	public function test_load_connectors_registers_filter_instances() {
 		Functions\when( 'is_admin' )->justReturn( true );
 
-		$connector  = $this->mock_connector();
+		$connector = $this->mock_connector();
+		Filters\expectApplied( 'wp_stream_connectors' )->andReturn( array( $connector ) );
+
 		$connectors = $this->make_connectors();
 		$this->seed_available( $connectors, array() );
-		$this->seed_instances( $connectors, array( 'unit-stub' => $connector ) );
 
 		$connectors->load_connectors();
 
@@ -178,15 +179,41 @@ class Test_Connectors_Unit extends TestCase {
 
 		$connector = $this->mock_connector( 'unit-unsatisfied' );
 		$connector->shouldReceive( 'is_dependency_satisfied' )->andReturn( false );
+		Filters\expectApplied( 'wp_stream_connectors' )->andReturn( array( $connector ) );
+
 		$connectors = $this->make_connectors();
 		$this->seed_available( $connectors, array() );
-		$this->seed_instances( $connectors, array( 'unit-unsatisfied' => $connector ) );
 
 		$connectors->load_connectors();
 
 		$this->assertArrayNotHasKey( 'unit-unsatisfied', $connectors->connectors );
 		$this->assertFalse( $connector->is_registered() );
 		$this->assertSame( array( 'unit-unsatisfied' ), $connectors->get_slugs( true ) );
+	}
+
+	public function test_load_connectors_second_call_doing_it_wrong_keeps_cache() {
+		Functions\when( 'is_admin' )->justReturn( true );
+		Functions\expect( '_doing_it_wrong' )
+			->once()
+			->with(
+				'WP_Stream\Connectors::load_connectors',
+				Mockery::type( 'string' ),
+				Plugin::VERSION
+			);
+
+		$connector = $this->mock_connector();
+		Filters\expectApplied( 'wp_stream_connectors' )->andReturn( array( $connector ) );
+
+		$connectors = $this->make_connectors();
+		$this->seed_available( $connectors, array() );
+
+		$connectors->load_connectors();
+		$slugs = $connectors->get_slugs( true );
+
+		$connectors->load_connectors();
+
+		$this->assertSame( $slugs, $connectors->get_slugs( true ) );
+		$this->assertSame( $connector, $connectors->connectors['unit-stub'] );
 	}
 
 	/**
@@ -204,17 +231,16 @@ class Test_Connectors_Unit extends TestCase {
 		$admin_only->register_frontend = false;
 		$unsatisfied                   = $this->mock_connector( 'unit-unsatisfied' );
 		$unsatisfied->shouldReceive( 'is_dependency_satisfied' )->andReturn( false );
+		Filters\expectApplied( 'wp_stream_connectors' )->andReturn(
+			array(
+				$active,
+				$admin_only,
+				$unsatisfied,
+			)
+		);
 
 		$connectors = $this->make_connectors();
 		$this->seed_available( $connectors, array() );
-		$this->seed_instances(
-			$connectors,
-			array(
-				'unit-stub'        => $active,
-				'unit-admin-only'  => $admin_only,
-				'unit-unsatisfied' => $unsatisfied,
-			)
-		);
 
 		$connectors->load_connectors();
 
@@ -346,17 +372,5 @@ class Test_Connectors_Unit extends TestCase {
 		$property = new ReflectionProperty( Connectors::class, 'available_connectors' );
 		$property->setAccessible( true );
 		$property->setValue( $connectors, $class_names );
-	}
-
-	/**
-	 * Seed instantiated connectors so load_connectors() does not `new` class names.
-	 *
-	 * @param Connectors               $connectors Connectors instance.
-	 * @param array<string, Connector> $instances  Instances keyed by slug.
-	 */
-	private function seed_instances( Connectors $connectors, array $instances ) {
-		$property = new ReflectionProperty( Connectors::class, 'connector_instances' );
-		$property->setAccessible( true );
-		$property->setValue( $connectors, $instances );
 	}
 }
