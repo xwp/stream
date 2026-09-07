@@ -312,7 +312,7 @@ class Alerts_List {
 				<?php
 				$function_name = 'display_' . $type . '_box';
 				$the_post      = get_post();
-				call_user_func( array( $this->plugin->alerts, $function_name ), $the_post );
+				call_user_func( array( $this->plugin->alerts->admin_ui, $function_name ), $the_post );
 				?>
 			</fieldset>
 			<?php

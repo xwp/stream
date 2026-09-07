@@ -18,6 +18,8 @@ class Alerts_Test extends WP_StreamTestCase {
 	public function test_construct() {
 		$alerts = new Alerts( $this->plugin );
 		$this->assertNotEmpty( $alerts->plugin );
+		$this->assertInstanceOf( Alerts_Trigger_Engine::class, $alerts->trigger_engine );
+		$this->assertInstanceOf( Alerts_Admin_UI::class, $alerts->admin_ui );
 	}
 
 	public function test_load_alert_types() {
@@ -100,21 +102,22 @@ class Alerts_Test extends WP_StreamTestCase {
 	}
 
 	public function test_check_records() {
-		$this->markTestIncomplete(
-			'This test is incomplete.'
-		);
-		// WP_Query not finding active alerts.
+		$alerts = $this->plugin->alerts;
 
-		$alerts = new Alerts( $this->plugin );
-		$alert  = new Alert( $this->dummy_alert_data(), $this->plugin );
-		$alert->save();
+		$data     = $this->dummy_alert_data();
+		$data->ID = 0;
+		$alert    = new Alert( $data, $this->plugin );
+		$post_id  = $alert->save();
+		$this->assertNotEmpty( $post_id );
 
 		$action = new \MockAction();
 		add_filter( 'wp_stream_alert_trigger_check', array( $action, 'filter' ) );
 
-		$alerts->check_records( 0, $this->dummy_stream_data() );
+		$record = $this->dummy_stream_data();
+		$result = $alerts->trigger_engine->check_records( 0, $record );
 
-		$this->assertEquals( 1, $action->get_call_count() );
+		$this->assertSame( $record, $result );
+		$this->assertGreaterThan( 0, $action->get_call_count() );
 	}
 
 	public function test_register_post_type() {
@@ -186,15 +189,18 @@ class Alerts_Test extends WP_StreamTestCase {
 	public function test_register_menu() {
 		global $submenu;
 
-		$this->markTestIncomplete();
+		$slug = $this->plugin->admin->records_page_slug;
+		$this->plugin->alerts->admin_ui->register_menu();
 
-		$this->assertEquals( array(), $submenu[ $this->plugin->admin->records_page_slug ] );
-		$submenu[ $this->plugin->admin->records_page_slug ] = array(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-		$this->assertEmpty( $submenu[ $this->plugin->admin->records_page_slug ] );
-
-		$alerts = new Alerts( $this->plugin );
-		$alerts->register_menu();
-		$this->assertNotEmpty( $submenu[ $this->plugin->admin->records_page_slug ] );
+		$this->assertArrayHasKey( $slug, $submenu );
+		$found = false;
+		foreach ( $submenu[ $slug ] as $item ) {
+			if ( isset( $item[2] ) && 'edit.php?post_type=wp_stream_alerts' === $item[2] ) {
+				$found = true;
+				break;
+			}
+		}
+		$this->assertTrue( $found, 'Alerts submenu points at the alerts post type list.' );
 	}
 
 	public function test_display_notification_box() {
@@ -206,18 +212,12 @@ class Alerts_Test extends WP_StreamTestCase {
 		$post_id  = $alert->save();
 
 		ob_start();
-		$alerts->display_notification_box( get_post( $alert->ID ) );
-		$output = ob_get_contents();
-		ob_end_clean();
+		$alerts->admin_ui->display_notification_box( get_post( $alert->ID ) );
+		$output = ob_get_clean();
 
-		$len_test = strlen( $output ) > 0;
-		$this->assertTrue( $len_test, 'Output length greater than zero.' );
-
-		$field_test = strpos( $output, 'wp_stream_alert_type' ) !== -1;
-		$this->assertTrue( $len_test, 'Alert type field is present.' );
-
-		$form_test = strpos( $output, 'wp_stream_alert_type_form' ) !== -1;
-		$this->assertTrue( $form_test, 'Alert type settings form is present' );
+		$this->assertNotSame( '', $output );
+		$this->assertStringContainsString( 'wp_stream_alert_type', $output );
+		$this->assertStringContainsString( 'wp_stream_alert_type_form', $output );
 	}
 
 	public function test_load_alerts_settings() {
@@ -316,15 +316,11 @@ class Alerts_Test extends WP_StreamTestCase {
 		$post_id  = $alert->save();
 
 		ob_start();
-		$alerts->display_triggers_box( get_post( $alert->ID ) );
-		$output = ob_get_contents();
-		ob_end_clean();
+		$alerts->admin_ui->display_triggers_box( get_post( $alert->ID ) );
+		$output = ob_get_clean();
 
-		$len_test = strlen( $output ) > 0;
-		$this->assertTrue( $len_test, 'Output length greater than zero.' );
-
-		$field_test = strpos( $output, 'wp_stream_alerts_nonce' ) !== -1;
-		$this->assertTrue( $len_test, 'Nonce field is present.' );
+		$this->assertNotSame( '', $output );
+		$this->assertStringContainsString( 'wp_stream_alerts_nonce', $output );
 	}
 
 	public function test_display_submit_box() {
@@ -336,29 +332,19 @@ class Alerts_Test extends WP_StreamTestCase {
 		$post_id  = $alert->save();
 
 		ob_start();
-		$alerts->display_submit_box( get_post( $alert->ID ) );
-		$output = ob_get_contents();
-		ob_end_clean();
+		$alerts->admin_ui->display_submit_box( get_post( $alert->ID ) );
+		$output = ob_get_clean();
 
-		$len_test = strlen( $output ) > 0;
-		$this->assertTrue( $len_test, 'Output length greater than zero.' );
-
-		$field_test = strpos( $output, 'wp_stream_enabled' ) !== -1;
-		$this->assertTrue( $len_test, 'Alert is shown as enabled.' );
+		$this->assertNotSame( '', $output );
+		$this->assertStringContainsString( 'wp_stream_enabled', $output );
 	}
 
 	public function test_get_notification_values() {
 		$alerts = new Alerts( $this->plugin );
 
 		$count  = count( $alerts->alert_types );
-		$output = $alerts->get_notification_values();
+		$output = $alerts->admin_ui->get_notification_values();
 		$this->assertEquals( $count, count( $output ) );
-	}
-
-	public function test_save_post_info() {
-		$this->markTestIncomplete(
-			'This test is incomplete'
-		);
 	}
 
 	public function test_get_actions() {
@@ -565,6 +551,9 @@ class Alerts_Test extends WP_StreamTestCase {
 		$this->assertIsObject( $response );
 		$this->assertObjectHasProperty( 'success', $response );
 		$this->assertTrue( $response->success );
+		$this->assertObjectHasProperty( 'html', $response->data );
+		$this->assertStringContainsString( 'wp_stream_alert_status', $response->data->html );
+		$this->assertStringContainsString( 'wp_stream_alert_type', $response->data->html );
 	}
 
 	public function test_get_new_alert_triggers_notifications_missing_caps() {
