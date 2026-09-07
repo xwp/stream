@@ -51,7 +51,7 @@ class Alerts_Admin_UI_Unit_Test extends TestCase {
 	}
 
 	/**
-	 * selected() stand-in; third arg false returns the attribute.
+	 * Selected() callback stand-in; third arg false returns the attribute.
 	 *
 	 * @param mixed $selected Compared value.
 	 * @param mixed $current  Current value.
@@ -196,13 +196,13 @@ class Alerts_Admin_UI_Unit_Test extends TestCase {
 	}
 
 	public function test_change_menu_link_url_returns_false_when_stream_menu_missing() {
-		$GLOBALS['submenu'] = array();
+		$GLOBALS['submenu'] = array(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 
 		$this->assertFalse( $this->admin_ui->change_menu_link_url() );
 	}
 
 	public function test_change_menu_link_url_rewrites_alerts_item_to_first_site() {
-		$GLOBALS['submenu'] = array(
+		$GLOBALS['submenu'] = array( // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 			'wp_stream' => array(
 				array( 'Alerts', 'manage_options', 'edit.php?post_type=wp_stream_alerts' ),
 			),
@@ -229,7 +229,7 @@ class Alerts_Admin_UI_Unit_Test extends TestCase {
 	}
 
 	public function test_change_menu_link_url_falls_back_to_site_one_when_sites_empty() {
-		$GLOBALS['submenu'] = array(
+		$GLOBALS['submenu'] = array( // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 			'wp_stream' => array(
 				array( 'Alerts', 'manage_options', 'edit.php?post_type=wp_stream_alerts' ),
 			),
@@ -285,9 +285,9 @@ class Alerts_Admin_UI_Unit_Test extends TestCase {
 
 	public function test_change_alert_action_links_unchanged_when_post_missing() {
 		Functions\when( 'get_post' )->justReturn( null );
-		$record             = Mockery::mock( Record::class );
-		$record->object_id  = 12;
-		$links              = array(
+		$record            = Mockery::mock( Record::class );
+		$record->object_id = 12;
+		$links             = array(
 			'View' => 'https://example.test/view',
 		);
 

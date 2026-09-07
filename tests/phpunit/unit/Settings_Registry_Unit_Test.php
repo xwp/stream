@@ -1,6 +1,8 @@
 <?php
 namespace WP_Stream;
 
+require_once __DIR__ . '/settings-registry-wp-roles-stub.php';
+
 use Brain\Monkey\Filters;
 use Brain\Monkey\Functions;
 use Mockery;
@@ -35,8 +37,8 @@ class Settings_Registry_Unit_Test extends TestCase {
 		Functions\when( 'add_query_arg' )->alias( array( self::class, 'add_query_arg_stub' ) );
 		self::stub_wp_roles();
 
-		$this->plugin        = Mockery::mock( Plugin::class );
-		$this->plugin->admin = Mockery::mock( Admin::class );
+		$this->plugin               = Mockery::mock( Plugin::class );
+		$this->plugin->admin        = Mockery::mock( Admin::class );
 		$this->plugin->admin->purge = Mockery::mock( Admin_Purge::class );
 
 		$this->plugin->shouldReceive( 'is_network_activated' )->andReturn( false )->byDefault();
@@ -196,9 +198,9 @@ class Settings_Registry_Unit_Test extends TestCase {
 	 */
 	public static function data_defaults() {
 		return array(
-			'records_ttl'        => array( 'general_records_ttl', 30 ),
-			'keep_indefinitely'  => array( 'general_keep_records_indefinitely', 0 ),
-			'exclude_rules'      => array( 'exclude_rules', array() ),
+			'records_ttl'       => array( 'general_records_ttl', 30 ),
+			'keep_indefinitely' => array( 'general_keep_records_indefinitely', 0 ),
+			'exclude_rules'     => array( 'exclude_rules', array() ),
 		);
 	}
 
@@ -293,26 +295,5 @@ class Settings_Registry_Unit_Test extends TestCase {
 		}
 
 		return null;
-	}
-}
-
-/**
- * Test-local role list for Settings_Registry::get_roles().
- */
-class Settings_Registry_Wp_Roles_Stub {
-
-	/**
-	 * Return role slug => label pairs.
-	 *
-	 * @return array<string, string>
-	 */
-	public function get_names() {
-		return array(
-			'administrator' => 'Administrator',
-			'editor'        => 'Editor',
-			'author'        => 'Author',
-			'contributor'   => 'Contributor',
-			'subscriber'    => 'Subscriber',
-		);
 	}
 }
