@@ -208,11 +208,16 @@ class Connectors {
 				continue;
 			}
 
-			// Add connector to the registry.
-			$this->connectors[ $connector->name ] = $connector;
-
 			// Register the connector.
 			$connector->register();
+
+			// Some connectors bail in register() (e.g. network-gated Yoast SEO).
+			if ( ! $connector->is_registered() ) {
+				continue;
+			}
+
+			// Add connector to the registry.
+			$this->connectors[ $connector->name ] = $connector;
 
 			// Link context labels to their connector.
 			$this->contexts[ $connector->name ] = $connector->get_context_labels();

@@ -111,6 +111,19 @@ class Test_Connectors_Unit extends TestCase {
 		$this->assertTrue( $extra->is_registered() );
 	}
 
+	public function test_register_connector_instances_skips_when_register_bails() {
+		Functions\when( 'is_admin' )->justReturn( true );
+
+		$connector = $this->mock_connector( 'unit-bail' );
+		$connector->shouldReceive( 'register' )->once()->andReturnNull();
+
+		$connectors = $this->make_connectors();
+		$connectors->register_connector_instances( array( 'unit-bail' => $connector ) );
+
+		$this->assertArrayNotHasKey( 'unit-bail', $connectors->connectors );
+		$this->assertFalse( $connector->is_registered() );
+	}
+
 	public function test_register_connector_instances_notices_when_register_method_missing() {
 		Functions\when( 'is_admin' )->justReturn( true );
 
