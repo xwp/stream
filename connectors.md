@@ -357,6 +357,8 @@
 				'label' => esc_html_x( 'reCAPTCHA Private Key', 'gravityforms', 'stream' ),
 			),
 			'rg_gforms_key'                 => null,
+			'gform_enable_logging'          => null,
+			'gravityformsaddon_gravityformslogging_settings' => null,
 		);
 	}
 ```
