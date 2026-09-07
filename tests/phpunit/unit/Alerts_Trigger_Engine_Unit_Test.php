@@ -1,6 +1,8 @@
 <?php
 namespace WP_Stream;
 
+require_once __DIR__ . '/alerts-trigger-engine-wp-query-stub.php';
+
 use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Yoast\WPTestUtils\BrainMonkey\TestCase;
@@ -174,7 +176,7 @@ class Alerts_Trigger_Engine_Unit_Test extends TestCase {
 			}
 
 			$hydrated[ $post_id ] = $alert;
-		}
+		}//end foreach
 
 		$this->plugin->alerts->shouldReceive( 'get_alert' )
 			->times( count( $outcomes ) )
@@ -187,40 +189,5 @@ class Alerts_Trigger_Engine_Unit_Test extends TestCase {
 		$result = $this->engine->check_records( $record_id, $recordarr );
 
 		$this->assertSame( $recordarr, $result );
-	}
-}
-
-/**
- * Test-local WP_Query for Alerts_Trigger_Engine::check_records().
- */
-class Alerts_Trigger_Engine_Wp_Query_Stub {
-
-	/**
-	 * Posts returned by the next query.
-	 *
-	 * @var array<int, object>
-	 */
-	public static $posts_to_return = array();
-
-	/**
-	 * Arguments passed to the last constructor call.
-	 *
-	 * @var array|null
-	 */
-	public static $last_args;
-
-	/**
-	 * Query posts.
-	 *
-	 * @var array<int, object>
-	 */
-	public $posts = array();
-
-	/**
-	 * @param array $args WP_Query arguments.
-	 */
-	public function __construct( $args = array() ) {
-		self::$last_args = $args;
-		$this->posts     = self::$posts_to_return;
 	}
 }
