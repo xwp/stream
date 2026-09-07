@@ -188,7 +188,7 @@ class Ability_Update_Settings_Test extends Abilities_TestCase {
 		$option_key = $this->plugin->settings->option_key;
 
 		// JSON-native boolean true must round-trip to 1, not '' (which is what
-		// Settings::sanitize_setting_by_field_type() would produce for a
+		// Settings_Sanitizer::sanitize_setting_by_field_type() would produce for a
 		// raw bool because it gates on is_numeric()).
 		$result = $this->ability->execute(
 			array(

@@ -239,7 +239,7 @@ class Abilities_Test extends WP_StreamTestCase {
 			$this->markTestSkipped( 'Test asserts the non-network-activated branch.' );
 		}
 
-		$fields               = $this->plugin->settings->get_fields();
+		$fields               = $this->plugin->settings->registry->get_fields();
 		$advanced_field_names = wp_list_pluck( $fields['advanced']['fields'], 'name' );
 
 		$this->assertContains(
