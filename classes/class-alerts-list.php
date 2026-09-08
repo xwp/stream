@@ -199,6 +199,38 @@ class Alerts_List {
 					<input type="hidden" name="wp_stream_slack_icon" value="<?php echo esc_attr( $alert->alert_meta['slack_icon'] ); ?>" />
 					<?php
 				}
+				if ( ! empty( $alert->alert_meta['url'] ) ) {
+					?>
+					<input type="hidden" name="wp_stream_webhook_url" value="<?php echo esc_attr( $alert->alert_meta['url'] ); ?>" />
+					<?php
+				}
+				if ( ! empty( $alert->alert_meta['method'] ) ) {
+					?>
+					<input type="hidden" name="wp_stream_webhook_method" value="<?php echo esc_attr( $alert->alert_meta['method'] ); ?>" />
+					<?php
+				}
+				if ( ! empty( $alert->alert_meta['content_type'] ) ) {
+					?>
+					<input type="hidden" name="wp_stream_webhook_content_type" value="<?php echo esc_attr( $alert->alert_meta['content_type'] ); ?>" />
+					<?php
+				}
+				if ( ! empty( $alert->alert_meta['headers'] ) && is_array( $alert->alert_meta['headers'] ) ) {
+					$header_lines = array();
+					foreach ( $alert->alert_meta['headers'] as $header_row ) {
+						if ( is_array( $header_row ) && ! empty( $header_row['name'] ) ) {
+							$header_value   = isset( $header_row['value'] ) ? $header_row['value'] : '';
+							$header_lines[] = $header_row['name'] . ': ' . $header_value;
+						}
+					}
+					?>
+					<input type="hidden" name="wp_stream_webhook_headers" value="<?php echo esc_attr( implode( "\n", $header_lines ) ); ?>" />
+					<?php
+				}
+				if ( ! empty( $alert->alert_meta['body_template'] ) ) {
+					?>
+					<input type="hidden" name="wp_stream_webhook_body_template" value="<?php echo esc_attr( $alert->alert_meta['body_template'] ); ?>" />
+					<?php
+				}
 				break;
 			case 'alert_status':
 				$post_status_object = get_post_status_object( get_post_status( $post_id ) );
@@ -312,7 +344,11 @@ class Alerts_List {
 				<?php
 				$function_name = 'display_' . $type . '_box';
 				$the_post      = get_post();
-				call_user_func( array( $this->plugin->alerts->admin_ui, $function_name ), $the_post );
+				$args          = array( $the_post );
+				if ( 'notification' === $type ) {
+					$args[] = false;
+				}
+				call_user_func_array( array( $this->plugin->alerts->admin_ui, $function_name ), $args );
 				?>
 			</fieldset>
 			<?php

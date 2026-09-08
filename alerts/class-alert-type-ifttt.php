@@ -61,6 +61,13 @@ class Alert_Type_IFTTT extends Alert_Type {
 	public string $slug = 'ifttt';
 
 	/**
+	 * Hidden from the new-alert UI; existing IFTTT alerts still fire.
+	 *
+	 * @var bool
+	 */
+	public bool $creatable = false;
+
+	/**
 	 * Class Constructor
 	 *
 	 * @param Plugin $plugin Plugin object.

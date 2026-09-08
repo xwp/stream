@@ -112,4 +112,14 @@ test.describe( 'Admin UI smoke', () => {
 		const empty = page.locator( '.no-items, .post-state' );
 		await expect( list.or( empty ).first() ).toBeVisible();
 	} );
+
+	test( 'new alert type list includes webhook and omits IFTTT', async () => {
+		await page.goto( '/wp-admin/edit.php?post_type=wp_stream_alerts' );
+		await page.locator( 'a.page-title-action' ).click();
+		const form = page.locator( '#add-new-alert' );
+		await expect( form ).toBeVisible();
+		const typeSelect = form.locator( '#wp_stream_alert_type' );
+		await expect( typeSelect.locator( 'option[value="webhook"]' ) ).toHaveCount( 1 );
+		await expect( typeSelect.locator( 'option[value="ifttt"]' ) ).toHaveCount( 0 );
+	} );
 } );

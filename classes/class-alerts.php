@@ -106,6 +106,7 @@ class Alerts {
 			'email',
 			'ifttt',
 			'slack',
+			'webhook',
 		);
 
 		$classes = array();
