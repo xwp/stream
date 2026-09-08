@@ -183,11 +183,12 @@ class Alerts_Admin_UI {
 	/**
 	 * Display Alert Type Meta Box
 	 *
-	 * @param \WP_Post|array $post Post object for current alert.
+	 * @param \WP_Post|array $post            Post object for current alert.
+	 * @param bool           $creatable_only  When false, include deprecated types (inline edit).
 	 *
 	 * @return void
 	 */
-	public function display_notification_box( $post = array() ) {
+	public function display_notification_box( $post = array(), $creatable_only = true ) {
 		$alert      = null;
 		$alert_type = 'none';
 		if ( is_object( $post ) ) {
@@ -205,7 +206,7 @@ class Alerts_Admin_UI {
 				'id'          => 'wp_stream_alert_type',
 				'name'        => 'wp_stream_alert_type',
 				'value'       => $alert_type,
-				'options'     => $this->get_notification_values(),
+				'options'     => $this->get_notification_values( $alert_type, $creatable_only ),
 				'placeholder' => __( 'No Alert', 'stream' ),
 				'title'       => 'Alert Type:',
 			)
@@ -254,6 +255,15 @@ class Alerts_Admin_UI {
 			$alert_type = 'none';
 		}
 		if ( ! array_key_exists( $alert_type, $this->plugin->alerts->alert_types ) ) {
+			wp_send_json_error(
+				array(
+					'message' => 'Could not find alert type.',
+				)
+			);
+		}
+
+		$type_obj = $this->plugin->alerts->alert_types[ $alert_type ];
+		if ( empty( $type_obj?->creatable ) && ( empty( $post_id ) || 'new' === $post_id ) ) {
 			wp_send_json_error(
 				array(
 					'message' => 'Could not find alert type.',
@@ -401,15 +411,26 @@ class Alerts_Admin_UI {
 	}
 
 	/**
-	 * Return all notification values
+	 * Return notification type labels for the alert-type dropdown.
 	 *
+	 * Non-creatable types are omitted from the new-alert UI unless
+	 * `$include_slug` is that type, or `$creatable_only` is false (inline edit).
+	 *
+	 * @param string $include_slug    Optional type slug to keep even when not creatable.
+	 * @param bool   $creatable_only  Whether to hide non-creatable types.
 	 * @return array
 	 */
-	public function get_notification_values() {
+	public function get_notification_values( $include_slug = '', $creatable_only = true ) {
 		$result = array();
-		$names  = wp_list_pluck( $this->plugin->alerts->alert_types, 'name', 'slug' );
-		foreach ( $names as $slug => $name ) {
-			$result[ $slug ] = $name;
+		foreach ( $this->plugin->alerts->alert_types as $slug => $type ) {
+			$creatable = $type->creatable;
+			if ( $creatable_only && ! $creatable && $slug !== $include_slug ) {
+				continue;
+			}
+			if ( empty( $type->name ) ) {
+				continue;
+			}
+			$result[ $slug ] = $type->name;
 		}
 
 		return $result;
@@ -477,6 +498,15 @@ class Alerts_Admin_UI {
 		$trigger_action = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_action' );
 		$alert_type     = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_type' );
 		$alert_status   = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_status' );
+
+		$registered_types = $this->plugin->alerts->alert_types;
+		if ( ! $registered_types[ $alert_type ]?->creatable ) {
+			wp_send_json_error(
+				array(
+					'message' => 'Alert type is not creatable.',
+				)
+			);
+		}
 
 		// Insert the post into the database.
 		$item    = (object) array(

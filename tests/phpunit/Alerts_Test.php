@@ -33,6 +33,8 @@ class Alerts_Test extends WP_StreamTestCase {
 		$this->assertArrayHasKey( 'none', $alerts->alert_types );
 		$this->assertArrayHasKey( 'highlight', $alerts->alert_types );
 		$this->assertArrayHasKey( 'email', $alerts->alert_types );
+		$this->assertArrayHasKey( 'webhook', $alerts->alert_types );
+		$this->assertArrayHasKey( 'ifttt', $alerts->alert_types );
 
 		$this->assertEquals( 1, $action->get_call_count() );
 	}
@@ -342,9 +344,10 @@ class Alerts_Test extends WP_StreamTestCase {
 	public function test_get_notification_values() {
 		$alerts = new Alerts( $this->plugin );
 
-		$count  = count( $alerts->alert_types );
 		$output = $alerts->admin_ui->get_notification_values();
-		$this->assertEquals( $count, count( $output ) );
+		$this->assertArrayHasKey( 'webhook', $output );
+		$this->assertArrayNotHasKey( 'ifttt', $output );
+		$this->assertSame( count( $alerts->alert_types ) - 1, count( $output ) );
 	}
 
 	public function test_get_actions() {

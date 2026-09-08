@@ -49,21 +49,13 @@ class Alert_Type_Highlight extends Alert_Type {
 	public $single_alert_id;
 
 	/**
-	 * The Plugin
-	 *
-	 * @var Plugin
-	 */
-	public $plugin;
-
-	/**
 	 * Class Constructor
 	 *
 	 * @param Plugin $plugin Plugin object.
 	 * @return void
 	 */
-	public function __construct( $plugin ) {
+	public function __construct( public Plugin $plugin ) {
 		parent::__construct( $plugin );
-		$this->plugin = $plugin;
 		if ( ! is_admin() ) {
 			return;
 		}
