@@ -143,6 +143,8 @@ abstract class Ability {
 	const SECRET_ALERT_META_KEYS = array(
 		'webhook',
 		'maker_key',
+		'url',
+		'headers',
 	);
 
 	/**

@@ -147,6 +147,23 @@ class Ability_Create_Alert_Test extends Abilities_TestCase {
 		$this->assertEmpty( $alerts );
 	}
 
+	public function test_rejects_ifttt_as_not_creatable() {
+		wp_set_current_user( $this->admin_user_id );
+
+		$result = $this->ability->execute(
+			array(
+				'alert_type'      => 'ifttt',
+				'trigger_author'  => 'any',
+				'trigger_context' => 'posts',
+				'trigger_action'  => 'updated',
+			)
+		);
+
+		$this->assertWPError( $result );
+		$this->assertSame( 'stream_alert_type_not_creatable', $result->get_error_code() );
+		$this->assertSame( 400, $result->get_error_data()['status'] );
+	}
+
 	public function test_respects_disabled_status() {
 		wp_set_current_user( $this->admin_user_id );
 

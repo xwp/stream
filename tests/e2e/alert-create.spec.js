@@ -21,10 +21,12 @@ test.describe.configure( { mode: 'serial' } );
 
 /** List-table row id (`post-{ID}`) of the alert this spec created. */
 let createdAlertRowId = '';
+let createdWebhookRowId = '';
 
 test.afterAll( async ( { browser } ) => {
 	const page = await newAuthedPage( browser );
-	await trashCreatedAlert( page );
+	await trashCreatedAlert( page, createdAlertRowId );
+	await trashCreatedAlert( page, createdWebhookRowId );
 	await page.context().close();
 } );
 
@@ -66,6 +68,38 @@ test.describe( 'Alert create', () => {
 			page.locator( '#the-list tr.highlight-yellow' ).first(),
 		).toBeVisible();
 	} );
+
+	test( 'creates an outgoing webhook alert', async ( { page } ) => {
+		await page.goto( '/wp-admin/edit.php?post_type=wp_stream_alerts' );
+		const existingIds = await listAlertRowIds( page );
+
+		await page.locator( 'a.page-title-action' ).click();
+		const form = page.locator( '#add-new-alert' );
+		await expect( form ).toBeVisible();
+		await expect( form.locator( '#wp_stream_alert_type option[value="ifttt"]' ) ).toHaveCount(
+			0,
+		);
+
+		await form.locator( '#wp_stream_alert_type' ).selectOption( 'webhook' );
+		await expect( form.locator( '#wp_stream_webhook_url' ) ).toBeVisible();
+		await form.locator( '#wp_stream_webhook_url' ).fill( 'https://example.com/stream-hook' );
+		await form.locator( '#wp_stream_webhook_method' ).selectOption( 'POST' );
+
+		await form.locator( 'button.button-primary.save' ).click( {
+			noWaitAfter: true,
+		} );
+		await expect( page.locator( '#add-new-alert' ) ).toHaveCount( 0, {
+			timeout: 20_000,
+		} );
+
+		const afterIds = await listAlertRowIds( page );
+		createdWebhookRowId =
+			afterIds.find( ( id ) => ! existingIds.includes( id ) ) || '';
+		expect( createdWebhookRowId, 'Webhook alert row should appear after save' ).toBeTruthy();
+		await expect(
+			page.locator( `#the-list tr#${ createdWebhookRowId }` ),
+		).toContainText( /Outgoing Webhook/ );
+	} );
 } );
 
 /**
@@ -81,17 +115,17 @@ async function listAlertRowIds( wpPage ) {
 }
 
 /**
- * Trash only the alert this spec created so leftover "any event" highlight
- * rules do not paint every subsequent record.
+ * Trash an alert created by this spec so leftover rules do not affect later tests.
  *
  * @param {import('@playwright/test').Page} wpPage Page.
+ * @param {string}                          rowId  `post-{ID}` value.
  */
-async function trashCreatedAlert( wpPage ) {
-	if ( ! createdAlertRowId ) {
+async function trashCreatedAlert( wpPage, rowId ) {
+	if ( ! rowId ) {
 		return;
 	}
 	await wpPage.goto( '/wp-admin/edit.php?post_type=wp_stream_alerts' );
-	const row = wpPage.locator( `#the-list tr#${ createdAlertRowId }` );
+	const row = wpPage.locator( `#the-list tr#${ rowId }` );
 	if ( ! ( await row.isVisible().catch( () => false ) ) ) {
 		return;
 	}
