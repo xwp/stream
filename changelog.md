@@ -6,6 +6,10 @@
 
 - Raise the minimum PHP version from 7.2 to **8.2**. Sites running PHP below 8.2 see an admin notice (for users who can activate plugins) and Stream remains inactive — no fatal error. PHP 7.2–8.1 are no longer supported ([XWPENG-46](https://xwp-co.atlassian.net/browse/XWPENG-46)).
 
+### Enhancements
+
+- Add an Outgoing Webhook alert (HTTP POST or PUT, optional headers, JSON body with record-field placeholders). IFTTT is no longer offered when creating a new alert; existing IFTTT alerts still fire. To keep using Maker, configure a webhook whose URL is `https://maker.ifttt.com/trigger/{event}/with/key/{key}`.
+
 ### Development
 
 - Align Composer (`require.php` `^8.2`), plugin headers, `readme.txt`, PHPCS `testVersion`, contributing docs, and CI matrix (PHP 8.2 / 8.3 / 8.4) at the new floor ([XWPENG-46](https://xwp-co.atlassian.net/browse/XWPENG-46)).

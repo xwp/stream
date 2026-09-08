@@ -104,20 +104,33 @@ class Alerts_Admin_UI_Unit_Test extends TestCase {
 	 * @return array<string, object>
 	 */
 	protected function sample_alert_types() {
-		$none            = new \stdClass();
-		$none->slug      = 'none';
-		$none->name      = 'Do Nothing';
-		$highlight       = new \stdClass();
-		$highlight->slug = 'highlight';
-		$highlight->name = 'Highlight';
-		$email           = new \stdClass();
-		$email->slug     = 'email';
-		$email->name     = 'Email';
+		$none                 = new \stdClass();
+		$none->slug           = 'none';
+		$none->name           = 'Do Nothing';
+		$none->creatable      = true;
+		$highlight            = new \stdClass();
+		$highlight->slug      = 'highlight';
+		$highlight->name      = 'Highlight';
+		$highlight->creatable = true;
+		$email                = new \stdClass();
+		$email->slug          = 'email';
+		$email->name          = 'Email';
+		$email->creatable     = true;
+		$ifttt                = new \stdClass();
+		$ifttt->slug          = 'ifttt';
+		$ifttt->name          = 'IFTTT';
+		$ifttt->creatable     = false;
+		$webhook              = new \stdClass();
+		$webhook->slug        = 'webhook';
+		$webhook->name        = 'Outgoing Webhook';
+		$webhook->creatable   = true;
 
 		return array(
 			'none'      => $none,
 			'highlight' => $highlight,
 			'email'     => $email,
+			'ifttt'     => $ifttt,
+			'webhook'   => $webhook,
 		);
 	}
 
@@ -148,10 +161,13 @@ class Alerts_Admin_UI_Unit_Test extends TestCase {
 		);
 	}
 
-	public function test_get_notification_values_count_matches_alert_types() {
+	public function test_get_notification_values_omits_non_creatable_types() {
 		$values = $this->admin_ui->get_notification_values();
 
-		$this->assertCount( count( $this->plugin->alerts->alert_types ), $values );
+		$this->assertArrayHasKey( 'webhook', $values );
+		$this->assertArrayNotHasKey( 'ifttt', $values );
+		$this->assertArrayHasKey( 'ifttt', $this->admin_ui->get_notification_values( 'ifttt' ) );
+		$this->assertArrayHasKey( 'ifttt', $this->admin_ui->get_notification_values( '', false ) );
 	}
 
 	public function test_display_status_box_outputs_enabled_and_disabled() {

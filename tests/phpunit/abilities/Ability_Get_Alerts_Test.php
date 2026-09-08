@@ -211,6 +211,35 @@ class Ability_Get_Alerts_Test extends Abilities_TestCase {
 		$this->assertStringNotContainsString( $maker_key, (string) wp_json_encode( $row ) );
 	}
 
+	public function test_webhook_url_is_redacted() {
+		wp_set_current_user( $this->admin_user_id );
+
+		$url = 'https://example.test/outgoing-webhook/secret-path';
+
+		$post_id = wp_insert_post(
+			array(
+				'post_type'   => Alerts::POST_TYPE,
+				'post_status' => 'wp_stream_enabled',
+				'post_title'  => 'Outgoing webhook alert',
+			)
+		);
+		update_post_meta( $post_id, 'alert_type', 'webhook' );
+		update_post_meta(
+			$post_id,
+			'alert_meta',
+			array(
+				'url'    => $url,
+				'method' => 'POST',
+			)
+		);
+
+		$row = $this->find_alert_row( $this->ability->execute( array( 'status' => 'any' ) ), $post_id );
+
+		$this->assertArrayNotHasKey( 'url', (array) $row['alert_meta'] );
+		$this->assertTrue( ( (array) $row['alert_meta'] )['url_configured'] );
+		$this->assertStringNotContainsString( $url, (string) wp_json_encode( $row ) );
+	}
+
 	/**
 	 * An unconfigured secret reports false rather than being reported as
 	 * present, so the marker is meaningful either way.
