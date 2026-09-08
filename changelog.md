@@ -9,6 +9,7 @@
 ### Enhancements
 
 - Add an Outgoing Webhook alert (HTTP POST or PUT, optional headers, JSON body with record-field placeholders). IFTTT is no longer offered when creating a new alert; existing IFTTT alerts still fire. To keep using Maker, configure a webhook whose URL is `https://maker.ifttt.com/trigger/{event}/with/key/{key}`.
+- Stop tracking Jetpack modules that no longer exist (Google+ authorship, Mobile theme, Custom CSS). Remaining Jetpack module logging was audited against Jetpack 15.5 on 2026-09-07.
 
 ### Development
 

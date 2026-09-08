@@ -44,6 +44,35 @@ class Connector_Jetpack_Test extends WP_StreamTestCase {
 		$this->assertTrue( class_exists( 'Jetpack', 'Jetpack is inactive' ) );
 	}
 
+	/**
+	 * Dead modules are not tracked. Their context labels stay for historical records.
+	 */
+	public function test_removed_modules_are_not_tracked() {
+		$labels = $this->mock->get_context_labels();
+
+		$this->assertArrayHasKey( 'gplus-authorship', $labels );
+		$this->assertArrayHasKey( 'minileven', $labels );
+		$this->assertArrayHasKey( 'custom-css', $labels );
+
+		$this->assertArrayHasKey( 'carousel', $labels );
+		$this->assertArrayHasKey( 'sharedaddy', $labels );
+		$this->assertArrayHasKey( 'videopress', $labels );
+
+		$this->assertArrayNotHasKey( 'hide_gplus', $this->mock->options );
+		$this->assertArrayNotHasKey( 'gplus_authors', $this->mock->options );
+		$this->assertArrayNotHasKey( 'wp_mobile_excerpt', $this->mock->options );
+		$this->assertArrayNotHasKey( 'wp_mobile_app_promos', $this->mock->options );
+
+		$safecss = array(
+			'connector' => 'posts',
+			'context'   => 'safecss',
+			'message'   => 'Post updated',
+			'args'      => array( 'option' => 'unused' ),
+		);
+
+		$this->assertSame( $safecss, $this->mock->log_override( $safecss ) );
+	}
+
 	public function test_callback_jetpack_log_entry_activate() {
 		$this->mock->expects( $this->once() )
 			->method( 'log' )
