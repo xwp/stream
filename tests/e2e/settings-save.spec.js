@@ -19,7 +19,7 @@ import {
 
 const SETTINGS_URL =
 	'/wp-admin/network/admin.php?page=wp_stream_network_settings';
-const EXCLUDE_IP = '203.0.113.44';
+const EXCLUDE_IP = '198.51.100.44';
 
 /** Captured before mutation so afterAll can restore the live install. */
 let originalTtl = null;
@@ -47,14 +47,12 @@ test.describe( 'Settings save', () => {
 
 		await page.getByRole( 'link', { name: 'Exclude' } ).click();
 		await page.locator( '#exclude_rules_new_rule' ).click();
-		await page.evaluate( ( ip ) => {
-			const select = document.querySelector(
-				'.stream-exclude-list tbody tr:not(.hidden):not(.helper) select.ip_address',
-			);
-			const option = new Option( ip, ip, true, true );
-			select.appendChild( option );
-			window.jQuery( select ).trigger( 'change' );
-		}, EXCLUDE_IP );
+		const ipInput = page
+			.locator(
+				'.stream-exclude-list tbody tr:not(.hidden):not(.helper) input.ip_address',
+			)
+			.last();
+		await ipInput.fill( EXCLUDE_IP );
 
 		await page.getByRole( 'link', { name: 'Advanced' } ).click();
 		const cron = page.locator(
@@ -84,10 +82,10 @@ test.describe( 'Settings save', () => {
 		await expect(
 			page
 				.locator(
-					`.stream-exclude-list select.ip_address option[value="${ EXCLUDE_IP }"]`,
+					'.stream-exclude-list tbody tr:not(.hidden):not(.helper) input.ip_address',
 				)
-				.first(),
-		).toBeAttached();
+				.last(),
+		).toHaveValue( EXCLUDE_IP );
 
 		await page.getByRole( 'link', { name: 'Advanced' } ).click();
 		if ( cronWasChecked ) {

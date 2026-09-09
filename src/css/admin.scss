@@ -20,34 +20,10 @@
 	overflow: visible;
 }
 
-.post-type-wp_stream_alerts .select2 .select2-selection,
-.stream-exclude-list .select2 .select2-selection{
-	border-color: #ccc;
-	background: #f7f7f7;
-	-webkit-box-shadow: 0 1px 0 #ccc;
-	box-shadow: 0 1px 0 #ccc;
-}
-
-.post-type-wp_stream_alerts .select2 .select2-selection--multiple,
-.stream-exclude-list .select2 .select2-selection--multiple{
-	font-size: 0;
-	min-height: 28px;
-}
-
-.post-type-wp_stream_alerts .select2-container.select2-container--focus .select2-selection--multiple,
-.stream-exclude-list .select2-container.select2-container--focus .select2-selection--multiple{
-	border: solid #ccc 1px;
-}
-
-.post-type-wp_stream_alerts .select2-container .select2-selection--multiple .select2-selection__choice,
-.stream-exclude-list .select2-container .select2-selection--multiple .select2-selection__choice{
-	margin-top: 4px;
-	margin-bottom: 3px;
-}
-
-.post-type-wp_stream_alerts .select2 .select2-selection .select2-selection__rendered,
-.stream-exclude-list .select2 .select2-selection .select2-selection__rendered{
-	color: #555;
+.post-type-wp_stream_alerts .inline-edit-col select,
+.post-type-wp_stream_alerts #add-new-alert select,
+.stream-exclude-list select {
+	max-width: 100%;
 }
 
 #record-query-reset {
@@ -233,7 +209,6 @@ more custom columns squeezes the summary column to a narrow strip.
 	vertical-align: middle;
 }
 
-
 /* Live Update */
 
 .toplevel_page_wp_stream .stream-live-update-checkbox .spinner {
@@ -280,13 +255,6 @@ more custom columns squeezes the summary column to a narrow strip.
 .notice-stream-feature-request .dashicons {
 	font-size: 17px;
 	text-decoration: none;
-}
-
-.wp_stream_settings .select2.select2-container,
-.wp_stream_network_settings .select2.select2-container,
-.wp_stream_default_settings .select2.select2-container {
-	min-width: 160px;
-	max-width: 100%;
 }
 
 .wp_stream_settings .tablenav,
@@ -375,70 +343,6 @@ more custom columns squeezes the summary column to a narrow strip.
 }
 
 
-/* Select2 Common */
-
-.post-type-wp_stream_alerts li.select2-searching,
-.post-type-wp_stream_alerts li.select2-no-results {
-	background: none;
-	padding: 7px 7px 0;
-	color: #999;
-}
-
-.post-type-wp_stream_alerts .select2 .select2-selection .select2-selection__placeholder {
-	color: #72777c;
-}
-
-.post-type-wp_stream_alerts .select2-results .select2-disabled {
-	background: transparent;
-	color: #aaa;
-}
-
-.post-type-wp_stream_alerts .select2 .select2-search--inline {
-	float: none;
-	margin-bottom: 4px;
-	margin-left: 2px;
-}
-
-.post-type-wp_stream_alerts .select2-selection .icon16 {
-	margin: -3px 1px 0 -3px;
-	padding: 0;
-	width: 16px;
-	height: 16px;
-}
-
-.post-type-wp_stream_alerts .select2-selection .icon16 {
-	padding-right: 8px;
-}
-
-.post-type-wp_stream_alerts .select2-chosen .icon16:before,
-.post-type-wp_stream_alerts .select2-search-choice .icon16:before {
-	font-size: 15px !important;
-	color: #656565;
-}
-
-.post-type-wp_stream_alerts .select2-search-choice-close {
-	-webkit-transition: none;
-	-moz-transition: none;
-	-o-transition: all 0 none;
-	transition: none;
-}
-
-.wp-stream-select2-icon {
-	position: relative;
-	top: 3px;
-	margin-right: 4px;
-	width: 16px;
-	height: 16px;
-}
-
-.select2-disabled .wp-stream-select2-icon {
-	filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); /* Firefox 3.5+ */
-	filter: gray; /* IE6-9 */
-	-webkit-filter: grayscale(100%); /* Chrome 19+ & Safari 6+ */
-	-moz-filter: grayscale(100%); /* Firefox < 3.5 */
-}
-
-
 /* Exclude List Table */
 
 .stream-exclude-list {
@@ -490,8 +394,15 @@ more custom columns squeezes the summary column to a narrow strip.
 	margin-top: 4px;
 }
 
+.stream-exclude-list tbody td select,
+.stream-exclude-list tbody td .stream-user-combobox__input,
 .stream-exclude-list tbody td .ip_address {
 	width: 100%;
+	max-width: 100%;
+}
+
+.stream-exclude-list tbody td .stream-user-combobox__input {
+	margin-bottom: 4px;
 }
 
 .stream-exclude-list tbody td .ip_address.invalid {
@@ -501,14 +412,6 @@ more custom columns squeezes the summary column to a narrow strip.
 .stream-exclude-list .icon-users {
 	top: -3px !important;
 	position: relative !important;
-}
-
-.wp_stream_screen .select2-results__option .parent {
-	font-weight: bold;
-}
-
-.wp_stream_screen .select2-results__option .child {
-	padding-left: 8px;
 }
 
 @media screen and ( max-width: 900px ) {

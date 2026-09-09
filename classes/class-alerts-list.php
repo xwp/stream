@@ -419,6 +419,18 @@ class Alerts_List {
 		);
 		$alert_meta = apply_filters( 'wp_stream_alerts_save_meta', $alert_meta, $alert_type );
 		update_post_meta( $post_id, 'alert_meta', $alert_meta );
+
+		// Keep the generated title in sync with the saved triggers. The alerts
+		// list displays post_title, which was previously only built at creation,
+		// so editing a trigger left the list showing a stale summary.
+		$item  = (object) array(
+			'alert_type'   => $alert_type,
+			'alert_meta'   => $alert_meta,
+			'alert_status' => $alert_status,
+		);
+		$alert = new Alert( $item, $this->plugin );
+
+		$data['post_title'] = $alert->get_title();
 		return $data;
 	}
 }

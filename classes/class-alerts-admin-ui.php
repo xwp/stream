@@ -100,7 +100,6 @@ class Alerts_Admin_UI {
 		$this->plugin->enqueue_asset(
 			'alerts',
 			array(
-				$this->plugin->with_select2(),
 				'inline-edit-post',
 			),
 			array(

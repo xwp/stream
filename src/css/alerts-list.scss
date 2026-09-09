@@ -20,12 +20,8 @@
 	color: #555;
 }
 
-.edit-php.post-type-wp_stream_alerts .inline-edit-col .select2-container {
-	display: block;
-}
-
 #wp_stream_alert_type_form {
-	max-height: 14em;
+	max-height: 22em;
 	border: 1px solid #ddd;
 	overflow-y: scroll;
 	padding: 0.2em 0.5em;
@@ -45,6 +41,14 @@
 	font-size: 1em;
 }
 
+.inline-edit-row fieldset.inline-edit-wp_stream_alerts label span.title {
+	width: 8em;
+}
+
+.inline-edit-row fieldset.inline-edit-wp_stream_alerts label span.input-text-wrap {
+	margin-left: 8em;
+}
+
 .edit-php.post-type-wp_stream_alerts .misc-pub-section.misc-pub-post-status,
 .edit-php.post-type-wp_stream_alerts #misc-publishing-actions {
 	padding: 0;
@@ -61,29 +65,20 @@
 	}
 }
 
-.edit-php.post-type-wp_stream_alerts .select2 .select2-selection {
-	border-color: #ccc;
-	background: #f7f7f7;
-	-webkit-box-shadow: 0 1px 0 #ccc;
-	box-shadow: 0 1px 0 #ccc;
-}
 .edit-php.post-type-wp_stream_alerts label {
 	font-style: italic;
 }
 
-.edit-php.post-type-wp_stream_alerts select {
-	width: auto;
-}
-
-.edit-php.post-type-wp_stream_alerts span.select2-selection__rendered {
-	font-style: normal;
+.edit-php.post-type-wp_stream_alerts .inline-edit-col select,
+.edit-php.post-type-wp_stream_alerts #add-new-alert select {
+	width: 100%;
+	max-width: 100%;
+	display: block;
+	margin-bottom: 6px;
 }
 
 #add-new-alert.inline-edit-row.inline-edit-row-page .inline-edit-col-right {
 	margin-top: 32px;
-}
-.edit-php.post-type-wp_stream_alerts #add-new-alert .select2.select2-container {
-	display: block;
 }
 .edit-php.post-type-wp_stream_alerts #add-new-alert .inline-edit-add-new-notifications,
 .edit-php.post-type-wp_stream_alerts #add-new-alert .inline-edit-add-new-status {
@@ -93,7 +88,8 @@
 	margin: .2em 0;
 	line-height: 2.5;
 }
-.post-type-wp_stream_alerts .select2-container {
+.post-type-wp_stream_alerts .inline-edit-col select,
+.post-type-wp_stream_alerts #add-new-alert select {
 	margin-bottom: 6px;
 	min-width: 165px;
 }

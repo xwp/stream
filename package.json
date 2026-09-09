@@ -30,7 +30,6 @@
     "@wordpress/env": "^10.39.0",
     "@wordpress/eslint-plugin": "^25.2.0",
     "@wordpress/scripts": "^32.2.0",
-    "copy-webpack-plugin": "^14.0.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.12.0",
     "jquery": "4.0.0",
@@ -69,10 +68,6 @@
     "large-records-remove": "wp-env run cli -- bash -c 'wp db query < wp-content/plugins/stream/local/scripts/large-datasets/remove-test-logs.sql'",
     "large-records-generate": "wp-env run cli -- bash -c 'wp db query < wp-content/plugins/stream/local/scripts/large-datasets/bulk-insert-logs.sql'",
     "large-records-show": "wp-env run cli -- bash -c 'wp db query < wp-content/plugins/stream/local/scripts/large-datasets/show-stream-db-stats.sql'"
-  },
-  "dependencies": {
-    "select2": "^4.1.0",
-    "timeago": "^1.6.7"
   },
   "overrides": {
     "@wordpress/e2e-test-utils-playwright": {
