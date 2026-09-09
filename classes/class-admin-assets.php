@@ -44,7 +44,6 @@ class Admin_Assets {
 			$this->admin->plugin->enqueue_asset(
 				'admin',
 				array(
-					$this->admin->plugin->with_select2(),
 					$this->admin->plugin->with_jquery_timeago(),
 				),
 				array(
