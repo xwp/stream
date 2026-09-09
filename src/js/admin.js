@@ -22,100 +22,20 @@ if ( 'en' === window[ 'wp-stream-admin' ].locale && 'undefined' !== typeof $.tim
 
 $( 'li.toplevel_page_wp_stream ul li.wp-first-item.current' ).parent().parent().find( '.update-plugins' ).remove();
 
-$( '.toplevel_page_wp_stream :input.chosen-select' ).each(
-	function( i, el ) {
-		let args = {};
-		function templateResult( record ) {
-			const $result = $( '<span>' );
-			const $elem = $( record.element );
-			let icon = '';
-
-			if ( '- ' === record.text.substring( 0, 2 ) ) {
-				record.text = record.text.substring( 2 );
-			}
-
-			if ( 'undefined' !== typeof record.id && 'string' === typeof record.id ) {
-				if ( record.id.indexOf( 'group-' ) === 0 ) {
-					$result.addClass( 'parent' );
-				} else if ( $elem.hasClass( 'level-2' ) ) {
-					$result.addClass( 'child' );
-				}
-			}
-
-			if ( undefined !== record.icon ) {
-				icon = record.icon;
-			} else if ( undefined !== $elem && '' !== $elem.data( 'icon' ) ) {
-				icon = $elem.data( 'icon' );
-			}
-
-			if ( icon ) {
-				$result.html( '<img src="' + icon + '" class="wp-stream-select2-icon">' );
-			}
-			$result.append( record.text );
-
-			return $result;
-		}
-		function templateSelection( record ) {
-			if ( '- ' === record.text.substring( 0, 2 ) ) {
-				record.text = record.text.substring( 2 );
-			}
-			return record.text;
-		}
-
-		if ( $( el ).find( 'option' ).not( ':selected' ).not( ':empty' ).length > 0 ) {
-			args = {
-				minimumResultsForSearch: 10,
-				templateResult,
-				templateSelection,
-				allowClear: true,
-				width: '165px',
-			};
-		} else {
-			args = {
-				minimumInputLength: 3,
-				allowClear: true,
-				width: '165px',
-				ajax: {
-					url: window.ajaxurl,
-					delay: 500,
-					dataType: 'json',
-					quietMillis: 100,
-					data( term ) {
-						return {
-							action: 'wp_stream_filters',
-							nonce: $( '#stream_filters_user_search_nonce' ).val(),
-							filter: $( el ).attr( 'name' ),
-							q: term.term,
-						};
-					},
-					processResults( data ) {
-						const results = [];
-						$.each(
-							data, function( index, item ) {
-								results.push(
-									{
-										id: item.id,
-										text: item.label,
-									},
-								);
-							},
-						);
-						return {
-							results,
-						};
-					},
-				},
-				templateResult,
-				templateSelection,
-			};
-		}
-
-		$( el ).select2( args );
-	},
-);
+/**
+ * Filter control wrapper (or the select itself) for screen-option visibility.
+ *
+ * @param {string} name Filter field name.
+ * @return {Object} Control to show or hide.
+ */
+function getRecordsFilterControl( name ) {
+	const $named = $( '.alignleft.actions [name="' + name + '"]' ).first();
+	const $control = $named.closest( '.stream-filter-control' );
+	return $control.length ? $control : $named;
+}
 
 const $queryVars = getQueryVars();
-const $contextInput = $( '.toplevel_page_wp_stream select.chosen-select[name="context"]' );
+const $contextInput = $( '#record-filter-form select.chosen-select[name="context"]' );
 
 if ( ( 'undefined' === typeof $queryVars.context || '' === $queryVars.context ) && 'undefined' !== typeof $queryVars.connector ) {
 	$contextInput.val( 'group-' + $queryVars.connector );
@@ -131,9 +51,9 @@ $( 'input[type=submit]', '#record-filter-form' ).click(
 
 $( '#record-filter-form' ).submit(
 	function() {
-		const	$context = $( '.toplevel_page_wp_stream :input.chosen-select[name="context"]' ),
+		const	$context = $( '#record-filter-form select.chosen-select[name="context"]' ),
 			$option = $context.find( 'option:selected' ),
-			$connector = $context.parent().find( '.record-filter-connector' ),
+			$connector = $( '#record-filter-form .record-filter-connector' ),
 			optionConnector = $option.data( 'group' ),
 			optionClass = $option.prop( 'class' ),
 			$recordAction = $( '.recordactions select' );
@@ -269,11 +189,14 @@ $( document ).ready(
 				all_hidden = false;
 			}
 
-			const divs = $( 'div.alignleft.actions div.select2-container' );
-
-			divs.each(
+			$( 'div.alignleft.actions select.chosen-select' ).each(
 				function() {
-					if ( ! $( this ).is( ':hidden' ) ) {
+					const name = $( this ).prop( 'name' );
+					if ( 'date_predefined' === name ) {
+						return;
+					}
+					const $control = getRecordsFilterControl( name );
+					if ( $control.length && ! $control.is( ':hidden' ) ) {
 						all_hidden = false;
 						return false;
 					}
@@ -298,11 +221,15 @@ $( document ).ready(
 		$( 'div.actions select.chosen-select' ).each(
 			function() {
 				const name = $( this ).prop( 'name' );
+				if ( 'date_predefined' === name ) {
+					return;
+				}
+				const $control = getRecordsFilterControl( name );
 
 				if ( $( 'div.metabox-prefs [name="' + name + '-hide"]' ).is( ':checked' ) ) {
-					$( this ).prev( '.select2-container' ).show();
+					$control.show();
 				} else {
-					$( this ).prev( '.select2-container' ).hide();
+					$control.hide();
 				}
 			},
 		);
@@ -321,11 +248,12 @@ $( document ).ready(
 					}
 				} else {
 					id = id.replace( '-hide', '' );
+					const $control = getRecordsFilterControl( id );
 
 					if ( $( this ).is( ':checked' ) ) {
-						$( '[name="' + id + '"]' ).prev( '.select2-container' ).show();
+						$control.show();
 					} else {
-						$( '[name="' + id + '"]' ).prev( '.select2-container' ).hide();
+						$control.hide();
 					}
 				}
 
@@ -407,12 +335,6 @@ const intervals = {
 					datepickers.datepicker( 'widget' ).addClass( 'stream-datepicker' );
 				}
 
-				predefined.select2(
-					{
-						allowClear: true,
-					},
-				);
-
 				if ( '' !== from.val() ) {
 					from_remove.show();
 				}
@@ -442,9 +364,6 @@ const intervals = {
 							if ( $.datepicker && datepickers.datepicker( 'widget' ).is( ':visible' ) ) {
 								datepickers.datepicker( 'refresh' ).datepicker( 'hide' );
 							}
-						},
-						'select2-removed'() {
-							predefined.val( '' ).trigger( 'change' );
 						},
 						check_options() {
 							if ( '' !== to.val() && '' !== from.val() ) {

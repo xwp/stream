@@ -221,13 +221,16 @@ more custom columns squeezes the summary column to a narrow strip.
 	display: inline;
 }
 
-.toplevel_page_wp_stream .select2-container {
+.toplevel_page_wp_stream .stream-filter-control {
+	display: inline-block;
 	margin-right: 6px;
 	margin-bottom: 6px;
+	vertical-align: top;
 }
 
-.toplevel_page_wp_stream .select2-container.select2-allowclear .select2-choice abbr {
-	margin-top: -2px;
+.toplevel_page_wp_stream .stream-filter-control select {
+	max-width: 165px;
+	vertical-align: middle;
 }
 
 
