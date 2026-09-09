@@ -6,6 +6,8 @@ use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Yoast\WPTestUtils\BrainMonkey\TestCase;
 
+require_once __DIR__ . '/settings-registry-wp-roles-stub.php';
+
 class Settings_Renderer_Unit_Test extends TestCase {
 	/**
 	 * Renderer under test.
@@ -33,14 +35,24 @@ class Settings_Renderer_Unit_Test extends TestCase {
 		Functions\when( 'translate_user_role' )->returnArg();
 		Functions\when( 'wp_create_nonce' )->justReturn( 'test-nonce' );
 		Functions\when( 'wp_parse_args' )->alias( array( self::class, 'wp_parse_args_stub' ) );
-		Functions\when( 'wp_roles' )->justReturn( null );
-		Functions\when( 'count_users' )->justReturn(
+		if ( ! class_exists( \WP_Roles::class, false ) ) {
+			class_alias( Settings_Registry_Wp_Roles_Stub::class, 'WP_Roles' );
+		}
+		Functions\when( 'wp_roles' )->justReturn( new Settings_Registry_Wp_Roles_Stub() );
+		Functions\when( 'is_multisite' )->justReturn( false );
+		Functions\when( 'get_users' )->justReturn(
 			array(
-				'avail_roles' => array(
-					'administrator' => 1,
+				(object) array(
+					'ID'           => 1,
+					'display_name' => 'Test Admin',
+				),
+				(object) array(
+					'ID'           => 2,
+					'display_name' => 'Test Editor',
 				),
 			)
 		);
+		Functions\when( 'get_userdata' )->justReturn( false );
 
 		$this->plugin                          = Mockery::mock( Plugin::class );
 		$this->plugin->connectors              = Mockery::mock( Connectors::class );
@@ -275,6 +287,63 @@ class Settings_Renderer_Unit_Test extends TestCase {
 				),
 			),
 		);
+	}
+
+	public function test_rule_list_renders_native_selects_with_roles_and_users() {
+		$html = $this->renderer->render_field(
+			$this->make_field(
+				array(
+					'type'    => 'rule_list',
+					'section' => 'exclude',
+					'name'    => 'rules',
+					'desc'    => 'Exclude',
+				)
+			),
+			array(
+				'exclude_rules' => array(
+					'exclude_row'    => array( 'row1' => '1' ),
+					'author_or_role' => array( 'row1' => '1' ),
+					'connector'      => array( 'row1' => 'posts' ),
+					'context'        => array( 'row1' => 'post' ),
+					'action'         => array( 'row1' => 'updated' ),
+					'ip_address'     => array( 'row1' => '203.0.113.10' ),
+				),
+			),
+			'wp_stream'
+		);
+
+		$this->assertStringContainsString( '<optgroup label="Roles">', $html );
+		$this->assertStringContainsString( '<optgroup label="Users">', $html );
+		$this->assertStringContainsString( '>Test Admin</option>', $html );
+		$this->assertStringContainsString( '>WP-CLI</option>', $html );
+		$this->assertStringContainsString( 'value="1"  selected="selected"', $html );
+		$this->assertStringContainsString( 'value="203.0.113.10"', $html );
+		$this->assertStringNotContainsString( 'select2', $html );
+	}
+
+	public function test_rule_list_labels_missing_user_as_not_available() {
+		Functions\when( 'get_userdata' )->justReturn( false );
+
+		$html = $this->renderer->render_field(
+			$this->make_field(
+				array(
+					'type'    => 'rule_list',
+					'section' => 'exclude',
+					'name'    => 'rules',
+					'desc'    => 'Exclude',
+				)
+			),
+			array(
+				'exclude_rules' => array(
+					'exclude_row'    => array( 'row1' => '1' ),
+					'author_or_role' => array( 'row1' => '42' ),
+				),
+			),
+			'wp_stream'
+		);
+
+		$this->assertStringContainsString( 'value="42"', $html );
+		$this->assertStringContainsString( '>N/A</option>', $html );
 	}
 
 	public function test_render_field_returns_empty_when_required_keys_missing() {

@@ -85,11 +85,16 @@ class Form_Generator {
 		$output = '';
 		switch ( $field_type ) {
 			case 'text':
+				$placeholder = '';
+				if ( ! empty( $args['data']['placeholder'] ) ) {
+					$placeholder = sprintf( ' placeholder="%s"', esc_attr( $args['data']['placeholder'] ) );
+				}
 				$output = sprintf(
-					'<input type="text" name="%1$s" id="%1$s" class="%2$s" value="%3$s" />',
+					'<input type="text" name="%1$s" id="%1$s" class="%2$s" value="%3$s"%4$s />',
 					esc_attr( $args['name'] ),
 					esc_attr( $args['classes'] ),
-					esc_attr( $args['value'] )
+					esc_attr( $args['value'] ),
+					$placeholder
 				);
 				break;
 			case 'hidden':
@@ -119,20 +124,28 @@ class Form_Generator {
 				}
 				$output .= '</select>';
 				break;
-			case 'select2':
+			case 'grouped_select':
 				$values = array();
 
 				$multiple = ( $args['multiple'] ) ? ' multiple' : '';
-				$output   = sprintf(
-					'<select name="%1$s" id="%1$s" class="select2-select %2$s" %3$s%4$s>',
+				$label    = '';
+				if ( ! empty( $args['data']['placeholder'] ) ) {
+					$label = sprintf( ' aria-label="%s"', esc_attr( $args['data']['placeholder'] ) );
+				}
+				$output = sprintf(
+					'<select name="%1$s" id="%1$s" class="%2$s" %3$s%4$s%5$s>',
 					esc_attr( $args['name'] ),
 					esc_attr( $args['classes'] ),
 					$this->prepare_data_attributes_string( $args['data'] ), // The data attributes are escaped in the function.
-					$multiple
+					$multiple,
+					$label
 				);
 
 				if ( array_key_exists( 'placeholder', $args['data'] ) && ! $multiple ) {
-					$output .= '<option value=""></option>';
+					$output .= sprintf(
+						'<option value="">%s</option>',
+						esc_html( $args['data']['placeholder'] )
+					);
 				}
 
 				foreach ( $args['options'] as $parent ) {
@@ -144,38 +157,36 @@ class Form_Generator {
 							'children' => array(),
 						)
 					);
-					if ( empty( $parent['value'] ) ) {
+					if ( '' === (string) $parent['value'] && empty( $parent['children'] ) ) {
 						continue;
 					}
-					if ( is_array( $args['value'] ) ) {
-						$selected = selected( in_array( $parent['value'], $args['value'], true ), true, false );
-					} else {
-						$selected = selected( $args['value'], $parent['value'], false );
-					}
-					$output  .= sprintf(
-						'<option class="parent" value="%1$s" %2$s>%3$s</option>',
-						esc_attr( $parent['value'] ),
-						$selected,
-						esc_html( $parent['text'] )
-					);
-					$values[] = $parent['value'];
-					if ( ! empty( $parent['children'] ) ) {
+
+					// Group header (no value of its own): render children inside an optgroup.
+					if ( '' === (string) $parent['value'] ) {
+						$output .= sprintf(
+							'<optgroup label="%s">',
+							esc_attr( $parent['text'] )
+						);
 						foreach ( $parent['children'] as $child ) {
-							$output  .= sprintf(
-								'<option class="child" value="%1$s" %2$s>%3$s</option>',
-								esc_attr( $child['value'] ),
-								selected( $args['value'], $child['value'], false ),
-								esc_html( $child['text'] )
-							);
+							$output  .= $this->render_select_option( $child, $args['value'] );
 							$values[] = $child['value'];
 						}
 						$output .= '</optgroup>';
+						continue;
+					}
+
+					// Selectable parent option followed by its children, matching the previous flat markup.
+					$output  .= $this->render_select_option( $parent, $args['value'], 'parent' );
+					$values[] = $parent['value'];
+					foreach ( $parent['children'] as $child ) {
+						$output  .= $this->render_select_option( $child, $args['value'], 'child' );
+						$values[] = $child['value'];
 					}
 				}
 
-				$selected_values = explode( ',', $args['value'] );
+				$selected_values = is_array( $args['value'] ) ? $args['value'] : explode( ',', (string) $args['value'] );
 				foreach ( $selected_values as $selected_value ) {
-					if ( ! empty( $selected_value ) && ! in_array( $selected_value, array_map( 'strval', $values ), true ) ) {
+					if ( ! empty( $selected_value ) && ! in_array( (string) $selected_value, array_map( 'strval', $values ), true ) ) {
 						$output .= sprintf(
 							'<option value="%1$s" selected="selected">%2$s</option>',
 							esc_attr( $selected_value ),
@@ -208,6 +219,40 @@ class Form_Generator {
 		}
 
 		echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+
+	/**
+	 * Render a single <option> for a native select.
+	 *
+	 * @param array        $option  Option array (`value`, `text`).
+	 * @param string|array $current Currently selected value(s).
+	 * @param string       $css_class Optional option class ('parent' or 'child').
+	 * @return string
+	 */
+	private function render_select_option( $option, $current, $css_class = '' ) {
+		$option = wp_parse_args(
+			$option,
+			array(
+				'value' => '',
+				'text'  => '',
+			)
+		);
+
+		if ( is_array( $current ) ) {
+			$selected = selected( in_array( (string) $option['value'], array_map( 'strval', $current ), true ), true, false );
+		} else {
+			$selected = selected( (string) $current, (string) $option['value'], false );
+		}
+
+		$class_attr = '' !== $css_class ? sprintf( ' class="%s"', esc_attr( $css_class ) ) : '';
+
+		return sprintf(
+			'<option%1$s value="%2$s" %3$s>%4$s</option>',
+			$class_attr,
+			esc_attr( $option['value'] ),
+			$selected,
+			esc_html( $option['text'] )
+		);
 	}
 
 	/**

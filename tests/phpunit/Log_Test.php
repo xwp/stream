@@ -180,5 +180,17 @@ class Log_Test extends WP_StreamTestCase {
 				'Record IP address is one of the IP addresses in the rule'
 			)
 		);
+
+		$this->assertTrue(
+			$this->plugin->log->record_matches_rules(
+				array(
+					'ip_address' => '1.1.1.1',
+				),
+				array(
+					'ip_address' => '8.8.8.8, 1.1.1.1',
+				)
+			),
+			'Whitespace after commas in a free-text IP list must not break matching'
+		);
 	}
 }

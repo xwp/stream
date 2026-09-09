@@ -187,9 +187,10 @@ class Alerts_Admin_UI_Unit_Test extends TestCase {
 	}
 
 	public function test_display_notification_box_without_post_renders_type_select() {
-		$none       = Mockery::mock();
-		$none->slug = 'none';
-		$none->name = 'Do Nothing';
+		$none            = Mockery::mock();
+		$none->slug      = 'none';
+		$none->name      = 'Do Nothing';
+		$none->creatable = true;
 		$none->shouldReceive( 'display_fields' )->once()->with( array() );
 		$this->plugin->alerts->alert_types['none'] = $none;
 
@@ -283,12 +284,11 @@ class Alerts_Admin_UI_Unit_Test extends TestCase {
 			)
 		);
 		Functions\when( 'wp_create_nonce' )->justReturn( 'stream-nonce' );
-		$this->plugin->shouldReceive( 'with_select2' )->once()->andReturn( array( 'select2' ) );
 		$this->plugin->shouldReceive( 'enqueue_asset' )
 			->once()
 			->with(
 				'alerts',
-				array( array( 'select2' ), 'inline-edit-post' ),
+				array( 'inline-edit-post' ),
 				Mockery::on(
 					static function ( $l10n ) {
 						return isset( $l10n['getActionsNonce'] ) && 'stream-nonce' === $l10n['getActionsNonce'];
