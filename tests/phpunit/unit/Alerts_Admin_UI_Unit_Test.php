@@ -284,12 +284,11 @@ class Alerts_Admin_UI_Unit_Test extends TestCase {
 			)
 		);
 		Functions\when( 'wp_create_nonce' )->justReturn( 'stream-nonce' );
-		$this->plugin->shouldReceive( 'with_select2' )->once()->andReturn( array( 'select2' ) );
 		$this->plugin->shouldReceive( 'enqueue_asset' )
 			->once()
 			->with(
 				'alerts',
-				array( array( 'select2' ), 'inline-edit-post' ),
+				array( 'inline-edit-post' ),
 				Mockery::on(
 					static function ( $l10n ) {
 						return isset( $l10n['getActionsNonce'] ) && 'stream-nonce' === $l10n['getActionsNonce'];

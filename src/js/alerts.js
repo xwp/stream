@@ -6,57 +6,12 @@ import $ from 'jquery';
 
 let $post_row,
 	$edit_row;
-function setupSelectTwo( id ) {
+function bindTriggerSelects( id ) {
 	const $target = $( id );
-	$target.find( '.select2-select.connector_or_context' ).each(
+	$target.find( 'select.connector_or_context' ).each(
 		function( k, el ) {
-			$( el ).select2(
-				{
-					allowClear: true,
-					placeholder: window[ 'wp-stream-alerts' ].anyContext,
-					templateResult( item ) {
-						if ( 'undefined' === typeof item.id ) {
-							return item.text;
-						}
-						if ( -1 === item.id.indexOf( '-' ) ) {
-							return $( '<span class="parent">' + item.text + '</span>' );
-						}
-						return $( '<span class="child">' + item.text + '</span>' );
-					},
-					matcher( params, data ) {
-						const match = $.extend( true, {}, data );
-
-						if ( null === params.term || '' === $.trim( params.term ) ) {
-							return match;
-						}
-
-						const term = params.term.toLowerCase();
-
-						match.id = match.id.replace( 'blogs', 'sites' );
-						if ( match.id.toLowerCase().indexOf( term ) >= 0 ) {
-							return match;
-						}
-
-						if ( match.children ) {
-							for ( let i = match.children.length - 1; i >= 0; i-- ) {
-								const child = match.children[ i ];
-
-								// Remove term from results if it doesn't match.
-								if ( -1 === child.id.toLowerCase().indexOf( term ) ) {
-									match.children.splice( i, 1 );
-								}
-							}
-
-							if ( match.children.length > 0 ) {
-								return match;
-							}
-						}
-
-						return null;
-					},
-				},
-			).change(
-				function() {
+			$( el ).on(
+				'change', function() {
 					const value = $( this ).val();
 					if ( value ) {
 						const parts = value.split( '-' );
@@ -74,20 +29,6 @@ function setupSelectTwo( id ) {
 				parts.splice( 1, 1 );
 			}
 			$( el ).val( parts.join( '-' ) ).trigger( 'change' );
-		},
-	);
-
-	$target.find( 'select.select2-select:not(.connector_or_context)' ).each(
-		function() {
-			const element_id_split = $( this ).attr( 'id' ).split( '_' );
-			const select_name = element_id_split[ element_id_split.length - 1 ].charAt( 0 ).toUpperCase() +
-				element_id_split[ element_id_split.length - 1 ].slice( 1 );
-			$( this ).select2(
-				{
-					allowClear: true,
-					placeholder: window[ 'wp-stream-alerts' ].any + ' ' + select_name,
-				},
-			);
 		},
 	);
 }
@@ -134,7 +75,7 @@ function getActions( connector ) {
 	trigger_action.empty();
 	trigger_action.prop( 'disabled', true );
 
-	const placeholder = $( '<option/>', { value: '', text: '' } );
+	const placeholder = $( '<option/>', { value: '', text: trigger_action.data( 'placeholder' ) || '' } );
 	trigger_action.append( placeholder );
 
 	const data = {
@@ -209,7 +150,7 @@ $( '#wpbody-content' ).on(
 					);
 					add_new_alert.on( 'click', '.button-primary.save', save_new_alert );
 
-					setupSelectTwo( '#add-new-alert' );
+					bindTriggerSelects( '#add-new-alert' );
 				}
 			},
 		);
@@ -286,7 +227,7 @@ window.inlineEditPost.edit = function( id ) {
 			},
 		);
 		$edit_row.find( 'select[name="wp_stream_alert_status"] option[value="' + alert_status + '"]' ).attr( 'selected', 'selected' );
-		setupSelectTwo( '#edit-' + post_id );
+		bindTriggerSelects( '#edit-' + post_id );
 
 		// Alert type handling
 		$( '#wp_stream_alert_type_form' ).hide();

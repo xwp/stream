@@ -72,7 +72,7 @@ class Alert_Trigger_Context extends Alert_Trigger {
 		$context_values = array();
 
 		$form->add_field(
-			'select2',
+			'grouped_select',
 			array(
 				'name'    => 'wp_stream_trigger_connector_or_context',
 				'options' => $this->get_values(),
