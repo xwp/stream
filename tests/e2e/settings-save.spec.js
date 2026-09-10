@@ -7,8 +7,9 @@ import { test, expect } from '@wordpress/e2e-test-utils-playwright';
  * Internal dependencies
  */
 import {
-	newAuthedPage,
 	clearNetworkExcludeRulesViaWpCli,
+	newAuthedPage,
+	setJQuerySelect,
 } from './helpers/stream-plugin';
 
 /**
@@ -34,6 +35,85 @@ test.afterAll( async ( { browser } ) => {
 } );
 
 test.describe( 'Settings save', () => {
+	test( 'multi-IP exclude rule round trips through save and reload', async ( {
+		page,
+	} ) => {
+		const firstIp = '198.51.100.23';
+		const secondIp = '203.0.113.77';
+
+		await page.goto( `${ SETTINGS_URL }&tab=exclude` );
+		await page.locator( '#exclude_rules_new_rule' ).click();
+		await page
+			.locator(
+				'.stream-exclude-list tbody tr:not(.hidden):not(.helper) input.ip_address',
+			)
+			.last()
+			.fill( `${ firstIp }, ${ secondIp }` );
+		await page.evaluate( ( v ) => {
+			window.__expectedIp = v;
+		}, `${ firstIp }, ${ secondIp }` );
+		await Promise.all( [
+			page.waitForURL( /settings-updated=true/ ),
+			page.getByRole( 'button', { name: 'Save Changes' } ).click( {
+				noWaitAfter: true,
+			} ),
+		] );
+		await page.waitForLoadState( 'load' );
+
+		await expect
+			.poll( () =>
+				page
+					.locator( '.stream-exclude-list input.ip_address' )
+					.evaluateAll(
+						( els, expected ) => els.map( ( el ) => el.value ).includes( expected ),
+						`${ firstIp }, ${ secondIp }`,
+					),
+			)
+			.toBe( true );
+	} );
+
+	test( 'role exclude rule round trips and deletes', async ( { page } ) => {
+		await page.goto( `${ SETTINGS_URL }&tab=exclude` );
+		await page.locator( '#exclude_rules_new_rule' ).click();
+		await setJQuerySelect(
+			page,
+			'.stream-exclude-list tbody tr:not(.hidden):not(.helper) select.author_or_role',
+			'editor',
+			'optgroup[label="Users"] option, optgroup[label="Roles"] option',
+		);
+
+		await Promise.all( [
+			page.waitForURL( /settings-updated=true/ ),
+			page.getByRole( 'button', { name: 'Save Changes' } ).click( {
+				noWaitAfter: true,
+			} ),
+		] );
+		await page.waitForLoadState( 'load' );
+
+		// Reloaded row keeps the role selected.
+		await expect(
+			page.locator(
+				'.stream-exclude-list tbody tr:not(.hidden):not(.helper) select.author_or_role',
+			)
+				.first(),
+		).toHaveValue( 'editor' );
+
+		// Deleting the row removes it (guards the Delete Selected Rules flow).
+		await page
+			.locator(
+				'.stream-exclude-list tbody tr:not(.hidden):not(.helper) input.cb-select',
+			)
+			.first()
+			.check();
+		await page.locator( '#exclude_rules_remove_rules' ).click();
+		await page.waitForTimeout( 300 );
+		await expect(
+			page.locator(
+				'.stream-exclude-list tbody tr:not(.hidden):not(.helper) select.author_or_role',
+			),
+		).toHaveCount( 0 );
+	} );
+
 	test( 'persists one change per tab after save and reload', async ( {
 		page,
 	} ) => {

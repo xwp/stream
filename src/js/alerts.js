@@ -4,6 +4,11 @@
  */
 import $ from 'jquery';
 
+/**
+ * Internal dependencies
+ */
+import initUserComboboxes, { setUserComboboxSelection } from './utils/user-combobox';
+
 let $post_row,
 	$edit_row;
 function bindTriggerSelects( id ) {
@@ -31,6 +36,8 @@ function bindTriggerSelects( id ) {
 			$( el ).val( parts.join( '-' ) ).trigger( 'change' );
 		},
 	);
+
+	initUserComboboxes( $target.find( '.stream-user-combobox' ), window[ 'wp-stream-alerts' ] );
 }
 const $alertSettingSelect = $( '#wp_stream_alert_type' );
 
@@ -228,6 +235,16 @@ window.inlineEditPost.edit = function( id ) {
 		);
 		$edit_row.find( 'select[name="wp_stream_alert_status"] option[value="' + alert_status + '"]' ).attr( 'selected', 'selected' );
 		bindTriggerSelects( '#edit-' + post_id );
+
+		// Seed the author trigger with the saved value (previously dropped on inline edit).
+		const alert_trigger_author = $post_row.find( 'input[name="wp_stream_trigger_author"]' ).val();
+		const alert_trigger_author_label = $post_row.find( 'input[name="wp_stream_trigger_author_label"]' ).val();
+		const $authorCombobox = $edit_row.find( '.stream-user-combobox' );
+		if ( $authorCombobox.length ) {
+			setUserComboboxSelection( $authorCombobox, alert_trigger_author, alert_trigger_author_label );
+		} else {
+			$edit_row.find( 'select[name="wp_stream_trigger_author"]' ).val( alert_trigger_author );
+		}
 
 		// Alert type handling
 		$( '#wp_stream_alert_type_form' ).hide();

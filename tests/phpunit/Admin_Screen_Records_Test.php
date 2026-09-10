@@ -42,6 +42,17 @@ class Admin_Screen_Records_Test extends WP_StreamTestCase {
 		$this->assertStringContainsString( 'record-filter-form', $html );
 	}
 
+	public function test_user_filter_labels_wp_cli_not_na() {
+		$this->records->register_list_table();
+
+		$filters = $this->admin->list_table->get_filters();
+		$items   = $filters['user_id']['items'];
+
+		$this->assertNotEmpty( $items );
+		$this->assertArrayHasKey( 0, $items, 'WP-CLI pseudo-user should be listed' );
+		$this->assertSame( 'WP-CLI', $items[0]['label'], 'User 0 must render as WP-CLI, not N/A' );
+	}
+
 	public function test_register_list_table() {
 		$this->records->register_list_table();
 
