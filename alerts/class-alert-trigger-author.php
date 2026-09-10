@@ -60,16 +60,17 @@ class Alert_Trigger_Author extends Alert_Trigger {
 			$value = $alert->alert_meta['trigger_author'];
 		}
 
-		$args = array(
-			'name'    => esc_attr( $this->field_key ),
-			'value'   => esc_attr( $value ),
-			'options' => $this->get_values(),
-			'classes' => 'wp_stream_ajax_forward',
-			'data'    => array(
-				'placeholder' => __( 'Any Author', 'stream' ),
-			),
+		$form->add_field(
+			'grouped_select',
+			array(
+				'name'    => esc_attr( $this->field_key ),
+				'value'   => esc_attr( $value ),
+				'options' => $this->get_values(),
+				'data'    => array(
+					'placeholder' => __( 'Any Author', 'stream' ),
+				),
+			)
 		);
-		$form->add_field( 'select2', $args );
 	}
 
 	/**
@@ -79,13 +80,6 @@ class Alert_Trigger_Author extends Alert_Trigger {
 	 */
 	public function get_values() {
 		$all_records = array();
-
-		$user_count  = count_users();
-		$total_users = $user_count['total_users'];
-
-		if ( $total_users > $this->plugin->admin->preload_users_max ) {
-			return array();
-		}
 
 		$users = array_map(
 			function ( $user_id ) {

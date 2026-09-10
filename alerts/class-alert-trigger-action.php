@@ -74,7 +74,7 @@ class Alert_Trigger_Action extends Alert_Trigger {
 				'placeholder' => __( 'Any Action', 'stream' ),
 			),
 		);
-		$form->add_field( 'select2', $args );
+		$form->add_field( 'grouped_select', $args );
 	}
 
 	/**

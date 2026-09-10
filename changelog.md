@@ -9,6 +9,7 @@
 ### Enhancements
 
 - Add an Outgoing Webhook alert (HTTP POST or PUT, optional headers, JSON body with record-field placeholders). IFTTT is no longer offered when creating a new alert; existing IFTTT alerts still fire. To keep using Maker, configure a webhook whose URL is `https://maker.ifttt.com/trigger/{event}/with/key/{key}`.
+- Replace Select2 with native `<select>` elements across the admin (records filters, settings exclude rules, alert triggers). Author/role filters offer every user in grouped native selects; IP exclusion rules accept a comma-separated list in a plain text field. Relative timestamps now use `Intl.RelativeTimeFormat` (locale-aware) with the same bold relative + absolute date presentation as before. The `select2` and `jquery-timeago` dependencies and their bundled vendor copies are gone, and the unused `stream_get_users` and `stream_get_ips` Ajax actions were removed. Editing an alert now also regenerates its list title ("Author > Context > Action") so it matches the saved triggers instead of keeping the creation-time summary.
 - Stop tracking Jetpack modules that no longer exist (Google+ authorship, Mobile theme, Custom CSS). Remaining Jetpack module logging was audited against Jetpack 15.5 on 2026-09-07.
 
 ### Development

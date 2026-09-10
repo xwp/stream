@@ -43,9 +43,7 @@ class Admin_Assets {
 		if ( in_array( $hook, $this->admin->menu->screen_id, true ) ) {
 			$this->admin->plugin->enqueue_asset(
 				'admin',
-				array(
-					$this->admin->plugin->with_jquery_timeago(),
-				),
+				array(),
 				array(
 					'i18n'       => array(
 						'confirm_purge'    => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
@@ -58,9 +56,7 @@ class Admin_Assets {
 
 			$this->admin->plugin->enqueue_asset(
 				'admin-exclude',
-				array(
-					$this->admin->plugin->with_select2(),
-				),
+				array(),
 				array(
 					'getActionsNonce' => wp_create_nonce( 'stream_get_actions' ),
 				)

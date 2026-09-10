@@ -9,16 +9,7 @@ import $ from 'jquery';
  */
 import '../css/admin.scss';
 import getQueryVars from './utils/get-query-vars';
-
-// Shorter timeago strings for English locale
-if ( 'en' === window[ 'wp-stream-admin' ].locale && 'undefined' !== typeof $.timeago ) {
-	$.timeago.settings.strings.seconds = 'seconds';
-	$.timeago.settings.strings.minute = 'a minute';
-	$.timeago.settings.strings.hour = 'an hour';
-	$.timeago.settings.strings.hours = '%d hours';
-	$.timeago.settings.strings.month = 'a month';
-	$.timeago.settings.strings.year = 'a year';
-}
+import formatRelativeTime from './utils/relative-time';
 
 $( 'li.toplevel_page_wp_stream ul li.wp-first-item.current' ).parent().parent().find( '.update-plugins' ).remove();
 
@@ -273,10 +264,13 @@ $( 'table.wp-list-table' ).on(
 			function( i, el ) {
 				const timeEl = $( el );
 				timeEl.removeClass( 'relative-time' );
-				$( '<strong><time datetime="' + timeEl.attr( 'datetime' ) + '" class="timeago"/></time></strong><br/>' )
-					.prependTo( timeEl.parent().parent() )
-					.find( 'time.timeago' )
-					.timeago();
+				const text = formatRelativeTime( timeEl.attr( 'datetime' ) );
+				if ( text ) {
+					$( '<strong><time datetime="' + timeEl.attr( 'datetime' ) + '" class="timeago"/></time></strong><br/>' )
+						.prependTo( timeEl.parent().parent() )
+						.find( 'time.timeago' )
+						.text( text );
+				}
 			},
 		);
 	},

@@ -233,7 +233,7 @@ class Log {
 			}
 
 			if ( 'ip_address' === $exclude_key ) {
-				$ip_addresses = explode( ',', $exclude_value );
+				$ip_addresses = array_filter( array_map( 'trim', explode( ',', (string) $exclude_value ) ) );
 
 				if ( in_array( $record['ip_address'], $ip_addresses, true ) ) {
 					++$matches_found;
