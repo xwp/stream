@@ -31,6 +31,29 @@ class Admin_Assets {
 	}
 
 	/**
+	 * Script data shared by every screen that renders the user combobox.
+	 *
+	 * @return array{userSearchNonce: string, userSearchI18n: array<string, string>}
+	 */
+	public function user_combobox_l10n(): array {
+		return array(
+			'userSearchNonce' => wp_create_nonce( 'stream_filters_user_search_nonce' ),
+			'userSearchI18n'  => array(
+				'noUsers'       => __( 'No users found.', 'stream' ),
+				'searchError'   => __( 'Unable to search users.', 'stream' ),
+				'minChars'      => __( 'Type at least 2 characters to search users.', 'stream' ),
+				/* translators: %d: number of matching users */
+				'foundSingular' => _n( '%d user found.', '%d users found.', 1, 'stream' ),
+				/* translators: %d: number of matching users */
+				'foundPlural'   => _n( '%d user found.', '%d users found.', 2, 'stream' ),
+				'rolesHeader'   => __( 'Roles', 'stream' ),
+				'usersHeader'   => __( 'Users', 'stream' ),
+				'searchUsersHint' => __( 'Start typing to search users.', 'stream' ),
+			),
+		);
+	}
+
+	/**
 	 * Enqueue scripts/styles for admin screen
 	 *
 	 * @action admin_enqueue_scripts
@@ -43,22 +66,32 @@ class Admin_Assets {
 		if ( in_array( $hook, $this->admin->menu->screen_id, true ) ) {
 			$this->admin->plugin->enqueue_asset(
 				'admin',
-				array(),
 				array(
-					'i18n'       => array(
-						'confirm_purge'    => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
-						'confirm_defaults' => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
+					'wp-a11y',
+				),
+				array_merge(
+					array(
+						'i18n'       => array(
+							'confirm_purge'    => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
+							'confirm_defaults' => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
+						),
+						'locale'     => strtolower( substr( get_locale(), 0, 2 ) ),
+						'gmt_offset' => get_option( 'gmt_offset' ),
 					),
-					'locale'     => strtolower( substr( get_locale(), 0, 2 ) ),
-					'gmt_offset' => get_option( 'gmt_offset' ),
+					$this->user_combobox_l10n()
 				)
 			);
 
 			$this->admin->plugin->enqueue_asset(
 				'admin-exclude',
-				array(),
 				array(
-					'getActionsNonce' => wp_create_nonce( 'stream_get_actions' ),
+					'wp-a11y',
+				),
+				array_merge(
+					array(
+						'getActionsNonce' => wp_create_nonce( 'stream_get_actions' ),
+					),
+					$this->user_combobox_l10n()
 				)
 			);
 

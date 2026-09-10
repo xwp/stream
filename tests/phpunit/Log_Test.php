@@ -193,4 +193,45 @@ class Log_Test extends WP_StreamTestCase {
 			'Whitespace after commas in a free-text IP list must not break matching'
 		);
 	}
+	/**
+	 * Role exclude rules must match records by the acting user's role.
+	 *
+	 * @covers WP_Stream\Log::is_record_excluded
+	 */
+	public function test_record_excluded_by_role_rule() {
+		$editor_id = self::factory()->user->create( array( 'role' => 'editor' ) );
+		$editor    = get_userdata( $editor_id );
+		$admin     = get_userdata( 1 );
+
+		$this->plugin->settings->options['exclude_rules'] = array(
+			'exclude_row'    => array( 'rule1' => '1' ),
+			'author_or_role' => array( 'rule1' => 'editor' ),
+			'connector'      => array( 'rule1' => '' ),
+			'context'        => array( 'rule1' => '' ),
+			'action'         => array( 'rule1' => '' ),
+			'ip_address'     => array( 'rule1' => '' ),
+		);
+
+		$this->assertTrue(
+			$this->plugin->log->is_record_excluded( 'posts', 'post', 'created', $editor ),
+			'A record by an editor must be excluded by an editor-role rule'
+		);
+		$this->assertFalse(
+			$this->plugin->log->is_record_excluded( 'posts', 'post', 'created', $admin ),
+			'A record by an administrator must not match an editor-role rule'
+		);
+
+		// Role + connector combination: only both together exclude.
+		$this->plugin->settings->options['exclude_rules']['connector'] = array( 'rule1' => 'posts' );
+		$this->assertTrue(
+			$this->plugin->log->is_record_excluded( 'posts', 'post', 'created', $editor )
+		);
+		$this->assertFalse(
+			$this->plugin->log->is_record_excluded( 'media', 'attachment', 'added', $editor ),
+			'A rule scoped to the posts connector must not exclude other connectors'
+		);
+
+		unset( $this->plugin->settings->options['exclude_rules'] );
+		self::delete_user_completely( $editor_id );
+	}
 }

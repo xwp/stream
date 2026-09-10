@@ -137,34 +137,15 @@ class Admin_Ajax {
 		check_ajax_referer( 'stream_filters_user_search_nonce', 'nonce' );
 
 		switch ( wp_stream_filter_input( INPUT_GET, 'filter' ) ) {
+			// User picker search: shared by the records filter, settings exclude
+			// rules, and alert author trigger comboboxes. See the DB user picker
+			// section for the option-source contract.
 			case 'user_id':
-				$users = array_merge(
-					array(
-						0 => (object) array(
-							'display_name' => 'WP-CLI',
-						),
-					),
-					get_users()
-				);
-
 				$search = wp_stream_filter_input( INPUT_GET, 'q' );
-				if ( is_string( $search ) && '' !== $search ) {
-					// `search` arg for get_users() is not enough.
-					$filtered = array();
-					foreach ( $users as $key => $user ) {
-						if ( self::user_display_name_contains( $user, $search ) ) {
-							$filtered[ $key ] = $user;
-						}
-					}
-					$users = $filtered;
-				}
+				$search = is_string( $search ) ? $search : '';
+				$limit  = max( 20, $this->admin->get_preload_users_max() );
 
-				if ( count( $users ) > $this->admin->preload_users_max ) {
-					$users = array_slice( $users, 0, $this->admin->preload_users_max );
-				}
-
-				// Get gravatar / roles for final result set.
-				$results = $this->get_users_record_meta( $users );
+				$results = $this->admin->plugin->user_picker->search( $search, $limit );
 
 				break;
 		}
@@ -175,31 +156,6 @@ class Admin_Ajax {
 
 		die();
 	}
-
-	/**
-	 * Return relevant user meta data for Ajax filter results.
-	 *
-	 * @param array $authors Author data keyed by user ID.
-	 * @return array
-	 */
-	public function get_users_record_meta( $authors ) {
-		$authors_records = array();
-
-		foreach ( $authors as $user_id => $args ) {
-			$author = new Author( $args->ID );
-
-			$authors_records[ $user_id ] = array(
-				'text'  => $author->get_display_name(),
-				'id'    => $author->id,
-				'label' => $author->get_display_name(),
-				'icon'  => $author->get_avatar_src( 32 ),
-				'title' => '',
-			);
-		}
-
-		return $authors_records;
-	}
-
 	/**
 	 * Render confirmation notices keyed by the wp_stream_message query arg.
 	 *
@@ -229,16 +185,5 @@ class Admin_Ajax {
 			'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
 			esc_html( $notices[ $message ] )
 		);
-	}
-
-	/**
-	 * Whether a user display name contains the search needle.
-	 *
-	 * @param object $user   User-like object with display_name.
-	 * @param string $search Search needle.
-	 * @return bool
-	 */
-	private static function user_display_name_contains( $user, string $search ): bool {
-		return false !== mb_strpos( mb_strtolower( $user->display_name ), mb_strtolower( $search ) );
 	}
 }

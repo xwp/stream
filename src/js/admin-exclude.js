@@ -8,6 +8,7 @@ import $ from 'jquery';
  * Internal dependencies
  */
 import wp_stream_regenerate_alt_rows from './utils/wp-stream-regenerate-alt-rows';
+import initUserComboboxes from './utils/user-combobox';
 
 const $excludeRows = $( '.stream-exclude-list tbody tr:not(.hidden)' );
 const $placeholderRow = $( '.stream-exclude-list tr.helper' );
@@ -29,6 +30,8 @@ function initExcludeRows( $rows ) {
 			getActions( row, connector );
 		},
 	);
+
+	initUserComboboxes( $( '.stream-user-combobox', $rows ), window[ 'wp-stream-admin-exclude' ] );
 
 	$( '.exclude_rules_remove_rule_row', $rows ).on(
 		'click', function( e ) {

@@ -1,0 +1,100 @@
+.stream-user-combobox {
+	position: relative;
+	display: inline-block;
+	vertical-align: top;
+	max-width: 100%;
+}
+
+.stream-user-combobox__input {
+	display: block;
+	width: 100%;
+	max-width: 100%;
+	margin: 0;
+}
+
+.stream-user-combobox__listbox {
+	position: absolute;
+	z-index: 100000;
+	top: 100%;
+	left: 0;
+	right: 0;
+	margin: 0;
+	padding: 0;
+	max-height: 220px;
+	overflow: auto;
+	list-style: none;
+	background: #fff;
+	border: 1px solid #8c8f94;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.stream-user-combobox__group {
+	margin: 0;
+	padding: 6px 8px 2px;
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1.4;
+	color: #646970;
+	text-transform: uppercase;
+	cursor: default;
+}
+
+.stream-user-combobox__hint {
+	margin: 0;
+	padding: 4px 8px 6px;
+	color: #646970;
+	font-style: italic;
+}
+
+.stream-user-combobox__option {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+	padding: 4px 8px;
+	cursor: pointer;
+}
+
+.stream-user-combobox__avatar {
+	flex: 0 0 24px;
+	width: 24px;
+	height: 24px;
+	border-radius: 2px;
+	object-fit: cover;
+	background: #dcdcde;
+}
+
+.stream-user-combobox__name {
+	flex: 1 1 auto;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.stream-user-combobox__option[aria-selected="true"],
+.stream-user-combobox__option.is-active {
+	background: #2271b1;
+	color: #fff;
+}
+
+.stream-user-combobox__empty {
+	margin: 0;
+	padding: 6px 8px;
+	color: #646970;
+}
+
+.toplevel_page_wp_stream .stream-filter-control .stream-user-combobox {
+	min-width: 180px;
+}
+
+.toplevel_page_wp_stream .stream-filter-control .stream-user-combobox__input {
+	height: 28px;
+	margin: 0;
+}
+
+.toplevel_page_wp_stream .stream-filter-control .stream-user-combobox__avatar {
+	flex: 0 0 20px;
+	width: 20px;
+	height: 20px;
+}

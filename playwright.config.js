@@ -27,6 +27,8 @@ const settingsUiSpecs = [
 	'**/alert-create.spec.js',
 	'**/export-download.spec.js',
 	'**/records-filter.spec.js',
+	'**/exclude-rules.spec.js',
+	'**/user-combobox.spec.js',
 ];
 
 /**

@@ -206,6 +206,20 @@ async function saveOptionsGeneral( page ) {
  * link leaves a pending reaper, so the next suite would see the running
  * copy instead of the idle-state link.
  */
+/**
+ * Trigger a Stream record as a specific user (wp-cli).
+ *
+ * Publishes a unique post as that user; the posts connector logs reliably
+ * from wp-cli (option updates do not on this install).
+ *
+ * @param {number|string} userId      User to act as.
+ * @param {string}        titlePrefix Marker included in the post title.
+ */
+export function seedAuthorRecordViaWpCli( userId = 1, titlePrefix = 'E2E author trigger' ) {
+	const php = `wp_set_current_user( intval( '${ userId }' ) ); $suffix = substr( md5( uniqid( '', true ) ), 0, 8 ); wp_insert_post( array( 'post_type' => 'post', 'post_status' => 'publish', 'post_title' => '${ titlePrefix } ' . $suffix ) );`;
+	runWpCli( [ 'eval', php ] );
+}
+
 export function clearAutoPurgeQueueViaWpCli() {
 	runWpCli( [
 		'db',
@@ -225,9 +239,40 @@ export function clearAutoPurgeQueueViaWpCli() {
  *
  * @param {string} [ipAddress] IP of the row this run added (TEST-NET-3).
  */
+/**
+ * Remove every network exclude rule (unconditional, unlike the selective clear).
+ */
+export function dropAllNetworkExcludeRulesViaWpCli() {
+	const php = `$opt = (array) get_site_option( "wp_stream_network", array() ); unset( $opt["exclude_rules"] ); update_site_option( "wp_stream_network", $opt );`;
+	runWpCli( [ 'eval', php ] );
+}
+
 export function clearNetworkExcludeRulesViaWpCli( ipAddress = '203.0.113.44' ) {
 	const dropIp = JSON.stringify( ipAddress || '' );
 	const php = `$opt = (array) get_site_option( "wp_stream_network", array() ); if ( empty( $opt["exclude_rules"] ) || ! is_array( $opt["exclude_rules"] ) ) { return; } $rules = $opt["exclude_rules"]; $rows = isset( $rules["exclude_row"] ) && is_array( $rules["exclude_row"] ) ? $rules["exclude_row"] : array(); $drop_ip = ${ dropIp }; $keys = array( "exclude_row", "author_or_role", "connector", "context", "action", "ip_address" ); $keep = array(); foreach ( $rows as $row_id => $marker ) { $ip = isset( $rules["ip_address"][ $row_id ] ) ? (string) $rules["ip_address"][ $row_id ] : ""; $is_empty = true; foreach ( $keys as $key ) { if ( ! empty( $rules[ $key ][ $row_id ] ) ) { $is_empty = false; break; } } if ( $is_empty || ( "" !== $drop_ip && $ip === $drop_ip ) ) { continue; } $keep[] = $row_id; } if ( empty( $keep ) ) { unset( $opt["exclude_rules"] ); } else { $filtered = array(); foreach ( $keys as $key ) { if ( ! isset( $rules[ $key ] ) || ! is_array( $rules[ $key ] ) ) { continue; } foreach ( $keep as $row_id ) { if ( array_key_exists( $row_id, $rules[ $key ] ) ) { $filtered[ $key ][ $row_id ] = $rules[ $key ][ $row_id ]; } } } $opt["exclude_rules"] = $filtered; } update_site_option( "wp_stream_network", $opt );`;
+	runWpCli( [ 'eval', php ] );
+}
+
+const PRELOAD_CAP_MU_PLUGIN = 'stream-e2e-preload-users-max.php';
+
+/**
+ * Force every Stream user picker into Ajax combobox mode.
+ *
+ * Pickers preload a native `<select>` while distinct record authors stay
+ * under `wp_stream_preload_users_max` (50). A fresh wp-env has a handful of
+ * authors, so specs that exercise the combobox drop a one-line mu-plugin
+ * that pins the cap to 0. Pair with `restorePreloadUsersCapViaWpCli()`.
+ */
+export function forceUserComboboxViaWpCli() {
+	const php = `if ( ! is_dir( WPMU_PLUGIN_DIR ) ) { mkdir( WPMU_PLUGIN_DIR, 0755, true ); } file_put_contents( WPMU_PLUGIN_DIR . "/${ PRELOAD_CAP_MU_PLUGIN }", "<?php add_filter( \\"wp_stream_preload_users_max\\", \\"__return_zero\\" );" );`;
+	runWpCli( [ 'eval', php ] );
+}
+
+/**
+ * Remove the mu-plugin added by `forceUserComboboxViaWpCli()`.
+ */
+export function restorePreloadUsersCapViaWpCli() {
+	const php = `$file = WPMU_PLUGIN_DIR . "/${ PRELOAD_CAP_MU_PLUGIN }"; if ( file_exists( $file ) ) { unlink( $file ); }`;
 	runWpCli( [ 'eval', php ] );
 }
 
@@ -283,6 +328,36 @@ export async function setJQuerySelect( page, selector, value, optionSelector ) {
 		},
 		{ selector, value, optionSelector: optionSelector || '' },
 	);
+}
+
+/**
+ * Search a Stream user combobox and pick the first matching option.
+ *
+ * @param {import('@playwright/test').Locator} combobox Combobox root.
+ * @param {string}                             query    Search term (min 2 chars).
+ */
+export async function selectUserCombobox( combobox, query ) {
+	const search = combobox.locator( '.stream-user-combobox__input' );
+	await search.fill( query );
+	const option = combobox.locator( '[role="option"]' ).first();
+	await option.waitFor( { state: 'visible', timeout: 10_000 } );
+	await option.evaluate( ( node ) => {
+		node.dispatchEvent( new MouseEvent( 'mousedown', { bubbles: true } ) );
+	} );
+}
+
+/**
+ * Clear a Stream user combobox the way the native search "×" does
+ * (empty value + `input` and `search` events), which also clears the hidden field.
+ *
+ * @param {import('@playwright/test').Locator} combobox Combobox root.
+ */
+export async function clearUserCombobox( combobox ) {
+	await combobox.locator( '.stream-user-combobox__input' ).evaluate( ( input ) => {
+		input.value = '';
+		input.dispatchEvent( new Event( 'input', { bubbles: true } ) );
+		input.dispatchEvent( new Event( 'search', { bubbles: true } ) );
+	} );
 }
 
 /**

@@ -284,14 +284,30 @@ class Alerts_Admin_UI_Unit_Test extends TestCase {
 			)
 		);
 		Functions\when( 'wp_create_nonce' )->justReturn( 'stream-nonce' );
+
+		$assets = Mockery::mock( Admin_Assets::class );
+		$assets->shouldReceive( 'user_combobox_l10n' )->once()->andReturn(
+			array(
+				'userSearchNonce' => 'stream-nonce',
+				'userSearchI18n'  => array(
+					'noUsers' => 'No users found.',
+				),
+			)
+		);
+		$admin               = Mockery::mock( Admin::class );
+		$admin->assets       = $assets;
+		$this->plugin->admin = $admin;
+
 		$this->plugin->shouldReceive( 'enqueue_asset' )
 			->once()
 			->with(
 				'alerts',
-				array( 'inline-edit-post' ),
+				array( 'inline-edit-post', 'wp-a11y' ),
 				Mockery::on(
 					static function ( $l10n ) {
-						return isset( $l10n['getActionsNonce'] ) && 'stream-nonce' === $l10n['getActionsNonce'];
+						return isset( $l10n['getActionsNonce'], $l10n['userSearchNonce'] )
+							&& 'stream-nonce' === $l10n['getActionsNonce']
+							&& 'stream-nonce' === $l10n['userSearchNonce'];
 					}
 				)
 			);

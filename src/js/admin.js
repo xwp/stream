@@ -10,8 +10,16 @@ import $ from 'jquery';
 import '../css/admin.scss';
 import getQueryVars from './utils/get-query-vars';
 import formatRelativeTime from './utils/relative-time';
+import initUserComboboxes from './utils/user-combobox';
 
 $( 'li.toplevel_page_wp_stream ul li.wp-first-item.current' ).parent().parent().find( '.update-plugins' ).remove();
+
+/**
+ * Bind Ajax user comboboxes on the records screen.
+ */
+function initRecordsUserSearch() {
+	initUserComboboxes( $( '#record-filter-form .stream-user-combobox' ), window[ 'wp-stream-admin' ] );
+}
 
 /**
  * Filter control wrapper (or the select itself) for screen-option visibility.
@@ -180,7 +188,7 @@ $( document ).ready(
 				all_hidden = false;
 			}
 
-			$( 'div.alignleft.actions select.chosen-select' ).each(
+			$( 'div.alignleft.actions select.chosen-select, div.alignleft.actions .stream-user-combobox__value' ).each(
 				function() {
 					const name = $( this ).prop( 'name' );
 					if ( 'date_predefined' === name ) {
@@ -209,7 +217,7 @@ $( document ).ready(
 			$( 'div.date-interval' ).hide();
 		}
 
-		$( 'div.actions select.chosen-select' ).each(
+		$( 'div.actions select.chosen-select, div.actions .stream-user-combobox__value' ).each(
 			function() {
 				const name = $( this ).prop( 'name' );
 				if ( 'date_predefined' === name ) {
@@ -445,6 +453,7 @@ const intervals = {
 $( document ).ready(
 	function() {
 		intervals.init( $( '.date-interval' ) );
+		initRecordsUserSearch();
 
 		// Disable option groups whose children are all disabled
 		$( 'select[name="context"] .level-1' ).each(

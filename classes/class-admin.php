@@ -129,6 +129,26 @@ class Admin {
 	public int $preload_users_max = 50;
 
 	/**
+	 * Filtered preload cap for user pickers.
+	 *
+	 * @return int
+	 */
+	public function get_preload_users_max(): int {
+		/**
+		 * Filters the maximum number of users preloaded into a picker.
+		 *
+		 * Above this cap the picker switches to Ajax search. Zero forces Ajax.
+		 *
+		 * @since 5.0.0
+		 *
+		 * @param int $preload_users_max Default cap (50).
+		 */
+		$max = apply_filters( 'wp_stream_preload_users_max', $this->preload_users_max );
+
+		return max( 0, (int) $max );
+	}
+
+	/**
 	 * Admin notices, collected and displayed on proper action
 	 */
 	public array $notices = array();

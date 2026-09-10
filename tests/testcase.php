@@ -238,6 +238,23 @@ class WP_StreamTestCase extends \WP_Ajax_UnitTestCase {
 	}
 
 	/**
+	 * Delete a user from the current site, or the network when tests run as multisite.
+	 *
+	 * `wp_delete_user()` only removes the account from the blog on a network, so
+	 * `get_userdata()` would still succeed and picker labels would keep the display name.
+	 *
+	 * @param int $user_id User ID.
+	 * @return bool
+	 */
+	protected static function delete_user_completely( int $user_id ): bool {
+		if ( is_multisite() ) {
+			return wpmu_delete_user( $user_id );
+		}
+
+		return wp_delete_user( $user_id );
+	}
+
+	/**
 	 * Helper function to check validity of filters
 	 *
 	 * @param array $tests

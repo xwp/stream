@@ -94,6 +94,11 @@ class Plugin {
 	public ?Settings $settings = null;
 
 	/**
+	 * Server-side backend for user pickers (native select / Ajax combobox).
+	 */
+	public ?User_Picker $user_picker = null;
+
+	/**
 	 * Process DB migrations.
 	 */
 	public ?Install $install = null;
@@ -341,6 +346,7 @@ class Plugin {
 		$this->alerts      = new Alerts( $this );
 		$this->alerts_list = new Alerts_List( $this );
 		$this->abilities   = new Abilities( $this );
+		$this->user_picker = new User_Picker();
 	}
 
 	/**

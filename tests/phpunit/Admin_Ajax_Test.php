@@ -318,6 +318,10 @@ class Admin_Ajax_Test extends WP_StreamTestCase {
 		$this->assertNotFalse( $data );
 		$this->assertNotEmpty( $data );
 		$this->assertIsArray( $data );
+		$this->assertObjectHasProperty( 'id', $data[0] );
+		$this->assertObjectHasProperty( 'text', $data[0] );
+		$this->assertObjectHasProperty( 'label', $data[0] );
+		$this->assertObjectHasProperty( 'icon', $data[0] );
 	}
 
 	public function test_ajax_clean_orphan_meta_schedules_reaper() {
@@ -378,16 +382,22 @@ class Admin_Ajax_Test extends WP_StreamTestCase {
 		}
 	}
 
-	public function test_get_users_record_meta() {
-		$user_id = $this->admin_user_id;
-		$authors = array(
-			$user_id => get_user_by( 'id', $user_id ),
-		);
+	/**
+	 * Reject wp_stream_filters when the nonce is invalid.
+	 *
+	 * @group ajax
+	 */
+	public function test_ajax_filters_requires_valid_nonce() {
+		if ( ! defined( 'DOING_AJAX' ) ) {
+			define( 'DOING_AJAX', true );
+		}
 
-		$records = $this->ajax->get_users_record_meta( $authors );
+		$this->_setRole( 'administrator' );
+		$_GET['filter'] = 'user_id';
+		$_GET['q']      = 'adm';
+		$_GET['nonce']  = 'not-a-valid-nonce';
 
-		$this->assertArrayHasKey( $user_id, $records );
-		$this->assertArrayHasKey( 'text', $records[ $user_id ] );
-		$this->assertEquals( 'test_admin', $records[ $user_id ]['text'] );
+		$this->expectException( \WPAjaxDieStopException::class );
+		$this->_handleAjax( 'wp_stream_filters' );
 	}
 }

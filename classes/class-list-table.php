@@ -20,6 +20,13 @@ class List_Table extends \WP_List_Table {
 	private List_Table_Query_Builder $query_builder;
 
 	/**
+	 * Whether the user filter is using Ajax search.
+	 *
+	 * @var bool
+	 */
+	private bool $user_filter_ajax = false;
+
+	/**
 	 * Renders record cell HTML.
 	 *
 	 * @var List_Table_Column_Renderer
@@ -337,6 +344,23 @@ class List_Table extends \WP_List_Table {
 		if ( 'user_id' === $column ) {
 			$all_records = array();
 
+			// Over the preload cap the select becomes an Ajax combobox: preload
+			// only the currently selected user, if any.
+			$picker = $this->plugin->user_picker->get( $this->plugin->admin->get_preload_users_max() );
+
+			if ( $picker['ajax'] ) {
+				$this->user_filter_ajax = true;
+				$selected_user          = (string) wp_stream_filter_input( INPUT_GET, 'user_id' );
+				$selected_label         = $this->plugin->user_picker->label_for_value( $selected_user );
+				if ( '' === $selected_user || '' === $selected_label ) {
+					return array();
+				}
+
+				return array(
+					$selected_user => $selected_label,
+				);
+			}
+
 			$users = array_map(
 				function ( $user_id ) {
 					return new Author( $user_id );
@@ -368,7 +392,7 @@ class List_Table extends \WP_List_Table {
 			);
 
 			foreach ( $users as $user ) {
-				$all_records[ $user->id ] = $user->get_display_name();
+				$all_records[ $user->id ] = $this->plugin->user_picker->label( $user->id );
 			}
 		} else {
 			$prefixed_column = sprintf( 'stream_%s', $column );
@@ -440,7 +464,7 @@ class List_Table extends \WP_List_Table {
 		$filters['user_id'] = array(
 			'title' => __( 'users', 'stream' ),
 			'items' => $users,
-			'ajax'  => count( $users ) <= 0,
+			'ajax'  => $this->user_filter_ajax,
 		);
 
 		$filters['context'] = array(
@@ -591,6 +615,31 @@ class List_Table extends \WP_List_Table {
 		$select_id = 'stream-filter-' . $name;
 
 		echo '<div class="stream-filter-control">';
+
+		if ( $ajax && 'user_id' === $name ) {
+			$selected_label = isset( $items[ $selected ] ) && is_array( $items[ $selected ] )
+				? (string) $items[ $selected ]['label']
+				: ( is_string( $items[ $selected ] ?? null ) ? $items[ $selected ] : '' );
+
+			$form = new Form_Generator();
+			$html = $form->render_field(
+				'user_combobox',
+				array(
+					'name'           => $name,
+					'id'             => $select_id,
+					'value'          => $selected,
+					'selected_label' => $selected_label,
+					'classes'        => 'chosen-select',
+					'data'           => array(
+						'placeholder' => $placeholder,
+					),
+				),
+				false
+			);
+			echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '</div>';
+			return;
+		}
 
 		printf(
 			'<label class="screen-reader-text" for="%1$s">%2$s</label>',
@@ -974,13 +1023,15 @@ class List_Table extends \WP_List_Table {
 		$record_meta = array();
 
 		foreach ( $users as $user_id => $args ) {
-			$user = new Author( $user_id );
+			// Picker labels keep user 0 ("WP-CLI") and deleted users readable.
+			$label = $this->plugin->user_picker->label( (int) $user_id );
+			$icon  = $this->plugin->user_picker->icon( (int) $user_id );
 
 			$record_meta[ $user_id ] = array(
-				'text'     => $user->get_display_name(),
+				'text'     => $label,
 				'id'       => $user_id,
-				'label'    => $user->get_display_name(),
-				'icon'     => $user->get_avatar_src( 32 ),
+				'label'    => $label,
+				'icon'     => $icon,
 				'title'    => '',
 				'disabled' => ! empty( $args['disabled'] ),
 			);
