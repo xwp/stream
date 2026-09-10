@@ -181,4 +181,115 @@ class Test_Log extends WP_StreamTestCase {
 			)
 		);
 	}
+
+	public function test_ip_address_rule_trims_whitespace_around_commas() {
+		// Whitespace around commas (admin form join + user paste) must not
+		// silently fail the IP match.
+		$this->assertTrue(
+			$this->plugin->log->record_matches_rules(
+				array(
+					'ip_address' => '8.8.8.8',
+				),
+				array(
+					'ip_address' => '1.1.1.1, 8.8.8.8',
+				)
+			),
+			'Trailing space after comma does not break the match'
+		);
+
+		$this->assertTrue(
+			$this->plugin->log->record_matches_rules(
+				array(
+					'ip_address' => '8.8.8.8',
+				),
+				array(
+					'ip_address' => '8.8.8.8 ',
+				)
+			),
+			'Trailing space on a single-IP rule still matches'
+		);
+	}
+
+	public function test_ip_address_rule_does_not_match_empty_record_ip() {
+		$this->assertFalse(
+			$this->plugin->log->record_matches_rules(
+				array(
+					'ip_address' => '',
+				),
+				array(
+					'ip_address' => '1.1.1.1',
+				)
+			),
+			'Empty record IP never matches an IP-only rule'
+		);
+	}
+
+	public function test_ip_address_rule_drops_empty_comma_tokens() {
+		// Empty tokens between commas (e.g. user-pasted "1.1.1.1, ,") must be
+		// dropped, not treated as a valid match against the empty record IP.
+		$this->assertTrue(
+			$this->plugin->log->record_matches_rules(
+				array(
+					'ip_address' => '1.1.1.1',
+				),
+				array(
+					'ip_address' => '1.1.1.1, ,',
+				)
+			),
+			'Empty comma-separated tokens are dropped before matching'
+		);
+	}
+
+	public function test_ip_only_exclude_rule_excludes_record() {
+		// End-to-end coverage for the comma/whitespace exclude-rule fix.
+		// Shape mirrors the parallel-array rule format produced by both the
+		// wp-admin Exclude list and the stream/create-exclusion-rule ability.
+		// Does not cover the separate IPv6/proxy-chain cause of issue #1824.
+		$this->plugin->settings->options['exclude_rules'] = array(
+			'exclude_row'    => array( 0 => '' ),
+			'author_or_role' => array( 0 => '' ),
+			'connector'      => array( 0 => '' ),
+			'context'        => array( 0 => '' ),
+			'action'         => array( 0 => '' ),
+			'ip_address'     => array( 0 => '127.0.0.1' ),
+		);
+
+		$user = $this->factory->user->create_and_get();
+		$user->add_role( 'administrator' );
+
+		$this->assertTrue(
+			$this->plugin->log->is_record_excluded(
+				'users',
+				'profile',
+				'updated',
+				$user,
+				'127.0.0.1'
+			),
+			'IP-only rule excludes a record from the matching IP'
+		);
+
+		$this->assertFalse(
+			$this->plugin->log->is_record_excluded(
+				'users',
+				'profile',
+				'updated',
+				$user,
+				'8.8.8.8'
+			),
+			'IP-only rule does not exclude a record from a different IP'
+		);
+
+		// Whitespace in the stored IP value must still match.
+		$this->plugin->settings->options['exclude_rules']['ip_address'][0] = '127.0.0.1, 8.8.8.8';
+		$this->assertTrue(
+			$this->plugin->log->is_record_excluded(
+				'users',
+				'profile',
+				'updated',
+				$user,
+				'8.8.8.8'
+			),
+			'Comma-joined IP list with whitespace matches the second entry'
+		);
+	}
 }
