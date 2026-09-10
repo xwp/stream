@@ -11,11 +11,11 @@ import { newAuthedPage } from './helpers/stream-plugin';
 /**
  * Admin UI smoke test for the Stream plugin.
  *
- * Loads the main Stream admin screens and asserts that core
- * jQuery-dependent widgets render and that no uncaught JS errors
- * are emitted. Intended to catch regressions from upstream jQuery,
- * jQuery UI, or select2 version bumps that the unit / integration
- * suites do not exercise.
+ * Loads the main Stream admin screens and asserts that the records-screen
+ * native selects and the jQuery UI datepicker render, and that no uncaught
+ * JS errors are emitted. Intended to catch regressions from upstream jQuery
+ * or jQuery UI version bumps that the unit / integration suites do not
+ * exercise.
  */
 
 test.describe.configure( { mode: 'serial' } );
@@ -75,9 +75,6 @@ test.describe( 'Admin UI smoke', () => {
 		await page.goto( '/wp-admin/admin.php?page=wp_stream' );
 
 		// The date inputs are revealed only when the "Custom" range is selected.
-		// The visible UI is a select2 widget on top of the real <select>, so set
-		// the value on the native element and dispatch the change event jQuery
-		// listens for.
 		await page.evaluate( () => {
 			const select = document.querySelector(
 				'select[name="date_predefined"]',
@@ -92,13 +89,13 @@ test.describe( 'Admin UI smoke', () => {
 		await expect( page.locator( '#ui-datepicker-div' ) ).toBeVisible();
 	} );
 
-	test( 'opens a select2 dropdown', async () => {
+	test( 'uses native selects on the records filters', async () => {
 		await page.goto( '/wp-admin/admin.php?page=wp_stream' );
-		const select2 = page.locator( '.select2-selection' ).first();
-		await expect( select2 ).toBeVisible();
-		await select2.click();
-		await expect( page.locator( '.select2-dropdown' ) ).toBeVisible();
-		await page.keyboard.press( 'Escape' );
+		await expect(
+			page.locator( '#record-filter-form select[name="context"]' ),
+		).toBeVisible();
+		await expect( page.locator( '.select2-dropdown' ) ).toHaveCount( 0 );
+		await expect( page.locator( '.select2-container' ) ).toHaveCount( 0 );
 	} );
 
 	test( 'loads the Settings tab', async () => {

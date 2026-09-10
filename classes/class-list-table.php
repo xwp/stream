@@ -337,23 +337,6 @@ class List_Table extends \WP_List_Table {
 		if ( 'user_id' === $column ) {
 			$all_records = array();
 
-			// If the number of users exceeds the max users constant value then return an empty array and use AJAX instead.
-			$user_count  = count_users();
-			$total_users = $user_count['total_users'];
-
-			if ( $total_users > $this->plugin->admin->preload_users_max ) {
-				$selected_user = wp_stream_filter_input( INPUT_GET, 'user_id' );
-				if ( $selected_user ) {
-					$user = new Author( $selected_user );
-
-					return array(
-						$selected_user => $user->get_display_name(),
-					);
-				} else {
-					return array();
-				}
-			}
-
 			$users = array_map(
 				function ( $user_id ) {
 					return new Author( $user_id );
@@ -599,22 +582,30 @@ class List_Table extends \WP_List_Table {
 	 * @return void
 	 */
 	public function filter_select( $name, $title, $items, $ajax = false ) {
-		$selected = wp_stream_filter_input( INPUT_GET, $name );
+		$selected    = wp_stream_filter_input( INPUT_GET, $name );
+		$placeholder = sprintf(
+			/* translators: %s: the title of the dropdown menu (e.g. "users") */
+			__( 'Show all %s', 'stream' ),
+			$title
+		);
+		$select_id = 'stream-filter-' . $name;
+
+		echo '<div class="stream-filter-control">';
 
 		printf(
-			'<select name="%1$s" class="chosen-select" data-placeholder="%2$s">',
-			esc_attr( $name ),
-			esc_attr(
-				sprintf(
-					/* translators: %s: the title of the dropdown menu (e.g. "users") */
-					__( 'Show all %s', 'stream' ),
-					$title
-				)
-			)
+			'<label class="screen-reader-text" for="%1$s">%2$s</label>',
+			esc_attr( $select_id ),
+			esc_html( $placeholder )
 		);
 
-		// First option should be empty.
-		echo '<option value=""></option>';
+		printf(
+			'<select name="%1$s" id="%2$s" class="chosen-select" data-placeholder="%3$s">',
+			esc_attr( $name ),
+			esc_attr( $select_id ),
+			esc_attr( $placeholder )
+		);
+
+		printf( '<option value="">%s</option>', esc_html( $placeholder ) );
 
 		foreach ( $items as $key => $item ) {
 			$value       = isset( $item['children'] ) ? 'group-' . $key : $key;
@@ -648,6 +639,7 @@ class List_Table extends \WP_List_Table {
 		}
 
 		echo '</select>';
+		echo '</div>';
 	}
 
 	/**
@@ -784,7 +776,6 @@ class List_Table extends \WP_List_Table {
 		}
 		echo '</select></div>';
 		wp_nonce_field( 'stream_record_actions_nonce', 'stream_record_actions_nonce' );
-		wp_nonce_field( 'stream_filters_user_search_nonce', 'stream_filters_user_search_nonce' );
 
 		printf( '<input type="hidden" name="page" value="%s">', esc_attr( wp_stream_filter_input( INPUT_GET, 'page' ) ) );
 		printf( '<input type="hidden" name="date_predefined" value="%s">', esc_attr( wp_stream_filter_input( INPUT_GET, 'date_predefined' ) ) );
