@@ -274,6 +274,7 @@ class Settings_Renderer {
 	private function render_rule_list( $field, $current_value, $option_key, $section, $name, $description ) {
 		unset( $field );
 
+		$picker = $this->plugin->user_picker->get( $this->plugin->admin->get_preload_users_max() );
 		$form   = new Form_Generator();
 		$output = '<p class="description">' . esc_html( $description ) . '</p>';
 
@@ -315,6 +316,7 @@ class Settings_Renderer {
 		foreach ( $current_value['exclude_row'] as $key => $value ) {
 			$exclude_rows[] = $this->render_rule_list_row(
 				$form,
+				$picker,
 				$current_value,
 				$key,
 				$option_key,
@@ -343,6 +345,7 @@ class Settings_Renderer {
 	 * Render a single exclude-rule table row.
 	 *
 	 * @param Form_Generator $form          Form helper.
+	 * @param array          $picker        User picker state (ajax + items).
 	 * @param array          $current_value Stored rule list value.
 	 * @param string|int     $key           Row key.
 	 * @param string         $option_key    Settings option key.
@@ -350,7 +353,7 @@ class Settings_Renderer {
 	 * @param string         $name          Field name.
 	 * @return string
 	 */
-	private function render_rule_list_row( $form, $current_value, $key, $option_key, $section, $name ) {
+	private function render_rule_list_row( $form, $picker, $current_value, $key, $option_key, $section, $name ) {
 		$author_or_role = isset( $current_value['author_or_role'][ $key ] ) ? $current_value['author_or_role'][ $key ] : '';
 		$connector      = isset( $current_value['connector'][ $key ] ) ? $current_value['connector'][ $key ] : '';
 		$context        = isset( $current_value['context'][ $key ] ) ? $current_value['context'][ $key ] : '';
@@ -365,42 +368,14 @@ class Settings_Renderer {
 			);
 		}
 
-		$author_or_role_values = array(
-			array(
-				'text'     => __( 'Roles', 'stream' ),
-				'children' => $role_options,
-			),
-			array(
-				'text'     => __( 'Users', 'stream' ),
-				'children' => $this->get_exclude_user_options(),
-			),
-		);
-
-		// Stored value missing from the lists (e.g. a deleted user): keep it selectable.
-		if ( '' !== (string) $author_or_role && ctype_digit( (string) $author_or_role ) ) {
-			$known = array_map( 'strval', array_column( $author_or_role_values[1]['children'], 'value' ) );
-			if ( ! in_array( (string) $author_or_role, $known, true ) ) {
-				$user                                   = get_userdata( (int) $author_or_role );
-				$author_or_role_values[1]['children'][] = array(
-					'value' => (string) $author_or_role,
-					'text'  => ( $user && $user->ID ) ? $user->display_name : esc_html__( 'N/A', 'stream' ),
-				);
-			}
-		}
-
-		$author_or_role_input = $form->render_field(
-			'grouped_select',
-			array(
-				'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'author_or_role' ) ),
-				'value'   => (string) $author_or_role,
-				'options' => $author_or_role_values,
-				'classes' => 'author_or_role',
-				// Data attributes are escaped in Form_Generator::prepare_data_attributes_string().
-				'data'    => array(
-					'placeholder' => __( 'Any Author or Role', 'stream' ),
-				),
-			),
-			false
+		$author_or_role_input = $this->render_exclude_author_control(
+			$form,
+			$picker,
+			$role_options,
+			(string) $author_or_role,
+			$option_key,
+			$section,
+			$name
 		);
 
 		$context_values = array();
@@ -569,6 +544,93 @@ class Settings_Renderer {
 		}
 
 		return $return_labels;
+	}
+
+	/**
+	 * Author-or-role control: one picker in both modes — a native select with
+	 * Roles/Users optgroups under the preload cap, an Ajax combobox whose
+	 * listbox carries the same Roles group plus user search results over it.
+	 *
+	 * @param Form_Generator $form         Form helper.
+	 * @param array          $picker       User picker state (ajax + items).
+	 * @param array          $role_options Role options.
+	 * @param string         $current      Stored value (user ID or role slug).
+	 * @param string         $option_key   Option key.
+	 * @param string         $section      Section.
+	 * @param string         $name         Field name.
+	 * @return string
+	 */
+	private function render_exclude_author_control( $form, $picker, $role_options, $current, $option_key, $section, $name ) {
+		$field_name  = sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'author_or_role' );
+		$placeholder = __( 'Any Author or Role', 'stream' );
+
+		if ( ! empty( $picker['ajax'] ) ) {
+			// One control for both: whichever label matches the stored value
+			// (role slug or user id) is seeded into the combobox.
+			$selected_label = '';
+
+			foreach ( $role_options as $role_option ) {
+				if ( (string) $role_option['value'] === $current ) {
+					$selected_label = (string) $role_option['text'];
+				}
+			}
+
+			if ( '' === $selected_label && ctype_digit( $current ) ) {
+				$selected_label = $this->plugin->user_picker->label( (int) $current );
+			}
+
+			return $form->render_field(
+				'user_combobox',
+				array(
+					'name'           => esc_attr( $field_name ),
+					'value'          => $current,
+					'selected_label' => $selected_label,
+					'classes'        => 'author_or_role',
+					'role_options'   => $role_options,
+					'data'           => array(
+						'placeholder' => $placeholder,
+					),
+				),
+				false
+			);
+		}
+
+		$author_or_role_values = array(
+			array(
+				'text'     => __( 'Roles', 'stream' ),
+				'children' => $role_options,
+			),
+			array(
+				'text'     => __( 'Users', 'stream' ),
+				'children' => $this->get_exclude_user_options(),
+			),
+		);
+
+		// Stored value missing from the lists (e.g. a deleted user): keep it selectable.
+		if ( '' !== $current && ctype_digit( $current ) ) {
+			$known = array_map( 'strval', array_column( $author_or_role_values[1]['children'], 'value' ) );
+			if ( ! in_array( $current, $known, true ) ) {
+				$user                                   = get_userdata( (int) $current );
+				$author_or_role_values[1]['children'][] = array(
+					'value' => $current,
+					'text'  => ( $user && $user->ID ) ? $user->display_name : esc_html__( 'N/A', 'stream' ),
+				);
+			}
+		}
+
+		return $form->render_field(
+			'grouped_select',
+			array(
+				'name'    => esc_attr( $field_name ),
+				'value'   => $current,
+				'options' => $author_or_role_values,
+				'classes' => 'author_or_role',
+				'data'    => array(
+					'placeholder' => $placeholder,
+				),
+			),
+			false
+		);
 	}
 
 	/**

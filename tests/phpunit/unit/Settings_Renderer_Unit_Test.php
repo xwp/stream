@@ -17,6 +17,13 @@ class Settings_Renderer_Unit_Test extends TestCase {
 	protected $renderer;
 
 	/**
+	 * Picker state returned by the db mock.
+	 *
+	 * @var array
+	 */
+	protected $picker_state;
+
+	/**
 	 * Plugin mock with connectors stubs.
 	 *
 	 * @var Plugin
@@ -54,7 +61,28 @@ class Settings_Renderer_Unit_Test extends TestCase {
 		);
 		Functions\when( 'get_userdata' )->justReturn( false );
 
-		$this->plugin                          = Mockery::mock( Plugin::class );
+		$this->plugin = Mockery::mock( Plugin::class );
+
+		$this->picker_state = array(
+			'ajax'  => false,
+			'items' => array(),
+		);
+		$picker = Mockery::mock( User_Picker::class );
+		$picker->allows( 'get' )->andReturnUsing(
+			function () {
+				return $this->picker_state;
+			}
+		);
+		$picker->allows( 'label' )->andReturnUsing(
+			static function ( int $user_id ) {
+				return 0 === $user_id ? 'WP-CLI' : 'STUB_LABEL_' . $user_id;
+			}
+		);
+		$this->plugin->user_picker = $picker;
+		$admin               = Mockery::mock( Admin::class );
+		$admin->allows( 'get_preload_users_max' )->andReturn( 50 );
+		$this->plugin->admin = $admin;
+
 		$this->plugin->connectors              = Mockery::mock( Connectors::class );
 		$this->plugin->connectors->term_labels = array(
 			'stream_action'    => array(
@@ -344,6 +372,68 @@ class Settings_Renderer_Unit_Test extends TestCase {
 
 		$this->assertStringContainsString( 'value="42"', $html );
 		$this->assertStringContainsString( '>N/A</option>', $html );
+	}
+
+	public function test_rule_list_over_cap_renders_user_combobox_with_roles() {
+		$this->picker_state = array(
+			'ajax'  => true,
+			'items' => array(),
+		);
+
+		$html = $this->renderer->render_field(
+			$this->make_field(
+				array(
+					'type'    => 'rule_list',
+					'section' => 'exclude',
+					'name'    => 'rules',
+					'desc'    => 'Exclude',
+				)
+			),
+			array(
+				'exclude_rules' => array(
+					'exclude_row'    => array( 'row1' => '1' ),
+					'author_or_role' => array( 'row1' => '42' ),
+				),
+			),
+			'wp_stream'
+		);
+
+		$this->assertStringContainsString( 'stream-user-combobox', $html );
+		// Roles render inside the combobox (single control), not as a select.
+		$this->assertStringContainsString( 'data-role-options=', $html );
+		$this->assertStringContainsString( '"value":"administrator"', $html );
+		$this->assertStringNotContainsString( 'stream-user-combobox__roles', $html );
+		$this->assertStringContainsString( 'value="42"', $html );
+		$this->assertStringNotContainsString( '<optgroup label="Users">', $html );
+	}
+
+	public function test_rule_list_over_cap_seeds_stored_role_label() {
+		$this->picker_state = array(
+			'ajax'  => true,
+			'items' => array(),
+		);
+
+		$html = $this->renderer->render_field(
+			$this->make_field(
+				array(
+					'type'    => 'rule_list',
+					'section' => 'exclude',
+					'name'    => 'rules',
+					'desc'    => 'Exclude',
+				)
+			),
+			array(
+				'exclude_rules' => array(
+					'exclude_row'    => array( 'row1' => '1' ),
+					'author_or_role' => array( 'row1' => 'editor' ),
+				),
+			),
+			'wp_stream'
+		);
+
+		// Stored role: hidden value keeps the slug, label seeds the combobox.
+		$this->assertStringContainsString( 'value="editor"', $html );
+		$this->assertStringContainsString( 'data-selected-label="Editor"', $html );
 	}
 
 	public function test_render_field_returns_empty_when_required_keys_missing() {

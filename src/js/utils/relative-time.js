@@ -1,3 +1,16 @@
+/*
+ * Locale-aware relative timestamps (replaces the jquery-timeago plugin).
+ *
+ * - Locale resolution: document <html lang> first, then the admin script
+ *   locale passed from PHP, then the runtime default.
+ * - One Intl.RelativeTimeFormat instance per locale is memoized; each table
+ *   row only calls format().
+ * - Division thresholds mirror the previous timeago output (seconds → years
+ *   with 4.34524-week months).
+ * - Presentation is unchanged from the jquery-timeago UI: callers prepend a
+ *   bold <strong><time class="timeago"> next to the original absolute date.
+ */
+
 const DIVISIONS = [
 	{ amount: 60, unit: 'second' },
 	{ amount: 60, unit: 'minute' },

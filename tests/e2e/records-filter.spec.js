@@ -8,8 +8,11 @@ import { test, expect } from '@wordpress/e2e-test-utils-playwright';
  */
 import {
 	followAdminLink,
+	forceUserComboboxViaWpCli,
 	seedSettingsRecord,
 	setJQuerySelect,
+	selectUserCombobox,
+	restorePreloadUsersCapViaWpCli,
 } from './helpers/stream-plugin';
 
 /**
@@ -57,6 +60,20 @@ test.describe( 'Records filters', () => {
 		await setJQuerySelect( page, 'select[name="user_id"]', userId );
 		await submitFilters( page, new RegExp( `user_id=${ userId }` ) );
 		await expectVisibleRows( page );
+	} );
+
+	test( 'user filter labels the system user as WP-CLI', async ( { page } ) => {
+		await page.goto( '/wp-admin/admin.php?page=wp_stream' );
+		await expect(
+			page.locator( 'select[name="user_id"] option[value="0"]' ),
+		).toHaveText( 'WP-CLI' );
+	} );
+
+	test( 'date range select shows the All Time placeholder option', async ( { page } ) => {
+		await page.goto( '/wp-admin/admin.php?page=wp_stream' );
+		await expect(
+			page.locator( 'select[name="date_predefined"] option' ).first(),
+		).toHaveText( 'All Time' );
 	} );
 
 	test( 'filters by connector (parent context option)', async ( { page } ) => {
@@ -176,6 +193,33 @@ test.describe( 'Records filters', () => {
 		await expect(
 			page.locator( '#the-list tr:not(.no-items) .column-ip' ).first(),
 		).toContainText( ip );
+	} );
+} );
+
+test.describe( 'Records filters (user combobox)', () => {
+	test.beforeAll( () => {
+		forceUserComboboxViaWpCli();
+	} );
+
+	test.afterAll( () => {
+		restorePreloadUsersCapViaWpCli();
+	} );
+
+	test( 'filters by user via combobox search', async ( { page } ) => {
+		await page.goto( '/wp-admin/admin.php?page=wp_stream' );
+		const combobox = page.locator(
+			'#record-filter-form .stream-user-combobox',
+		);
+		await expect( combobox ).toHaveCount( 1 );
+		await selectUserCombobox( combobox, 'adm' );
+		await expect( combobox.locator( '.stream-user-combobox__value' ) ).not.toHaveValue(
+			'',
+		);
+		const userId = await combobox
+			.locator( '.stream-user-combobox__value' )
+			.inputValue();
+		await submitFilters( page, new RegExp( `user_id=${ userId }` ) );
+		await expectVisibleRows( page );
 	} );
 } );
 

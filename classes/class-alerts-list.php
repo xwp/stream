@@ -141,6 +141,13 @@ class Alerts_List {
 				<input type="hidden" name="wp_stream_trigger_context" value="<?php echo esc_attr( $trigger_context ); ?>" />
 				<input type="hidden" name="wp_stream_trigger_action" value="<?php echo esc_attr( $trigger_action ); ?>" />
 				<?php
+				$trigger_author = isset( $alert->alert_meta['trigger_author'] )
+					? (string) $alert->alert_meta['trigger_author']
+					: '';
+				?>
+				<input type="hidden" name="wp_stream_trigger_author" value="<?php echo esc_attr( $trigger_author ); ?>" />
+				<input type="hidden" name="wp_stream_trigger_author_label" value="<?php echo esc_attr( $this->plugin->user_picker->label_for_value( $trigger_author ) ); ?>" />
+				<?php
 				echo wp_kses_post( $this->custom_column_actions( $post_id ) );
 				break;
 			case 'alert_type':

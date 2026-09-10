@@ -101,11 +101,15 @@ class Alerts_Admin_UI {
 			'alerts',
 			array(
 				'inline-edit-post',
+				'wp-a11y',
 			),
-			array(
-				'any'             => __( 'Any', 'stream' ),
-				'anyContext'      => __( 'Any Context', 'stream' ),
-				'getActionsNonce' => wp_create_nonce( 'stream_get_actions' ),
+			array_merge(
+				array(
+					'any'             => __( 'Any', 'stream' ),
+					'anyContext'      => __( 'Any Context', 'stream' ),
+					'getActionsNonce' => wp_create_nonce( 'stream_get_actions' ),
+				),
+				$this->plugin->admin->assets->user_combobox_l10n()
 			)
 		);
 	}
