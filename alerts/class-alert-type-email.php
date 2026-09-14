@@ -24,6 +24,11 @@ class Alert_Type_Email extends Alert_Type {
 	public $name = 'Email';
 
 	/**
+	 * Meta key that stores the last time an alert sent an email.
+	 */
+	const LAST_SENT_META_KEY = '_wp_stream_email_last_sent';
+
+	/**
 	 * Alert type slug
 	 *
 	 * @var string
@@ -62,6 +67,10 @@ class Alert_Type_Email extends Alert_Type {
 	 * @return void
 	 */
 	public function alert( $record_id, $recordarr, $alert ) {
+		if ( ! $this->is_send_allowed( $alert ) ) {
+			return;
+		}
+
 		$options = wp_parse_args(
 			$alert->alert_meta,
 			array(
@@ -120,7 +129,59 @@ class Alert_Type_Email extends Alert_Type {
 		$edit_alert_link = admin_url( 'edit.php?post_type=wp_stream_alerts#post-' . $alert->ID );
 		$message        .= __( 'Edit Alert', 'stream' ) . "\n<$edit_alert_link>";
 
+		$this->update_last_sent( $alert );
+
 		wp_mail( $options['email_recipient'], $options['email_subject'], $message );
+	}
+
+	/**
+	 * Checks if the throttle allows this alert to send another email.
+	 *
+	 * @param Alert $alert Alert object.
+	 * @return bool
+	 */
+	public function is_send_allowed( $alert ) {
+		$interval = $this->get_throttle_interval();
+
+		if ( $interval <= 0 ) {
+			return true;
+		}
+
+		$last_sent = (int) get_post_meta( $alert->ID, self::LAST_SENT_META_KEY, true );
+
+		return ( time() - $last_sent ) >= $interval;
+	}
+
+	/**
+	 * Stores the time of the last email sent by this alert.
+	 *
+	 * @param Alert $alert Alert object.
+	 * @return void
+	 */
+	public function update_last_sent( $alert ) {
+		if ( empty( $alert->ID ) ) {
+			return;
+		}
+
+		update_post_meta( $alert->ID, self::LAST_SENT_META_KEY, time() );
+	}
+
+	/**
+	 * Returns the minimum number of seconds between two emails sent by one alert.
+	 *
+	 * @return int
+	 */
+	public function get_throttle_interval() {
+		/**
+		 * Filters the minimum number of seconds between two emails sent by the same alert.
+		 *
+		 * Set it to 0 to send an email for every matching record.
+		 *
+		 * @param int $interval Minimum number of seconds between two emails. Default 300.
+		 */
+		$interval = (int) apply_filters( 'wp_stream_alert_email_throttle', 300 );
+
+		return $interval;
 	}
 
 	/**
