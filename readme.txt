@@ -41,6 +41,7 @@ With Stream’s powerful activity logging, you’ll have the information you nee
 
 = Built-In Tracking For Core Actions: =
 
+ * WordPress AI Client (WP 7.0+)
  * Posts
  * Pages
  * Custom Post Types
@@ -99,6 +100,20 @@ As a workaround, you can use the `wp_stream_client_ip_address` filter to adapt t
 );`
 
 ⚠️ **WARNING:** The above is an insecure workaround that you should only use when you fully understand what this implies. Relying on any variable with the `HTTP_*` prefix is prone to spoofing and cannot be trusted!
+
+
+= AI Client (WordPress 7.0+) =
+
+When WordPress 7.0+ provides the AI Client event dispatcher (`WP_AI_Client_Event_Dispatcher`), Stream logs each AI generation as an activity record under **AI Client → Prompts → Generated**. If the dispatcher is not available, the connector registers no hooks and has no effect.
+
+By default, Stream stores metadata for every generation: operation, provider, model, input/thought/output token counts, duration, finish reason, and other extended fields when present. The activity summary shows a one-line preview (for example, `chat via openai/gpt-4o (tokens: 120/0/45) in 842ms`); the three numbers are input, thought, then output. Multiline summaries display only the first line in the list table; open a record to see the full text.
+
+Prompt and response text are **not** logged by default. To opt in, enable **Log Prompt and Response text** under **Stream → Settings → AI Client**. When enabled, prompt and response text are appended to the activity summary (not stored in meta, which is size-limited) and may be forwarded to any configured Stream alerts or webhooks (e.g. Slack, IFTTT). HTML is stripped on insert, so stored and forwarded text is not a byte-for-byte copy of the generation. **Privacy Warning:** This content may include personally identifiable information (PII). Ensure your privacy policy covers AI data collection before enabling. Use the `wp_stream_ai_client_log_prompt` and `wp_stream_ai_client_log_response` filters below to redact or omit text before it is stored.
+
+Developers can filter stored text when the setting is enabled:
+
+* `wp_stream_ai_client_log_prompt` — filter prompt text before it is stored; return an empty string to omit it.
+* `wp_stream_ai_client_log_response` — filter response text before it is stored; return an empty string to omit it.
 
 
 == Known Issues ==
