@@ -137,7 +137,7 @@ class DB_Driver_WPDB implements DB_Driver {
 		}
 
 		return (array) $wpdb->get_results(
-			"SELECT DISTINCT $column FROM $wpdb->stream", // @codingStandardsIgnoreLine can't prepare column name
+			"SELECT DISTINCT $column FROM $wpdb->stream", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- reason: $column is restricted to Query::ALLOWED_FIELDS.
 			'ARRAY_A'
 		);
 	}
