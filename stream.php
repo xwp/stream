@@ -76,7 +76,7 @@ function wp_stream_fail_php_version() {
 	$message      = sprintf( __( 'Stream requires PHP version %s or newer. Plugin is currently NOT ACTIVE.', 'stream' ), WP_STREAM_MIN_PHP_VERSION );
 	$html_message = sprintf( '<div class="notice notice-error">%s</div>', wpautop( $message ) );
 
-	echo wp_kses_post( $html_message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped by wp_kses_post().
+	echo wp_kses_post( $html_message );
 }
 
 /**
