@@ -26,9 +26,7 @@
 		</properties>
 	</rule>
 
-	<rule ref="WordPress-Core">
-		<exclude name="WordPress.Security.EscapeOutput.DeprecatedWhitelistCommentFound" /><!-- TODO: Change these to phpcs:ignore -->
-	</rule>
+	<rule ref="WordPress-Core" />
 
 	<exclude-pattern>*.ruleset</exclude-pattern>
 	<exclude-pattern>*/.ai/*</exclude-pattern>
