@@ -145,7 +145,7 @@ class Filter_Input {
 	 * @return boolean
 	 */
 	public static function is_regex( $maybe_regex ) {
-		$test = @preg_match( $maybe_regex, '' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+		$test = @preg_match( $maybe_regex, '' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- reason: invalid user regex must not emit a PHP warning; false return is the API.
 
 		return false !== $test;
 	}

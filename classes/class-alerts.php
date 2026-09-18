@@ -345,7 +345,7 @@ class Alerts {
 			array(
 				'post_type'      => self::POST_TYPE,
 				'post_status'    => $statuses,
-				'posts_per_page' => -1, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+				'posts_per_page' => -1, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page -- reason: alerts are a small CPT; all rows must load for the alerts list.
 			)
 		);
 

@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @return mixed|false|null Value of the requested variable on success, FALSE if the filter fails, or NULL if the $variable_name is not set.
  */
-function wp_stream_filter_input( $type, $variable_name, $filter = null, $options = array() ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+function wp_stream_filter_input( $type, $variable_name, $filter = null, $options = array() ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- reason: parameters are forwarded via func_get_args() to Filter_Input::super().
 	return call_user_func_array( array( '\WP_Stream\Filter_Input', 'super' ), func_get_args() );
 }
 
@@ -38,7 +38,7 @@ function wp_stream_filter_input( $type, $variable_name, $filter = null, $options
  *
  * @return Returns the filtered data, or FALSE if the filter fails.
  */
-function wp_stream_filter_var( $value, $filter = null, $options = array() ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+function wp_stream_filter_var( $value, $filter = null, $options = array() ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- reason: parameters are forwarded via func_get_args() to Filter_Input::filter().
 	return call_user_func_array( array( '\WP_Stream\Filter_Input', 'filter' ), func_get_args() );
 }
 
@@ -67,30 +67,27 @@ function wp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 ) {
 }
 
 /**
- * Return an array of sites for a network in a way that is also backwards compatible
+ * Return an array of sites for a network.
+ *
+ * On single-site, `get_sites()` is not loaded by WordPress, so this returns
+ * an empty array instead of calling an undefined function.
  *
  * @param string|array $args  Argument to filter results by.
  *
  * @return array
  */
 function wp_stream_get_sites( $args = array() ) {
+	if ( ! is_multisite() ) {
+		return array();
+	}
+
 	if ( empty( $args['limit'] ) ) {
 		$args['limit'] = 0;
 	}
 
-	if ( function_exists( 'get_sites' ) ) {
-		// Account for get_sites() which uses 'number' while wp_get_sites() uses 'limit'.
-		$args['number'] = $args['limit'];
+	$args['number'] = $args['limit'];
 
-		$sites = get_sites( $args );
-	} else {
-		$sites = array();
-		foreach ( wp_get_sites( $args ) as $site ) { // @codingStandardsIgnoreLine Specifically for old version of WP first, in order to provide backward compatibility
-			$sites[] = WP_Site::get_instance( $site['blog_id'] );
-		}
-	}
-
-	return $sites;
+	return get_sites( $args );
 }
 
 /**
