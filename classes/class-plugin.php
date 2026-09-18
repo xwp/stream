@@ -110,9 +110,9 @@ class Plugin {
 	/**
 	 * Whether the bundled Action Scheduler library was loaded.
 	 *
-	 * Set from a file_exists() check at construction (see __construct), so it
-	 * is reliable on `plugins_loaded` even though AS only declares its as_*()
-	 * API later on `init`.
+	 * Set from a file_exists() check during boot() (called from the
+	 * constructor), so it is reliable on `plugins_loaded` even though AS
+	 * only declares its as_*() API later on `init`.
 	 */
 	protected bool $action_scheduler_available = false;
 
@@ -129,7 +129,9 @@ class Plugin {
 	protected $client_ip_address;
 
 	/**
-	 * Class constructor
+	 * Class constructor.
+	 *
+	 * Sets plugin locations that the autoloader needs, then boots subsystems.
 	 */
 	public function __construct() {
 		$locate = $this->locate_plugin();
@@ -142,6 +144,17 @@ class Plugin {
 			'class_dir' => $locate['dir_path'] . 'classes/',
 		);
 
+		$this->boot();
+	}
+
+	/**
+	 * Load dependencies, instantiate subsystems, and register hooks.
+	 *
+	 * Called from the constructor after locations are set so the autoloader
+	 * can resolve plugin classes. Hook names, priorities, and registration
+	 * order match the previous constructor body.
+	 */
+	public function boot() {
 		spl_autoload_register( array( $this, 'autoload' ) );
 
 		// Determine the scheduler backend, then load Action Scheduler only if
@@ -152,7 +165,7 @@ class Plugin {
 		//
 		// Availability is tracked from a file_exists() check rather than
 		// function_exists(): AS only declares its as_*() API on `init`, but
-		// this constructor runs at plugin-file inclusion time (before the
+		// boot() runs at plugin-file inclusion time (before the
 		// `plugins_loaded` action fires), so the functions are not defined
 		// yet. Scheduler methods are only ever called on/after `init`
 		// (wp_loaded, AJAX, cron), by which point the API is loaded.
@@ -237,12 +250,13 @@ class Plugin {
 		/**
 		 * Filter whether Stream uses Action Scheduler for its deferred work.
 		 *
-		 * IMPORTANT — timing: this filter is applied in Plugin::__construct(),
-		 * which runs when the Stream plugin file is included, i.e. BEFORE the
-		 * `plugins_loaded` action. Callbacks must therefore be registered from
-		 * code that loads before Stream: an mu-plugin, wp-config.php, or a
-		 * plugin guaranteed to load earlier. Registering it from a regular
-		 * plugin's `plugins_loaded` hook is too late and will be ignored.
+		 * IMPORTANT — timing: this filter is applied in Plugin::boot(),
+		 * which runs from the constructor when the Stream plugin file is
+		 * included, i.e. BEFORE the `plugins_loaded` action. Callbacks must
+		 * therefore be registered from code that loads before Stream: an
+		 * mu-plugin, wp-config.php, or a plugin guaranteed to load earlier.
+		 * Registering it from a regular plugin's `plugins_loaded` hook is too
+		 * late and will be ignored.
 		 *
 		 * @param bool $use_action_scheduler Whether to use Action Scheduler.
 		 *                                   Defaults to true when the bundled
