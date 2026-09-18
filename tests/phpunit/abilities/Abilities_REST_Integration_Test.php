@@ -39,7 +39,7 @@ class Abilities_REST_Integration_Test extends Abilities_TestCase {
 
 		// Boot a fresh REST server for each test so route registration is clean.
 		global $wp_rest_server;
-		$wp_rest_server = new \WP_REST_Server(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$wp_rest_server = new \WP_REST_Server(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 		$this->server   = $wp_rest_server;
 		do_action( 'rest_api_init' );
 
@@ -53,7 +53,7 @@ class Abilities_REST_Integration_Test extends Abilities_TestCase {
 		global $wp_current_filter;
 
 		if ( ! wp_has_ability_category( Abilities::CATEGORY_SLUG ) ) {
-			$wp_current_filter[] = 'wp_abilities_api_categories_init'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+			$wp_current_filter[] = 'wp_abilities_api_categories_init'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 			$this->loader->register_category();
 			array_pop( $wp_current_filter );
 		}
@@ -62,7 +62,7 @@ class Abilities_REST_Integration_Test extends Abilities_TestCase {
 			if ( wp_has_ability( $ability->get_name() ) ) {
 				continue;
 			}
-			$wp_current_filter[] = 'wp_abilities_api_init'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+			$wp_current_filter[] = 'wp_abilities_api_init'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 			$ability->register();
 			array_pop( $wp_current_filter );
 		}
@@ -73,7 +73,7 @@ class Abilities_REST_Integration_Test extends Abilities_TestCase {
 	 */
 	public function tearDown(): void {
 		global $wp_rest_server;
-		$wp_rest_server = null; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$wp_rest_server = null; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 		parent::tearDown();
 	}
 

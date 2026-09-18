@@ -59,7 +59,7 @@ class Admin_Menu_Test extends WP_StreamTestCase {
 
 	public function test_register_menu() {
 		global $menu;
-		$menu = array(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$menu = array(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 
 		do_action( 'admin_menu' );
 
@@ -73,7 +73,7 @@ class Admin_Menu_Test extends WP_StreamTestCase {
 	 */
 	public function test_network_admin_menu_uses_menu_collaborator() {
 		global $menu;
-		$menu = array(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$menu = array(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 
 		$this->menu->screen_id = array();
 		$this->menu->register_menu();

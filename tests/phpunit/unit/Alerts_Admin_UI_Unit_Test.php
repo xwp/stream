@@ -213,13 +213,13 @@ class Alerts_Admin_UI_Unit_Test extends TestCase {
 	}
 
 	public function test_change_menu_link_url_returns_false_when_stream_menu_missing() {
-		$GLOBALS['submenu'] = array(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$GLOBALS['submenu'] = array(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 
 		$this->assertFalse( $this->admin_ui->change_menu_link_url() );
 	}
 
 	public function test_change_menu_link_url_rewrites_alerts_item_to_first_site() {
-		$GLOBALS['submenu'] = array( // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$GLOBALS['submenu'] = array( // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 			'wp_stream' => array(
 				array( 'Alerts', 'manage_options', 'edit.php?post_type=wp_stream_alerts' ),
 			),
@@ -246,7 +246,7 @@ class Alerts_Admin_UI_Unit_Test extends TestCase {
 	}
 
 	public function test_change_menu_link_url_falls_back_to_site_one_when_sites_empty() {
-		$GLOBALS['submenu'] = array( // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$GLOBALS['submenu'] = array( // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 			'wp_stream' => array(
 				array( 'Alerts', 'manage_options', 'edit.php?post_type=wp_stream_alerts' ),
 			),
