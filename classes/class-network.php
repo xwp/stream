@@ -355,7 +355,7 @@ class Network {
 			$labels[ $network_key ] = array();
 		}
 
-		foreach ( $this->plugin->settings->get_fields() as $section_slug => $section ) {
+		foreach ( $this->plugin->settings->registry->get_fields() as $section_slug => $section ) {
 			foreach ( $section['fields'] as $field ) {
 				$labels[ $network_key ][ sprintf( '%s_%s', $section_slug, $field['name'] ) ] = $field['title'];
 			}
@@ -395,14 +395,14 @@ class Network {
 
 			$value          = array();
 			$posted_options = isset( $_POST[ $option ] ) && is_array( $_POST[ $option ] ) ? wp_unslash( $_POST[ $option ] ) : array();
-			$sections       = $this->plugin->settings->get_fields();
+			$sections       = $this->plugin->settings->registry->get_fields();
 
 			foreach ( $sections as $section_name => $section ) {
 				foreach ( $section['fields'] as $field_idx => $field ) {
 					$option_key = $section_name . '_' . $field['name'];
 
 					if ( isset( $posted_options[ $option_key ] ) ) {
-						$value[ $option_key ] = $this->plugin->settings->sanitize_setting_by_field_type( $posted_options[ $option_key ], $field['type'] );
+						$value[ $option_key ] = $this->plugin->settings->sanitizer->sanitize_setting_by_field_type( $posted_options[ $option_key ], $field['type'] );
 					} else {
 						$value[ $option_key ] = false;
 					}

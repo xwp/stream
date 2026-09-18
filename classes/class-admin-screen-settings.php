@@ -59,7 +59,7 @@ class Admin_Screen_Settings {
 
 		$page_description = apply_filters( 'wp_stream_settings_form_description', '' );
 
-		$sections   = $this->admin->plugin->settings->get_fields();
+		$sections   = $this->admin->plugin->settings->registry->get_fields();
 		$active_tab = wp_stream_filter_input( INPUT_GET, 'tab' );
 
 		$this->admin->plugin->enqueue_asset(
