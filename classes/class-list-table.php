@@ -636,7 +636,7 @@ class List_Table extends \WP_List_Table {
 				),
 				false
 			);
-			echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- reason: Form_Generator returns HTML with escaped attributes.
 			echo '</div>';
 			return;
 		}
