@@ -22,7 +22,7 @@ class Connector_Users extends Connector {
 	 *
 	 * @var WP_User
 	 */
-	protected $_users_object_pre_deleted = array(); // @codingStandardsIgnoreLine
+	protected $users_object_pre_deleted = array();
 	/**
 	 * Actions registered for this connector
 	 */
@@ -343,8 +343,8 @@ class Connector_Users extends Connector {
 	 * @param int $user_id  User ID that maybe deleted.
 	 */
 	public function callback_delete_user( $user_id ) {
-		if ( ! isset( $this->_users_object_pre_deleted[ $user_id ] ) ) {
-			$this->_users_object_pre_deleted[ $user_id ] = get_user_by( 'id', $user_id );
+		if ( ! isset( $this->users_object_pre_deleted[ $user_id ] ) ) {
+			$this->users_object_pre_deleted[ $user_id ] = get_user_by( 'id', $user_id );
 		}
 	}
 
@@ -357,16 +357,16 @@ class Connector_Users extends Connector {
 	public function callback_deleted_user( $user_id ) {
 		$user = wp_get_current_user();
 
-		if ( isset( $this->_users_object_pre_deleted[ $user_id ] ) ) {
+		if ( isset( $this->users_object_pre_deleted[ $user_id ] ) ) {
 			/* translators: %1$s: a user display name, %2$s: a user role (e.g. "Jane Doe", "subscriber") */
 			$message      = _x(
 				'%1$s\'s account was deleted (%2$s)',
 				'1: User display name, 2: User roles',
 				'stream'
 			);
-			$display_name = $this->_users_object_pre_deleted[ $user_id ]->display_name;
-			$deleted_user = $this->_users_object_pre_deleted[ $user_id ];
-			unset( $this->_users_object_pre_deleted[ $user_id ] );
+			$display_name = $this->users_object_pre_deleted[ $user_id ]->display_name;
+			$deleted_user = $this->users_object_pre_deleted[ $user_id ];
+			unset( $this->users_object_pre_deleted[ $user_id ] );
 		} else {
 			/* translators: %d: a user display name, and a user role (e.g. "Jane Doe", "subscriber") */
 			$message      = esc_html__( 'User account #%d was deleted', 'stream' );

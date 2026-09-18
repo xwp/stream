@@ -1,4 +1,4 @@
-<?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
+<?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase -- reason: feed template is named after the RSS 2.0 spec.
 /**
  * Renders a RSS feed of records.
  *
