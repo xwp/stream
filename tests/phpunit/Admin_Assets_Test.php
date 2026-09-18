@@ -39,7 +39,7 @@ class Admin_Assets_Test extends WP_StreamTestCase {
 
 		// Populate screen_id so enqueue tests can target a Stream screen hook.
 		global $menu;
-		$menu = array(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$menu = array(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 		do_action( 'admin_menu' );
 	}
 

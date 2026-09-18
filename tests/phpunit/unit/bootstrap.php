@@ -8,8 +8,7 @@
 $wp_stream_unit_autoload_file = dirname( __DIR__, 3 ) . '/vendor/autoload.php';
 
 if ( ! is_readable( $wp_stream_unit_autoload_file ) ) {
-	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- CLI bootstrap before WP loads.
-	fwrite( STDERR, "Composer autoload not found. Run composer install.\n" );
+	fwrite( STDERR, "Composer autoload not found. Run composer install.\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- reason: CLI bootstrap runs before WordPress filesystem APIs load.
 	exit( 1 );
 }
 

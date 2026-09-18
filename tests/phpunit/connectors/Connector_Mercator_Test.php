@@ -218,7 +218,7 @@ class Connector_Mercator_Test extends WP_StreamTestCase {
 		 * Execute action to trigger callback because the tables need to
 		 * run the \Mercator\Mapping::delete() don't currently exist.
 		 */
-		do_action( 'mercator.mapping.deleted', $mapping ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+		do_action( 'mercator.mapping.deleted', $mapping ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- reason: the test fires the real hyphenated hook name.
 
 		// Check callback test action.
 		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_mercator_mapping_deleted' ) );

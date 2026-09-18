@@ -55,7 +55,7 @@ class Abilities_Test extends WP_StreamTestCase {
 		if ( null === $this->original_abilities_init_hook ) {
 			unset( $wp_filter['wp_abilities_api_init'] );
 		} else {
-			$wp_filter['wp_abilities_api_init'] = $this->original_abilities_init_hook; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+			$wp_filter['wp_abilities_api_init'] = $this->original_abilities_init_hook; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 		}
 
 		parent::tearDown();
@@ -266,7 +266,7 @@ class Abilities_Test extends WP_StreamTestCase {
 		global $wp_current_filter;
 
 		if ( ! wp_has_ability_category( Abilities::CATEGORY_SLUG ) ) {
-			$wp_current_filter[] = 'wp_abilities_api_categories_init'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+			$wp_current_filter[] = 'wp_abilities_api_categories_init'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 			$abilities->register_category();
 			array_pop( $wp_current_filter );
 		}
@@ -274,7 +274,7 @@ class Abilities_Test extends WP_StreamTestCase {
 		// Always exercise register_abilities() so this loader instance's abilities
 		// array gets populated regardless of whether the global registry already
 		// has them registered (a prior test in the same process may have done so).
-		$wp_current_filter[] = 'wp_abilities_api_init'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$wp_current_filter[] = 'wp_abilities_api_init'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 		$abilities->register_abilities();
 		array_pop( $wp_current_filter );
 

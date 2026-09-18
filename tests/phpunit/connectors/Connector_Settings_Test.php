@@ -321,10 +321,10 @@ class Connector_Settings_Test extends WP_StreamTestCase {
 		global $whitelist_options;
 
 		if ( ! is_array( $whitelist_options ) ) {
-			$whitelist_options = array(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+			$whitelist_options = array(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 		}
 
-		$whitelist_options['writing'] = array_merge( // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$whitelist_options['writing'] = array_merge( // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 			isset( $whitelist_options['writing'] ) ? (array) $whitelist_options['writing'] : array(),
 			array( 'mailserver_pass', 'mailserver_login' )
 		);
