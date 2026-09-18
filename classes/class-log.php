@@ -332,9 +332,7 @@ class Log {
 		// Debug backtrace.
 		ob_start();
 
-		// @codingStandardsIgnoreStart
-		debug_print_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
-		// @codingStandardsIgnoreEnd
+		debug_print_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_print_backtrace -- reason: Stream debug log captures the backtrace when WP_STREAM_DEBUG is enabled.
 
 		$backtrace = ob_get_clean();
 		$backtrace = array_values( array_filter( explode( "\n", $backtrace ) ) );

@@ -175,7 +175,7 @@ class Alerts_Admin_UI {
 			// Set correct URL for the menu item.
 			if ( $page === $value[2] ) {
 				// This hack is not kosher, see the docblock for an explanation.
-				$submenu[ $parent ][ $key ][2] = $new_url; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+				$submenu[ $parent ][ $key ][2] = $new_url; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: network admin must rewrite the submenu URL to the current site; core has no API for that.
 				break;
 			}
 		}
