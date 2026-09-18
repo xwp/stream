@@ -8,7 +8,7 @@
  *
  * @package WP_Stream
  *
- * phpcs:disable WordPress.WP.GlobalVariablesOverride.Prohibited
+ * phpcs:disable WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit config must assign $table_prefix and related WP test globals for the whole file.
  */
 
 define( 'DB_NAME', 'tests-wordpress' );

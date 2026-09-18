@@ -26,7 +26,7 @@ class Connector_Jetpack_Test extends WP_StreamTestCase {
 
 		global $wp_rest_server;
 
-		$wp_rest_server = new \WP_REST_Server(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$wp_rest_server = new \WP_REST_Server(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 		$this->server   = $wp_rest_server;
 
 		do_action( 'rest_api_init' );
@@ -467,7 +467,7 @@ class Connector_Jetpack_Test extends WP_StreamTestCase {
 		global $publicize_ui;
 
 		$original_publicize_ui = $publicize_ui;
-		$publicize_ui          = new class() { // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$publicize_ui          = new class() { // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 			/**
 			 * Publicize stub.
 			 *
@@ -511,7 +511,7 @@ class Connector_Jetpack_Test extends WP_StreamTestCase {
 		try {
 			$connector->check_jetpack_options( $old_value, $new_value );
 		} finally {
-			$publicize_ui = $original_publicize_ui; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+			$publicize_ui = $original_publicize_ui; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 		}
 	}
 

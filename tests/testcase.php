@@ -178,7 +178,7 @@ class WP_StreamTestCase extends \WP_Ajax_UnitTestCase {
 	 * @link https://core.trac.wordpress.org/ticket/62004
 	 * @return void
 	 */
-	public function expectDeprecated(): void { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function expectDeprecated(): void { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- reason: method name matches the WP_UnitTestCase API.
 		add_action( 'deprecated_function_run', array( $this, 'deprecated_function_run' ), 10, 3 );
 		add_action( 'deprecated_argument_run', array( $this, 'deprecated_function_run' ), 10, 3 );
 		add_action( 'deprecated_class_run', array( $this, 'deprecated_function_run' ), 10, 3 );

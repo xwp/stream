@@ -39,7 +39,7 @@ class Connector_Editor_Test extends WP_StreamTestCase {
 	}
 
 	public function tearDown(): void {
-		file_put_contents( WP_PLUGIN_DIR . '/hello.php', $this->original_contents ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+		file_put_contents( WP_PLUGIN_DIR . '/hello.php', $this->original_contents ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- reason: test restores a plugin fixture file without bootstrapping WP_Filesystem.
 	}
 
 	public function test_log_changes_theme_file() {
@@ -83,7 +83,7 @@ class Connector_Editor_Test extends WP_StreamTestCase {
 			'theme'            => 'twentytwentythree',
 		);
 
-		do_action( 'wp_ajax_edit-theme-plugin-file' ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+		do_action( 'wp_ajax_edit-theme-plugin-file' ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- reason: the test fires the real hyphenated hook name.
 	}
 
 	public function test_log_changes_plugin_file() {
@@ -127,6 +127,6 @@ class Connector_Editor_Test extends WP_StreamTestCase {
 			'plugin'           => 'hello.php',
 		);
 
-		do_action( 'wp_ajax_edit-theme-plugin-file' ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+		do_action( 'wp_ajax_edit-theme-plugin-file' ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- reason: the test fires the real hyphenated hook name.
 	}
 }

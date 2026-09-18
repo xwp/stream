@@ -94,7 +94,7 @@ abstract class Abilities_TestCase extends WP_StreamTestCase {
 	 */
 	protected function with_doing_action( $action_name, callable $callback ) {
 		global $wp_current_filter;
-		$wp_current_filter[] = $action_name; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$wp_current_filter[] = $action_name; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 		try {
 			return $callback();
 		} finally {
