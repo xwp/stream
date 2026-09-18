@@ -2,9 +2,9 @@
 
 Describes Stream 5.0.0 (`Plugin::VERSION`). Read top to bottom. Every class link is repo-relative.
 
-Related: [contributing.md](contributing.md) (env + commands) · [connectors.md](connectors.md) (generated inventory) · [changelog.md](changelog.md)
+Related: [contributing.md](contributing.md) (env + commands) · [connectors.md](connectors.md) (generated inventory) · [docs/adding-a-connector.md](docs/adding-a-connector.md) (how to add a connector) · [changelog.md](changelog.md)
 
-Not covered here: writing a connector (XWPENG-61) · writing an alert type (XWPENG-62) · hook reference (XWPENG-63) · Abilities/MCP internals · scheduler internals · admin UI / settings internals.
+Not covered here: writing an alert type · hook reference · Abilities/MCP internals · scheduler internals · admin UI / settings internals.
 
 ## Boot sequence
 
@@ -121,7 +121,7 @@ Files: [classes/class-connectors.php](classes/class-connectors.php), [classes/cl
 
 **From another plugin:** hook `wp_stream_connectors` and append a `Connector` **instance** keyed by its `$name`.
 
-Step-by-step guide: XWPENG-61 (not yet written).
+Step-by-step guide: [docs/adding-a-connector.md](docs/adding-a-connector.md).
 
 ## Alert lifecycle
 

@@ -14,7 +14,7 @@ View the [plugin description on WordPress.org](https://wordpress.org/plugins/str
 
 ### Connectors
 
-A list of the connectors is in [connectors.md](connectors.md).
+A list of the connectors is in [connectors.md](connectors.md). To add one, follow [How to add a connector](docs/adding-a-connector.md).
 
 ### Configuration
 
