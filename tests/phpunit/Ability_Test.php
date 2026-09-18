@@ -84,7 +84,7 @@ class Ability_Test extends WP_StreamTestCase {
 		global $wp_current_filter;
 
 		if ( ! wp_has_ability_category( Abilities::CATEGORY_SLUG ) ) {
-			$wp_current_filter[] = 'wp_abilities_api_categories_init'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+			$wp_current_filter[] = 'wp_abilities_api_categories_init'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 			wp_register_ability_category(
 				Abilities::CATEGORY_SLUG,
 				array(
@@ -96,7 +96,7 @@ class Ability_Test extends WP_StreamTestCase {
 		}
 
 		if ( ! wp_has_ability( 'stream/fake' ) ) {
-			$wp_current_filter[] = 'wp_abilities_api_init'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+			$wp_current_filter[] = 'wp_abilities_api_init'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 			$this->ability->register();
 			array_pop( $wp_current_filter );
 		}

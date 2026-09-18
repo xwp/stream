@@ -89,7 +89,7 @@ class Ability_Purge_Records_Test extends Abilities_TestCase {
 			'updated'
 		);
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- reason: tests insert and assert against Stream custom tables without using WP object cache.
 		$total_before = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->stream}" );
 		$this->assertGreaterThanOrEqual( 2, $total_before );
 
@@ -104,18 +104,18 @@ class Ability_Purge_Records_Test extends Abilities_TestCase {
 		$this->assertGreaterThanOrEqual( 1, $result['deleted'] );
 
 		// Users records gone.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- reason: tests insert and assert against Stream custom tables without using WP object cache.
 		$users_left = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->stream} WHERE connector = 'users'" );
 		$this->assertSame( 0, $users_left );
 
 		// Posts records untouched.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- reason: tests insert and assert against Stream custom tables without using WP object cache.
 		$posts_left = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->stream} WHERE connector = 'posts'" );
 		$this->assertGreaterThanOrEqual( 1, $posts_left );
 
 		// No orphaned meta for users connector — the cascade DELETE should have
 		// removed any meta rows whose record_id was deleted.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- reason: tests insert and assert against Stream custom tables without using WP object cache.
 		$orphans = (int) $wpdb->get_var(
 			"SELECT COUNT(*) FROM {$wpdb->streammeta} meta
 			 LEFT JOIN {$wpdb->stream} stream ON stream.ID = meta.record_id
@@ -157,7 +157,7 @@ class Ability_Purge_Records_Test extends Abilities_TestCase {
 		$current_blog_id = is_multisite() ? (int) get_current_blog_id() : 0;
 
 		foreach ( array( $older_utc, $newer_utc ) as $created ) {
-			$inserted = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$inserted = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- reason: tests insert and assert against Stream custom tables without using WP object cache.
 				$wpdb->stream,
 				array(
 					'site_id'   => 1,
@@ -185,7 +185,7 @@ class Ability_Purge_Records_Test extends Abilities_TestCase {
 		$this->assertIsArray( $result );
 		$this->assertSame( 1, $result['deleted'], 'Exactly the older row must be purged.' );
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- reason: tests assert Stream table contents; table name comes from $wpdb->stream.
 		$remaining = $wpdb->get_col(
 			$wpdb->prepare( "SELECT created FROM {$wpdb->stream} WHERE connector = %s ORDER BY created", 'tz_test' )
 		);
@@ -209,7 +209,7 @@ class Ability_Purge_Records_Test extends Abilities_TestCase {
 		$current_blog_id = (int) get_current_blog_id();
 		$foreign_blog_id = $current_blog_id + 999;
 
-		$inserted_foreign = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$inserted_foreign = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- reason: tests insert and assert against Stream custom tables without using WP object cache.
 			$wpdb->stream,
 			array(
 				'site_id'   => 1,
@@ -245,7 +245,7 @@ class Ability_Purge_Records_Test extends Abilities_TestCase {
 		$this->assertIsArray( $result );
 
 		// Foreign-blog row must remain.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- reason: tests assert Stream table contents; table name comes from $wpdb->stream.
 		$foreign_left = (int) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(*) FROM {$wpdb->stream} WHERE blog_id = %d AND connector = %s",
@@ -256,7 +256,7 @@ class Ability_Purge_Records_Test extends Abilities_TestCase {
 		$this->assertSame( 1, $foreign_left, 'Purge must not delete records belonging to other blogs.' );
 
 		// Current-blog rows are gone.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- reason: tests assert Stream table contents; table name comes from $wpdb->stream.
 		$current_left = (int) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(*) FROM {$wpdb->stream} WHERE blog_id = %d AND connector = %s",
