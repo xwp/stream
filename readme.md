@@ -34,7 +34,7 @@ define('WP_STREAM_SETTINGS_CAPABILITY', 'wp_stream_manage_settings');
 
 ## Contribute
 
-All suggestions and contributions are welcome! View the [contributor documentation](contributing.md) for how to report issues and setup the local development environment.
+All suggestions and contributions are welcome! View the [contributor documentation](contributing.md) for how to report issues and setup the local development environment. For a map of how the plugin boots and how connectors, alerts, and exports flow, read [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Credits
 
