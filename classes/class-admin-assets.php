@@ -95,18 +95,18 @@ class Admin_Assets {
 				)
 			);
 
-			$current_order = isset( $_GET['order'] ) ? sanitize_key( wp_unslash( $_GET['order'] ) ) : 'desc'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$current_order = isset( $_GET['order'] ) ? sanitize_key( wp_unslash( $_GET['order'] ) ) : 'desc'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- reason: list-table sort is a read-only query arg, not a state-changing request.
 			if ( ! in_array( $current_order, array( 'asc', 'desc' ), true ) ) {
 				$current_order = 'desc';
 			}
-			$current_query = map_deep( wp_unslash( $_GET ), 'sanitize_text_field' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$current_query = map_deep( wp_unslash( $_GET ), 'sanitize_text_field' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- reason: live-updates echo current list filters; GET is sanitized and not used to change data.
 
 			$this->admin->plugin->enqueue_asset(
 				'live-updates',
 				array( 'heartbeat' ),
 				array(
 					'current_screen'      => $hook,
-					'current_page'        => isset( $_GET['paged'] ) ? absint( wp_unslash( $_GET['paged'] ) ) : '1', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					'current_page'        => isset( $_GET['paged'] ) ? absint( wp_unslash( $_GET['paged'] ) ) : '1', // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- reason: pagination is a read-only query arg.
 					'current_order'       => $current_order,
 					'current_query'       => wp_json_encode( $current_query ),
 					'current_query_count' => count( $current_query ),
@@ -183,8 +183,8 @@ class Admin_Assets {
 		if ( $this->is_stream_screen() ) {
 			$stream_classes[] = $this->admin->admin_body_class;
 
-			if ( isset( $_GET['page'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$stream_classes[] = sanitize_key( $_GET['page'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( isset( $_GET['page'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- reason: admin body class reads the current screen slug from the URL.
+				$stream_classes[] = sanitize_key( $_GET['page'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- reason: page slug is sanitized with sanitize_key() for CSS classes only.
 			}
 		}
 
