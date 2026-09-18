@@ -734,6 +734,6 @@ class Settings_Renderer {
 			return;
 		}
 
-		echo $this->render_field( $field, $settings->options, $settings->option_key ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $this->render_field( $field, $settings->options, $settings->option_key ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- reason: render_field() returns HTML escaped per control type.
 	}
 }

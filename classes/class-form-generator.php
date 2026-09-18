@@ -221,7 +221,7 @@ class Form_Generator {
 			return $output;
 		}
 
-		echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- reason: $output is HTML built with escaped attributes by this generator.
 	}
 
 	/**
