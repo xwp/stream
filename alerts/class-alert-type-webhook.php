@@ -143,8 +143,7 @@ class Alert_Type_Webhook extends Alert_Type {
 		);
 
 		if ( is_wp_error( $response ) && defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Opt-in debug only.
-			error_log( sprintf( 'Stream webhook alert request failed: %s', $response->get_error_message() ) );
+			error_log( sprintf( 'Stream webhook alert request failed: %s', $response->get_error_message() ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- reason: opt-in WP_DEBUG logging of a failed outbound request.
 		}
 	}
 

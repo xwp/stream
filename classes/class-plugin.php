@@ -550,7 +550,7 @@ class Plugin {
 			throw new RuntimeException( 'Built JavaScript assets not found. Please run `npm run build`' );
 		}
 
-		$script_asset = require $script_asset_path; // phpcs:disable WPThemeReview.CoreFunctionality.FileInclude.FileIncludeFound
+		$script_asset = require $script_asset_path; // phpcs:ignore WPThemeReview.CoreFunctionality.FileInclude.FileIncludeFound -- reason: webpack asset.php returns a generated dependency array, not a template.
 
 		wp_enqueue_script(
 			"wp-stream-$handle",

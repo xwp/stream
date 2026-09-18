@@ -338,7 +338,7 @@ class Connector_Installer extends Connector {
 		/**
 		 * This is used as a hack to determine a theme was deleted.
 		 */
-		$backtrace = debug_backtrace(); // @codingStandardsIgnoreLine
+		$backtrace         = debug_backtrace(); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace -- reason: core has no delete_theme hook; the backtrace is the only way to detect a theme deletion.
 		$delete_theme_call = null;
 
 		foreach ( $backtrace as $call ) {

@@ -42,7 +42,7 @@ class Exporter_CSV extends Exporter {
 		foreach ( $data as $row ) {
 			fputcsv( $csv, $row, ',', '"', '\\' );
 		}
-		fclose( $csv ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+		fclose( $csv ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- reason: php://output is a stream handle, not a filesystem path WP_Filesystem can close.
 
 		echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- reason: CSV download body, not HTML.
 
