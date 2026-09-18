@@ -737,7 +737,7 @@ class List_Table extends \WP_List_Table {
 				<input type="submit" name="" id="search-submit" class="button" value="%3$s" />
 			</p>',
 			esc_html__( 'Search Records', 'stream' ),
-			esc_attr( ! empty( $_GET['search'] ) ? sanitize_text_field( wp_unslash( $_GET['search'] ) ) : '' ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			esc_attr( ! empty( $_GET['search'] ) ? sanitize_text_field( wp_unslash( $_GET['search'] ) ) : '' ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- reason: search is a read-only records list filter, not a state-changing request.
 			esc_attr__( 'Search Records', 'stream' )
 		);
 	}
@@ -933,18 +933,15 @@ class List_Table extends \WP_List_Table {
 	public function set_live_update_option( $dummy, $option, $value ) {
 		unset( $value );
 
-		// @codingStandardsIgnoreStart
 		if (
 			$this->plugin->admin->live_update->user_meta_key === $option
 			&&
-			isset( $_POST[ $this->plugin->admin->live_update->user_meta_key ] )
+			isset( $_POST[ $this->plugin->admin->live_update->user_meta_key ] ) // phpcs:ignore WordPress.Security.NonceVerification.Missing -- reason: screen-option save is handled by core; Stream only reads the posted toggle.
 		) {
-			$value = esc_attr( $_POST[ $this->plugin->admin->live_update->user_meta_key ] ); //input var okay
+			$value = esc_attr( $_POST[ $this->plugin->admin->live_update->user_meta_key ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- reason: value is escaped for storage; core already verified the screen-option request.
 
 			return $value;
 		}
-
-		// @codingStandardsIgnoreEnd
 
 		return $dummy;
 	}

@@ -381,8 +381,7 @@ class Connector_Jetpack extends Connector {
 			$context      = 'blogs';
 			$action       = str_replace( 'subsite', '', $method );
 			$is_multisite = ( 0 === strpos( $method, 'subsite' ) );
-			// @codingStandardsIgnoreLine
-			$blog_id      = $is_multisite ? ( isset( $_GET['site_id'] ) ? intval( wp_unslash( $_GET['site_id'] ) ) : null ) : get_current_blog_id();
+			$blog_id      = $is_multisite ? ( isset( $_GET['site_id'] ) ? intval( wp_unslash( $_GET['site_id'] ) ) : null ) : get_current_blog_id(); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- reason: Jetpack network action already ran; Stream only logs the site_id from the request.
 
 			if ( empty( $blog_id ) ) {
 				return;
