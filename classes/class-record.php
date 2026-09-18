@@ -168,7 +168,7 @@ class Record {
 		// $wpdb->stream and {$where} are constructed from string literals (no
 		// user input), and $prepared holds only integer IDs.
 		$sql = "SELECT * FROM {$wpdb->stream} WHERE ID = %d{$where}";
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared -- reason: table name is $wpdb->stream; $where is a literal AND clause and IDs are prepared.
 		$row = $wpdb->get_row( $wpdb->prepare( $sql, $prepared ), ARRAY_A );
 
 		if ( empty( $row ) ) {
