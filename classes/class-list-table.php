@@ -1128,7 +1128,7 @@ class List_Table extends \WP_List_Table {
 		unset( $args );
 
 		$user_id   = get_current_user_id();
-		$option    = $this->plugin->admin->get_user_meta( $user_id, $this->plugin->admin->live_update->user_meta_key, true );
+		$option    = get_user_meta( $user_id, $this->plugin->admin->live_update->user_meta_key, true );
 		$heartbeat = wp_script_is( 'heartbeat', 'done' ) ? 'true' : 'false';
 
 		if ( 'on' === $option && 'false' === $heartbeat ) {

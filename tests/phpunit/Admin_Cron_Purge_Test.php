@@ -24,6 +24,13 @@ class Admin_Cron_Purge_Test extends WP_StreamTestCase {
 	protected $admin;
 
 	/**
+	 * Purge collaborator under test.
+	 *
+	 * @var Admin_Purge
+	 */
+	protected $purge;
+
+	/**
 	 * Scheduler that was active before this test swapped in the cron one.
 	 *
 	 * @var Scheduler
@@ -35,10 +42,11 @@ class Admin_Cron_Purge_Test extends WP_StreamTestCase {
 
 		$this->admin = $this->plugin->admin;
 		$this->assertNotEmpty( $this->admin );
+		$this->purge = $this->get_admin_collaborator( $this->admin, 'purge' );
 
 		// Force the WP-Cron fallback for the duration of each test. Because
-		// $this->plugin is the global instance, this also routes the static
-		// is_running_* probes through the cron scheduler.
+		// $this->plugin is the same instance Admin_Purge reads via
+		// $this->admin->plugin, is_running_* probes use the cron scheduler.
 		$this->original_scheduler = $this->plugin->scheduler;
 		$this->plugin->scheduler  = new Cron_Scheduler();
 
@@ -150,7 +158,7 @@ class Admin_Cron_Purge_Test extends WP_StreamTestCase {
 		wp_schedule_event( time(), 'twicedaily', 'wp_stream_auto_purge' );
 		$this->assertNotFalse( wp_next_scheduled( 'wp_stream_auto_purge' ) );
 
-		$this->admin->purge_schedule_setup();
+		$this->purge->purge_schedule_setup();
 
 		$this->assertFalse(
 			wp_next_scheduled( 'wp_stream_auto_purge' ),
@@ -168,7 +176,7 @@ class Admin_Cron_Purge_Test extends WP_StreamTestCase {
 
 		// Idempotent: a second call must not stack a duplicate.
 		$first = wp_next_scheduled( Admin::AUTO_PURGE_ACTION );
-		$this->admin->purge_schedule_setup();
+		$this->purge->purge_schedule_setup();
 		$this->assertSame( $first, wp_next_scheduled( Admin::AUTO_PURGE_ACTION ) );
 	}
 
@@ -182,7 +190,7 @@ class Admin_Cron_Purge_Test extends WP_StreamTestCase {
 		$ids = $this->seed_aged_records( 2, 5 );
 		$this->set_records_ttl( 1 );
 
-		$this->admin->purge_scheduled_action();
+		$this->purge->purge_scheduled_action();
 
 		$remaining = (int) $wpdb->get_var(
 			$wpdb->prepare(
@@ -212,7 +220,7 @@ class Admin_Cron_Purge_Test extends WP_StreamTestCase {
 		$this->seed_aged_records( 2, 5 );
 		$this->set_records_ttl( 1 );
 
-		$this->admin->purge_scheduled_action();
+		$this->purge->purge_scheduled_action();
 
 		$this->assertTrue(
 			$this->plugin->scheduler->has_scheduled( Admin::AUTO_PURGE_BATCH_ACTION ),
@@ -243,7 +251,7 @@ class Admin_Cron_Purge_Test extends WP_StreamTestCase {
 		$this->seed_aged_records( 5, 5 );
 		$before = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->stream}" );
 
-		$this->admin->auto_purge_batch( $this->cutoff_one_day_ago(), 0 );
+		$this->purge->auto_purge_batch( $this->cutoff_one_day_ago(), 0 );
 
 		$remaining = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->stream}" );
 		$this->assertLessThan( $before, $remaining, 'Batch must delete at least one row' );
@@ -266,7 +274,7 @@ class Admin_Cron_Purge_Test extends WP_StreamTestCase {
 		$wpdb->query( "DELETE FROM {$wpdb->stream}" );
 		$wpdb->query( "DELETE FROM {$wpdb->streammeta}" );
 
-		$this->admin->auto_purge_batch( $this->cutoff_one_day_ago(), 0 );
+		$this->purge->auto_purge_batch( $this->cutoff_one_day_ago(), 0 );
 
 		$this->assertFalse(
 			$this->plugin->scheduler->has_scheduled( Admin::AUTO_PURGE_BATCH_ACTION ),
@@ -282,7 +290,7 @@ class Admin_Cron_Purge_Test extends WP_StreamTestCase {
 		);
 
 		// The reaper clears the marker when it finishes.
-		$this->admin->auto_purge_reaper();
+		$this->purge->auto_purge_reaper();
 		$this->assertFalse(
 			(bool) get_transient( Cron_Scheduler::RUNNING_TRANSIENT ),
 			'Running marker must be cleared once the reaper completes'
@@ -296,14 +304,14 @@ class Admin_Cron_Purge_Test extends WP_StreamTestCase {
 	 */
 	public function test_enable_auto_purge_filter_disables_scheduling() {
 		// Establish a recurring purge first.
-		$this->admin->purge_schedule_setup();
+		$this->purge->purge_schedule_setup();
 		$this->assertNotFalse(
 			wp_next_scheduled( Admin::AUTO_PURGE_ACTION ),
 			'Recurring purge must be scheduled before the disable filter is applied'
 		);
 
 		add_filter( 'wp_stream_enable_auto_purge', '__return_false' );
-		$this->admin->purge_schedule_setup();
+		$this->purge->purge_schedule_setup();
 
 		$this->assertFalse(
 			wp_next_scheduled( Admin::AUTO_PURGE_ACTION ),
@@ -318,7 +326,7 @@ class Admin_Cron_Purge_Test extends WP_StreamTestCase {
 		// Re-enabling must recover: the sentinel differs from the active
 		// backend, so the switch cleanup re-registers the recurring purge.
 		remove_all_filters( 'wp_stream_enable_auto_purge' );
-		$this->admin->purge_schedule_setup();
+		$this->purge->purge_schedule_setup();
 		$this->assertNotFalse(
 			wp_next_scheduled( Admin::AUTO_PURGE_ACTION ),
 			'Re-enabling auto-purge must re-register the recurring event'
@@ -337,7 +345,7 @@ class Admin_Cron_Purge_Test extends WP_StreamTestCase {
 		$this->set_records_ttl( 1 );
 
 		add_filter( 'wp_stream_enable_auto_purge', '__return_false' );
-		$this->admin->purge_scheduled_action();
+		$this->purge->purge_scheduled_action();
 		remove_all_filters( 'wp_stream_enable_auto_purge' );
 
 		$remaining = (int) $wpdb->get_var(
@@ -366,7 +374,7 @@ class Admin_Cron_Purge_Test extends WP_StreamTestCase {
 		$this->seed_aged_records( 2, 5 );
 		$this->set_records_ttl( 1 );
 
-		$this->admin->purge_scheduled_action();
+		$this->purge->purge_scheduled_action();
 
 		$stored = get_option( Admin::LARGE_TABLE_CRON_NOTICE_OPTION );
 		$this->assertNotEmpty(
@@ -387,7 +395,7 @@ class Admin_Cron_Purge_Test extends WP_StreamTestCase {
 		}
 
 		ob_start();
-		$this->admin->display_large_table_cron_notice();
+		$this->purge->display_large_table_cron_notice();
 		$rendered = ob_get_clean();
 
 		$this->assertStringContainsString(
@@ -401,7 +409,7 @@ class Admin_Cron_Purge_Test extends WP_StreamTestCase {
 		);
 
 		ob_start();
-		$this->admin->display_large_table_cron_notice();
+		$this->purge->display_large_table_cron_notice();
 		$second = ob_get_clean();
 		$this->assertEmpty( $second, 'The warning must render only once' );
 
@@ -418,7 +426,7 @@ class Admin_Cron_Purge_Test extends WP_StreamTestCase {
 		wp_set_current_user( self::factory()->user->create( array( 'role' => 'subscriber' ) ) );
 
 		ob_start();
-		$this->admin->display_large_table_cron_notice();
+		$this->purge->display_large_table_cron_notice();
 		$rendered = ob_get_clean();
 
 		$this->assertEmpty( $rendered, 'Users without the settings capability must not see the warning' );
@@ -443,7 +451,7 @@ class Admin_Cron_Purge_Test extends WP_StreamTestCase {
 		$this->seed_aged_records( 2, 5 );
 		$this->set_records_ttl( 1 );
 
-		$this->admin->purge_scheduled_action();
+		$this->purge->purge_scheduled_action();
 
 		$this->assertEmpty(
 			get_option( Admin::LARGE_TABLE_CRON_NOTICE_OPTION ),
@@ -466,9 +474,10 @@ class Admin_Cron_Purge_Test extends WP_StreamTestCase {
 
 		delete_option( Admin::LARGE_TABLE_CRON_NOTICE_OPTION );
 
-		$method = new \ReflectionMethod( Admin::class, 'maybe_warn_large_table_without_action_scheduler' );
-		$method->setAccessible( true );
-		$method->invoke( $this->admin, 2000000, 'reset the Stream database (delete all records for this site)' );
+		$this->purge->maybe_warn_large_table_without_action_scheduler(
+			2000000,
+			'reset the Stream database (delete all records for this site)'
+		);
 
 		$stored = get_option( Admin::LARGE_TABLE_CRON_NOTICE_OPTION );
 		$this->assertNotEmpty(
@@ -499,7 +508,7 @@ class Admin_Cron_Purge_Test extends WP_StreamTestCase {
 		$this->seed_aged_records( 2, 5 );
 		$this->set_records_ttl( 1 );
 
-		$this->admin->purge_scheduled_action();
+		$this->purge->purge_scheduled_action();
 
 		$this->assertEmpty(
 			get_option( Admin::LARGE_TABLE_CRON_NOTICE_OPTION ),
@@ -528,28 +537,28 @@ class Admin_Cron_Purge_Test extends WP_StreamTestCase {
 		$last = max( $ids );
 
 		// Non-terminal batch: marker set, next batch chained.
-		$this->admin->erase_large_records( 5, 0, $last, get_current_blog_id() );
+		$this->purge->erase_large_records( 5, 0, $last, get_current_blog_id() );
 
 		$this->assertTrue(
 			(bool) get_transient( Cron_Scheduler::RUNNING_TRANSIENT ),
 			'Running marker must be set while the reset chain is mid-flight'
 		);
 		$this->assertTrue(
-			Admin::is_running_async_deletion(),
+			$this->purge->is_running_async_deletion(),
 			'is_running_async_deletion() must read busy while the chain is pending'
 		);
 
 		// Drain: run remaining batches directly until the terminal one.
 		$wpdb->query( "DELETE FROM {$wpdb->stream}" );
 		wp_unschedule_hook( Admin::ASYNC_DELETION_ACTION );
-		$this->admin->erase_large_records( 5, 5, $last, get_current_blog_id() );
+		$this->purge->erase_large_records( 5, 5, $last, get_current_blog_id() );
 
 		$this->assertFalse(
 			(bool) get_transient( Cron_Scheduler::RUNNING_TRANSIENT ),
 			'Terminal batch must clear the running marker'
 		);
 		$this->assertFalse(
-			Admin::is_running_async_deletion(),
+			$this->purge->is_running_async_deletion(),
 			'is_running_async_deletion() must read idle after the chain completes'
 		);
 
@@ -562,7 +571,7 @@ class Admin_Cron_Purge_Test extends WP_StreamTestCase {
 	 */
 	public function test_is_running_auto_purge_reflects_cron_state() {
 		$this->assertFalse(
-			Admin::is_running_auto_purge(),
+			$this->purge->is_running_auto_purge(),
 			'Guard must read idle when nothing is scheduled or running'
 		);
 
@@ -575,10 +584,10 @@ class Admin_Cron_Purge_Test extends WP_StreamTestCase {
 		$this->seed_aged_records( 5, 5 );
 
 		// First batch deletes a window and chains the next batch.
-		$this->admin->auto_purge_batch( $this->cutoff_one_day_ago(), 0 );
+		$this->purge->auto_purge_batch( $this->cutoff_one_day_ago(), 0 );
 
 		$this->assertTrue(
-			Admin::is_running_auto_purge(),
+			$this->purge->is_running_auto_purge(),
 			'Guard must read busy while a batch chain is pending on WP-Cron'
 		);
 

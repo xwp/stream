@@ -443,7 +443,7 @@ class Settings {
 	 * Build the "Reset Stream Database" settings field definition.
 	 *
 	 * Extracted so the async-deletion running-state check
-	 * ({@see Admin::is_running_async_deletion()}) is evaluated once per render
+	 * ({@see Admin_Purge::is_running_async_deletion()}) is evaluated once per render
 	 * instead of once per field property, and only in admin context.
 	 *
 	 * `Settings::__construct` populates `$this->options = $this->get_options()`
@@ -454,7 +454,7 @@ class Settings {
 	 * @return array
 	 */
 	private function build_delete_all_records_field() {
-		$is_running_deletion = is_admin() ? Admin::is_running_async_deletion() : false;
+		$is_running_deletion = is_admin() ? $this->plugin->admin->purge->is_running_async_deletion() : false;
 
 		return array(
 			'name'    => 'delete_all_records',
@@ -478,7 +478,7 @@ class Settings {
 	 * Build the "Clean Orphaned Meta" settings field definition.
 	 *
 	 * Extracted so the auto-purge running-state check
-	 * ({@see Admin::is_running_auto_purge()}) is evaluated once per render
+	 * ({@see Admin_Purge::is_running_auto_purge()}) is evaluated once per render
 	 * instead of once per field property, and only in admin context — the
 	 * field is never rendered outside admin, so the Action Scheduler query
 	 * is skipped on front-end pageloads.
@@ -486,7 +486,7 @@ class Settings {
 	 * @return array
 	 */
 	private function build_clean_orphan_meta_field() {
-		$is_running = is_admin() ? Admin::is_running_auto_purge() : false;
+		$is_running = is_admin() ? $this->plugin->admin->purge->is_running_auto_purge() : false;
 
 		return array(
 			'name'    => 'clean_orphan_meta',
@@ -665,7 +665,7 @@ class Settings {
 	public function get_deletion_warning( $is_running_deletion = null ): string {
 
 		if ( null === $is_running_deletion ) {
-			$is_running_deletion = is_admin() ? Admin::is_running_async_deletion() : false;
+			$is_running_deletion = is_admin() ? $this->plugin->admin->purge->is_running_async_deletion() : false;
 		}
 
 		if ( $is_running_deletion ) {
@@ -1419,15 +1419,20 @@ class Settings {
 			// real chain is already running. Falls back to inline if no
 			// scheduler is available (defensive — Plugin::__construct() sets it).
 			if ( ! empty( $this->plugin->scheduler ) ) {
-				if ( ! \WP_Stream\Admin::is_running_auto_purge() ) {
+				// Prefer the purge collaborator when Admin is loaded (is_admin /
+				// WP-CLI / cron). Without it, skip the overlap probe and still
+				// enqueue — the recurring callback's own guard covers stacking.
+				$is_running = isset( $this->plugin->admin->purge )
+					&& $this->plugin->admin->purge->is_running_auto_purge();
+				if ( ! $is_running ) {
 					$this->plugin->scheduler->enqueue_async(
 						\WP_Stream\Admin::AUTO_PURGE_ACTION,
 						array(),
 						\WP_Stream\Admin::AUTO_PURGE_GROUP
 					);
 				}
-			} elseif ( isset( $this->plugin->admin ) ) {
-				$this->plugin->admin->purge_scheduled_action();
+			} elseif ( isset( $this->plugin->admin->purge ) ) {
+				$this->plugin->admin->purge->purge_scheduled_action();
 			}
 		}
 	}

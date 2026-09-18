@@ -195,6 +195,20 @@ class WP_StreamTestCase extends \WP_Ajax_UnitTestCase {
 	}
 
 	/**
+	 * Resolve an Admin collaborator.
+	 *
+	 * Collaborators are public on Admin; this helper remains for tests that
+	 * prefer a named lookup.
+	 *
+	 * @param Admin  $admin Admin instance.
+	 * @param string $name  Property name (menu|assets|records|settings|ajax|purge).
+	 * @return object
+	 */
+	protected function get_admin_collaborator( Admin $admin, string $name ) {
+		return $admin->{$name};
+	}
+
+	/**
 	 * Helper function to check validity of action
 	 *
 	 * @param array  $tests

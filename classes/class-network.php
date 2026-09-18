@@ -40,7 +40,7 @@ class Network {
 
 		// Actions.
 		add_action( 'init', array( $this, 'ajax_network_admin' ) );
-		add_action( 'network_admin_menu', array( $this->plugin->admin, 'register_menu' ) );
+		add_action( 'network_admin_menu', array( $this->plugin->admin->menu, 'register_menu' ) );
 		add_action( 'network_admin_menu', array( $this, 'admin_menu_screens' ) );
 		add_action( 'admin_menu', array( $this, 'admin_menu_screens' ) );
 		add_action( 'admin_bar_menu', array( $this, 'network_admin_bar_menu' ), 99 );
@@ -187,13 +187,13 @@ class Network {
 		remove_submenu_page( $this->plugin->admin->records_page_slug, 'wp_stream_settings' );
 		remove_submenu_page( $this->plugin->admin->records_page_slug, 'edit.php?post_type=wp_stream_alerts' );
 
-		$this->plugin->admin->screen_id['network_settings'] = add_submenu_page(
+		$this->plugin->admin->menu->screen_id['network_settings'] = add_submenu_page(
 			$this->plugin->admin->records_page_slug,
 			__( 'Stream Network Settings', 'stream' ),
 			__( 'Network Settings', 'stream' ),
 			$this->plugin->admin->settings_cap,
 			$this->network_settings_page_slug,
-			array( $this->plugin->admin, 'render_settings_page' )
+			array( $this->plugin->admin->settings, 'render_settings_page' )
 		);
 	}
 
