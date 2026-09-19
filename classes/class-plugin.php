@@ -212,9 +212,6 @@ class Plugin {
 			);
 		}
 
-		// Load languages.
-		add_action( 'plugins_loaded', array( $this, 'i18n' ) );
-
 		// Load logger class.
 		/**
 		 * Filter the log handler instance used to persist Stream records.
@@ -334,15 +331,6 @@ class Plugin {
 		if ( is_readable( $autoload_path ) ) {
 			require_once $autoload_path;
 		}
-	}
-
-	/**
-	 * Loads the translation files.
-	 *
-	 * @action plugins_loaded
-	 */
-	public function i18n() {
-		load_plugin_textdomain( 'stream', false, dirname( $this->locations['plugin'] ) . '/languages/' );
 	}
 
 	/**

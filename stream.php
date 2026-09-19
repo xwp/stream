@@ -9,7 +9,6 @@
  * Author URI: https://xwp.co
  * License: GPLv2+
  * Text Domain: stream
- * Domain Path: /languages
  *
  * @package WP_Stream
  */
@@ -69,8 +68,6 @@ function wp_stream_fail_php_version() {
 	if ( ! current_user_can( 'activate_plugins' ) ) {
 		return;
 	}
-
-	load_plugin_textdomain( 'stream', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 
 	/* translators: %s is the minimum PHP version. */
 	$message      = sprintf( __( 'Stream requires PHP version %s or newer. Plugin is currently NOT ACTIVE.', 'stream' ), WP_STREAM_MIN_PHP_VERSION );

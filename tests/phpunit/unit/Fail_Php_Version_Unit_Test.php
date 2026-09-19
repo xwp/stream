@@ -59,8 +59,7 @@ class Fail_Php_Version_Unit_Test extends TestCase {
 		self::load_stream_with_fail_gate();
 
 		Functions\when( 'current_user_can' )->justReturn( true );
-		Functions\when( 'load_plugin_textdomain' )->justReturn( true );
-		Functions\when( 'plugin_basename' )->justReturn( 'stream/stream.php' );
+		Functions\expect( 'load_plugin_textdomain' )->never();
 		Functions\when( 'wpautop' )->returnArg();
 		Functions\when( 'wp_kses_post' )->returnArg();
 

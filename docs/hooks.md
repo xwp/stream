@@ -227,7 +227,7 @@ Allows excluded connectors to be overridden and registered.
 ### `wp_stream_client_ip_address`
 
 - **Type:** filter
-- **Location:** `classes/class-plugin.php:478`
+- **Location:** `classes/class-plugin.php:466`
 - **Parameters:** `$client_ip_address`
 
 Filter the client IP address stored on Stream records.
@@ -284,7 +284,7 @@ Filter allows the result count query to be modified before execution.
 
 - **Type:** filter
 - **Location:** `classes/class-plugin.php:193`
-- **Location:** `classes/class-plugin.php:417`
+- **Location:** `classes/class-plugin.php:405`
 - **Parameters:** `$driver_class` — Database driver class name.
 
 Filter the database driver class name used by Stream.
@@ -373,7 +373,7 @@ Filter HTML for an unrecognized form field type.
 ### `wp_stream_frontend_indicator`
 
 - **Type:** filter
-- **Location:** `classes/class-plugin.php:380`
+- **Location:** `classes/class-plugin.php:368`
 - **Parameters:** `$comment` — The content of the HTML comment
 
 Filter allows the HTML output of the frontend indicator comment to be altered or removed, if desired.
@@ -405,7 +405,7 @@ Allows for the addition of content under a specified column.
 ### `wp_stream_is_large_records_table`
 
 - **Type:** filter
-- **Location:** `classes/class-plugin.php:514`
+- **Location:** `classes/class-plugin.php:502`
 - **Parameters:** `$is_large_table` — Whether or not the number of records should be considered large.; `$record_number` — The number of records being checked.
 
 Filters whether or not the number of records should be considered a large table.
@@ -413,7 +413,7 @@ Filters whether or not the number of records should be considered a large table.
 ### `wp_stream_is_network_activated`
 
 - **Type:** filter
-- **Location:** `classes/class-plugin.php:449`
+- **Location:** `classes/class-plugin.php:437`
 - **Parameters:** `$is_network_activated` — Whether the plugin is network activated.; `$plugin` — The stream plugin object.
 
 Filter allows the network activated detection to be overridden.
@@ -469,7 +469,7 @@ Override the data logged. Returning false to this filter will stop the data from
 ### `wp_stream_log_handler`
 
 - **Type:** filter
-- **Location:** `classes/class-plugin.php:224`
+- **Location:** `classes/class-plugin.php:221`
 - **Parameters:** `$log` — Log handler instance.
 
 Filter the log handler instance used to persist Stream records.
@@ -662,7 +662,7 @@ Action fires during testing to test the current callback
 ### `wp_stream_use_action_scheduler`
 
 - **Type:** filter
-- **Location:** `classes/class-plugin.php:284`
+- **Location:** `classes/class-plugin.php:281`
 - **Parameters:** `$use_action_scheduler` — Whether to use Action Scheduler.
 
 Filter whether Stream uses Action Scheduler for its deferred work. IMPORTANT — timing: this filter is applied in Plugin::boot(), which runs from the constructor when the Stream plugin file is included, i.e. BEFORE the `plugins_loaded` action. Callbacks must therefore be registered from code that loads before Stream: an mu-plugin, wp-config.php, or a plugin guaranteed to load earlier. Registering it from a regular plugin's `plugins_loaded` hook is too late and will be ignored.                                   Defaults to true when the bundled                                   AS library is present. Return a                                   real boolean: the value is cast                                   with (bool), so PHP string                                   truthiness applies to strings                                   (e.g. 'false' is truthy).
