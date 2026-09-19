@@ -16,6 +16,10 @@ View the [plugin description on WordPress.org](https://wordpress.org/plugins/str
 
 A list of the connectors is in [connectors.md](connectors.md). To add one, follow [How to add a connector](docs/adding-a-connector.md).
 
+### Alerts
+
+To add an alert type, follow [How to add an alert type](docs/adding-an-alert-type.md).
+
 ### Configuration
 
 To customize who can manage Stream settings, you can define the `WP_STREAM_SETTINGS_CAPABILITY` constant in your `wp-config.php` file. By default, capability will be set to `manage_options`.

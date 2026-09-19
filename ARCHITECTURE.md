@@ -2,9 +2,9 @@
 
 Describes Stream 5.0.0 (`Plugin::VERSION`). Read top to bottom. Every class link is repo-relative.
 
-Related: [contributing.md](contributing.md) (env + commands) · [connectors.md](connectors.md) (generated inventory) · [docs/adding-a-connector.md](docs/adding-a-connector.md) (how to add a connector) · [changelog.md](changelog.md)
+Related: [contributing.md](contributing.md) (env + commands) · [connectors.md](connectors.md) (generated inventory) · [docs/adding-a-connector.md](docs/adding-a-connector.md) (how to add a connector) · [docs/adding-an-alert-type.md](docs/adding-an-alert-type.md) (how to add an alert type) · [changelog.md](changelog.md)
 
-Not covered here: writing an alert type · hook reference · Abilities/MCP internals · scheduler internals · admin UI / settings internals.
+Not covered here: hook reference · Abilities/MCP internals · scheduler internals · admin UI / settings internals.
 
 ## Boot sequence
 
@@ -133,7 +133,7 @@ Triggers: author, context, action via `wp_stream_alert_triggers`. Match is **AND
 
 Evaluation + dispatch is **synchronous** on each record insert (a `WP_Query` per insert): `wp_stream_record_inserted` → [Alerts_Trigger_Engine](classes/class-alerts-trigger-engine.php)::`check_records` → [Alert](classes/class-alert.php)::`check_record` → `send_alert` → [Alert_Type](classes/class-alert-type.php)::`alert()`.
 
-Façade: [Alerts](classes/class-alerts.php) builds the trigger engine and [Alerts_Admin_UI](classes/class-alerts-admin-ui.php). To add a type: extend `Alert_Type`, add via `wp_stream_alert_types`. Full guide: XWPENG-62.
+Façade: [Alerts](classes/class-alerts.php) builds the trigger engine and [Alerts_Admin_UI](classes/class-alerts-admin-ui.php). To add a type: extend `Alert_Type`, add via `wp_stream_alert_types`. Step-by-step guide: [docs/adding-an-alert-type.md](docs/adding-an-alert-type.md).
 
 ## Exporter lifecycle
 
