@@ -113,6 +113,11 @@ class Log {
 			$role = '';
 		}
 
+		/**
+		 * Filter the blog ID stored on a Stream record.
+		 *
+		 * @param int $blog_id
+		 */
 		$recordarr = array(
 			'object_id' => (int) $object_id,
 			'site_id'   => (int) is_multisite() ? get_current_site()->id : 1,
@@ -210,8 +215,6 @@ class Log {
 		 *
 		 * @param array $exclude_record Whether the record should excluded.
 		 * @param array $recordarr The record to log.
-		 *
-		 * @return bool
 		 */
 		return apply_filters( 'wp_stream_is_record_excluded', $exclude_record, $record );
 	}

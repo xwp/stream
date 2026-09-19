@@ -164,6 +164,11 @@ class Connector_Woocommerce extends Connector {
 			$this->settings_pages
 		);
 
+		/**
+		 * Filter WooCommerce connector context labels.
+		 *
+		 * @param array $context_labels
+		 */
 		return apply_filters( 'wp_stream_woocommerce_contexts', $context_labels );
 	}
 
@@ -232,6 +237,11 @@ class Connector_Woocommerce extends Connector {
 			),
 		);
 
+		/**
+		 * Filter WooCommerce custom settings tracked by the connector.
+		 *
+		 * @param array $custom_settings
+		 */
 		return apply_filters( 'wp_stream_woocommerce_custom_settings', $custom_settings );
 	}
 

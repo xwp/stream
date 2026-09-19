@@ -185,6 +185,11 @@ class Plugin {
 		require_once $this->locations['inc_dir'] . 'functions.php';
 
 		// Load DB helper interface/class.
+		/**
+		 * Filter the database driver class name used by Stream.
+		 *
+		 * @param string $driver_class Database driver class name.
+		 */
 		$driver_class = apply_filters( 'wp_stream_db_driver', '\WP_Stream\DB_Driver_WPDB' );
 		$driver       = null;
 
@@ -211,6 +216,11 @@ class Plugin {
 		add_action( 'plugins_loaded', array( $this, 'i18n' ) );
 
 		// Load logger class.
+		/**
+		 * Filter the log handler instance used to persist Stream records.
+		 *
+		 * @param Log $log Log handler instance.
+		 */
 		$this->log = apply_filters( 'wp_stream_log_handler', new Log( $this ) );
 
 		// Set the IP address for the current request.
@@ -365,7 +375,7 @@ class Plugin {
 		 * Filter allows the HTML output of the frontend indicator comment
 		 * to be altered or removed, if desired.
 		 *
-		 * @return string  The content of the HTML comment
+		 * @param string $comment The content of the HTML comment
 		 */
 		$comment = apply_filters( 'wp_stream_frontend_indicator', $comment );
 
@@ -403,6 +413,7 @@ class Plugin {
 	 */
 	public function plugins_loaded() {
 		// Load DB helper interface/class.
+		/** This filter is documented in classes/class-plugin.php in Plugin::boot() */
 		$driver_class = apply_filters( 'wp_stream_db_driver', '\WP_Stream\DB_Driver_WPDB' );
 
 		if ( class_exists( $driver_class ) ) {
@@ -459,6 +470,11 @@ class Plugin {
 	 * @return false|null|string Valid IP address, null if not set, false if invalid.
 	 */
 	public function get_client_ip_address() {
+		/**
+		 * Filter the client IP address stored on Stream records.
+		 *
+		 * @param string|false|null $client_ip_address
+		 */
 		return apply_filters( 'wp_stream_client_ip_address', $this->client_ip_address );
 	}
 

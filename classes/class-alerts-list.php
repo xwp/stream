@@ -424,6 +424,7 @@ class Alerts_List {
 			'trigger_action'    => $trigger_action,
 			'trigger_context'   => $trigger_context,
 		);
+		/** This filter is documented in classes/class-alerts-admin-ui.php */
 		$alert_meta = apply_filters( 'wp_stream_alerts_save_meta', $alert_meta, $alert_type );
 		update_post_meta( $post_id, 'alert_meta', $alert_meta );
 

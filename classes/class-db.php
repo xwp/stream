@@ -42,8 +42,6 @@ class DB {
 		 * Filter allows modification of record information
 		 *
 		 * @param array $record
-		 *
-		 * @return array
 		 */
 		$record = apply_filters( 'wp_stream_record_array', $record );
 
@@ -210,7 +208,7 @@ class DB {
 		/**
 		 * Filter allows additional query properties to be added
 		 *
-		 * @return array Array of query properties
+		 * @param array $properties Array of query properties
 		 */
 		$properties = apply_filters( 'wp_stream_query_properties', $properties );
 
@@ -229,7 +227,7 @@ class DB {
 		/**
 		 * Filter allows additional arguments to query $args
 		 *
-		 * @return array  Array of query arguments
+		 * @param array $args Array of query arguments
 		 */
 		$args = apply_filters( 'wp_stream_query_args', $args );
 

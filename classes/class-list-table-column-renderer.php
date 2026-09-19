@@ -125,8 +125,6 @@ class List_Table_Column_Renderer {
 				 * @deprecated 4.0.1 Use the {@see 'wp_stream_list_table_columns'} filter instead.
 				 *
 				 * @param array $new_columns Columns injected in the table.
-				 *
-				 * @return array
 				 */
 				apply_filters_deprecated(
 					'wp_stream_register_column_defaults',
@@ -143,8 +141,6 @@ class List_Table_Column_Renderer {
 				 * @param string $out         Column content.
 				 * @param object $record      Record with row content.
 				 * @param string $column_name Column name.
-				 *
-				 * @return string
 				 */
 				$out = (string) apply_filters( "wp_stream_insert_column_default_{$column_name}", $out, $record, $column_name );
 				break;
@@ -165,20 +161,16 @@ class List_Table_Column_Renderer {
 		/**
 		 * Filter allows modification of action links for a specific connector
 		 *
-		 * @param array
-		 * @param Record
-		 *
-		 * @return array Action links for this connector
+		 * @param array  $action_links Action links.
+		 * @param Record $record       Record.
 		 */
 		$action_links = apply_filters( 'wp_stream_action_links_' . $record->connector, array(), $record );
 
 		/**
 		 * Filter allows addition of custom links for a specific connector
 		 *
-		 * @param array
-		 * @param Record
-		 *
-		 * @return array Custom links for this connector
+		 * @param array  $custom_links Custom links.
+		 * @param Record $record       Record.
 		 */
 		$custom_links = apply_filters( 'wp_stream_custom_action_links_' . $record->connector, array(), $record );
 

@@ -45,7 +45,7 @@ class List_Table extends \WP_List_Table {
 		/**
 		 * Filter the list table screen ID
 		 *
-		 * @return string
+		 * @param string $screen_id Screen ID.
 		 */
 		$screen_id = apply_filters( 'wp_stream_list_table_screen_id', $screen_id );
 
@@ -130,7 +130,7 @@ class List_Table extends \WP_List_Table {
 		/**
 		 * Allows devs to add new columns to table
 		 *
-		 * @return array
+		 * @param array $columns Columns.
 		 */
 		return apply_filters(
 			'wp_stream_list_table_columns',
@@ -482,7 +482,7 @@ class List_Table extends \WP_List_Table {
 		 * Note the format of the filters above, with they key and array
 		 * containing a title and array of items.
 		 *
-		 * @return array
+		 * @param array $filters Filters.
 		 */
 		return apply_filters( 'wp_stream_list_table_filters', $filters );
 	}
@@ -806,7 +806,7 @@ class List_Table extends \WP_List_Table {
 		/**
 		 * Filter the records screen actions dropdown menu
 		 *
-		 * @return array Should be in the format of action_slug => 'Action Name'
+		 * @param array $actions Should be in the format of action_slug => 'Action Name'
 		 */
 		$actions = apply_filters( 'wp_stream_record_actions_menu', array() );
 
@@ -861,6 +861,12 @@ class List_Table extends \WP_List_Table {
 	 * @param array $item  Record data.
 	 */
 	public function single_row( $item ) {
+		/**
+		 * Filter CSS classes on a Stream list table row.
+		 *
+		 * @param array $classes
+		 * @param array $item
+		 */
 		$classes = apply_filters( 'wp_stream_record_classes', array(), $item );
 
 		if ( empty( $classes ) ) {

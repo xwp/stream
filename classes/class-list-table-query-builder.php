@@ -88,6 +88,11 @@ class List_Table_Query_Builder {
 			$args['records_per_page'] = $input['records_per_page'] ?? 20;
 		}
 
+		/**
+		 * Filter records per page for the Stream list table query.
+		 *
+		 * @param int $records_per_page Number of records per page.
+		 */
 		$args['records_per_page'] = apply_filters( 'stream_records_per_page', $args['records_per_page'] );
 
 		return $args;
