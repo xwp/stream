@@ -33,6 +33,11 @@ class DB_Driver_WPDB implements DB_Driver {
 		$this->query = new Query( $this );
 
 		global $wpdb;
+		/**
+		 * Filter the database table prefix used for Stream tables.
+		 *
+		 * @param string $prefix
+		 */
 		$prefix = apply_filters( 'wp_stream_db_tables_prefix', $wpdb->base_prefix );
 
 		$this->table      = $prefix . 'stream';

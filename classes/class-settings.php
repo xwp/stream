@@ -115,6 +115,11 @@ class Settings {
 			$option_key = $this->network_options_key;
 		}
 
+		/**
+		 * Filter the settings option key.
+		 *
+		 * @param string $option_key
+		 */
 		$filtered_key = apply_filters( 'wp_stream_settings_option_key', $option_key );
 
 		// Guard against filters returning a non-string: the result is assigned
@@ -236,8 +241,6 @@ class Settings {
 		 *
 		 * @param array  $options    Options.
 		 * @param string $option_key Option key.
-		 *
-		 * @return array Updated array of options
 		 */
 		$filtered = apply_filters( 'wp_stream_settings_options', $options, $option_key );
 

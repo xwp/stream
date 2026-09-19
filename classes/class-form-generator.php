@@ -209,6 +209,13 @@ class Form_Generator {
 				);
 				break;
 			default:
+				/**
+				 * Filter HTML for an unrecognized form field type.
+				 *
+				 * @param string $output
+				 * @param string $field_type
+				 * @param array  $args
+				 */
 				$output = apply_filters( 'wp_stream_form_render_field', $output, $field_type, $args );
 				break;
 		}

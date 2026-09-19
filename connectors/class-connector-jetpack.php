@@ -159,6 +159,7 @@ class Connector_Jetpack extends Connector {
 				}
 
 				if ( \Jetpack::is_module_active( $slug ) ) {
+					/** This filter is documented in Jetpack. */
 					if ( apply_filters( 'jetpack_module_configurable_' . $slug, false ) ) {
 						$links[ esc_html__( 'Configure', 'stream' ) ] = \Jetpack::module_configuration_url( $slug );
 					}
@@ -188,6 +189,7 @@ class Connector_Jetpack extends Connector {
 			} elseif ( \Jetpack::is_module_active( str_replace( 'jetpack-', '', $record->context ) ) ) {
 				$slug = str_replace( 'jetpack-', '', $record->context ); // handling jetpack-comment anomaly.
 
+				/** This filter is documented in Jetpack. */
 				if ( apply_filters( 'jetpack_module_configurable_' . $slug, false ) ) {
 					$links[ esc_html__( 'Configure module', 'stream' ) ] = \Jetpack::module_configuration_url( $slug );
 				}

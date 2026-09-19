@@ -242,6 +242,14 @@ class Alert {
 	 * @return bool True if a positive match. False otherwise.
 	 */
 	public function check_record( $record_id, $recordarr ) {
+		/**
+		 * Filter whether an alert trigger matches a record.
+		 *
+		 * @param bool  $match
+		 * @param int   $record_id
+		 * @param array $recordarr
+		 * @param Alert $alert
+		 */
 		return apply_filters( 'wp_stream_alert_trigger_check', true, $record_id, $recordarr, $this );
 	}
 

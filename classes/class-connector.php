@@ -176,7 +176,7 @@ abstract class Connector {
 		 *
 		 * @see Connector_ACF::log_override()
 		 *
-		 * @return array|false An array of the data to be logged or false if it should not be logged.
+		 * @param array|false $data An array of the data to be logged or false if it should not be logged.
 		 */
 		$data = apply_filters(
 			'wp_stream_log_data',

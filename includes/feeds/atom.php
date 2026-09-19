@@ -13,7 +13,7 @@ header( 'Content-Type: ' . feed_content_type( 'atom' ) . '; charset=' . get_opti
 printf( '<?xml version="1.0" encoding="%s"?>', esc_attr( get_option( 'blog_charset' ) ) );
 ?>
 
-<feed xmlns="http://www.w3.org/2005/Atom" xmlns:thr="http://purl.org/syndication/thread/1.0" xml:lang="<?php echo esc_attr( bloginfo_rss( 'language' ) ); ?>" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" <?php do_action( 'atom_ns' ); ?>>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:thr="http://purl.org/syndication/thread/1.0" xml:lang="<?php echo esc_attr( bloginfo_rss( 'language' ) ); ?>" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" <?php /** This action is documented in WordPress core (`atom_ns`). */ do_action( 'atom_ns' ); ?>>
 	<title><?php bloginfo_rss( 'name' ); ?> - <?php esc_html_e( 'Stream Feed', 'stream' ); ?></title>
 	<link href="<?php self_link(); ?>" rel="self" type="application/rss+xml" />
 	<link href="<?php echo esc_url( $records_admin_url ); ?>" />

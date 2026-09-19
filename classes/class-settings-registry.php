@@ -148,8 +148,6 @@ class Settings_Registry {
 		 * Filter allows for modification of options fields
 		 *
 		 * @param array $fields Option fields.
-		 *
-		 * @return array Array of option fields
 		 */
 		$filtered_fields = apply_filters( 'wp_stream_settings_option_fields', $fields );
 

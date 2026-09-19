@@ -266,6 +266,11 @@ class Network {
 			return $fields;
 		}
 
+		/**
+		 * Filter hidden option fields on per-site settings when network activated.
+		 *
+		 * @param array $stream_hidden_options Stream hidden options.
+		 */
 		$stream_hidden_options = apply_filters(
 			'wp_stream_hidden_option_fields',
 			array(
@@ -278,6 +283,11 @@ class Network {
 			)
 		);
 
+		/**
+		 * Filter hidden option fields on network settings when network activated.
+		 *
+		 * @param array $network_hidden_options Network hidden options.
+		 */
 		$network_hidden_options = apply_filters(
 			'wp_stream_network_option_fields',
 			array(

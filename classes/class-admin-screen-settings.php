@@ -54,9 +54,19 @@ class Admin_Screen_Settings {
 	 * Render settings page
 	 */
 	public function render_settings_page() {
-		$option_key  = $this->admin->plugin->settings->option_key;
+		$option_key = $this->admin->plugin->settings->option_key;
+		/**
+		 * Filter the settings form action URL.
+		 *
+		 * @param string $form_action
+		 */
 		$form_action = apply_filters( 'wp_stream_settings_form_action', admin_url( 'options.php' ) );
 
+		/**
+		 * Filter the settings page description.
+		 *
+		 * @param string $page_description
+		 */
 		$page_description = apply_filters( 'wp_stream_settings_form_description', '' );
 
 		$sections   = $this->admin->plugin->settings->registry->get_fields();
