@@ -6,6 +6,7 @@
 - [docs/adding-a-connector.md](docs/adding-a-connector.md) — how to add a connector, with a copyable noop example
 - [docs/adding-an-alert-type.md](docs/adding-an-alert-type.md) — how to add an alert type, with a copyable error-log example
 - [connectors.md](connectors.md) — generated inventory of builtin connectors
+- [docs/hooks.md](docs/hooks.md) — generated filter/action reference (`npm run docs:hooks`)
 
 ## Development Environment
 
