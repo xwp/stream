@@ -193,6 +193,7 @@ class Connector_EDD extends Connector {
 		} elseif ( 'api_keys' === $record->context ) {
 			$user = new \WP_User( $record->object_id );
 
+			/** This filter is documented in Easy Digital Downloads. */
 			if ( apply_filters( 'edd_api_log_requests', true ) ) {
 				$links[ esc_html__( 'View API Log', 'stream' ) ] = add_query_arg(
 					array(

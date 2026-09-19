@@ -73,7 +73,7 @@ class Connector_Editor extends Connector {
 		/**
 		 * Filter available context labels for the Editor connector
 		 *
-		 * @return array Array of context slugs and their translated labels
+		 * @param array $context_labels Array of context slugs and their translated labels
 		 */
 		return apply_filters(
 			'wp_stream_editor_context_labels',
@@ -107,7 +107,6 @@ class Connector_Editor extends Connector {
 		 *
 		 * @param  string  $context  Context slug
 		 * @param  string  $location The URL of the redirect
-		 * @return string            Context slug
 		 */
 		return apply_filters( 'wp_stream_editor_context', $context, $location );
 	}

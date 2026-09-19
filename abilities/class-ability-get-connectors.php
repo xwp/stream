@@ -101,6 +101,11 @@ class Ability_Get_Connectors extends Ability {
 
 		// Shipped inventory, including inactive / unsatisfied-dependency
 		// connectors, so historical records remain filterable via abilities.
+		/**
+		 * Filter the connector list returned by the get-connectors ability.
+		 *
+		 * @param array $connectors Registered connector instances.
+		 */
 		$connectors = apply_filters(
 			'wp_stream_abilities_connectors',
 			$this->plugin->connectors->get_all( true )

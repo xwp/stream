@@ -314,8 +314,6 @@ class Install {
 		 * Filter to alter the DB update versions array
 		 *
 		 * @param array $db_update_versions
-		 *
-		 * @return array
 		 */
 		return apply_filters( 'wp_stream_db_update_versions', $db_update_versions );
 	}

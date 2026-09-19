@@ -841,9 +841,8 @@ class Connector_Widgets extends Connector {
 		 *
 		 * @todo Do we need this filter?
 		 *
-		 * @param  array  Sidebar Widgets in Options table
-		 * @param  array  Inserted Sidebar Widgets
-		 * @return array  Array of updated Sidebar Widgets
+		 * @param array $sidebars_widgets Sidebar Widgets in Options table
+		 * @param array $inserted         Inserted Sidebar Widgets
 		 */
 		return apply_filters( 'sidebars_widgets', get_option( 'sidebars_widgets', array() ) );
 	}

@@ -355,8 +355,6 @@ class Connector_Settings extends Connector {
 		 * @param boolean $is_ignored True if ignored, otherwise false.
 		 * @param string  $option_name Current option name.
 		 * @param array   $default_ignored Default options for Stream to ignore.
-		 *
-		 * @return boolean
 		 */
 		return apply_filters(
 			'wp_stream_is_option_ignored',
@@ -448,7 +446,6 @@ class Connector_Settings extends Connector {
 		 * Filter allows for insertion of serialized labels
 		 *
 		 * @param  array  $labels  Serialized labels
-		 * @return array  Updated array of serialzed labels
 		 */
 		$labels = apply_filters( 'wp_stream_serialized_labels', $labels );
 
@@ -577,6 +574,12 @@ class Connector_Settings extends Connector {
 					list( $menu_title, $capability ) = $target_submenu;
 
 					if ( current_user_can( $capability ) ) {
+						/**
+						 * Filter the action link URL for Settings connector records.
+						 *
+						 * @param string $url
+						 * @param object $record
+						 */
 						$url        = apply_filters( 'wp_stream_action_link_url', $url, $record );
 						$field_name = $record->get_meta( 'option_key', true );
 
