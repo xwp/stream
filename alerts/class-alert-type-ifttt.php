@@ -229,10 +229,9 @@ class Alert_Type_IFTTT extends Alert_Type {
 			 *
 			 * Defaults to 'user_login'.
 			 *
-			 * @param object $alert     The Alert object.
-			 * @param array  $recordarr Array of Record data.
-			 *
-			 * @return string
+			 * @param string $user_field User data field name.
+			 * @param object $alert      The Alert object.
+			 * @param array  $recordarr  Array of Record data.
 			 */
 			$user_field = apply_filters( 'wp_stream_alert_ifttt_user_data_value', 'user_login', $alert, $recordarr );
 			$user_value = ! empty( $user->$user_field ) ? $user->$user_field : $user->user_login;
@@ -244,9 +243,9 @@ class Alert_Type_IFTTT extends Alert_Type {
 		 *
 		 * Defaults to 'Y-m-d H:i:s'.
 		 *
-		 * @param object $alert The Alert.
-		 * @param array  $recordarray The Record's data.
-		 * @return string
+		 * @param string $date_format Date format string.
+		 * @param object $alert       The Alert.
+		 * @param array  $recordarr   The Record's data.
 		 */
 		$date_format = apply_filters( 'wp_stream_alert_ifttt_date_format', 'Y-m-d H:i:s', $alert, $recordarr );
 		$date        = gmdate( $date_format, strtotime( $created ) );
@@ -277,10 +276,9 @@ class Alert_Type_IFTTT extends Alert_Type {
 					/**
 					 * Filter the first IFTTT alert value
 					 *
-					 * @param string $summary The Record's summary.
-					 * @param object $alert The Alert.
+					 * @param string $summary   The Record's summary.
+					 * @param object $alert     The Alert.
 					 * @param array  $recordarr Array of Record data.
-					 * @return mixed
 					 */
 					'value1' => apply_filters( 'wp_stream_alert_ifttt_value_one', $record_data['summary'], $alert, $recordarr ),
 
@@ -288,20 +286,18 @@ class Alert_Type_IFTTT extends Alert_Type {
 					 * Filter the second IFTTT alert value
 					 *
 					 * @param string $user_value The user meta value requested above.
-					 * @param int    $user_id The user ID who fired the Alert.
-					 * @param object $alert The Alert.
-					 * @param array  $recordarr Array of Record data.
-					 * @return mixed
+					 * @param int    $user_id    The user ID who fired the Alert.
+					 * @param object $alert      The Alert.
+					 * @param array  $recordarr  Array of Record data.
 					 */
 					'value2' => apply_filters( 'wp_stream_alert_ifttt_value_two', $user_value, $user_id, $alert, $recordarr ),
 
 					/**
 					 * Filter the third IFTTT alert value
 					 *
-					 * @param string $date The Record's date.
-					 * @param object $alert The Alert.
+					 * @param string $date      The Record's date.
+					 * @param object $alert     The Alert.
 					 * @param array  $recordarr Array of Record data.
-					 * @return mixed
 					 */
 					'value3' => apply_filters( 'wp_stream_alert_ifttt_value_three', $date, $alert, $recordarr ),
 				)

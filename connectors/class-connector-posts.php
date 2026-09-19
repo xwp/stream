@@ -343,6 +343,11 @@ class Connector_Posts extends Connector {
 	 * @return array List of excluded post types
 	 */
 	public function get_excluded_post_types() {
+		/**
+		 * Filter excluded post types for the Posts connector.
+		 *
+		 * @param array $excluded_post_types
+		 */
 		return apply_filters(
 			'wp_stream_posts_exclude_post_types',
 			array(

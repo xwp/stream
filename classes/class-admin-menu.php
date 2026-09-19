@@ -69,7 +69,7 @@ class Admin_Menu {
 		/**
 		 * Filter the main admin menu title
 		 *
-		 * @return string
+		 * @param string $main_menu_title
 		 */
 		$main_menu_title = apply_filters( 'wp_stream_admin_menu_title', esc_html__( 'Stream', 'stream' ) );
 
@@ -78,14 +78,14 @@ class Admin_Menu {
 		 *
 		 * Note: Using longtail decimal string to reduce the chance of position conflicts, see Codex
 		 *
-		 * @return string
+		 * @param string $main_menu_position
 		 */
 		$main_menu_position = apply_filters( 'wp_stream_menu_position', '2.999999' );
 
 		/**
 		 * Filter the main admin page title
 		 *
-		 * @return string
+		 * @param string $main_page_title
 		 */
 		$main_page_title = apply_filters( 'wp_stream_admin_page_title', esc_html__( 'Stream Records', 'stream' ) );
 
@@ -102,15 +102,13 @@ class Admin_Menu {
 		/**
 		 * Fires before submenu items are added to the Stream menu
 		 * allowing plugins to add menu items before Settings
-		 *
-		 * @return void
 		 */
 		do_action( 'wp_stream_admin_menu' );
 
 		/**
 		 * Filter the Settings admin page title
 		 *
-		 * @return string
+		 * @param string $settings_page_title
 		 */
 		$settings_page_title = apply_filters( 'wp_stream_settings_form_title', esc_html__( 'Stream Settings', 'stream' ) );
 
@@ -126,8 +124,6 @@ class Admin_Menu {
 		if ( isset( $this->screen_id['main'] ) ) {
 			/**
 			 * Fires just before the Stream list table is registered.
-			 *
-			 * @return void
 			 */
 			do_action( 'wp_stream_admin_menu_screens' );
 

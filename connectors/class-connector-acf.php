@@ -115,7 +115,7 @@ class Connector_ACF extends Connector {
 		/**
 		 * Allow devs to disable logging values of rendered forms
 		 *
-		 * @return bool
+		 * @param bool $enable_value_logging
 		 */
 		if ( apply_filters( 'wp_stream_acf_enable_value_logging', true ) ) {
 			$this->actions[] = 'acf/update_value';

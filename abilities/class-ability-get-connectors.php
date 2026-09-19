@@ -101,6 +101,11 @@ class Ability_Get_Connectors extends Ability {
 
 		// Get all available connectors so REST/MCP callers see the same
 		// connector inventory an admin sees in wp-admin.
+		/**
+		 * Filter the connector list returned by the get-connectors ability.
+		 *
+		 * @param array $connectors Registered connector instances.
+		 */
 		$connectors = apply_filters(
 			'wp_stream_abilities_connectors',
 			$this->plugin->connectors->get_all( true )

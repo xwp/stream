@@ -302,6 +302,12 @@ class Alerts_Admin_UI {
 		}
 
 		$form = new Form_Generator();
+		/**
+		 * Fires when displaying the alert trigger form.
+		 *
+		 * @param Form_Generator $form
+		 * @param array          $alert
+		 */
 		do_action( 'wp_stream_alert_trigger_form_display', $form, $alert );
 		// @TODO use human readable text.
 		echo '<label>' . esc_html__( 'Alert me when', 'stream' ) . '</label>';
@@ -542,6 +548,12 @@ class Alerts_Admin_UI {
 			'trigger_action'    => $trigger_action,
 			'trigger_context'   => $trigger_context,
 		);
+		/**
+		 * Filter alert trigger meta before it is saved.
+		 *
+		 * @param array  $alert_meta
+		 * @param string $alert_type
+		 */
 		$alert_meta = apply_filters( 'wp_stream_alerts_save_meta', $alert_meta, $alert_type );
 		add_post_meta( $post_id, 'alert_meta', $alert_meta );
 		wp_send_json_success(

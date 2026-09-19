@@ -261,6 +261,11 @@ class Connector_Taxonomies extends Connector {
 	 * @return array List of excluded taxonomies
 	 */
 	public function get_excluded_taxonomies() {
+		/**
+		 * Filter excluded taxonomies for the Taxonomies connector.
+		 *
+		 * @param array $excluded_taxonomies
+		 */
 		return apply_filters(
 			'wp_stream_taxonomies_exclude_taxonomies',
 			array(
