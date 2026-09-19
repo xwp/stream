@@ -61,6 +61,7 @@
     "switch-to:php8.4": "WP_ENV_PHP_VERSION=8.4 wp-env start --update",
     "which-php": "wp-env run cli -- php --version",
     "document:connectors": "php ./local/scripts/generate-connector-docs.php",
+    "docs:hooks": "php ./local/scripts/generate-hook-docs.php",
     "stop": "wp-env stop",
     "stop-all": "docker stop $(docker ps -a -q)",
     "logs": "wp-env logs",

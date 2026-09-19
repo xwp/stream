@@ -2,7 +2,7 @@
 
 Describes Stream 5.0.0 (`Plugin::VERSION`). Read top to bottom. Every class link is repo-relative.
 
-Related: [contributing.md](contributing.md) (env + commands) · [connectors.md](connectors.md) (generated inventory) · [docs/adding-a-connector.md](docs/adding-a-connector.md) (how to add a connector) · [docs/adding-an-alert-type.md](docs/adding-an-alert-type.md) (how to add an alert type) · [changelog.md](changelog.md)
+Related: [contributing.md](contributing.md) (env + commands) · [connectors.md](connectors.md) (generated inventory) · [docs/hooks.md](docs/hooks.md) (generated hook reference) · [docs/adding-a-connector.md](docs/adding-a-connector.md) (how to add a connector) · [docs/adding-an-alert-type.md](docs/adding-an-alert-type.md) (how to add an alert type) · [changelog.md](changelog.md)
 
 Not covered here: hook reference · Abilities/MCP internals · scheduler internals · admin UI / settings internals.
 

@@ -62,6 +62,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Verify hook reference docs
+        run: npm run docs:hooks -- --check
+
       - name: Build
         run: npm run build
 
