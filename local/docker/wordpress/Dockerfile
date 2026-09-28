@@ -15,7 +15,7 @@ ENV COMPOSER_HOME=/tmp/.composer
 # deb.debian.org still names revisions whose pool files were removed
 # (git 1:2.30.2-1+deb11u5 and the mariadb, curl, and gsasl updates), so
 # apt-get install exits 100. Drop that suite; the packages below are in
-# the main Bullseye archive. Bookworm images (PHP 8.1+) keep their sources.
+# the main Bullseye archive. Images that are not Bullseye keep their sources.
 RUN if . /etc/os-release && [ "$VERSION_CODENAME" = "bullseye" ]; then \
 		sed -i '/debian-security/d' /etc/apt/sources.list; \
 	fi \
