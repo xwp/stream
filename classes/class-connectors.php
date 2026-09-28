@@ -19,6 +19,7 @@ class Connectors {
 	 */
 	const BUILTIN_CONNECTOR_SLUGS = array(
 		// Core Connectors.
+		'ai-client',
 		'blogs',
 		'comments',
 		'editor',
