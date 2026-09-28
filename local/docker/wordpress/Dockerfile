@@ -11,8 +11,16 @@ ARG XDEBUG_VERSION=3.1.6
 ENV PATH="/var/www/html/wp-content/plugins/stream-src/vendor/bin:${PATH}"
 ENV COMPOSER_HOME=/tmp/.composer
 
-RUN apt-get update; \
-	apt-get install -y --no-install-recommends \
+# Debian 11 LTS ended on 2026-08-31. The bullseye-security index on
+# deb.debian.org still names revisions whose pool files were removed
+# (git 1:2.30.2-1+deb11u5 and the mariadb, curl, and gsasl updates), so
+# apt-get install exits 100. Drop that suite; the packages below are in
+# the main Bullseye archive. Images that are not Bullseye keep their sources.
+RUN if . /etc/os-release && [ "$VERSION_CODENAME" = "bullseye" ]; then \
+		sed -i '/debian-security/d' /etc/apt/sources.list; \
+	fi \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends \
 	# WP-CLI dependencies.
 	bash less default-mysql-client git \
 	# MailHog dependencies.
