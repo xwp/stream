@@ -14,6 +14,12 @@ class Test_Connectors extends WP_StreamTestCase {
 
 		$this->connectors = $this->plugin->connectors;
 		$this->assertNotEmpty( $this->connectors );
+
+		// Connector test classes unload the shared registry in their setUp()
+		// and never re-register it. These tests used to recover by calling
+		// load_connectors() again, which is now one-shot, so re-attach hooks
+		// here to start every test from a registered state.
+		$this->connectors->reload_connectors();
 	}
 
 	public function test_construct() {
