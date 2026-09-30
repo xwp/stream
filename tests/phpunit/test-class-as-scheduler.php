@@ -3,8 +3,7 @@
  * Tests for the Action Scheduler backend (XWPENG-22 AS conflict defense).
  *
  * Happy-path coverage when the bundled AS API is present. The missing-function
- * path (outdated in-memory AS copy) cannot undefine `as_*` in this suite;
- * that is verified via WP-CLI in `.ai/tickets/XWPENG-22/sub-issues/01-action-scheduler/`.
+ * path (outdated in-memory AS copy) cannot undefine `as_*` in this suite.
  *
  * @package WP_Stream
  */
