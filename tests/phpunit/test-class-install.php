@@ -7,6 +7,8 @@
 
 namespace WP_Stream;
 
+require_once __DIR__ . '/class-auto-300-wpdb-spy.php';
+
 class Test_Install extends WP_StreamTestCase {
 	/**
 	 * Install instance present before a test mutates $plugin->install.
@@ -86,6 +88,31 @@ class Test_Install extends WP_StreamTestCase {
 		$this->assertInstanceOf( Install::class, $install );
 		$this->assertSame( Plugin::VERSION, get_site_option( 'wp_stream_db' ) );
 		$this->assert_stream_schema_present();
+	}
+
+	/**
+	 * The 3.0.0 migration returns false before RENAME when the Install instance is missing.
+	 */
+	public function test_auto_300_returns_false_before_rename_when_install_is_missing() {
+		global $wpdb;
+
+		include_once $this->plugin->locations['inc_dir'] . 'db-updates.php';
+
+		$saved = $wpdb;
+		$spy   = new Auto_300_Wpdb_Spy( $wpdb->base_prefix );
+
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- spy replaces wpdb for this call only.
+		$GLOBALS['wpdb'] = $spy;
+
+		try {
+			$result = \wp_stream_update_auto_300( '3.0.0', '1.4.9', null );
+
+			$this->assertFalse( $result );
+			$this->assertSame( array(), $spy->queries );
+		} finally {
+			// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restore the real wpdb.
+			$GLOBALS['wpdb'] = $saved;
+		}
 	}
 
 	/**

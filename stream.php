@@ -72,6 +72,9 @@ function wp_stream_fail_php_version() {
 /**
  * Helper for external plugins which wish to use Stream.
  *
+ * Returns null when the plugin global is not set, which avoids an undefined-index
+ * warning. Callers must check for null before calling a method on the result.
+ *
  * @return WP_Stream\Plugin|null Plugin instance, or null if Stream has not finished constructing.
  */
 function wp_stream_get_instance() {

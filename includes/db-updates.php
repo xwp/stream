@@ -85,12 +85,12 @@ function wp_stream_update_302( $db_version, $current_version ) {
 function wp_stream_update_auto_300( $db_version, $current_version, $install = null ) {
 	global $wpdb;
 
-	// Get only the author_meta values that are double-serialized.
-	$wpdb->query( "RENAME TABLE {$wpdb->base_prefix}stream TO {$wpdb->base_prefix}stream_tmp, {$wpdb->base_prefix}stream_context TO {$wpdb->base_prefix}stream_context_tmp" );
-
 	if ( ! $install instanceof \WP_Stream\Install ) {
 		return false;
 	}
+
+	// Get only the author_meta values that are double-serialized.
+	$wpdb->query( "RENAME TABLE {$wpdb->base_prefix}stream TO {$wpdb->base_prefix}stream_tmp, {$wpdb->base_prefix}stream_context TO {$wpdb->base_prefix}stream_context_tmp" );
 
 	$install->install( $current_version );
 
