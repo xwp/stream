@@ -37,8 +37,6 @@ class Alerts_Test extends WP_StreamTestCase {
 
 	/**
 	 * Test bad alert type is not added.
-	 *
-	 * @requires PHPUnit 5.7
 	 */
 	public function test_load_bad_alert_type() {
 		$alerts                    = new Alerts( $this->plugin );
@@ -427,8 +425,6 @@ class Alerts_Test extends WP_StreamTestCase {
 
 	/**
 	 * Test saving a new alert with no nonce.
-	 *
-	 * @requires PHPUnit 5.7
 	 */
 	public function test_save_new_alert_no_nonce() {
 		// Switch current user to an administrator.
@@ -456,8 +452,6 @@ class Alerts_Test extends WP_StreamTestCase {
 
 	/**
 	 * Test saving a new alert with an invalid nonce.
-	 *
-	 * @requires PHPUnit 5.7
 	 */
 	public function test_save_new_alert_invalid_nonce() {
 		// Switch current user to an administrator.
@@ -486,8 +480,6 @@ class Alerts_Test extends WP_StreamTestCase {
 
 	/**
 	 * Test saving a new alert with a mismatched nonce.
-	 *
-	 * @requires PHPUnit 5.7
 	 */
 	public function test_save_new_alert_mismatched_nonce() {
 		// Switch current user to an administrator.
@@ -516,8 +508,6 @@ class Alerts_Test extends WP_StreamTestCase {
 
 	/**
 	 * Test saving a new alert with missing capabilities.
-	 *
-	 * @requires PHPUnit 5.7
 	 */
 	public function test_save_new_alert_missing_caps() {
 		// Switch current user to a subscriber.

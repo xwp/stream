@@ -24,15 +24,37 @@ class WP_StreamTestCase extends \WP_Ajax_UnitTestCase {
 	protected $mock;
 
 	/**
+	 * Recorded log() arguments from mocked connector callbacks.
+	 *
+	 * @var array<int, array<int, mixed>>
+	 */
+	protected static $recorded_log_calls = array();
+
+	/**
 	 * PHP unit setup function
 	 *
 	 * @return void
 	 */
 	public function setUp(): void {
 		parent::setUp();
+
+		self::$recorded_log_calls = array();
+
 		$this->plugin = $GLOBALS['wp_stream'];
 		$this->assertNotEmpty( $this->plugin );
 		self::ensure_mercator_mapping_table();
+	}
+
+	/**
+	 * Records log() arguments for post-hoc assertions.
+	 *
+	 * Pass this to a mock with willReturnCallback().
+	 *
+	 * @param mixed ...$args Log method arguments.
+	 * @return void
+	 */
+	public static function record_log_call( ...$args ) {
+		self::$recorded_log_calls[] = $args;
 	}
 
 	/**
@@ -69,8 +91,9 @@ class WP_StreamTestCase extends \WP_Ajax_UnitTestCase {
 	 * Core's implementation calls \PHPUnit\Util\Test::parseTestMethodAnnotations(),
 	 * which was removed in PHPUnit 10. We still register the doing-it-wrong /
 	 * deprecated catchers so setExpectedIncorrectUsage() / setExpectedDeprecated()
-	 * keep working. Annotation parsing is omitted (zero @expectedDeprecated uses;
-	 * the one @expectedIncorrectUsage was converted).
+	 * keep working. Annotation parsing is omitted, so expectedDeprecated and
+	 * expectedIncorrectUsage docblock annotations on a test method are ignored.
+	 * Call setExpectedDeprecated() or setExpectedIncorrectUsage() instead.
 	 *
 	 * @link https://core.trac.wordpress.org/ticket/59486#comment:8
 	 * @link https://core.trac.wordpress.org/ticket/62004

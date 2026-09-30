@@ -874,7 +874,6 @@ class Admin_Test extends WP_StreamTestCase {
 	 * Test Ajax Filters
 	 *
 	 * @group ajax
-	 * @requires PHPUnit 5.7
 	 */
 	public function test_ajax_filters() {
 		$user = new \WP_User( $this->admin_user_id );

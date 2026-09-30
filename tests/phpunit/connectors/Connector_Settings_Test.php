@@ -8,10 +8,19 @@ namespace WP_Stream;
  */
 class Connector_Settings_Test extends WP_StreamTestCase {
 	/**
+	 * Prior mailserver_login value for non-redaction assertion.
+	 *
+	 * @var mixed
+	 */
+	private static $expected_mailserver_login_old = null;
+
+	/**
 	 * Runs before each test.
 	 */
 	public function setUp(): void {
 		parent::setUp();
+
+		self::$expected_mailserver_login_old = null;
 
 		$this->plugin->connectors->unload_connectors();
 
@@ -104,6 +113,7 @@ class Connector_Settings_Test extends WP_StreamTestCase {
 		call_user_func( $add_method, 'permalink_structure', '' );
 		$this->simulate_customize_save();
 
+		// Customizer saves hit both update_option and update_option_permalink_structure, so one write logs twice.
 		$this->mock->expects( $this->atLeastOnce() )
 			->method( 'log' )
 			->with(
@@ -138,6 +148,7 @@ class Connector_Settings_Test extends WP_StreamTestCase {
 		call_user_func( $add_method, 'category_base', '' );
 		$this->simulate_customize_save();
 
+		// Customizer saves hit both update_option and update_option_category_base, so one write logs twice.
 		$this->mock->expects( $this->atLeastOnce() )
 			->method( 'log' )
 			->with(
@@ -172,6 +183,7 @@ class Connector_Settings_Test extends WP_StreamTestCase {
 		call_user_func( $add_method, 'tag_base', '' );
 		$this->simulate_customize_save();
 
+		// Customizer saves hit both update_option and update_option_tag_base, so one write logs twice.
 		$this->mock->expects( $this->atLeastOnce() )
 			->method( 'log' )
 			->with(
@@ -274,13 +286,6 @@ class Connector_Settings_Test extends WP_StreamTestCase {
 
 		call_user_func( $update_method, 'mailserver_login', 'new-login' );
 	}
-
-	/**
-	 * Prior mailserver_login value for non-redaction assertion.
-	 *
-	 * @var mixed
-	 */
-	private static $expected_mailserver_login_old;
 
 	/**
 	 * Assert mailserver_login values remain readable.

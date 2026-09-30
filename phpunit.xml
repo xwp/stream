@@ -9,6 +9,7 @@
 	failOnNotice="false"
 	failOnDeprecation="false"
 	displayDetailsOnTestsThatTriggerWarnings="true"
+	displayDetailsOnPhpunitDeprecations="true"
 	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.5/phpunit.xsd"
 	>
 	<coverage>
