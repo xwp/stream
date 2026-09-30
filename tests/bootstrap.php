@@ -147,6 +147,7 @@ define( 'EDD_DOING_TESTS', true );
 activate_plugin( 'easy-digital-downloads/easy-digital-downloads.php' );
 wp_stream_install_edd();
 
+// Single-site only. The multisite PHPUnit config does not activate Yoast.
 if ( ! is_multisite() ) {
 	activate_plugin( 'wordpress-seo/wp-seo.php' );
 }

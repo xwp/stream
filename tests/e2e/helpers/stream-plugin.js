@@ -105,27 +105,6 @@ export async function networkActivateStream( page ) {
 }
 
 /**
- * Network-activate Stream via wp-cli (`stream` in wp-env).
- *
- * Use when the spec must wait until connectors are loaded (e.g. before a
- * wp-cli seed). The plugins-row click can finish before Stream is actually
- * active; this call is synchronous.
- */
-export function networkActivateStreamViaWpCli() {
-	const slugs = [ 'stream', 'stream-src' ];
-	let lastError;
-	for ( const slug of slugs ) {
-		try {
-			runWpCli( [ 'plugin', 'activate', slug, '--network' ] );
-			return;
-		} catch ( error ) {
-			lastError = error;
-		}
-	}
-	throw lastError;
-}
-
-/**
  * Network-deactivate Stream if it is currently active.
  *
  * @param {import('@playwright/test').Page} page Page.
@@ -223,9 +202,9 @@ export function clearAutoPurgeQueueViaWpCli() {
  * never deletes the entire `exclude_rules` key. Network-admin events still
  * log (they skip these rules).
  *
- * @param {string} [ipAddress] IP of the row this run added (TEST-NET-3).
+ * @param {string} [ipAddress] IP of a row this run added. Omit it to clear only empty rows.
  */
-export function clearNetworkExcludeRulesViaWpCli( ipAddress = '203.0.113.44' ) {
+export function clearNetworkExcludeRulesViaWpCli( ipAddress = '' ) {
 	const dropIp = JSON.stringify( ipAddress || '' );
 	const php = `$opt = (array) get_site_option( "wp_stream_network", array() ); if ( empty( $opt["exclude_rules"] ) || ! is_array( $opt["exclude_rules"] ) ) { return; } $rules = $opt["exclude_rules"]; $rows = isset( $rules["exclude_row"] ) && is_array( $rules["exclude_row"] ) ? $rules["exclude_row"] : array(); $drop_ip = ${ dropIp }; $keys = array( "exclude_row", "author_or_role", "connector", "context", "action", "ip_address" ); $keep = array(); foreach ( $rows as $row_id => $marker ) { $ip = isset( $rules["ip_address"][ $row_id ] ) ? (string) $rules["ip_address"][ $row_id ] : ""; $is_empty = true; foreach ( $keys as $key ) { if ( ! empty( $rules[ $key ][ $row_id ] ) ) { $is_empty = false; break; } } if ( $is_empty || ( "" !== $drop_ip && $ip === $drop_ip ) ) { continue; } $keep[] = $row_id; } if ( empty( $keep ) ) { unset( $opt["exclude_rules"] ); } else { $filtered = array(); foreach ( $keys as $key ) { if ( ! isset( $rules[ $key ] ) || ! is_array( $rules[ $key ] ) ) { continue; } foreach ( $keep as $row_id ) { if ( array_key_exists( $row_id, $rules[ $key ] ) ) { $filtered[ $key ][ $row_id ] = $rules[ $key ][ $row_id ]; } } } $opt["exclude_rules"] = $filtered; } update_site_option( "wp_stream_network", $opt );`;
 	runWpCli( [ 'eval', php ] );

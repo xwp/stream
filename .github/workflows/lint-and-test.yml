@@ -5,8 +5,6 @@ on: [push, workflow_call]
 env:
   # Opt into Node.js 24 for JavaScript actions that still ship a Node 20 runtime.
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
-  # PHPUnit 11 needs PHP ≥ 8.2. Pin the wordpress image until ghcr latest is rebuilt.
-  WORDPRESS_IMAGE_VERSION: php8.2
 
 jobs:
 
@@ -16,7 +14,6 @@ jobs:
     timeout-minutes: 20
     permissions:
       contents: read
-      packages: read
     steps:
 
       - name: Checkout
@@ -70,7 +67,6 @@ jobs:
     needs: lint
     permissions:
       contents: read
-      packages: read
     steps:
 
       - name: Checkout

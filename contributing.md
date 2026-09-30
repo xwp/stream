@@ -74,9 +74,9 @@ Start the environment with Xdebug enabled:
 npm run start-xdebug
 ```
 
-That runs `wp-env start --xdebug`. [Step Debugging](https://xdebug.org/docs/step_debug) should work in VS Code via [`.vscode/launch.json`](.vscode/launch.json). The container path for this plugin is `/var/www/html/wp-content/plugins/stream`.
+That runs `wp-env start --xdebug`. [Step Debugging](https://xdebug.org/docs/step_debug) should work in VS Code via [`.vscode/launch.json`](.vscode/launch.json). wp-env mounts this checkout at `/var/www/html/wp-content/plugins/<directory name>`. The launch config maps a checkout named `stream`.
 
-For PhpStorm, follow the [official guide](https://www.jetbrains.com/help/phpstorm/configuring-xdebug.html) and use the same mapping: `${workspaceRoot}` → `/var/www/html/wp-content/plugins/stream`.
+For PhpStorm, follow the [official guide](https://www.jetbrains.com/help/phpstorm/configuring-xdebug.html) and map `${workspaceRoot}` to `/var/www/html/wp-content/plugins/<directory name>`.
 
 ### Mail
 
@@ -117,10 +117,10 @@ We use npm as the canonical task runner for the project. The following commands 
 - `npm run large-records-remove` removes the test data only
 - `npm run large-records-show` shows how much test data is in the tables, this does not include non-test entries
 
-By default, tests have `WP_DEBUG` as false. To enable it, prefix the PHPUnit command with `WP_STREAM_TEST_DEBUG=yes`, for example:
+By default, tests have `WP_DEBUG` as false. `wp-env run` does not forward host environment variables, so set `WP_STREAM_TEST_DEBUG` inside the container command:
 
 ```sh
-WP_STREAM_TEST_DEBUG=yes npm run test:php
+npx wp-env run tests-cli --env-cwd=wp-content/plugins/"$(basename "$PWD")" -- env WP_STREAM_TEST_DEBUG=yes composer test
 ```
 
 ### wp-env issues
