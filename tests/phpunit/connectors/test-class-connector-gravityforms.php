@@ -1,6 +1,8 @@
 <?php
 namespace WP_Stream;
 
+require_once __DIR__ . '/../fake-gflogging.php';
+
 /**
  * Tests for the Gravity Forms connector.
  *
@@ -35,6 +37,10 @@ class Test_Connector_GravityForms extends WP_StreamTestCase {
 		// Populates $options, which check() consults. Safe without the plugin
 		// present: register() only builds that array.
 		$this->mock->register();
+
+		// Empty by default, so get_logging_plugin_label() falls back to the
+		// raw slug in every test except the one that populates this.
+		\GFLogging::$supported_plugins = array();
 	}
 
 	/**
@@ -139,5 +145,249 @@ class Test_Connector_GravityForms extends WP_StreamTestCase {
 		$this->mock->check_rg_gforms_key( 'old-license', '' );
 
 		$this->assertStringContainsString( 'deleted', $message );
+	}
+
+	/**
+	 * Toggling the main "Enable Logging" setting must be reported, so an
+	 * audit log user can tell who enabled it and when.
+	 */
+	public function test_logging_main_toggle_is_reported() {
+		$action = '';
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->willReturnCallback(
+				function ( $message, $args, $object_id, $context, $logged_action ) use ( &$action ) {
+					$action = $logged_action;
+					return true;
+				}
+			);
+
+		$this->mock->check_gform_enable_logging( false, true );
+
+		$this->assertSame( 'activated', $action );
+	}
+
+	/**
+	 * Gravity Forms enables every add-on's logger as a side effect of the
+	 * main toggle, in the same request. That cascade must not also be
+	 * reported, or one user action would produce a confusing pile of
+	 * per-add-on records alongside the single main-toggle record.
+	 */
+	public function test_addon_cascade_from_main_toggle_is_not_reported() {
+		$this->mock->expects( $this->once() )->method( 'log' );
+
+		$this->mock->check_gform_enable_logging( false, true );
+
+		$this->mock->check_gravityformsaddon_gravityformslogging_settings(
+			array(
+				'gravityforms'       => array( 'enable' => '0' ),
+				'gravityformsstripe' => array( 'enable' => '0' ),
+			),
+			array(
+				'gravityforms'       => array( 'enable' => '1' ),
+				'gravityformsstripe' => array( 'enable' => '1' ),
+			)
+		);
+	}
+
+	/**
+	 * Enabling logging for one add-on must be reported as 'activated'.
+	 */
+	public function test_addon_logging_enabled_is_reported() {
+		$action = '';
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->willReturnCallback(
+				function ( $message, $args, $object_id, $context, $logged_action ) use ( &$action ) {
+					$action = $logged_action;
+					return true;
+				}
+			);
+
+		$this->mock->check_gravityformsaddon_gravityformslogging_settings(
+			array( 'gravityforms' => array( 'enable' => '0' ) ),
+			array( 'gravityforms' => array( 'enable' => '1' ) )
+		);
+
+		$this->assertSame( 'activated', $action );
+	}
+
+	/**
+	 * Disabling logging for one add-on must be reported as 'deactivated'.
+	 */
+	public function test_addon_logging_disabled_is_reported() {
+		$action = '';
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->willReturnCallback(
+				function ( $message, $args, $object_id, $context, $logged_action ) use ( &$action ) {
+					$action = $logged_action;
+					return true;
+				}
+			);
+
+		$this->mock->check_gravityformsaddon_gravityformslogging_settings(
+			array( 'gravityforms' => array( 'enable' => '1' ) ),
+			array( 'gravityforms' => array( 'enable' => '0' ) )
+		);
+
+		$this->assertSame( 'deactivated', $action );
+	}
+
+	/**
+	 * An unchanged add-on entry must not produce a record, or resubmitting
+	 * the whole settings form would spam the log for every untouched add-on.
+	 */
+	public function test_addon_logging_unchanged_is_not_reported() {
+		$this->mock->expects( $this->never() )->method( 'log' );
+
+		$this->mock->check_gravityformsaddon_gravityformslogging_settings(
+			array( 'gravityforms' => array( 'enable' => '1' ) ),
+			array( 'gravityforms' => array( 'enable' => '1' ) )
+		);
+	}
+
+	/**
+	 * Each changed add-on must be its own record, since the whole settings
+	 * form (Core plus every add-on) saves together in one option update.
+	 */
+	public function test_addon_logging_multiple_changes_are_reported_separately() {
+		$this->mock->expects( $this->exactly( 2 ) )->method( 'log' );
+
+		$this->mock->check_gravityformsaddon_gravityformslogging_settings(
+			array(
+				'gravityforms'       => array( 'enable' => '0' ),
+				'gravityformsstripe' => array( 'enable' => '0' ),
+			),
+			array(
+				'gravityforms'       => array( 'enable' => '1' ),
+				'gravityformsstripe' => array( 'enable' => '1' ),
+			)
+		);
+	}
+
+	/**
+	 * The option's first-ever save (add_option, so the old value is entirely
+	 * absent) must still be reported, without a PHP notice from the missing
+	 * old entry.
+	 */
+	public function test_addon_logging_first_save_is_reported_without_notice() {
+		$this->mock->expects( $this->once() )->method( 'log' );
+
+		$this->mock->check_gravityformsaddon_gravityformslogging_settings(
+			null,
+			array( 'gravityforms' => array( 'enable' => '1' ) )
+		);
+	}
+
+	/**
+	 * The suppression flag must only skip the write right after a
+	 * main-toggle change, not a later unrelated one in the same process.
+	 */
+	public function test_addon_logging_suppression_is_consumed_once() {
+		$this->mock->expects( $this->exactly( 2 ) )->method( 'log' );
+
+		$this->mock->check_gform_enable_logging( false, true );
+
+		$this->mock->check_gravityformsaddon_gravityformslogging_settings(
+			array( 'gravityforms' => array( 'enable' => '0' ) ),
+			array( 'gravityforms' => array( 'enable' => '1' ) )
+		);
+
+		$this->mock->check_gravityformsaddon_gravityformslogging_settings(
+			array( 'gravityformsstripe' => array( 'enable' => '1' ) ),
+			array( 'gravityformsstripe' => array( 'enable' => '0' ) )
+		);
+	}
+
+	/**
+	 * Deleting the whole logging configuration must still be reported.
+	 */
+	public function test_addon_logging_deletion_is_reported() {
+		$action = '';
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->willReturnCallback(
+				function ( $message, $args, $object_id, $context, $logged_action ) use ( &$action ) {
+					$action = $logged_action;
+					return true;
+				}
+			);
+
+		$this->mock->check_gravityformsaddon_gravityformslogging_settings( null, null );
+
+		$this->assertSame( 'deleted', $action );
+	}
+
+	/**
+	 * An unmapped slug must fall back to the raw slug.
+	 */
+	public function test_addon_logging_label_falls_back_to_slug_when_unmapped() {
+		$message = '';
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->willReturnCallback(
+				function ( $msg ) use ( &$message ) {
+					$message = $msg;
+					return true;
+				}
+			);
+
+		$this->mock->check_gravityformsaddon_gravityformslogging_settings(
+			array( 'gravityformsstripe' => array( 'enable' => '0' ) ),
+			array( 'gravityformsstripe' => array( 'enable' => '1' ) )
+		);
+
+		$this->assertStringContainsString( 'gravityformsstripe', $message );
+	}
+
+	/**
+	 * A mapped slug must be reported by its real name, not the raw slug.
+	 */
+	public function test_addon_logging_label_uses_supported_plugin_name() {
+		\GFLogging::$supported_plugins = array( 'gravityformsstripe' => 'Gravity Forms Stripe Add-On' );
+
+		$message = '';
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->willReturnCallback(
+				function ( $msg ) use ( &$message ) {
+					$message = $msg;
+					return true;
+				}
+			);
+
+		$this->mock->check_gravityformsaddon_gravityformslogging_settings(
+			array( 'gravityformsstripe' => array( 'enable' => '0' ) ),
+			array( 'gravityformsstripe' => array( 'enable' => '1' ) )
+		);
+
+		$this->assertStringContainsString( 'Gravity Forms Stripe Add-On', $message );
+		$this->assertStringNotContainsString( 'gravityformsstripe', $message );
+	}
+
+	/**
+	 * A plugin name containing "%" must reach the message escaped.
+	 */
+	public function test_addon_logging_label_is_escaped() {
+		\GFLogging::$supported_plugins = array( 'gravityformsstripe' => 'Stripe 50% Off Add-On' );
+
+		$message = '';
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->willReturnCallback(
+				function ( $msg ) use ( &$message ) {
+					$message = $msg;
+					return true;
+				}
+			);
+
+		$this->mock->check_gravityformsaddon_gravityformslogging_settings(
+			array( 'gravityformsstripe' => array( 'enable' => '0' ) ),
+			array( 'gravityformsstripe' => array( 'enable' => '1' ) )
+		);
+
+		$this->assertStringContainsString( 'Stripe 50%% Off Add-On', $message );
+		$this->assertStringNotContainsString( 'Stripe 50% Off', $message );
 	}
 }
