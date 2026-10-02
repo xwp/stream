@@ -33,6 +33,7 @@
 	<testsuites>
 	<testsuite name="stream">
 		<directory prefix="test-" suffix=".php">tests</directory>
+		<exclude>tests/phpunit/unit</exclude>
 	</testsuite>
 	</testsuites>
 	<logging/>

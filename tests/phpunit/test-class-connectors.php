@@ -14,6 +14,12 @@ class Test_Connectors extends WP_StreamTestCase {
 
 		$this->connectors = $this->plugin->connectors;
 		$this->assertNotEmpty( $this->connectors );
+
+		// Connector test classes unload the shared registry in their setUp()
+		// and never re-register it. These tests used to recover by calling
+		// load_connectors() again, which is now one-shot, so re-attach hooks
+		// here to start every test from a registered state.
+		$this->connectors->reload_connectors();
 	}
 
 	public function test_construct() {
@@ -22,7 +28,6 @@ class Test_Connectors extends WP_StreamTestCase {
 	}
 
 	public function test_load_connectors() {
-		$this->connectors->load_connectors();
 		$this->assertNotEmpty( $this->connectors->connectors );
 		$this->assertNotEmpty( $this->connectors->contexts );
 		$this->assertNotEmpty( $this->connectors->term_labels['stream_connector'] );
@@ -36,8 +41,13 @@ class Test_Connectors extends WP_StreamTestCase {
 		$this->assertEmpty( $notices );
 	}
 
-	public function test_unload_connectors() {
+	public function test_load_connectors_second_call_is_doing_it_wrong() {
+		$this->setExpectedIncorrectUsage( 'WP_Stream\Connectors::load_connectors' );
 		$this->connectors->load_connectors();
+		$this->assertNotEmpty( $this->connectors->connectors );
+	}
+
+	public function test_unload_connectors() {
 		$this->assertNotEmpty( $this->connectors->connectors );
 
 		foreach ( $this->connectors->connectors as $connector ) {
@@ -51,7 +61,6 @@ class Test_Connectors extends WP_StreamTestCase {
 	}
 
 	public function test_reload_connectors() {
-		$this->connectors->load_connectors();
 		$this->assertNotEmpty( $this->connectors->connectors );
 		$this->connectors->unload_connectors();
 		foreach ( $this->connectors->connectors as $connector ) {
@@ -65,7 +74,6 @@ class Test_Connectors extends WP_StreamTestCase {
 	}
 
 	public function test_unload_connector() {
-		$this->connectors->load_connectors();
 		$this->assertNotEmpty( $this->connectors->connectors['posts'] );
 		$this->assertTrue( $this->connectors->connectors['posts']->is_registered() );
 
@@ -74,7 +82,6 @@ class Test_Connectors extends WP_StreamTestCase {
 	}
 
 	public function test_reload_connector() {
-		$this->connectors->load_connectors();
 		$this->assertNotEmpty( $this->connectors->connectors['posts'] );
 		$this->connectors->unload_connector( 'posts' );
 		$this->assertFalse( $this->connectors->connectors['posts']->is_registered() );

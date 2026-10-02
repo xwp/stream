@@ -113,6 +113,25 @@ class Test_Ability_Create_Exclusion_Rule extends Abilities_TestCase {
 		$this->assertSame( 'stream_unknown_connector', $result->get_error_code() );
 	}
 
+	public function test_skips_connector_validation_when_connectors_uninitialized() {
+		wp_set_current_user( $this->admin_user_id );
+
+		$connectors = $this->plugin->connectors;
+		unset( $this->plugin->connectors );
+
+		$option_key = $this->plugin->settings->option_key;
+		update_option( $option_key, array() );
+
+		try {
+			$result = $this->ability->execute( array( 'connector' => 'posts' ) );
+		} finally {
+			$this->plugin->connectors = $connectors;
+		}
+
+		$this->assertIsArray( $result );
+		$this->assertSame( 'posts', $result['rule']['connector'] );
+	}
+
 	/**
 	 * Admin-only connectors (register_frontend = false) must validate
 	 * successfully even when the test/REST request isn't wp-admin. Regression

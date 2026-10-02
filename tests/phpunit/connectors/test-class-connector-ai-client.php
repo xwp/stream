@@ -105,19 +105,18 @@ class Test_WP_Stream_Connector_AI_Client extends WP_StreamTestCase {
 	/**
 	 * Registration is gated on WP_AI_Client_Event_Dispatcher, not the SDK class.
 	 *
-	 * Asserts the absent branch first when the class is missing, then loads the
-	 * stub so the present branch is covered on WP 6.x CI. The require_once leaks
-	 * the stub into the rest of this PHPUnit process; no other test asserts the
-	 * connector is absent.
+	 * Asserts the absent branch against the boot-time registry when the class is
+	 * missing. load_connectors() runs once per Connectors instance, so the present
+	 * branch is a new instance created after the stub is loaded — the same sequence
+	 * as a request that boots with the dispatcher already available. The require_once
+	 * leaks the stub into the rest of this PHPUnit process; no other test asserts
+	 * the connector is absent.
 	 */
 	public function test_connector_registration_is_gated_on_event_dispatcher() {
 		$connector = new Connector_AI_Client();
 
 		if ( ! class_exists( 'WP_AI_Client_Event_Dispatcher' ) ) {
 			$this->assertFalse( $connector->is_dependency_satisfied() );
-
-			$this->plugin->connectors->unload_connectors();
-			$this->plugin->connectors->load_connectors();
 			$this->assertArrayNotHasKey( 'ai-client', $this->plugin->connectors->connectors );
 
 			require_once __DIR__ . '/stubs/class-wp-ai-client-event-dispatcher.php';
@@ -125,9 +124,15 @@ class Test_WP_Stream_Connector_AI_Client extends WP_StreamTestCase {
 
 		$this->assertTrue( $connector->is_dependency_satisfied() );
 
-		$this->plugin->connectors->unload_connectors();
-		$this->plugin->connectors->load_connectors();
-		$this->assertArrayHasKey( 'ai-client', $this->plugin->connectors->connectors );
+		// A second load_connectors() on the shared instance is a no-op. Boot a
+		// fresh registry now that the dependency exists, then detach its hooks
+		// so later tests keep the mock registered in setUp().
+		$connectors = new Connectors( $this->plugin );
+		try {
+			$this->assertArrayHasKey( 'ai-client', $connectors->connectors );
+		} finally {
+			$connectors->unload_connectors();
+		}
 	}
 
 	/**
