@@ -9,12 +9,27 @@ env:
 jobs:
 
   lint:
-    name: Lint and Test
+    name: Lint and Test (PHP ${{ matrix.php }})
     runs-on: ubuntu-22.04
-    timeout-minutes: 10
+    timeout-minutes: 20
     permissions:
       contents: read
       packages: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '7.4'
+            wordpress_image: latest
+            xdebug: '3.1.6'
+          - php: '8.2'
+            wordpress_image: php8.2
+            xdebug: '3.2.1'
+          - php: '8.3'
+            wordpress_image: php8.3
+            xdebug: '3.3.2'
+    env:
+      WORDPRESS_IMAGE_VERSION: ${{ matrix.wordpress_image }}
     steps:
 
       - name: Checkout
@@ -40,8 +55,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-php-${{ hashFiles( 'composer.lock' ) }}
-          restore-keys: ${{ runner.os }}-php-
+          key: ${{ runner.os }}-php-${{ matrix.php }}-${{ hashFiles( 'composer.lock' ) }}
+          restore-keys: ${{ runner.os }}-php-${{ matrix.php }}-
 
       - name: Log in to the Container registry
         uses: docker/login-action@v3
@@ -63,19 +78,43 @@ jobs:
         run: npm run build
 
       - name: Pull custom Docker images
-        run: docker compose pull wordpress
+        # `--ignore-pull-failures` so unpublished tags (e.g. php8.3 before
+        # docker-images.yml has published it from master) still pass. Compose
+        # then builds from local/docker/wordpress/Dockerfile.
+        run: docker compose pull --ignore-pull-failures wordpress
+
+      - name: Build WordPress image for matrix PHP
+        run: docker compose build --build-arg PHP_VERSION=${{ matrix.php }} --build-arg XDEBUG_VERSION=${{ matrix.xdebug }} wordpress
+
+      - name: Confirm container PHP version
+        run: npm run which-php
 
       - name: Test
         run: npm run test
 
   e2e:
-    name: E2E
+    name: E2E (PHP ${{ matrix.php }})
     runs-on: ubuntu-22.04
-    timeout-minutes: 12
+    timeout-minutes: 20
     needs: lint
     permissions:
       contents: read
       packages: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '7.4'
+            wordpress_image: latest
+            xdebug: '3.1.6'
+          - php: '8.2'
+            wordpress_image: php8.2
+            xdebug: '3.2.1'
+          - php: '8.3'
+            wordpress_image: php8.3
+            xdebug: '3.3.2'
+    env:
+      WORDPRESS_IMAGE_VERSION: ${{ matrix.wordpress_image }}
     steps:
 
       - name: Checkout
@@ -101,8 +140,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-php-${{ hashFiles( 'composer.lock' ) }}
-          restore-keys: ${{ runner.os }}-php-
+          key: ${{ runner.os }}-php-${{ matrix.php }}-${{ hashFiles( 'composer.lock' ) }}
+          restore-keys: ${{ runner.os }}-php-${{ matrix.php }}-
 
       - name: Map stream.wpenv.net to localhost
         run: echo "127.0.0.1 stream.wpenv.net" | sudo tee -a /etc/hosts
@@ -150,10 +189,15 @@ jobs:
         # :443 with ERR_CONNECTION_CLOSED. Build locally so the branch's
         # Dockerfile actually applies; Docker layer caching keeps this cheap
         # when the Dockerfile hasn't changed since the last published build.
-        run: docker compose build wordpress
+        # PHP_VERSION / XDEBUG_VERSION match docker-compose.build.yml so
+        # unpublished tags (php8.3) still produce the matrix PHP runtime.
+        run: docker compose build --build-arg PHP_VERSION=${{ matrix.php }} --build-arg XDEBUG_VERSION=${{ matrix.xdebug }} wordpress
 
       - name: Start WordPress
         run: npm run start
+
+      - name: Confirm container PHP version
+        run: npm run which-php
 
       - name: Wait for MySQL (from inside the wordpress container)
         run: |
@@ -188,6 +232,6 @@ jobs:
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report-php-${{ matrix.php }}
           path: playwright-report
           retention-days: 7

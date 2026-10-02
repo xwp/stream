@@ -345,7 +345,7 @@ class Install {
 			$function = 'wp_stream_update_' . ( 'user' === $update_args['type'] ? '' : $update_args['type'] . '_' ) . str_ireplace( '.', '', $version );
 
 			if ( version_compare( $db_version, $version, '<' ) ) {
-				$result = function_exists( $function ) ? call_user_func( $function, $db_version, $current_version ) : $current_version;
+				$result = function_exists( $function ) ? call_user_func( $function, $db_version, $current_version, $this ) : $current_version;
 
 				if ( $current_version !== $result ) {
 					return false;
