@@ -563,8 +563,8 @@ class Network {
 	 */
 	public function network_admin_page_title( $page_title ) {
 		if ( is_network_admin() ) {
-			/* translators: %d: number of sites on the network (e.g. "42") */
-			$site_count = sprintf( _n( '%d site', '%d sites', get_blog_count(), 'stream' ), number_format( get_blog_count() ) );
+			/* translators: %s: number of sites on the network (e.g. "1,234") */
+			$site_count = sprintf( _n( '%s site', '%s sites', get_blog_count(), 'stream' ), number_format( get_blog_count() ) );
 			$page_title = sprintf( '%s (%s)', $page_title, $site_count );
 		}
 
