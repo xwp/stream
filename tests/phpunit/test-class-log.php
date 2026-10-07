@@ -181,4 +181,89 @@ class Test_Log extends WP_StreamTestCase {
 			)
 		);
 	}
+
+	public function test_log_while_determining_current_user_logs_user_zero() {
+		$determinations = 0;
+		$logged         = array();
+
+		$capture               = function ( $record ) use ( &$logged ) {
+			$logged = $record;
+			return $record;
+		};
+		$log_while_determining = function ( $user_id ) use ( &$determinations ) {
+			if ( 1 === ++$determinations ) {
+				$this->plugin->log->log( 'test', 'Failed login', array(), 0, 'test', 'failed' );
+			}
+			return $user_id;
+		};
+
+		// Alerts re-enter through their own path, covered in Test_Alerts.
+		remove_action( 'wp_stream_record_inserted', array( $this->plugin->alerts, 'check_records' ) );
+		add_filter( 'wp_stream_record_array', $capture );
+
+		$this->determine_current_user_with( $log_while_determining, 'wp_get_current_user' );
+
+		remove_filter( 'wp_stream_record_array', $capture );
+		add_action( 'wp_stream_record_inserted', array( $this->plugin->alerts, 'check_records' ), 10, 2 );
+
+		$this->assertSame( 1, $determinations, 'Logging re-entered determine_current_user.' );
+		$this->assertSame( 0, $logged['user_id'] );
+	}
+
+	public function test_log_after_user_set_while_determining_keeps_user_and_checks_alerts() {
+		$user_id      = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$logged       = array();
+		$alert_checks = 0;
+
+		$capture             = function ( $record ) use ( &$logged ) {
+			$logged = $record;
+			return $record;
+		};
+		$count_alert_queries = function ( $query ) use ( &$alert_checks ) {
+			if ( Alerts::POST_TYPE === $query->get( 'post_type' ) ) {
+				++$alert_checks;
+			}
+		};
+		$set_user_then_log   = function () use ( $user_id ) {
+			wp_set_current_user( $user_id );
+			$this->plugin->log->log( 'test', 'Logged in', array(), 0, 'test', 'login' );
+			return $user_id;
+		};
+
+		add_filter( 'wp_stream_record_array', $capture );
+		add_action( 'pre_get_posts', $count_alert_queries );
+
+		$this->determine_current_user_with( $set_user_then_log, 'wp_get_current_user' );
+
+		remove_action( 'pre_get_posts', $count_alert_queries );
+		remove_filter( 'wp_stream_record_array', $capture );
+
+		$this->assertSame( $user_id, $logged['user_id'] );
+		$this->assertSame( 1, $alert_checks );
+	}
+
+	public function test_log_before_user_is_determined_determines_it() {
+		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$logged  = array();
+
+		$capture        = function ( $record ) use ( &$logged ) {
+			$logged = $record;
+			return $record;
+		};
+		$determine_user = function () use ( $user_id ) {
+			return $user_id;
+		};
+
+		add_filter( 'wp_stream_record_array', $capture );
+
+		$this->determine_current_user_with(
+			$determine_user,
+			function () {
+				$this->plugin->log->log( 'test', 'Early', array(), 0, 'test', 'early' );
+			}
+		);
+		remove_filter( 'wp_stream_record_array', $capture );
+
+		$this->assertSame( $user_id, $logged['user_id'] );
+	}
 }

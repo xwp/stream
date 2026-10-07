@@ -71,4 +71,19 @@ class WP_StreamTestCase extends \WP_Ajax_UnitTestCase {
 	protected function do_filter_validation( array $tests = array() ) {
 		$this->do_action_validation( $tests, 'has_filter' );
 	}
+
+	/**
+	 * Runs $run while the current user is undetermined, with $determine hooked on `determine_current_user`.
+	 *
+	 * @param callable $determine Filter callback for `determine_current_user`.
+	 * @param callable $run       Code that triggers the current user lookup.
+	 */
+	protected function determine_current_user_with( callable $determine, callable $run ) {
+		add_filter( 'determine_current_user', $determine, 30 );
+
+		$GLOBALS['current_user'] = null; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$run();
+
+		remove_filter( 'determine_current_user', $determine, 30 );
+	}
 }
