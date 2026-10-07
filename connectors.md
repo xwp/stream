@@ -958,6 +958,11 @@
 	- transition_post_status
 	- deleted_post
 	- woocommerce_order_status_changed
+	- woocommerce_new_order
+	- woocommerce_update_order
+	- woocommerce_before_trash_order
+	- woocommerce_untrash_order
+	- woocommerce_before_delete_order
 	- woocommerce_attribute_added
 	- woocommerce_attribute_updated
 	- woocommerce_attribute_deleted

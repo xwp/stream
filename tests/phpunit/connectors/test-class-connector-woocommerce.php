@@ -119,6 +119,7 @@ class Test_WP_Stream_Connector_WooCommerce extends WP_StreamTestCase {
 		$filtered   = $this->mock->exclude_order_post_types( $post_types );
 
 		$this->assertContains( 'shop_order', $filtered );
+		$this->assertContains( 'shop_order_placehold', $filtered );
 		$this->assertContains( 'post', $filtered );
 		$this->assertContains( 'page', $filtered );
 	}
@@ -291,5 +292,136 @@ class Test_WP_Stream_Connector_WooCommerce extends WP_StreamTestCase {
 			);
 
 		$this->mock->callback_woocommerce_tax_rate_added( $tax_rate_id, $tax_rate );
+	}
+
+	/**
+	 * Test that order events in custom order tables (HPOS) are logged.
+	 */
+	public function test_custom_order_table_events_are_logged() {
+		$events = array(
+			'created' => 'callback_woocommerce_new_order',
+			'updated' => 'callback_woocommerce_update_order',
+			'trashed' => 'callback_woocommerce_before_trash_order',
+			'deleted' => 'callback_woocommerce_before_delete_order',
+		);
+
+		set_current_screen( 'woocommerce_page_wc-orders' );
+
+		foreach ( $events as $action => $callback ) {
+			$connector = $this->get_order_table_connector( true );
+			$connector->expects( $this->once() )
+				->method( 'log' )
+				->with(
+					$this->anything(),
+					$this->callback(
+						function ( $args ) {
+							return 'Order number 42' === $args['post_title'];
+						}
+					),
+					$this->equalTo( 42 ),
+					$this->equalTo( 'shop_order' ),
+					$this->equalTo( $action )
+				);
+
+			$connector->$callback( 42, $this->get_order( 42 ) );
+		}
+
+		set_current_screen( 'front' );
+	}
+
+	/**
+	 * Test that custom order table events are skipped when they must not be logged.
+	 */
+	public function test_custom_order_table_events_are_skipped() {
+		set_current_screen( 'woocommerce_page_wc-orders' );
+
+		// Orders stored as posts are logged by callback_transition_post_status().
+		$connector = $this->get_order_table_connector( false );
+		$connector->expects( $this->never() )->method( 'log' );
+		$connector->callback_woocommerce_new_order( 42, $this->get_order( 42 ) );
+
+		// Refunds are separate order types.
+		$connector = $this->get_order_table_connector( true );
+		$connector->expects( $this->never() )->method( 'log' );
+		$connector->callback_woocommerce_new_order( 43, $this->get_order( 43, 'shop_order_refund' ) );
+
+		// Draft orders, such as the one the Add order screen starts from.
+		$connector = $this->get_order_table_connector( true );
+		$connector->expects( $this->never() )->method( 'log' );
+		$connector->callback_woocommerce_update_order( 44, $this->get_order( 44, 'shop_order', 'auto-draft' ) );
+
+		// Bulk status changes, which callback_woocommerce_order_status_changed() logs.
+		$_GET['action'] = 'mark_processing';
+		$connector      = $this->get_order_table_connector( true );
+		$connector->expects( $this->never() )->method( 'log' );
+		$connector->callback_woocommerce_update_order( 42, $this->get_order( 42 ) );
+		unset( $_GET['action'] );
+
+		set_current_screen( 'front' );
+
+		// Customer actions.
+		$connector = $this->get_order_table_connector( true );
+		$connector->expects( $this->never() )->method( 'log' );
+		$connector->callback_woocommerce_new_order( 42, $this->get_order( 42 ) );
+	}
+
+	/**
+	 * Test that only one event is logged per order per request, and that saves during creation aren't updates.
+	 */
+	public function test_custom_order_table_logs_once_per_request() {
+		set_current_screen( 'woocommerce_page_wc-orders' );
+
+		$connector = $this->get_order_table_connector( true );
+		$connector->expects( $this->once() )
+			->method( 'log' )
+			->with( $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->equalTo( 'created' ) );
+
+		$order      = $this->get_order( 42 );
+		$save_again = function () use ( $connector, $order ) {
+			$connector->callback_woocommerce_update_order( 42, $order );
+			$connector->callback_woocommerce_new_order( 42, $order );
+		};
+		add_action( 'woocommerce_new_order', $save_again );
+		do_action( 'woocommerce_new_order', 42, $order );
+		remove_action( 'woocommerce_new_order', $save_again );
+		$connector->callback_woocommerce_update_order( 42, $order );
+
+		set_current_screen( 'front' );
+	}
+
+	/**
+	 * Mocked connector with log() and the HPOS check stubbed.
+	 *
+	 * @param bool $hpos Whether orders are stored in custom order tables.
+	 *
+	 * @return Connector_Woocommerce
+	 */
+	private function get_order_table_connector( $hpos ) {
+		$connector = $this->getMockBuilder( Connector_Woocommerce::class )
+			->setMethods( array( 'log', 'custom_orders_table_usage_is_enabled' ) )
+			->getMock();
+		$connector->method( 'custom_orders_table_usage_is_enabled' )->willReturn( $hpos );
+
+		return $connector;
+	}
+
+	/**
+	 * Order stub, since WooCommerce isn't loaded in tests.
+	 *
+	 * @param int    $id     Order ID.
+	 * @param string $type   Order type.
+	 * @param string $status Order status.
+	 *
+	 * @return \WC_Order
+	 */
+	private function get_order( $id, $type = 'shop_order', $status = 'processing' ) {
+		$order = $this->getMockBuilder( 'WC_Order' )
+			->setMethods( array( 'get_id', 'get_type', 'get_status' ) )
+			->getMock();
+		$order->method( 'get_id' )->willReturn( $id );
+		$order->method( 'get_type' )->willReturn( $type );
+		$order->method( 'get_status' )->willReturn( $status );
+
+		return $order;
 	}
 }
