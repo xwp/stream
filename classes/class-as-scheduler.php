@@ -35,7 +35,9 @@ class AS_Scheduler implements Scheduler {
 	 * @return void
 	 */
 	public function enqueue_async( $hook, $args = array(), $group = '' ) {
-		as_enqueue_async_action( $hook, $args, $group );
+		if ( function_exists( 'as_enqueue_async_action' ) ) {
+			as_enqueue_async_action( $hook, $args, $group );
+		}
 	}
 
 	/**
@@ -54,6 +56,10 @@ class AS_Scheduler implements Scheduler {
 	 * @return void
 	 */
 	public function schedule_recurring( $timestamp, $interval, $hook, $args = array(), $group = '' ) {
+		if ( ! function_exists( 'as_next_scheduled_action' ) || ! function_exists( 'as_schedule_recurring_action' ) ) {
+			return;
+		}
+
 		if ( false === as_next_scheduled_action( $hook ) ) {
 			as_schedule_recurring_action( $timestamp, $interval, $hook, $args, $group );
 		}
@@ -67,6 +73,10 @@ class AS_Scheduler implements Scheduler {
 	 * @return int|false
 	 */
 	public function next_scheduled( $hook, $args = array() ) {
+		if ( ! function_exists( 'as_next_scheduled_action' ) ) {
+			return false;
+		}
+
 		return as_next_scheduled_action( $hook, empty( $args ) ? null : $args );
 	}
 
@@ -77,6 +87,10 @@ class AS_Scheduler implements Scheduler {
 	 * @return bool
 	 */
 	public function has_scheduled( $hook ) {
+		if ( ! function_exists( 'as_has_scheduled_action' ) ) {
+			return false;
+		}
+
 		return as_has_scheduled_action( $hook );
 	}
 
