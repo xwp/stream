@@ -46,6 +46,7 @@ class Connector_Posts extends Connector {
 		return array(
 			'updated'   => esc_html__( 'Updated', 'stream' ),
 			'created'   => esc_html__( 'Created', 'stream' ),
+			'published' => esc_html__( 'Published', 'stream' ),
 			'trashed'   => esc_html__( 'Trashed', 'stream' ),
 			'untrashed' => esc_html__( 'Restored', 'stream' ),
 			'deleted'   => esc_html__( 'Deleted', 'stream' ),
@@ -203,6 +204,7 @@ class Connector_Posts extends Connector {
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
+			$action  = 'published';
 		} elseif ( 'draft' === $new_status ) {
 			/* translators: %1$s: a post title, %2$s a post type singular name (e.g. "Hello World", "Post") */
 			$summary = _x(
@@ -231,6 +233,7 @@ class Connector_Posts extends Connector {
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
+			$action  = 'published';
 		} elseif ( 'private' === $new_status ) {
 			/* translators: %1$s: a post title, %2$s: a post type singular name (e.g. "Hello World", "Post") */
 			$summary = _x(
@@ -255,7 +258,7 @@ class Connector_Posts extends Connector {
 			);
 		}
 
-		if ( in_array( $old_status, $start_statuses, true ) && ! in_array( $new_status, $start_statuses, true ) ) {
+		if ( empty( $action ) && in_array( $old_status, $start_statuses, true ) && ! in_array( $new_status, $start_statuses, true ) ) {
 			$action = 'created';
 		}
 
