@@ -65,6 +65,11 @@ class Settings {
 		// Register settings, and fields.
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 
+		// One-shot repair for installs whose wp_stream row was flipped off
+		// autoload. admin_init is enough: default writes already use yes, and
+		// a single admin hit after upgrade fixes any stray no. See #1482.
+		add_action( 'admin_init', array( $this, 'ensure_option_autoload' ) );
+
 		// Remove records when records TTL is shortened.
 		add_action(
 			'update_option_' . $this->option_key,
@@ -577,7 +582,10 @@ class Settings {
 		if ( $is_network ) {
 			$result = update_site_option( $this->network_options_key, $options );
 		} else {
-			$result = update_option( $this->option_key, $options );
+			// Autoload on purpose: Settings loads this option on every request
+			// (Plugin::init -> Settings::__construct -> get_options) for exclude
+			// rules, logging gates, and role access. See issue #1482.
+			$result = update_option( $this->option_key, $options, true );
 		}
 
 		// Refresh the in-memory copy so subsequent reads in the same request
@@ -598,6 +606,31 @@ class Settings {
 		}
 
 		return (bool) $result;
+	}
+
+	/**
+	 * Ensure the per-site settings option stays autoloaded.
+	 *
+	 * Settings are read on every request via get_options(), so autoload=yes
+	 * avoids an extra query. Idempotent. No-op for the network option key
+	 * (sitemeta has no autoload flag) and when wp_set_option_autoload() is
+	 * unavailable (WordPress < 6.4).
+	 *
+	 * @see https://github.com/xwp/stream/issues/1482
+	 *
+	 * @return void
+	 */
+	public function ensure_option_autoload() {
+		if ( ! function_exists( 'wp_set_option_autoload' ) ) {
+			return;
+		}
+
+		// Network settings live in sitemeta; no autoload flag to maintain.
+		if ( $this->option_key === $this->network_options_key ) {
+			return;
+		}
+
+		wp_set_option_autoload( $this->option_key, true );
 	}
 
 	/**
@@ -695,8 +728,10 @@ class Settings {
 			$this->option_key,
 			$this->option_key,
 			array(
-				$this,
-				'sanitize_settings',
+				'type'              => 'array',
+				'sanitize_callback' => array( $this, 'sanitize_settings' ),
+				// Autoload on purpose — see ensure_option_autoload() / issue #1482.
+				'autoload'          => true,
 			)
 		);
 
