@@ -32,7 +32,7 @@ class Ability_Get_Connectors extends Ability {
 	 * {@inheritDoc}
 	 */
 	public function get_description() {
-		return __( 'List all registered Stream connectors with their available contexts and actions. Useful for understanding what activity Stream can track on this site.', 'stream' );
+		return __( 'List all Stream connectors this plugin ships, including inactive connectors and those whose dependencies are not currently satisfied. Use this to filter historical records that may have been logged when those connectors were active.', 'stream' );
 	}
 
 	/**
@@ -42,7 +42,7 @@ class Ability_Get_Connectors extends Ability {
 		return array(
 			'readonly'     => true,
 			'idempotent'   => true,
-			'instructions' => __( 'Use to discover the valid connector / context / action values for filters in stream/get-records and stream/create-exclusion-rule. Connector slugs are stable identifiers, so cache the result if you call abilities repeatedly.', 'stream' ),
+			'instructions' => __( 'Use to discover the valid connector / context / action values for filters in stream/get-records and stream/create-exclusion-rule. The list is the plugin\'s shipped inventory, not only connectors whose dependencies are met on this site. Connector slugs are stable identifiers, so cache the result if you call abilities repeatedly.', 'stream' ),
 		);
 	}
 
@@ -59,7 +59,7 @@ class Ability_Get_Connectors extends Ability {
 	public function get_output_schema() {
 		return array(
 			'type'        => 'array',
-			'description' => 'Registered connectors.',
+			'description' => 'Connectors this plugin ships, including inactive and unsatisfied-dependency connectors.',
 			'items'       => array(
 				'type'                 => 'object',
 				'additionalProperties' => false,
@@ -99,11 +99,13 @@ class Ability_Get_Connectors extends Ability {
 			return array();
 		}
 
-		// Use the metadata-only accessor that includes admin-only connectors
-		// (settings, editor, menus, etc.) so REST/MCP callers see the same
-		// connector inventory an admin sees in wp-admin. The plain get_all()
-		// reflects only connectors registered for the current request type,
-		// which is the wrong frame for the abilities-facing "what exists on this site" answer.
-		return $this->plugin->connectors->get_all_including_admin_only();
+		// Shipped inventory, including inactive / unsatisfied-dependency
+		// connectors, so historical records remain filterable via abilities.
+		$connectors = apply_filters(
+			'wp_stream_abilities_connectors',
+			$this->plugin->connectors->get_all( true )
+		);
+
+		return $connectors;
 	}
 }

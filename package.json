@@ -46,6 +46,7 @@
     "format:php": "composer format",
     "format:js": "npm run lint:js -- --fix",
     "test": "npm-run-all test:*",
+    "test:php-unit": "npm run cli -- composer test-unit --working-dir=wp-content/plugins/stream-src",
     "test:php": "npm run cli -- composer test --working-dir=wp-content/plugins/stream-src",
     "test:php-multisite": "npm run cli -- composer test-multisite --working-dir=wp-content/plugins/stream-src",
     "test-e2e": "wp-scripts test-playwright",

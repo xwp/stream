@@ -41,7 +41,8 @@
     "wp-plugin/wp-crontrol": "1.21.0",
     "wp-theme/twentytwentythree": "^1.0",
     "xwp/wait-for": "^0.0.1",
-    "yoast/phpunit-polyfills": "^1.1"
+    "yoast/phpunit-polyfills": "^1.1",
+    "yoast/wp-test-utils": "^1.2"
   },
   "config": {
     "process-timeout": 600,
@@ -94,6 +95,9 @@
     "test": [
       "phpunit --coverage-text",
       "php local/scripts/make-clover-relative.php ./tests/reports/clover.xml"
+    ],
+    "test-unit": [
+      "phpunit -c phpunit-unit.xml"
     ],
     "test-one": [
       "phpunit",
