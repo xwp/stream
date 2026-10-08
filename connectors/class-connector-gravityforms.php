@@ -74,6 +74,14 @@ class Connector_GravityForms extends Connector {
 	public $options_override = array();
 
 	/**
+	 * Whether the main logging toggle was just changed, so the resulting
+	 * per-add-on cascade isn't also reported
+	 *
+	 * @var bool
+	 */
+	private $logging_main_toggle_in_progress = false;
+
+	/**
 	 * Check if plugin dependencies are satisfied and add an admin notice if not
 	 *
 	 * @return bool
@@ -211,6 +219,8 @@ class Connector_GravityForms extends Connector {
 				'label' => esc_html_x( 'reCAPTCHA Private Key', 'gravityforms', 'stream' ),
 			),
 			'rg_gforms_key'                 => null,
+			'gform_enable_logging'          => null,
+			'gravityformsaddon_gravityformslogging_settings' => null,
 		);
 	}
 
@@ -556,6 +566,112 @@ class Connector_GravityForms extends Connector {
 			'settings',
 			$is_update ? 'updated' : 'deleted'
 		);
+	}
+
+	/**
+	 * Log the main "Enable Logging" setting change
+	 *
+	 * @param bool|null $old_value  Previous state.
+	 * @param bool      $new_value  Updated state.
+	 * @return void
+	 */
+	public function check_gform_enable_logging( $old_value, $new_value ) {
+		$this->logging_main_toggle_in_progress = true;
+
+		$this->log(
+			sprintf(
+				/* translators: %s: a status (e.g. "enabled") */
+				__( 'Gravity Forms logging %s', 'stream' ),
+				$this->get_status_for_message(
+					$new_value,
+					esc_html__( 'enabled', 'stream' ),
+					esc_html__( 'disabled', 'stream' )
+				)
+			),
+			compact( 'old_value', 'new_value' ),
+			null,
+			'settings',
+			$new_value ? 'activated' : 'deactivated'
+		);
+	}
+
+	/**
+	 * Log Gravity Forms logging setting changes for Core and each add-on
+	 *
+	 * @param array|null $old_value  Previous logging settings, keyed by plugin slug.
+	 * @param array|null $new_value  Updated logging settings, keyed by plugin slug.
+	 * @return void
+	 */
+	public function check_gravityformsaddon_gravityformslogging_settings( $old_value, $new_value ) {
+		/*
+		 * The main toggle already reports that logging was enabled; skip the
+		 * add-on cascade it triggers as a side effect, since that's just
+		 * redundant noise for the same action.
+		 */
+		if ( $this->logging_main_toggle_in_progress ) {
+			$this->logging_main_toggle_in_progress = false;
+			return;
+		}
+
+		if ( is_null( $old_value ) && is_null( $new_value ) ) {
+			$this->log(
+				__( 'Gravity Forms logging configuration deleted', 'stream' ),
+				array(),
+				null,
+				'settings',
+				'deleted'
+			);
+			return;
+		}
+
+		$old_value = is_array( $old_value ) ? $old_value : array();
+		$new_value = is_array( $new_value ) ? $new_value : array();
+
+		$plugin_slugs      = $this->get_changed_keys( $old_value, $new_value );
+		$supported_plugins = class_exists( '\GFLogging' ) ? \GFLogging::get_instance()->get_supported_plugins() : array();
+
+		foreach ( $plugin_slugs as $plugin_slug ) {
+			$old_enabled = ! empty( $old_value[ $plugin_slug ]['enable'] );
+			$new_enabled = ! empty( $new_value[ $plugin_slug ]['enable'] );
+
+			if ( $old_enabled === $new_enabled ) {
+				continue;
+			}
+
+			$plugin_label = $this->get_logging_plugin_label( $plugin_slug, $supported_plugins );
+
+			$this->log(
+				sprintf(
+					/* translators: 1: a status (e.g. "enabled"), 2: a plugin name (e.g. "Gravity Forms Core") */
+					__( 'Gravity Forms logging %1$s for "%2$s"', 'stream' ),
+					$this->get_status_for_message(
+						$new_enabled,
+						esc_html__( 'enabled', 'stream' ),
+						esc_html__( 'disabled', 'stream' )
+					),
+					$plugin_label
+				),
+				compact( 'plugin_slug', 'old_enabled', 'new_enabled' ),
+				null,
+				'settings',
+				$new_enabled ? 'activated' : 'deactivated'
+			);
+		}
+	}
+
+	/**
+	 * Get the display label for a Gravity Forms logging-tracked plugin slug
+	 *
+	 * @param string $plugin_slug        Plugin slug as stored in the logging settings.
+	 * @param array  $supported_plugins  Slug-to-label map, from GFLogging::get_supported_plugins().
+	 * @return string
+	 */
+	private function get_logging_plugin_label( $plugin_slug, $supported_plugins ) {
+		if ( isset( $supported_plugins[ $plugin_slug ] ) ) {
+			return $this->escape_percentages( $supported_plugins[ $plugin_slug ] );
+		}
+
+		return $this->escape_percentages( $plugin_slug );
 	}
 
 	/**
