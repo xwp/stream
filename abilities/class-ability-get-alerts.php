@@ -124,13 +124,13 @@ class Ability_Get_Alerts extends Ability {
 				continue;
 			}
 
-			// Alert::$alert_meta defaults to array(); an empty PHP array() also
-			// JSON-encodes as a list ([]), which violates the declared object
-			// output schema. Normalize empty/non-array values to a real object
-			// so wp_json_encode() emits {} when there is no meta.
-			$alert_meta = is_array( $alert->alert_meta ) && ! empty( $alert->alert_meta )
-				? $alert->alert_meta
-				: new \stdClass();
+			// This ability only requires view_stream, which is a lower bar than
+			// the settings capability that gates alert configuration in the
+			// admin UI. Strip destination credentials (Slack webhook, IFTTT
+			// maker key) before they cross that boundary. Also normalizes
+			// empty/non-array meta to stdClass so wp_json_encode() emits {} and
+			// satisfies the declared object output schema.
+			$alert_meta = $this->redact_alert_meta( $alert->alert_meta );
 
 			$out[] = array(
 				'id'         => (int) $alert->ID,

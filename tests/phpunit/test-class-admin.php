@@ -73,6 +73,45 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->assertInstanceOf( '\WP_Stream\Export', $this->admin->export );
 	}
 
+	/**
+	 * The user_has_cap filter is registered in the Admin constructor, but the
+	 * Settings object is only built on init priority 9. A capability check for
+	 * the view cap fired before then (e.g. a firewall plugin on plugins_loaded)
+	 * must be denied, not fatal on the null options chain.
+	 */
+	public function test_filter_user_caps_before_settings_initialized() {
+		$settings               = $this->plugin->settings;
+		$this->plugin->settings = null;
+
+		$user    = get_user_by( 'id', $this->admin_user_id );
+		$allcaps = $this->admin->filter_user_caps(
+			array(),
+			array( $this->admin->view_cap ),
+			array( $this->admin->view_cap, $this->admin_user_id ),
+			$user
+		);
+
+		$this->plugin->settings = $settings;
+
+		$this->assertArrayNotHasKey( $this->admin->view_cap, $allcaps );
+	}
+
+	/**
+	 * Once Settings exists, the view cap is granted to allowed roles as before.
+	 */
+	public function test_filter_user_caps_grants_view_cap_to_allowed_role() {
+		$user    = get_user_by( 'id', $this->admin_user_id );
+		$allcaps = $this->admin->filter_user_caps(
+			array(),
+			array( $this->admin->view_cap ),
+			array( $this->admin->view_cap, $this->admin_user_id ),
+			$user
+		);
+
+		$this->assertArrayHasKey( $this->admin->view_cap, $allcaps );
+		$this->assertTrue( $allcaps[ $this->admin->view_cap ] );
+	}
+
 	public function test_prepare_admin_notices() {
 		// Test no notices
 		$this->admin->notices = array();

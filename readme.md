@@ -18,6 +18,8 @@ A list of the connectors is in [connectors.md](connectors.md).
 
 ### Configuration
 
+See [readme.txt](readme.txt) for configuration details, including the [AI Client connector (WordPress 7.0+)](readme.txt#ai-client-wordpress-70).
+
 To customize who can manage Stream settings, you can define the `WP_STREAM_SETTINGS_CAPABILITY` constant in your `wp-config.php` file. By default, capability will be set to `manage_options`.
 
 ```php

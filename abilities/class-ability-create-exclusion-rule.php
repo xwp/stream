@@ -33,6 +33,19 @@ class Ability_Create_Exclusion_Rule extends Ability {
 	}
 
 	/**
+	 * Exclusion rules suppress future audit records. On a network-activated
+	 * install the rule is written to the network option and therefore applies
+	 * across every site, so require a network capability in that case.
+	 *
+	 * @param array $input Input that will be passed to execute().
+	 * @return bool
+	 */
+	public function permission_callback( $input = array() ) {
+		unset( $input );
+		return $this->can_write_settings();
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function get_label() {

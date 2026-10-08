@@ -3,7 +3,7 @@ Contributors: xwp
 Tags: activity log, audit log, event log, user tracking, security
 Requires at least: 4.6
 Tested up to: 7.0
-Stable tag: 4.3.0
+Stable tag: 4.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -41,6 +41,7 @@ With Stream’s powerful activity logging, you’ll have the information you nee
 
 = Built-In Tracking For Core Actions: =
 
+ * WordPress AI Client (WP 7.0+)
  * Posts
  * Pages
  * Custom Post Types
@@ -101,6 +102,20 @@ As a workaround, you can use the `wp_stream_client_ip_address` filter to adapt t
 ⚠️ **WARNING:** The above is an insecure workaround that you should only use when you fully understand what this implies. Relying on any variable with the `HTTP_*` prefix is prone to spoofing and cannot be trusted!
 
 
+= AI Client (WordPress 7.0+) =
+
+When WordPress 7.0+ provides the AI Client event dispatcher (`WP_AI_Client_Event_Dispatcher`), Stream logs each AI generation as an activity record under **AI Client → Prompts → Generated**. If the dispatcher is not available, the connector registers no hooks and has no effect.
+
+By default, Stream stores metadata for every generation: operation, provider, model, input/thought/output token counts, duration, finish reason, and other extended fields when present. The activity summary shows a one-line preview (for example, `chat via openai/gpt-4o (tokens: 120/0/45) in 842ms`); the three numbers are input, thought, then output. Multiline summaries display only the first line in the list table; open a record to see the full text.
+
+Prompt and response text are **not** logged by default. To opt in, enable **Log Prompt and Response text** under **Stream → Settings → AI Client**. When enabled, prompt and response text are appended to the activity summary (not stored in meta, which is size-limited) and may be forwarded to any configured Stream alerts or webhooks (e.g. Slack, IFTTT). HTML is stripped on insert, so stored and forwarded text is not a byte-for-byte copy of the generation. **Privacy Warning:** This content may include personally identifiable information (PII). Ensure your privacy policy covers AI data collection before enabling. Use the `wp_stream_ai_client_log_prompt` and `wp_stream_ai_client_log_response` filters below to redact or omit text before it is stored.
+
+Developers can filter stored text when the setting is enabled:
+
+* `wp_stream_ai_client_log_prompt` — filter prompt text before it is stored; return an empty string to omit it.
+* `wp_stream_ai_client_log_response` — filter response text before it is stored; return an empty string to omit it.
+
+
 == Known Issues ==
 
  * We have temporarily disabled the data removal feature through plugin uninstallation, starting with version 3.9.3. We identified a few edge cases that did not behave as expected and we decided that a temporary removal is preferable at this time for such an impactful and irreversible operation. Our team is actively working on refining this feature to ensure it performs optimally and securely. We plan to reintroduce it in a future update with enhanced safeguards.
@@ -132,12 +147,32 @@ Thank you for wanting to make Stream better for everyone!
 
 == Upgrade Notice ==
 
+= 4.4.0 =
+
+On multisite, access to the records of another site and changes to network-wide settings now need the `manage_network_options` capability. Stream no longer writes integration credentials, such as API keys and tokens, into option-change records. See the changelog for details.
+
 = 4.0.0 =
 
 Use only `$_SERVER['REMOTE_ADDR']` as the client IP address for event logs without additional support for `X-Forwarded-For` HTTP request header value which could be spoofed. See the changelog for additional details.
 
 
 == Changelog ==
+
+= 4.4.0 - August 31, 2026 =
+
+Security:
+
+* Keep multisite record reads inside the current site, and make a network capability necessary for changes to network-wide settings.
+* Remove integration credentials from option-change records. Secret values now show as `[redacted]`.
+* Withhold alert destination credentials, such as Slack webhook URLs, from the `stream/get-alerts` ability.
+
+Bug Fixes:
+
+* Correct a false "SITE IS DISCONNECTED" error from `wp stream query` on a site with no records.
+* Correct a fatal error when a Stream capability check runs before `init`.
+* Correct a PHP warning for a password reset request that gives an unknown user.
+
+[View the full release notes on GitHub.](https://github.com/xwp/stream/blob/master/changelog.md#440---august-31-2026)
 
 = 4.3.0 - July 18, 2026 =
 
@@ -175,29 +210,6 @@ Bug Fixes:
 
 = 4.2.0 - May 28, 2026 =
 
-New Features:
-
-* Expose Stream abilities via the WordPress MCP Adapter when present, enabling AI tools to query Stream records through the Abilities API.
-
-Bug Fixes:
-
-* Fix unbounded growth of `stream` / `stream_meta` tables: the TTL-based auto-purge now runs via Action Scheduler with batched deletion, resolving database bloat on large sites.
-* Fix orphan `stream_meta` rows accumulating across repeated purge cycles with a terminal orphan reaper at the end of every auto-purge chain.
-* Skip Action Scheduler queries on front-end pageloads, eliminating unnecessary queries per pageview.
-
-Enhancements:
-
-* Add a Clean Orphaned Meta link under Settings → Advanced for one-shot cleanup on already-bloated installs.
-* Replace the legacy `wp_stream_auto_purge` WP-Cron event with a recurring Action Scheduler action, with run history visible under Tools → Scheduled Actions.
-
-[View the full release notes on GitHub.](https://github.com/xwp/stream/blob/master/changelog.md#420---may-28-2026)
-
-= 4.1.2 - February 19, 2026 =
-
-[View the release notes.](https://github.com/xwp/stream/blob/master/changelog.md#412---february-19-2026)
-
-= 4.1.1 - February 3, 2025 =
-
-[View the release notes.](https://github.com/xwp/stream/blob/master/changelog.md#411---february-3-2025)
+[View the release notes.](https://github.com/xwp/stream/blob/master/changelog.md#420---may-28-2026)
 
 [See the full changelog for all releases.](https://github.com/xwp/stream/blob/master/changelog.md)

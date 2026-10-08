@@ -97,6 +97,105 @@ abstract class Ability {
 	}
 
 	/**
+	 * Permission check for abilities that persist Stream settings.
+	 *
+	 * On network-activated multisite, Settings::update_all_setting_values()
+	 * writes the authoritative network option (wp_stream_network), so the write
+	 * affects every site on the network. WP_STREAM_SETTINGS_CAPABILITY defaults
+	 * to 'manage_options', which every single-site administrator holds -- on its
+	 * own it is not sufficient authority for a network-wide change. Require a
+	 * network capability whenever the write is going to be network-scoped.
+	 *
+	 * The network capability is required in addition to the settings
+	 * capability, not instead of it: on multisite a super admin passes every
+	 * capability check by definition, so returning the network check alone
+	 * would silently ignore a deployment that narrowed
+	 * WP_STREAM_SETTINGS_CAPABILITY.
+	 *
+	 * @return bool
+	 */
+	protected function can_write_settings() {
+		$can_write_settings = current_user_can( WP_STREAM_SETTINGS_CAPABILITY );
+
+		// Mirrors the branch in Settings::update_all_setting_values(): when the
+		// write lands on the network option it additionally requires network
+		// authority. This is an extra requirement, never a substitute -- the
+		// settings capability is a site-overridable constant, so a deployment
+		// that restricts or revokes it must keep being honoured for super
+		// admins too.
+		if ( is_multisite() && $this->plugin->is_network_activated() ) {
+			return $can_write_settings && current_user_can( 'manage_network_options' );
+		}
+
+		return $can_write_settings;
+	}
+
+	/**
+	 * Alert meta keys holding reusable credentials rather than configuration.
+	 *
+	 * Alert destinations are configured by users with the Stream settings
+	 * capability, but alerts are readable through get-alerts by anyone with
+	 * `view_stream`. These values are bearer credentials -- a Slack incoming
+	 * webhook URL is sufficient on its own to post into the target channel, and
+	 * an IFTTT Maker key is sufficient to fire that account's applets -- so they
+	 * must not cross that privilege boundary.
+	 *
+	 * @const array
+	 */
+	const SECRET_ALERT_META_KEYS = array(
+		'webhook',
+		'maker_key',
+	);
+
+	/**
+	 * Replace credential values in an alert_meta array with a boolean marker.
+	 *
+	 * Callers still need to know whether a destination is configured, so each
+	 * secret key is replaced by `{key}_configured` rather than dropped. The
+	 * value itself never leaves the site.
+	 *
+	 * Returns stdClass for empty input so wp_json_encode() emits `{}` and
+	 * satisfies the `alert_meta: object` output schema (an empty PHP array
+	 * encodes as `[]`).
+	 *
+	 * @param mixed $alert_meta Raw alert meta, usually an array.
+	 * @return array|\stdClass
+	 */
+	protected function redact_alert_meta( $alert_meta ) {
+		if ( ! is_array( $alert_meta ) || empty( $alert_meta ) ) {
+			return new \stdClass();
+		}
+
+		/**
+		 * Filters the alert_meta keys treated as credentials and withheld from
+		 * ability output.
+		 *
+		 * Third-party alert types registered via `wp_stream_alert_types` may
+		 * store their own destination secrets under names Stream cannot know
+		 * about; add them here so they are redacted too.
+		 *
+		 * @param array $keys       Meta keys to redact.
+		 * @param array $alert_meta The alert meta being redacted.
+		 */
+		$secret_keys = (array) apply_filters(
+			'wp_stream_secret_alert_meta_keys',
+			self::SECRET_ALERT_META_KEYS,
+			$alert_meta
+		);
+
+		foreach ( $secret_keys as $key ) {
+			if ( ! array_key_exists( $key, $alert_meta ) ) {
+				continue;
+			}
+
+			$alert_meta[ $key . '_configured' ] = ! empty( $alert_meta[ $key ] );
+			unset( $alert_meta[ $key ] );
+		}
+
+		return empty( $alert_meta ) ? new \stdClass() : $alert_meta;
+	}
+
+	/**
 	 * Annotation flags for the ability (readonly, destructive, idempotent).
 	 *
 	 * @return array
