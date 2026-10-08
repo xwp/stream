@@ -117,6 +117,37 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->assertEquals( 1, $action->get_call_count() );
 	}
 
+	public function test_check_records_waits_until_current_user_is_set() {
+		$alerts         = new Alerts( $this->plugin );
+		$user_id        = self::factory()->user->create();
+		$alert_checks   = 0;
+		$determinations = 0;
+
+		$count_alert_queries     = function ( $query ) use ( &$alert_checks ) {
+			if ( Alerts::POST_TYPE === $query->get( 'post_type' ) ) {
+				++$alert_checks;
+			}
+		};
+		$check_while_determining = function ( $user_id ) use ( $alerts, &$determinations ) {
+			if ( 1 === ++$determinations ) {
+				$alerts->check_records( 1, $this->dummy_stream_data() );
+			}
+			return $user_id;
+		};
+
+		add_action( 'pre_get_posts', $count_alert_queries );
+
+		$this->determine_current_user_with( $check_while_determining, 'wp_get_current_user' );
+
+		$this->assertSame( 1, $determinations, 'Checking alerts re-entered determine_current_user.' );
+		$this->assertSame( 1, $alert_checks, 'Alerts were not checked once the current user was set.' );
+
+		wp_set_current_user( $user_id );
+		remove_action( 'pre_get_posts', $count_alert_queries );
+
+		$this->assertSame( 1, $alert_checks, 'A deferred record was checked twice.' );
+	}
+
 	public function test_register_post_type() {
 		global $wp_post_types, $wp_post_statuses;
 		if ( isset( $wp_post_types['wp_stream_alerts'] ) ) {

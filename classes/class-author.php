@@ -214,7 +214,7 @@ class Author {
 
 			$separator = apply_filters( 'wp_stream_get_role_list_separator', ' - ' );
 			$user_role = implode( $separator, $roles );
-		} elseif ( is_multisite() && is_super_admin( $this->id ) ) {
+		} elseif ( is_multisite() && ! wp_stream_is_determining_current_user() && is_super_admin( $this->id ) ) {
 			$user_role = $wp_roles->role_names['administrator'];
 		}
 
