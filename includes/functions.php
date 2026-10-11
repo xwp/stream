@@ -111,3 +111,13 @@ function wp_stream_is_vip() {
 function wp_stream_is_cron_enabled() {
 	return ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) ? false : true;
 }
+
+/**
+ * Check if WordPress is still determining the current user, so reading it would
+ * re-enter the `determine_current_user` filter (#2033).
+ *
+ * @return bool
+ */
+function wp_stream_is_determining_current_user() {
+	return doing_filter( 'determine_current_user' ) && empty( $GLOBALS['current_user'] );
+}

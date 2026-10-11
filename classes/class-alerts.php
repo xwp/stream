@@ -68,6 +68,13 @@ class Alerts {
 	public $alert_triggers = array();
 
 	/**
+	 * Records inserted while the current user was being determined, keyed by record ID.
+	 *
+	 * @var array
+	 */
+	private $deferred_records = array();
+
+	/**
 	 * Class constructor.
 	 *
 	 * @param Plugin $plugin Instance of plugin object.
@@ -285,6 +292,14 @@ class Alerts {
 	 * @return array
 	 */
 	public function check_records( $record_id, $recordarr ) {
+		// WP_Query reads the current user.
+		if ( wp_stream_is_determining_current_user() ) {
+			$this->deferred_records[ $record_id ] = $recordarr;
+			add_action( 'set_current_user', array( $this, 'check_deferred_records' ) );
+
+			return $recordarr;
+		}
+
 		$args = array(
 			'post_type'   => self::POST_TYPE,
 			'post_status' => 'wp_stream_enabled',
@@ -305,6 +320,22 @@ class Alerts {
 		}
 
 		return $recordarr;
+	}
+
+	/**
+	 * Checks records deferred by check_records() once the current user is set.
+	 *
+	 * @action set_current_user
+	 *
+	 * @return void
+	 */
+	public function check_deferred_records() {
+		$records                = $this->deferred_records;
+		$this->deferred_records = array();
+
+		foreach ( $records as $record_id => $recordarr ) {
+			$this->check_records( $record_id, $recordarr );
+		}
 	}
 
 	/**
