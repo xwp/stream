@@ -242,7 +242,9 @@ class Log {
 			}
 
 			if ( 'ip_address' === $exclude_key ) {
-				$ip_addresses = explode( ',', $exclude_value );
+				// Admin form joins multi-IP values with a comma; trim each
+				// one so "1.1.1.1, 8.8.8.8" still matches a real client IP.
+				$ip_addresses = array_filter( array_map( 'trim', explode( ',', (string) $exclude_value ) ) );
 
 				if ( in_array( $record['ip_address'], $ip_addresses, true ) ) {
 					++$matches_found;
