@@ -36,6 +36,11 @@ class Connector_Woocommerce extends Connector {
 		'transition_post_status',
 		'deleted_post',
 		'woocommerce_order_status_changed',
+		'woocommerce_new_order',
+		'woocommerce_update_order',
+		'woocommerce_before_trash_order',
+		'woocommerce_untrash_order',
+		'woocommerce_before_delete_order',
 		'woocommerce_attribute_added',
 		'woocommerce_attribute_updated',
 		'woocommerce_attribute_deleted',
@@ -307,6 +312,7 @@ class Connector_Woocommerce extends Connector {
 	 */
 	public function exclude_order_post_types( $post_types ) {
 		$post_types[] = 'shop_order';
+		$post_types[] = 'shop_order_placehold';
 
 		return $post_types;
 	}
@@ -342,18 +348,7 @@ class Connector_Woocommerce extends Connector {
 			return;
 		}
 
-		// Don't track customer actions.
-		if ( ! is_admin() ) {
-			return;
-		}
-
-		// Don't track minor status change actions.
-		if ( in_array( wp_stream_filter_input( INPUT_GET, 'action' ), array( 'mark_processing', 'mark_on-hold', 'mark_completed' ), true ) || defined( 'DOING_AJAX' ) ) {
-			return;
-		}
-
-		// Don't log updates when more than one happens at the same time.
-		if ( $post->ID === $this->order_update_logged ) {
+		if ( ! $this->should_log_order_event( $post->ID ) ) {
 			return;
 		}
 
@@ -456,6 +451,145 @@ class Connector_Woocommerce extends Connector {
 			$post->post_type,
 			'deleted'
 		);
+	}
+
+	/**
+	 * Whether orders are stored in WooCommerce's custom order tables (HPOS), where order post hooks don't fire.
+	 *
+	 * @return bool
+	 */
+	public function custom_orders_table_usage_is_enabled() {
+		return class_exists( '\Automattic\WooCommerce\Utilities\OrderUtil' )
+			&& \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled();
+	}
+
+	/**
+	 * Log order creation in custom order tables
+	 *
+	 * @action woocommerce_new_order
+	 *
+	 * @param int       $order_id Order ID.
+	 * @param \WC_Order $order    Order object.
+	 */
+	public function callback_woocommerce_new_order( $order_id, $order ) {
+		/* translators: %s: an order title (e.g. "Order #42") */
+		$this->log_order_table_event( $order, esc_html_x( '%s created', 'Order title', 'stream' ), 'created' );
+	}
+
+	/**
+	 * Log order updates in custom order tables
+	 *
+	 * @action woocommerce_update_order
+	 *
+	 * @param int       $order_id Order ID.
+	 * @param \WC_Order $order    Order object.
+	 */
+	public function callback_woocommerce_update_order( $order_id, $order ) {
+		// Saves made by other woocommerce_new_order callbacks are part of creating the order.
+		if ( doing_action( 'woocommerce_new_order' ) ) {
+			return;
+		}
+
+		/* translators: %s: an order title (e.g. "Order #42") */
+		$this->log_order_table_event( $order, esc_html_x( '%s updated', 'Order title', 'stream' ), 'updated' );
+	}
+
+	/**
+	 * Log order trashing in custom order tables
+	 *
+	 * @action woocommerce_before_trash_order
+	 *
+	 * @param int       $order_id Order ID.
+	 * @param \WC_Order $order    Order object.
+	 */
+	public function callback_woocommerce_before_trash_order( $order_id, $order ) {
+		/* translators: %s: an order title (e.g. "Order #42") */
+		$this->log_order_table_event( $order, esc_html_x( '%s trashed', 'Order title', 'stream' ), 'trashed' );
+	}
+
+	/**
+	 * Log order restoring in custom order tables
+	 *
+	 * @action woocommerce_untrash_order
+	 *
+	 * @param int    $order_id        Order ID.
+	 * @param string $previous_status Status the order is restored to.
+	 */
+	public function callback_woocommerce_untrash_order( $order_id, $previous_status ) {
+		/* translators: %s: an order title (e.g. "Order #42") */
+		$this->log_order_table_event( wc_get_order( $order_id ), esc_html_x( '%s restored from the trash', 'Order title', 'stream' ), 'untrashed' );
+	}
+
+	/**
+	 * Log order deletion in custom order tables
+	 *
+	 * @action woocommerce_before_delete_order
+	 *
+	 * @param int       $order_id Order ID.
+	 * @param \WC_Order $order    Order object.
+	 */
+	public function callback_woocommerce_before_delete_order( $order_id, $order ) {
+		/* translators: %s: an order title (e.g. "Order #42") */
+		$this->log_order_table_event( $order, _x( '"%s" deleted from trash', 'Order title', 'stream' ), 'deleted' );
+	}
+
+	/**
+	 * Whether an order event should be logged: admin only, not bulk status changes or AJAX, once per order per request.
+	 *
+	 * @param int $order_id Order ID.
+	 *
+	 * @return bool
+	 */
+	private function should_log_order_event( $order_id ) {
+		// Don't track customer actions.
+		if ( ! is_admin() ) {
+			return false;
+		}
+
+		// Don't track minor status change actions.
+		if ( in_array( wp_stream_filter_input( INPUT_GET, 'action' ), array( 'mark_processing', 'mark_on-hold', 'mark_completed' ), true ) || defined( 'DOING_AJAX' ) ) {
+			return false;
+		}
+
+		// Don't log updates when more than one happens at the same time.
+		return $order_id !== $this->order_update_logged;
+	}
+
+	/**
+	 * Logs an order event when orders live in custom order tables, with the same rules as callback_transition_post_status().
+	 *
+	 * @param \WC_Order|false $order   Order object.
+	 * @param string          $message sprintf-ready message taking the order title.
+	 * @param string          $action  Action slug.
+	 */
+	private function log_order_table_event( $order, $message, $action ) {
+		if ( ! $this->custom_orders_table_usage_is_enabled() || ! $order instanceof \WC_Order || 'shop_order' !== $order->get_type() ) {
+			return;
+		}
+
+		// Draft orders are ignored, as in callback_transition_post_status() and callback_deleted_post().
+		if ( in_array( $order->get_status(), array( 'auto-draft', 'draft', 'checkout-draft' ), true ) ) {
+			return;
+		}
+
+		if ( ! $this->should_log_order_event( $order->get_id() ) ) {
+			return;
+		}
+
+		$this->log(
+			$message,
+			array(
+				'post_title'    => esc_html__( 'Order number', 'stream' ) . ' ' . esc_html( $order->get_id() ),
+				'singular_name' => esc_html__( 'order', 'stream' ),
+				'new_status'    => $order->get_status(),
+				'revision_id'   => null,
+			),
+			$order->get_id(),
+			'shop_order',
+			$action
+		);
+
+		$this->order_update_logged = $order->get_id();
 	}
 
 	/**
