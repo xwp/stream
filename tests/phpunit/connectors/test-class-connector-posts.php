@@ -104,7 +104,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 					),
 					$this->greaterThan( 0 ),
 					$this->equalTo( 'post' ),
-					$this->equalTo( 'updated' ),
+					$this->equalTo( 'published' ),
 				),
 				array(
 					$this->equalTo(
@@ -219,7 +219,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 					),
 					$this->greaterThan( 0 ),
 					$this->equalTo( 'post' ),
-					$this->equalTo( 'updated' ),
+					$this->equalTo( 'published' ),
 				),
 				array(
 					$this->equalTo(
@@ -334,7 +334,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 					),
 					$this->greaterThan( 0 ),
 					$this->equalTo( 'post' ),
-					$this->equalTo( 'created' ),
+					$this->equalTo( 'published' ),
 				)
 			);
 
