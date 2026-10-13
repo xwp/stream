@@ -153,4 +153,150 @@ class Test_WP_Stream_Connector_Two_Factor extends WP_StreamTestCase {
 
 			\Two_Factor_Core::disable_provider_for_user( $this->user_id, 'Two_Factor_Dummy' );
 	}
+
+	/**
+	 * Older Two Factor fires this action with only the user argument.
+	 */
+	public function test_callback_two_factor_user_authenticated_without_provider_logs_unknown_method() {
+		// Arrange
+		wp_set_current_user( $this->user_id );
+
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->with(
+				$this->equalTo(
+					__(
+						'Authenticated via %s',
+						'stream'
+					)
+				),
+				$this->equalTo(
+					array(
+						'provider' => __( 'unknown Two Factor method', 'stream' ),
+					)
+				),
+				$this->user_id,
+				'auth',
+				'authenticated',
+				$this->user_id
+			);
+
+		// Act
+		do_action( 'two_factor_user_authenticated', $this->user );
+	}
+
+	/**
+	 * Failed 2FA for a known login is logged against that user.
+	 */
+	public function test_callback_wp_login_failed_known_user_logs_failed_2fa() {
+		// Arrange
+		$error = new \WP_Error(
+			'two_factor_invalid',
+			'ERROR: Invalid verification code.'
+		);
+
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->with(
+				$this->equalTo(
+					__(
+						'%1$s Failed 2FA: %2$s %3$s',
+						'stream'
+					)
+				),
+				$this->equalTo(
+					array(
+						'display_name' => $this->user->display_name,
+						'code'         => 'two_factor_invalid',
+						'error'        => 'ERROR: Invalid verification code.',
+					)
+				),
+				$this->user_id,
+				'auth',
+				'failed',
+				$this->user_id
+			);
+
+		// Act
+		$this->mock->callback_wp_login_failed( $this->user->user_login, $error );
+	}
+
+	/**
+	 * Failed 2FA submitted as an email still resolves the user.
+	 */
+	public function test_callback_wp_login_failed_email_login_logs_failed_2fa() {
+		// Arrange
+		$email   = 'twofactor-login@example.com';
+		$user_id = self::factory()->user->create(
+			array(
+				'user_email'   => $email,
+				'display_name' => 'emailuserdisplay',
+			)
+		);
+		$user    = get_user_by( 'id', $user_id );
+
+		$error = new \WP_Error(
+			'two_factor_invalid',
+			'ERROR: Invalid verification code.'
+		);
+
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->with(
+				$this->equalTo(
+					__(
+						'%1$s Failed 2FA: %2$s %3$s',
+						'stream'
+					)
+				),
+				$this->equalTo(
+					array(
+						'display_name' => $user->display_name,
+						'code'         => 'two_factor_invalid',
+						'error'        => 'ERROR: Invalid verification code.',
+					)
+				),
+				$user_id,
+				'auth',
+				'failed',
+				$user_id
+			);
+
+		// Act
+		$this->mock->callback_wp_login_failed( $email, $error );
+	}
+
+	/**
+	 * Unknown login must not dereference a false $user (PHP 8 property-on-bool warning).
+	 */
+	public function test_callback_wp_login_failed_unknown_user_does_not_log() {
+		// Arrange
+		$error = new \WP_Error(
+			'two_factor_invalid',
+			'ERROR: Invalid verification code.'
+		);
+
+		$this->mock->expects( $this->never() )
+			->method( 'log' );
+
+		// Act
+		$this->mock->callback_wp_login_failed( 'does-not-exist-xyz', $error );
+	}
+
+	/**
+	 * Non-Two-Factor login failures are ignored by this connector.
+	 */
+	public function test_callback_wp_login_failed_non_two_factor_error_does_not_log() {
+		// Arrange
+		$error = new \WP_Error(
+			'incorrect_password',
+			'The password you entered is incorrect.'
+		);
+
+		$this->mock->expects( $this->never() )
+			->method( 'log' );
+
+		// Act
+		$this->mock->callback_wp_login_failed( $this->user->user_login, $error );
+	}
 }

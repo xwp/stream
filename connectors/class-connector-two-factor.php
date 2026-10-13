@@ -334,6 +334,10 @@ class Connector_Two_Factor extends Connector {
 			$user = get_user_by( 'email', $user_login );
 		}
 
+		if ( ! $user ) {
+			return;
+		}
+
 		/* Translators: %1$s is the user display name, %2$s is the error code, %3$s is the error message. */
 		$message = __(
 			'%1$s Failed 2FA: %2$s %3$s',
