@@ -19,6 +19,7 @@ class Connectors {
 	 */
 	const BUILTIN_CONNECTOR_SLUGS = array(
 		// Core Connectors.
+		'ai-client',
 		'blogs',
 		'comments',
 		'editor',
@@ -61,7 +62,10 @@ class Connectors {
 	private $available_connectors = null;
 
 	/**
-	 * Instantiated connectors, keyed by slug. Filled once by instantiate_connector_classes().
+	 * Instantiated connectors, keyed by slug. Includes inactive connectors.
+	 *
+	 * Distinct from $connectors, which holds only instances that passed
+	 * dependency and admin/frontend registration gates.
 	 *
 	 * @var array<string, Connector>|null
 	 */
@@ -142,16 +146,12 @@ class Connectors {
 	}
 
 	/**
-	 * Instantiate connector classes. Memoizes so abilities do not new twice.
+	 * Instantiate connector classes.
 	 *
 	 * @param string[] $class_names Fully-qualified class names.
 	 * @return array<string, Connector>
 	 */
 	private function instantiate_connector_classes( $class_names ) {
-		if ( is_array( $this->connector_instances ) ) {
-			return $this->connector_instances;
-		}
-
 		$classes = array();
 
 		foreach ( $class_names as $class_name ) {
@@ -159,9 +159,7 @@ class Connectors {
 			$classes[ $instance->name ] = $instance;
 		}
 
-		$this->connector_instances = $classes;
-
-		return $this->connector_instances;
+		return $classes;
 	}
 
 	/**
@@ -211,11 +209,16 @@ class Connectors {
 				continue;
 			}
 
-			// Add connector to the registry.
-			$this->connectors[ $connector->name ] = $connector;
-
 			// Register the connector.
 			$connector->register();
+
+			// Some connectors bail in register() (e.g. network-gated Yoast SEO).
+			if ( ! $connector->is_registered() ) {
+				continue;
+			}
+
+			// Add connector to the registry.
+			$this->connectors[ $connector->name ] = $connector;
 
 			// Link context labels to their connector.
 			$this->contexts[ $connector->name ] = $connector->get_context_labels();
@@ -246,11 +249,23 @@ class Connectors {
 	}
 
 	/**
-	 * Load built-in connectors
+	 * Load built-in connectors.
+	 *
+	 * Runs once per Connectors instance. Later calls are ignored and trigger
+	 * _doing_it_wrong(); use reload_connectors() to re-attach hooks.
 	 */
 	public function load_connectors() {
-		$class_names = $this->get_available_connectors();
-		$instances   = $this->instantiate_connector_classes( $class_names );
+		if ( ! empty( $this->connector_instances ) ) {
+			$message = sprintf(
+				/* translators: %s: method name */
+				__( '%s should only be called once. Use reload_connectors() to re-register hooks.', 'stream' ),
+				__METHOD__
+			);
+			_doing_it_wrong( __METHOD__, $message, Plugin::VERSION ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- notice text, not HTML output.
+			return;
+		}
+
+		$instances = $this->instantiate_connector_classes( $this->get_available_connectors() );
 
 		/**
 		 * Allows for adding additional connectors via classes that extend Connector.
