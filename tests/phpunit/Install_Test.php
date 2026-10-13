@@ -9,7 +9,7 @@ namespace WP_Stream;
 
 require_once __DIR__ . '/class-auto-300-wpdb-spy.php';
 
-class Test_Install extends WP_StreamTestCase {
+class Install_Test extends WP_StreamTestCase {
 	/**
 	 * Install instance present before a test mutates $plugin->install.
 	 *

@@ -13,9 +13,9 @@
 namespace WP_Stream;
 
 /**
- * Test_WP_Stream_Connector_AI_Client
+ * Connector_AI_Client_Test
  */
-class Test_WP_Stream_Connector_AI_Client extends WP_StreamTestCase {
+class Connector_AI_Client_Test extends WP_StreamTestCase {
 
 	/**
 	 * Message captured from the most recent Connector::log() call.

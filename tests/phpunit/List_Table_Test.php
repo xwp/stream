@@ -1,11 +1,11 @@
 <?php
 namespace WP_Stream;
 
-class Test_List_Table extends WP_StreamTestCase {
+use PHPUnit\Framework\Attributes\DataProvider;
 
-	/**
-	 * @dataProvider provide_format_summary_preview_cases
-	 */
+class List_Table_Test extends WP_StreamTestCase {
+
+	#[DataProvider( 'provide_format_summary_preview_cases' )]
 	public function test_format_summary_preview( string $input, string $expected_pattern, string $description ): void {
 		$result = List_Table::format_summary_preview( $input );
 		$this->assertMatchesRegularExpression( $expected_pattern, $result, $description );

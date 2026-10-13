@@ -10,7 +10,7 @@
 
 namespace WP_Stream;
 
-class Test_AS_Scheduler extends WP_StreamTestCase {
+class AS_Scheduler_Test extends WP_StreamTestCase {
 
 	/**
 	 * Scheduler under test.

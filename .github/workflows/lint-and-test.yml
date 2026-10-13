@@ -19,14 +19,13 @@ jobs:
       packages: read
     strategy:
       fail-fast: false
+      # PHPUnit 11 requires PHP >= 8.2. PHP 7.4 stays available locally via
+      # `npm run switch-to:php7.4` for runtime smoke checks, not this suite.
       matrix:
         include:
-          - php: '7.4'
-            wordpress_image: latest
-            xdebug: '3.1.6'
           - php: '8.2'
             wordpress_image: php8.2
-            xdebug: '3.2.1'
+            xdebug: '3.3.2'
           - php: '8.3'
             wordpress_image: php8.3
             xdebug: '3.3.2'
@@ -104,14 +103,13 @@ jobs:
       packages: read
     strategy:
       fail-fast: false
+      # PHPUnit 11 requires PHP >= 8.2. PHP 7.4 stays available locally via
+      # `npm run switch-to:php7.4` for runtime smoke checks, not this suite.
       matrix:
         include:
-          - php: '7.4'
-            wordpress_image: latest
-            xdebug: '3.1.6'
           - php: '8.2'
             wordpress_image: php8.2
-            xdebug: '3.2.1'
+            xdebug: '3.3.2'
           - php: '8.3'
             wordpress_image: php8.3
             xdebug: '3.3.2'
