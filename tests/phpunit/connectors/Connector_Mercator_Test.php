@@ -11,27 +11,8 @@ namespace WP_Stream;
 
 class Connector_Mercator_Test extends WP_StreamTestCase {
 
-	/**
-	 * Recorded log() arguments from mocked connector callbacks.
-	 *
-	 * @var array<int, array<int, mixed>>
-	 */
-	private static $recorded_log_calls = array();
-
-	/**
-	 * Records log() arguments for post-hoc assertions.
-	 *
-	 * @param mixed ...$args Log method arguments.
-	 * @return void
-	 */
-	public static function record_log_call( ...$args ) {
-		self::$recorded_log_calls[] = $args;
-	}
-
 	public function setUp(): void {
 		parent::setUp();
-
-		self::$recorded_log_calls = array();
 
 		if ( ! is_multisite() ) {
 			$this->markTestSkipped( 'This test requires multisite.' );

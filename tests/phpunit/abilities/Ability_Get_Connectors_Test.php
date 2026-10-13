@@ -35,6 +35,8 @@ class Ability_Get_Connectors_Test extends Abilities_TestCase {
 
 		$output = $this->ability->get_output_schema();
 		$this->assertSame( 'array', $output['type'] );
+		$this->assertStringContainsString( 'ships', $this->ability->get_description() );
+		$this->assertStringContainsString( 'ships', $output['description'] );
 	}
 
 	public function test_permissions() {

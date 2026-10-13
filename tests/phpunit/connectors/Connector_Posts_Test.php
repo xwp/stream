@@ -23,10 +23,19 @@ class Connector_Posts_Test extends WP_StreamTestCase {
 	private $date_gmt;
 
 	/**
+	 * Expected post transition context subset.
+	 *
+	 * @var array
+	 */
+	private static $expected_post_context = array();
+
+	/**
 	 * Runs before each test.
 	 */
 	public function setUp(): void {
 		parent::setUp();
+
+		self::$expected_post_context = array();
 
 		$this->plugin->connectors->unload_connectors();
 
@@ -616,13 +625,6 @@ class Connector_Posts_Test extends WP_StreamTestCase {
 			)
 		);
 	}
-
-	/**
-	 * Expected post transition context subset.
-	 *
-	 * @var array
-	 */
-	private static $expected_post_context = array();
 
 	/**
 	 * Assert post transition log context contains expected keys.

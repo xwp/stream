@@ -10,10 +10,19 @@ namespace WP_Stream;
 class Connector_Media_Test extends WP_StreamTestCase {
 
 	/**
+	 * Expected parent post ID for attachment context assertions.
+	 *
+	 * @var int
+	 */
+	private static $expected_parent_id = 0;
+
+	/**
 	 * Runs before each test
 	 */
 	public function setUp(): void {
 		parent::setUp();
+
+		self::$expected_parent_id = 0;
 
 		// Make partial of Connector_Media class, with mocked "log" function.
 		$this->mock = $this->getMockBuilder( Connector_Media::class )
@@ -94,13 +103,6 @@ class Connector_Media_Test extends WP_StreamTestCase {
 
 		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_add_attachment' ) );
 	}
-
-	/**
-	 * Expected parent post ID for attachment context assertions.
-	 *
-	 * @var int
-	 */
-	private static $expected_parent_id = 0;
 
 	/**
 	 * Assert attached-to-parent context.
