@@ -107,7 +107,8 @@ We use npm as the canonical task runner for the project. The following commands 
 - `npm run test` to run PHPUnit (single-site + multisite) inside `wp-env run tests-cli`.
 - `composer test-unit` to run the fast PHP unit suite on the host (no Docker, no WordPress bootstrap). Requires PHP ≥ 8.2 (PHPUnit 11).
 - `npm run test:php-unit` to run the fast PHP unit suite in the wp-env tests container.
-- `npm run test:php` / `npm run test:php-multisite` to run one integration PHPUnit suite only.
+- `npm run test:php` / `npm run test:php-multisite` to run one integration PHPUnit suite only. These pass `--no-coverage` because wp-env does not load a coverage driver.
+- `composer test-coverage` / `composer test-coverage-multisite` write `tests/reports/clover.xml` for `npm run test-report`.
 - `npm run test-xdebug` will run PHPUnit after starting wp-env with Xdebug.
 - `npm run test-e2e` will run the Playwright E2E tests against `http://localhost:8888`.
 - `npm run test-e2e-debug` will run the Playwright E2E tests in debug mode (Chromium + dev tools).
