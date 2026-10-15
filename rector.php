@@ -37,8 +37,8 @@ return RectorConfig::configure()
 			__DIR__ . '/tests',
 			__DIR__ . '/vendor',
 			TypedPropertyFromAssignsRector::class => array(
-				// Remaining extension-point bases. Alert/exporter families
-				// are typed with their children in PR 3 (Q7).
+				// Extension-point bases. PHP requires identical property types in
+				// parent and child, so each family must be typed in one change.
 				__DIR__ . '/classes/class-alert-type.php',
 				__DIR__ . '/classes/class-alert-trigger.php',
 				__DIR__ . '/classes/class-exporter.php',

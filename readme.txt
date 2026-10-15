@@ -148,6 +148,10 @@ Thank you for wanting to make Stream better for everyone!
 
 == Upgrade Notice ==
 
+= Unreleased =
+
+Custom connectors must declare typed properties, for example `public string $name`. An untyped declaration causes a fatal error. See the changelog for details.
+
 = 4.4.0 =
 
 On multisite, access to the records of another site and changes to network-wide settings now need the `manage_network_options` capability. Stream no longer writes integration credentials, such as API keys and tokens, into option-change records. See the changelog for details.

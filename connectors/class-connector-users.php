@@ -23,6 +23,7 @@ class Connector_Users extends Connector {
 	 * @var WP_User
 	 */
 	protected $_users_object_pre_deleted = array(); // @codingStandardsIgnoreLine
+
 	/**
 	 * Actions registered for this connector
 	 */
