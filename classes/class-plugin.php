@@ -209,8 +209,15 @@ class Plugin {
 
 		// Load admin area classes.
 		if ( is_admin() || ( defined( 'WP_STREAM_DEV_DEBUG' ) && WP_STREAM_DEV_DEBUG ) || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
-			$this->admin   = new Admin( $this );
-			$this->install = $driver->setup_storage( $this );
+			$this->admin = new Admin( $this );
+			$install     = $driver->setup_storage( $this );
+			if ( ! $install instanceof Install ) {
+				wp_die(
+					esc_html__( 'Stream: DB driver setup_storage() must return an Install instance.', 'stream' ),
+					esc_html__( 'Stream DB Error', 'stream' )
+				);
+			}
+			$this->install = $install;
 		} elseif ( defined( 'DOING_CRON' ) && DOING_CRON ) {
 			$this->admin = new Admin( $this, $driver );
 		}
