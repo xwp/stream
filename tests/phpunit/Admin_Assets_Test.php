@@ -66,13 +66,12 @@ class Admin_Assets_Test extends WP_StreamTestCase {
 
 		$this->assertTrue( wp_style_is( 'wp-stream-admin' ), 'wp-stream-admin style is enqueued' );
 
-		// select2 remains enqueued via the admin-exclude bundle dependency until
-		// that screen migrates off it; the records screen itself no longer runs
-		// any select2 initialization (see the e2e native-selects assertions).
-		$this->assertTrue( wp_script_is( 'wp-stream-select2' ), 'wp-stream-select2 script is enqueued' );
-		$this->assertTrue( wp_script_is( 'wp-stream-select2-en' ), 'wp-stream-select2-en script is enqueued' );
-		$this->assertTrue( wp_script_is( 'wp-stream-jquery-timeago' ), 'wp-stream-jquery-timeago script is enqueued' );
-		$this->assertTrue( wp_script_is( 'wp-stream-jquery-timeago-en' ), 'wp-stream-jquery-timeago-en script is enqueued' );
+		// The select2 and jquery-timeago vendor scripts are no longer enqueued
+		// anywhere: every screen uses native selects and Intl.RelativeTimeFormat.
+		$this->assertFalse( wp_script_is( 'wp-stream-select2' ), 'wp-stream-select2 script is not enqueued' );
+		$this->assertFalse( wp_script_is( 'wp-stream-select2-en' ), 'wp-stream-select2-en script is not enqueued' );
+		$this->assertFalse( wp_script_is( 'wp-stream-jquery-timeago' ), 'wp-stream-jquery-timeago script is not enqueued' );
+		$this->assertFalse( wp_script_is( 'wp-stream-jquery-timeago-en' ), 'wp-stream-jquery-timeago-en script is not enqueued' );
 
 		$this->assertTrue( wp_script_is( 'wp-stream-admin' ), 'wp-stream-admin script is enqueued' );
 		$this->assertTrue( wp_script_is( 'wp-stream-live-updates' ), 'wp-stream-live-updates script is enqueued' );

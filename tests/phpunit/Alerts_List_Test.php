@@ -65,6 +65,64 @@ class Alerts_List_Test extends WP_StreamTestCase {
 	/**
 	 * Test save_alert_inline_edit method.
 	 */
+	public function test_save_alert_inline_edit_regenerates_alert_title() {
+		$alerts_list = new Alerts_List( $this->plugin );
+		$post_id     = wp_insert_post(
+			array(
+				'post_type'  => Alerts::POST_TYPE,
+				'post_title' => 'Admin > Any Context > Any Action',
+			)
+		);
+
+		$user_id = self::factory()->user->create(
+			array(
+				'role'         => 'administrator',
+				'display_name' => 'Zelly Regenerated',
+			)
+		);
+		wp_set_current_user( $user_id );
+
+		$_POST['post_type']                              = Alerts::POST_TYPE;
+		$_POST['wp_stream_trigger_author']               = (string) $user_id;
+		$_POST['wp_stream_trigger_connector_or_context'] = '';
+		$_POST['wp_stream_trigger_action']               = '';
+		$_POST['wp_stream_alert_type']                   = 'none';
+		$_POST['wp_stream_alert_status']                 = 'wp_stream_enabled';
+		$_POST[ Alerts::POST_TYPE . '_edit_nonce' ]      = wp_create_nonce( plugin_basename( $this->plugin->locations['dir'] . 'classes/class-alerts-list.php' ) );
+
+		$data    = array();
+		$postarr = array(
+			'ID'        => $post_id,
+			'post_type' => Alerts::POST_TYPE,
+		);
+
+		$filtered = $alerts_list->save_alert_inline_edit( $data, $postarr );
+
+		$this->assertStringContainsString(
+			'Zelly Regenerated',
+			$filtered['post_title'],
+			'Editing a trigger should regenerate the alert title shown in the list'
+		);
+		$this->assertStringNotContainsString(
+			'Admin',
+			$filtered['post_title'],
+			'Regenerated title should not keep the creation-time author'
+		);
+
+		$alert_meta = get_post_meta( $post_id, 'alert_meta', true );
+		$this->assertSame( (string) $user_id, $alert_meta['trigger_author'], 'Trigger author not saved' );
+
+		unset(
+			$_POST['post_type'],
+			$_POST['wp_stream_trigger_author'],
+			$_POST['wp_stream_trigger_connector_or_context'],
+			$_POST['wp_stream_trigger_action'],
+			$_POST['wp_stream_alert_type'],
+			$_POST['wp_stream_alert_status'],
+			$_POST[ Alerts::POST_TYPE . '_edit_nonce' ]
+		);
+	}
+
 	public function test_save_alert_inline_edit() {
 		$alerts_list = new Alerts_List( $this->plugin );
 		$post_id     = wp_insert_post(

@@ -11,11 +11,11 @@ import { newAuthedPage } from './helpers/stream-plugin';
 /**
  * Admin UI smoke test for the Stream plugin.
  *
- * Loads the main Stream admin screens and asserts that the records-screen
- * native selects and the jQuery UI datepicker render, and that no uncaught
- * JS errors are emitted. Intended to catch regressions from upstream jQuery
- * or jQuery UI version bumps that the unit / integration suites do not
- * exercise.
+ * Loads the main Stream admin screens and asserts that native selects,
+ * the jQuery UI datepicker, and relative timestamps render, and that no
+ * uncaught JS errors are emitted. Intended to catch regressions from
+ * upstream jQuery or jQuery UI version bumps that the unit / integration
+ * suites do not exercise.
  */
 
 test.describe.configure( { mode: 'serial' } );
@@ -98,6 +98,36 @@ test.describe( 'Admin UI smoke', () => {
 		await expect( page.locator( '.select2-container' ) ).toHaveCount( 0 );
 	} );
 
+	test( 'renders relative timestamps next to the absolute date', async () => {
+		await page.goto( '/wp-admin/admin.php?page=wp_stream' );
+		const time = page
+			.locator( 'table.wp-list-table .column-date time.timeago' )
+			.first();
+		await expect( time ).toBeVisible();
+		await expect( time ).toHaveAttribute( 'datetime', /./ );
+		await expect( time ).toHaveText(
+			/ago|now|yesterday|today|tomorrow|last\s|next\s|in\s|this\s/i,
+		);
+		// Previous presentation: the bold relative string renders alongside the
+		// original absolute date, which stays visible in the cell.
+		await expect( time.locator( 'xpath=ancestor::td[1]' ) ).toHaveText(
+			/\d{4}\/\d{2}\/\d{2}/,
+		);
+	} );
+
+	test( 'uses native selects on Settings exclude rules', async () => {
+		await page.goto(
+			'/wp-admin/admin.php?page=wp_stream_settings&tab=exclude',
+		);
+		await page.locator( '#exclude_rules_new_rule' ).click();
+		const contextSelect = page
+			.locator( '.stream-exclude-list tbody tr:not(.hidden) select.connector_or_context' )
+			.last();
+		await expect( contextSelect ).toBeVisible();
+		await expect( page.locator( '.select2-dropdown' ) ).toHaveCount( 0 );
+		await expect( page.locator( '.select2-container' ) ).toHaveCount( 0 );
+	} );
+
 	test( 'loads the Settings tab', async () => {
 		await page.goto( '/wp-admin/admin.php?page=wp_stream_settings' );
 		await expect( page.locator( 'form' ).first() ).toBeVisible();
@@ -108,6 +138,11 @@ test.describe( 'Admin UI smoke', () => {
 		const list = page.locator( '.wp-list-table' );
 		const empty = page.locator( '.no-items, .post-state' );
 		await expect( list.or( empty ).first() ).toBeVisible();
+		await expect( page.locator( '.select2-dropdown' ) ).toHaveCount( 0 );
+		const bulkWidth = await page
+			.locator( '#bulk-action-selector-top' )
+			.evaluate( ( el ) => parseFloat( window.getComputedStyle( el ).width ) );
+		expect( bulkWidth ).toBeLessThan( 250 );
 	} );
 
 	test( 'new alert type list includes webhook and omits IFTTT', async () => {

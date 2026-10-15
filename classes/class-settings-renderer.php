@@ -211,58 +211,34 @@ class Settings_Renderer {
 				// The description string carries the running-state message.
 				$output = '';
 				break;
-			case 'select2':
-				if ( ! isset( $current_value ) ) {
-					$current_value = '';
-				}
-
-				$data_values = array();
-
+			case 'grouped_select':
+				$choices = array();
 				if ( isset( $field['choices'] ) ) {
 					$choices = $field['choices'];
 					if ( is_callable( $choices ) ) {
 						$param   = ( isset( $field['param'] ) ) ? $field['param'] : null;
 						$choices = call_user_func( $choices, $param );
 					}
-					foreach ( $choices as $key => $value ) {
-						if ( is_array( $value ) ) {
-							$child_values = array();
-							if ( isset( $value['children'] ) ) {
-								$child_values = array();
-								foreach ( $value['children'] as $child_key => $child_value ) {
-									$child_values[] = array(
-										'id'   => $child_key,
-										'text' => $child_value,
-									);
-								}
-							}
-							if ( isset( $value['label'] ) ) {
-								$data_values[] = array(
-									'id'       => $key,
-									'text'     => $value['label'],
-									'children' => $child_values,
-								);
-							}
-						} else {
-							$data_values[] = array(
-								'id'   => $key,
-								'text' => $value,
-							);
-						}
-					}
-					$class .= ' with-source';
 				}
 
-				$input_html = sprintf(
-					'<input type="hidden" name="%1$s[%2$s_%3$s]" data-values=\'%4$s\' value="%5$s" class="select2-select %6$s" data-placeholder="%7$s" />',
-					esc_attr( $option_key ),
-					esc_attr( $section ),
-					esc_attr( $name ),
-					esc_attr( wp_json_encode( $data_values ) ),
-					esc_attr( $current_value ),
-					esc_attr( $class ),
-					/* translators: %s: the title of the dropdown menu (e.g. "users") */
-					sprintf( esc_html__( 'Any %s', 'stream' ), $title )
+				$selected_values = is_array( $current_value ) ? $current_value : explode( ',', (string) $current_value );
+				$form            = new Form_Generator();
+				$input_html      = $form->render_field(
+					'grouped_select',
+					array(
+						'name'    => sprintf( '%1$s[%2$s_%3$s]', $option_key, $section, $name ),
+						'value'   => array_map( 'strval', $selected_values ),
+						'options' => self::choices_to_options( $choices ),
+						'classes' => $class,
+						'data'    => array(
+							'placeholder' => sprintf(
+								/* translators: %s: the title of the dropdown menu (e.g. "users") */
+								__( 'Any %s', 'stream' ),
+								$title
+							),
+						),
+					),
+					false
 				);
 
 				$output = sprintf(
@@ -298,7 +274,6 @@ class Settings_Renderer {
 	private function render_rule_list( $field, $current_value, $option_key, $section, $name, $description ) {
 		unset( $field );
 
-		$users  = count_users();
 		$form   = new Form_Generator();
 		$output = '<p class="description">' . esc_html( $description ) . '</p>';
 
@@ -340,7 +315,6 @@ class Settings_Renderer {
 		foreach ( $current_value['exclude_row'] as $key => $value ) {
 			$exclude_rows[] = $this->render_rule_list_row(
 				$form,
-				$users,
 				$current_value,
 				$key,
 				$option_key,
@@ -369,7 +343,6 @@ class Settings_Renderer {
 	 * Render a single exclude-rule table row.
 	 *
 	 * @param Form_Generator $form          Form helper.
-	 * @param array          $users         count_users() payload.
 	 * @param array          $current_value Stored rule list value.
 	 * @param string|int     $key           Row key.
 	 * @param string         $option_key    Settings option key.
@@ -377,58 +350,54 @@ class Settings_Renderer {
 	 * @param string         $name          Field name.
 	 * @return string
 	 */
-	private function render_rule_list_row( $form, $users, $current_value, $key, $option_key, $section, $name ) {
+	private function render_rule_list_row( $form, $current_value, $key, $option_key, $section, $name ) {
 		$author_or_role = isset( $current_value['author_or_role'][ $key ] ) ? $current_value['author_or_role'][ $key ] : '';
 		$connector      = isset( $current_value['connector'][ $key ] ) ? $current_value['connector'][ $key ] : '';
 		$context        = isset( $current_value['context'][ $key ] ) ? $current_value['context'][ $key ] : '';
 		$action         = isset( $current_value['action'][ $key ] ) ? $current_value['action'][ $key ] : '';
 		$ip_address     = isset( $current_value['ip_address'][ $key ] ) ? $current_value['ip_address'][ $key ] : '';
 
-		$author_or_role_values   = array();
-		$author_or_role_selected = array();
-
-		foreach ( Settings_Registry::get_roles() as $role_id => $role ) {
-			$args  = array(
+		$role_options = array();
+		foreach ( Settings_Registry::get_roles() as $role_id => $role_label ) {
+			$role_options[] = array(
 				'value' => $role_id,
-				'text'  => $role,
+				'text'  => $role_label,
 			);
-			$count = isset( $users['avail_roles'][ $role_id ] ) ? $users['avail_roles'][ $role_id ] : 0;
-
-			if ( ! empty( $count ) ) {
-				/* translators: %d: a number of users (e.g. "42") */
-				$args['user_count'] = sprintf( _n( '%d user', '%d users', absint( $count ), 'stream' ), absint( $count ) );
-			}
-
-			if ( $role_id === $author_or_role ) {
-				$author_or_role_selected['value'] = $role_id;
-				$author_or_role_selected['text']  = $role;
-			}
-
-			$author_or_role_values[] = $args;
 		}
 
-		if ( empty( $author_or_role_selected ) && is_numeric( $author_or_role ) ) {
-			$user                    = new WP_User( $author_or_role );
-			$display_name            = ( 0 === $user->ID ) ? esc_html__( 'N/A', 'stream' ) : $user->display_name;
-			$author_or_role_selected = array(
-				'value' => $user->ID,
-				'text'  => $display_name,
-			);
-			$author_or_role_values[] = $author_or_role_selected;
+		$author_or_role_values = array(
+			array(
+				'text'     => __( 'Roles', 'stream' ),
+				'children' => $role_options,
+			),
+			array(
+				'text'     => __( 'Users', 'stream' ),
+				'children' => $this->get_exclude_user_options(),
+			),
+		);
+
+		// Stored value missing from the lists (e.g. a deleted user): keep it selectable.
+		if ( '' !== (string) $author_or_role && ctype_digit( (string) $author_or_role ) ) {
+			$known = array_map( 'strval', array_column( $author_or_role_values[1]['children'], 'value' ) );
+			if ( ! in_array( (string) $author_or_role, $known, true ) ) {
+				$user                                   = get_userdata( (int) $author_or_role );
+				$author_or_role_values[1]['children'][] = array(
+					'value' => (string) $author_or_role,
+					'text'  => ( $user && $user->ID ) ? $user->display_name : esc_html__( 'N/A', 'stream' ),
+				);
+			}
 		}
 
 		$author_or_role_input = $form->render_field(
-			'select2',
+			'grouped_select',
 			array(
 				'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'author_or_role' ) ),
+				'value'   => (string) $author_or_role,
 				'options' => $author_or_role_values,
 				'classes' => 'author_or_role',
 				// Data attributes are escaped in Form_Generator::prepare_data_attributes_string().
 				'data'    => array(
-					'placeholder'   => __( 'Any Author or Role', 'stream' ),
-					'nonce'         => wp_create_nonce( 'stream_get_users' ),
-					'selected-id'   => isset( $author_or_role_selected['value'] ) ? $author_or_role_selected['value'] : '',
-					'selected-text' => isset( $author_or_role_selected['text'] ) ? $author_or_role_selected['text'] : '',
+					'placeholder' => __( 'Any Author or Role', 'stream' ),
 				),
 			),
 			false
@@ -465,9 +434,10 @@ class Settings_Renderer {
 		}
 
 		$connector_or_context_input = $form->render_field(
-			'select2',
+			'grouped_select',
 			array(
 				'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'connector_or_context' ) ),
+				'value'   => ( '' !== $context ) ? $connector . '-' . $context : $connector,
 				'options' => $context_values,
 				'classes' => 'connector_or_context',
 				// Data attributes are escaped in Form_Generator::prepare_data_attributes_string().
@@ -509,7 +479,7 @@ class Settings_Renderer {
 		}
 
 		$action_input = $form->render_field(
-			'select2',
+			'grouped_select',
 			array(
 				'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'action' ) ),
 				'value'   => $action,
@@ -524,17 +494,14 @@ class Settings_Renderer {
 		);
 
 		$ip_address_input = $form->render_field(
-			'select2',
+			'text',
 			array(
-				'name'     => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'ip_address' ) ),
-				'value'    => $ip_address,
-				'classes'  => 'ip_address',
-				// Data attributes are escaped in Form_Generator::prepare_data_attributes_string().
-				'data'     => array(
+				'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'ip_address' ) ),
+				'value'   => $ip_address,
+				'classes' => 'ip_address',
+				'data'    => array(
 					'placeholder' => __( 'Any IP Address', 'stream' ),
-					'nonce'       => wp_create_nonce( 'stream_get_ips' ),
 				),
-				'multiple' => true,
 			),
 			false
 		);
@@ -602,6 +569,92 @@ class Settings_Renderer {
 		}
 
 		return $return_labels;
+	}
+
+	/**
+	 * User options for the exclude-rules author/role select.
+	 *
+	 * Lists every user (plus network super-admins and the WP-CLI pseudo-user),
+	 * mirroring the previous Select2 Ajax dropdown's result set.
+	 *
+	 * @return array<int, array{value: string, text: string}>
+	 */
+	private function get_exclude_user_options() {
+		$users = get_users(
+			array(
+				'fields' => array( 'ID', 'display_name' ),
+			)
+		);
+
+		if ( is_multisite() && is_super_admin() ) {
+			foreach ( get_super_admins() as $login ) {
+				$super = get_user_by( 'login', $login );
+				if ( $super ) {
+					$users[] = $super;
+				}
+			}
+		}
+
+		$options = array();
+		$seen    = array();
+
+		foreach ( $users as $user ) {
+			$id = (string) $user->ID;
+			if ( isset( $seen[ $id ] ) ) {
+				continue;
+			}
+			$seen[ $id ] = true;
+
+			$options[] = array(
+				'value' => $id,
+				'text'  => $user->display_name,
+			);
+		}
+
+		$options[] = array(
+			'value' => '0',
+			'text'  => 'WP-CLI',
+		);
+
+		return $options;
+	}
+
+	/**
+	 * Map a settings `choices` array (flat or `label`/`children` groups) to Form_Generator options.
+	 *
+	 * @param array $choices Field choices.
+	 * @return array
+	 */
+	private static function choices_to_options( array $choices ): array {
+		$options = array();
+
+		foreach ( $choices as $key => $value ) {
+			if ( ! is_array( $value ) ) {
+				$options[] = array(
+					'value' => (string) $key,
+					'text'  => $value,
+				);
+				continue;
+			}
+
+			$children = array();
+			if ( isset( $value['children'] ) && is_array( $value['children'] ) ) {
+				foreach ( $value['children'] as $child_key => $child_value ) {
+					$children[] = array(
+						'value' => (string) $child_key,
+						'text'  => $child_value,
+					);
+				}
+			}
+
+			$options[] = array(
+				'value'    => (string) $key,
+				'text'     => isset( $value['label'] ) ? $value['label'] : (string) $key,
+				'children' => $children,
+			);
+		}
+
+		return $options;
 	}
 
 	/**
