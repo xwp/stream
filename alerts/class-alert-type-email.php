@@ -18,17 +18,13 @@ class Alert_Type_Email extends Alert_Type {
 
 	/**
 	 * Alert type name
-	 *
-	 * @var string
 	 */
-	public $name = 'Email';
+	public string $name = 'Email';
 
 	/**
 	 * Alert type slug
-	 *
-	 * @var string
 	 */
-	public $slug = 'email';
+	public string $slug = 'email';
 
 	/**
 	 * Class Constructor

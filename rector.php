@@ -36,15 +36,6 @@ return RectorConfig::configure()
 			__DIR__ . '/node_modules',
 			__DIR__ . '/tests',
 			__DIR__ . '/vendor',
-			TypedPropertyFromAssignsRector::class => array(
-				// Extension-point bases. PHP requires identical property types in
-				// parent and child, so each family must be typed in one change.
-				__DIR__ . '/classes/class-alert-type.php',
-				__DIR__ . '/classes/class-alert-trigger.php',
-				__DIR__ . '/classes/class-exporter.php',
-				__DIR__ . '/alerts',
-				__DIR__ . '/exporters',
-			),
 		)
 	)
 	->withPhpVersion( PhpVersion::PHP_74 )
