@@ -24,9 +24,7 @@ flowchart TD
   end
 
   subgraph phaseB["B — plugins_loaded"]
-    b1[i18n]
-    b2["priority 20: wp_stream_db_driver swap"]
-    b1 --> b2
+    b1["priority 20: wp_stream_db_driver swap"]
   end
 
   subgraph phaseC["C — init"]
@@ -42,7 +40,7 @@ flowchart TD
   end
 
   a3 --> b1
-  b2 --> c1
+  b1 --> c1
   c2 --> d1
   c2 --> d2
   c2 --> d3
@@ -59,13 +57,12 @@ flowchart TD
 | 6 | A | | `require` [includes/functions.php](includes/functions.php) | |
 | 7 | A | | `wp_stream_db_driver` → `new DB( $driver )`; `wp_die` if the class is missing or not a `DB_Driver` | [classes/class-db.php](classes/class-db.php), [classes/class-db-driver.php](classes/class-db-driver.php), [classes/class-db-driver-wpdb.php](classes/class-db-driver-wpdb.php) |
 | 8 | A | | `wp_stream_log_handler` → `$log`; client IP captured | [classes/class-log.php](classes/class-log.php) |
-| 9 | A | | hooks registered: `plugins_loaded`→`i18n`; `init`@9→`init`; `wp_head`→`frontend_indicator`; `plugins_loaded`@20→`plugins_loaded` | |
+| 9 | A | | hooks registered: `init`@9→`init`; `wp_head`→`frontend_indicator`; `plugins_loaded`@20→`plugins_loaded` | |
 | 10 | A | | if admin / `WP_CLI` / `WP_STREAM_DEV_DEBUG`: `new Admin()` (Menu, Assets, Screen_Records, Screen_Settings, Purge, Ajax) and `$install = $driver->setup_storage()`; elseif `DOING_CRON`: `Admin` only; WP-CLI also registers `stream` | [classes/class-admin.php](classes/class-admin.php), [classes/class-install.php](classes/class-install.php), [classes/class-cli.php](classes/class-cli.php) |
-| 11 | B | `plugins_loaded` | `i18n()` textdomain | |
-| 12 | B | `plugins_loaded`@20 | `wp_stream_db_driver` re-applied; `$db` rebuilt for late add-ons | |
-| 13 | C | `init`@9 | `Plugin::init()`: [Settings](classes/class-settings.php), [Connectors](classes/class-connectors.php) (loads + registers connectors now), [Alerts](classes/class-alerts.php) (engine, admin UI, types, triggers), [Alerts_List](classes/class-alerts-list.php), [Abilities](classes/class-abilities.php), [User_Picker](classes/class-user-picker.php) | |
-| 14 | C | `init`@10 | `Admin::init()`: [Network](classes/class-network.php), [Live_Update](classes/class-live-update.php), [Export](classes/class-export.php); `Alerts::register_post_type()` | |
-| 15 | D | later | `admin_init` → export download (only `page=wp_stream`); `wp_head` → frontend indicator; `shutdown` → `delayed_log_commit` | |
+| 11 | B | `plugins_loaded`@20 | `wp_stream_db_driver` re-applied; `$db` rebuilt for late add-ons | |
+| 12 | C | `init`@9 | `Plugin::init()`: [Settings](classes/class-settings.php), [Connectors](classes/class-connectors.php) (loads + registers connectors now), [Alerts](classes/class-alerts.php) (engine, admin UI, types, triggers), [Alerts_List](classes/class-alerts-list.php), [Abilities](classes/class-abilities.php), [User_Picker](classes/class-user-picker.php) | |
+| 13 | C | `init`@10 | `Admin::init()`: [Network](classes/class-network.php), [Live_Update](classes/class-live-update.php), [Export](classes/class-export.php); `Alerts::register_post_type()` | |
+| 14 | D | later | `admin_init` → export download (only `page=wp_stream`); `wp_head` → frontend indicator; `shutdown` → `delayed_log_commit` | |
 
 **Filters that must be registered before Stream’s plugin file loads** (mu-plugin, `wp-config.php`, or an earlier plugin). Too late on `plugins_loaded`:
 
