@@ -2,6 +2,7 @@
 Contributors: xwp
 Tags: activity log, audit log, event log, user tracking, security
 Requires at least: 4.6
+Requires PHP: 7.4
 Tested up to: 7.0
 Stable tag: 4.4.0
 License: GPLv2 or later

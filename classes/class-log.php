@@ -302,10 +302,6 @@ class Log {
 	 * @return string
 	 */
 	public function debug_backtrace( $recordarr ) {
-		if ( version_compare( PHP_VERSION, '5.3.6', '<' ) ) {
-			return __( 'Debug backtrace requires at least PHP 5.3.6', 'stream' );
-		}
-
 		// Record details.
 		$summary   = isset( $recordarr['summary'] ) ? $recordarr['summary'] : null;
 		$author    = isset( $recordarr['author'] ) ? $recordarr['author'] : null;
@@ -346,7 +342,7 @@ class Log {
 		ob_start();
 
 		// @codingStandardsIgnoreStart
-		debug_print_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS ); // Option to ignore args requires PHP 5.3.6
+		debug_print_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
 		// @codingStandardsIgnoreEnd
 
 		$backtrace = ob_get_clean();

@@ -10,6 +10,14 @@
 
 - Show only the first line of multiline summaries in the Stream list table so long entries stay readable in the activity feed.
 
+### Breaking Changes
+
+- Raise the minimum PHP version from 7.2 to **7.4**. Sites running PHP below 7.4 see an admin notice (for users who can activate plugins) and Stream remains inactive — no fatal error. PHP 7.2 and PHP 7.3 are no longer supported ([XWPENG-46](https://xwp-co.atlassian.net/browse/XWPENG-46)).
+
+### Development
+
+- Align Composer (`require.php` `>=7.4`), plugin headers, `readme.txt`, and production PHPCS `testVersion` (`7.4-`) with the PHP 7.4 floor. Lint/Test and E2E stay on PHP 8.2, 8.3, and 8.4 because PHPUnit 11 cannot run on 7.4. A separate CI job parses production PHP with `php -l` on PHP 7.4 ([XWPENG-46](https://xwp-co.atlassian.net/browse/XWPENG-46)).
+
 ## 4.4.0 - August 31, 2026
 
 ### Security
