@@ -20,17 +20,13 @@ class Live_Update {
 
 	/**
 	 * User meta key/identifier
-	 *
-	 * @var string
 	 */
-	public $user_meta_key = 'stream_live_update_records';
+	public string $user_meta_key = 'stream_live_update_records';
 
 	/**
 	 * List table object instance
-	 *
-	 * @var List_Table
 	 */
-	public $list_table = null;
+	public ?List_Table $list_table = null;
 
 	/**
 	 * Class constructor.

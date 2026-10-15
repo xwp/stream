@@ -85,101 +85,73 @@ class Admin {
 
 	/**
 	 * Holds Network class
-	 *
-	 * @var Network
 	 */
-	public $network;
+	public ?Network $network = null;
 
 	/**
 	 * Holds Live Update class
-	 *
-	 * @var Live_Update
 	 */
-	public $live_update;
+	public ?Live_Update $live_update = null;
 
 	/**
 	 * Holds Export class
-	 *
-	 * @var Export
 	 */
-	public $export;
+	public ?Export $export = null;
 
 	/**
 	 * Menu page screen id
-	 *
-	 * @var string
 	 */
-	public $screen_id = array();
+	public array $screen_id = array();
 
 	/**
 	 * List table object
-	 *
-	 * @var List_Table
 	 */
-	public $list_table = null;
+	public ?List_Table $list_table = null;
 
 	/**
 	 * Option to disable access to Stream
-	 *
-	 * @var bool
 	 */
-	public $disable_access = false;
+	public bool $disable_access = false;
 
 	/**
 	 * Class applied to the body of the admin screen
-	 *
-	 * @var string
 	 */
-	public $admin_body_class = 'wp_stream_screen';
+	public string $admin_body_class = 'wp_stream_screen';
 
 	/**
 	 * Slug of the records page
-	 *
-	 * @var string
 	 */
-	public $records_page_slug = 'wp_stream';
+	public string $records_page_slug = 'wp_stream';
 
 	/**
 	 * Slug of the settings page
-	 *
-	 * @var string
 	 */
-	public $settings_page_slug = 'wp_stream_settings';
+	public string $settings_page_slug = 'wp_stream_settings';
 
 	/**
 	 * Parent page of the records and settings pages
-	 *
-	 * @var string
 	 */
-	public $admin_parent_page = 'admin.php';
+	public string $admin_parent_page = 'admin.php';
 
 	/**
 	 * Capability name for viewing records
-	 *
-	 * @var string
 	 */
-	public $view_cap = 'view_stream';
+	public string $view_cap = 'view_stream';
 
 	/**
 	 * Capability name for managing settings
-	 *
-	 * @var string
 	 */
-	public $settings_cap = WP_STREAM_SETTINGS_CAPABILITY;
+	public string $settings_cap = WP_STREAM_SETTINGS_CAPABILITY;
 
 	/**
 	 * Total amount of authors to pre-load
-	 *
-	 * @var int
 	 */
-	public $preload_users_max = 50;
+	public int $preload_users_max = 50;
 
 	/**
 	 * Admin notices, collected and displayed on proper action
-	 *
-	 * @var array
 	 */
-	public $notices = array();
+	public array $notices = array();
 
 	/**
 	 * Class constructor.

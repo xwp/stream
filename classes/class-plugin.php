@@ -53,45 +53,33 @@ class Plugin {
 
 	/**
 	 * Holds and manages WordPress Admin configurations.
-	 *
-	 * @var Admin
 	 */
-	public $admin;
+	public ?Admin $admin = null;
 
 	/**
 	 * Holds and manages alerts.
-	 *
-	 * @var Alerts
 	 */
-	public $alerts;
+	public ?Alerts $alerts = null;
 
 	/**
 	 * Holds and manages alerts lists.
-	 *
-	 * @var Alerts_List
 	 */
-	public $alerts_list;
+	public ?Alerts_List $alerts_list = null;
 
 	/**
 	 * Holds and manages WordPress Abilities API integration.
-	 *
-	 * @var Abilities
 	 */
-	public $abilities;
+	public ?Abilities $abilities = null;
 
 	/**
 	 * Holds and manages connectors
-	 *
-	 * @var Connectors
 	 */
-	public $connectors;
+	public ?Connectors $connectors = null;
 
 	/**
 	 * Holds and manages DB connections.
-	 *
-	 * @var DB
 	 */
-	public $db;
+	public ?DB $db = null;
 
 	/**
 	 * Holds and manages records.
@@ -102,17 +90,13 @@ class Plugin {
 
 	/**
 	 * Stores and manages WordPress settings.
-	 *
-	 * @var Settings
 	 */
-	public $settings;
+	public ?Settings $settings = null;
 
 	/**
 	 * Process DB migrations.
-	 *
-	 * @var Install
 	 */
-	public $install;
+	public ?Install $install = null;
 
 	/**
 	 * Backend used to schedule Stream's deferred work (purge / reset).
@@ -120,10 +104,8 @@ class Plugin {
 	 * Either an {@see AS_Scheduler} (Action Scheduler, default) or a
 	 * {@see Cron_Scheduler} (WP-Cron fallback), selected at construction via
 	 * the `wp_stream_use_action_scheduler` filter.
-	 *
-	 * @var Scheduler
 	 */
-	public $scheduler;
+	public Scheduler $scheduler;
 
 	/**
 	 * Whether the bundled Action Scheduler library was loaded.
@@ -131,17 +113,13 @@ class Plugin {
 	 * Set from a file_exists() check at construction (see __construct), so it
 	 * is reliable on `plugins_loaded` even though AS only declares its as_*()
 	 * API later on `init`.
-	 *
-	 * @var bool
 	 */
-	protected $action_scheduler_available = false;
+	protected bool $action_scheduler_available = false;
 
 	/**
 	 * URLs and Paths used by the plugin
-	 *
-	 * @var array
 	 */
-	public $locations = array();
+	public array $locations = array();
 
 	/**
 	 * IP address for the current request to be associated with the log entry.
@@ -231,8 +209,15 @@ class Plugin {
 
 		// Load admin area classes.
 		if ( is_admin() || ( defined( 'WP_STREAM_DEV_DEBUG' ) && WP_STREAM_DEV_DEBUG ) || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
-			$this->admin   = new Admin( $this );
-			$this->install = $driver->setup_storage( $this );
+			$this->admin = new Admin( $this );
+			$install     = $driver->setup_storage( $this );
+			if ( ! $install instanceof Install ) {
+				wp_die(
+					esc_html__( 'Stream: DB driver setup_storage() must return an Install instance.', 'stream' ),
+					esc_html__( 'Stream DB Error', 'stream' )
+				);
+			}
+			$this->install = $install;
 		} elseif ( defined( 'DOING_CRON' ) && DOING_CRON ) {
 			$this->admin = new Admin( $this, $driver );
 		}

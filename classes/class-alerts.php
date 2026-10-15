@@ -48,10 +48,8 @@ class Alerts {
 
 	/**
 	 * Post meta prefix
-	 *
-	 * @var string
 	 */
-	public $meta_prefix = 'wp_stream';
+	public string $meta_prefix = 'wp_stream';
 
 	/**
 	 * Alert Types

@@ -14,10 +14,8 @@ class Form_Generator {
 
 	/**
 	 * List of all registered fields.
-	 *
-	 * @var array
 	 */
-	public $fields = array();
+	public array $fields = array();
 
 	/**
 	 * Adds a new field to the form.
