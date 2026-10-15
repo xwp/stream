@@ -38,7 +38,7 @@ class Connector_AI_Client extends Connector {
 	 *
 	 * @var string
 	 */
-	public $name = 'ai-client';
+	public string $name = 'ai-client';
 
 	/**
 	 * WordPress actions this connector listens to.
@@ -48,7 +48,7 @@ class Connector_AI_Client extends Connector {
 	 *
 	 * @var string[]
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'wp_ai_client_before_generate_result',
 		'wp_ai_client_after_generate_result',
 	);
