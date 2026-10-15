@@ -95,7 +95,7 @@ class Ability_Get_Record_Test extends Abilities_TestCase {
 		$current_blog_id = (int) get_current_blog_id();
 		$foreign_blog_id = $current_blog_id + 4242;
 
-		$inserted = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$inserted = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- reason: tests insert and assert against Stream custom tables without using WP object cache.
 			$wpdb->stream,
 			array(
 				'site_id'   => 1,

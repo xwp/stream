@@ -32,7 +32,7 @@ function wp_stream_resolve_wp_tests_dir() {
 $_tests_dir = wp_stream_resolve_wp_tests_dir();
 
 if ( empty( $_tests_dir ) ) {
-	trigger_error( 'Unable to locate WP_TESTS_DIR', E_USER_ERROR ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
+	trigger_error( 'Unable to locate WP_TESTS_DIR', E_USER_ERROR ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error -- reason: bootstrap must abort when WP_TESTS_DIR is missing.
 }
 
 $wp_env_tests_config = __DIR__ . '/wp-tests-config-wp-env.php';
@@ -159,7 +159,7 @@ function wp_stream_install_edd() {
 
 	$edd_options = get_option( 'edd_settings' );
 
-	$current_user = new WP_User( 1 ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+	$current_user = new WP_User( 1 ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 	$current_user->set_role( 'administrator' );
 	wp_update_user(
 		array(

@@ -20,10 +20,10 @@ class Filter_Input_Test extends WP_StreamTestCase {
 
 	public function test_super() {
 		$_POST['pod_bay_doors'] = 'closed';
-		$this->assertEquals( $_POST['pod_bay_doors'], $this->filter->super( INPUT_POST, 'pod_bay_doors' ) ); // phpcs:ignore WordPress.Security.NonceVerification
+		$this->assertEquals( $_POST['pod_bay_doors'], $this->filter->super( INPUT_POST, 'pod_bay_doors' ) ); // phpcs:ignore WordPress.Security.NonceVerification -- reason: the test supplies $_GET/$_POST fixtures; it is not handling a form request.
 
 		$_GET['cause_of_failure'] = 'human error';
-		$this->assertEquals( $_GET['cause_of_failure'], $this->filter->super( INPUT_GET, 'cause_of_failure' ) ); // phpcs:ignore WordPress.Security.NonceVerification
+		$this->assertEquals( $_GET['cause_of_failure'], $this->filter->super( INPUT_GET, 'cause_of_failure' ) ); // phpcs:ignore WordPress.Security.NonceVerification -- reason: the test supplies $_GET/$_POST fixtures; it is not handling a form request.
 
 		$this->expectException( \Exception::class );
 		$this->expectExceptionMessage( 'Invalid use, type must be one of INPUT_* family.' );

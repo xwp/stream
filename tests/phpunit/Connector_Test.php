@@ -115,7 +115,7 @@ class Connector_Test extends WP_StreamTestCase {
 	public function test_callback() {
 		global $wp_current_filter;
 		$action              = $this->connector->actions[0];
-		$wp_current_filter[] = $action; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$wp_current_filter[] = $action; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 
 		$this->connector->callback();
 
@@ -126,7 +126,7 @@ class Connector_Test extends WP_StreamTestCase {
 	public function test_callback_hyphenated() {
 		global $wp_current_filter;
 		$action              = $this->connector->actions[1];
-		$wp_current_filter[] = $action; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$wp_current_filter[] = $action; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 
 		$this->connector->callback();
 
