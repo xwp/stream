@@ -16,6 +16,10 @@ View the [plugin description on WordPress.org](https://wordpress.org/plugins/str
 
 A list of the connectors is in [connectors.md](connectors.md). To add one, follow [How to add a connector](docs/adding-a-connector.md).
 
+### Alerts
+
+To add an alert type, follow [How to add an alert type](docs/adding-an-alert-type.md).
+
 ### Configuration
 
 See [readme.txt](readme.txt) for configuration details, including the [AI Client connector (WordPress 7.0+)](readme.txt#ai-client-wordpress-70).
