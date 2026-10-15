@@ -13,6 +13,7 @@
 ### Breaking Changes
 
 - Raise the minimum PHP version from 7.2 to **7.4**. Sites running PHP below 7.4 see an admin notice (for users who can activate plugins) and Stream remains inactive — no fatal error. PHP 7.2 and PHP 7.3 are no longer supported ([XWPENG-46](https://xwp-co.atlassian.net/browse/XWPENG-46)).
+- Add native PHP types to the public properties of `Connector` and the built-in connectors. A custom connector must declare the same types, for example `public string $name = 'my_plugin';`, `public array $actions = array();`, and `public bool $register_frontend = false;`. A connector that declares these properties without types causes a PHP fatal error when it loads ([XWPENG-47](https://xwp-co.atlassian.net/browse/XWPENG-47)).
 
 ### Development
 

@@ -13,17 +13,13 @@ namespace WP_Stream;
 class Connector_Mercator extends Connector {
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'mercator';
+	public string $name = 'mercator';
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'mercator.mapping.updated',
 		'mercator.mapping.deleted',
 		'mercator.mapping.created',
@@ -32,10 +28,8 @@ class Connector_Mercator extends Connector {
 
 	/**
 	 * Register connector in the WP Frontend
-	 *
-	 * @var bool
 	 */
-	public $register_frontend = false;
+	public bool $register_frontend = false;
 
 	/**
 	 * Return translated connector label

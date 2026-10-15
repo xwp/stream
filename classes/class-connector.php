@@ -17,49 +17,40 @@ abstract class Connector {
 	 *
 	 * @var string
 	 */
-	public $name = null;
+	public string $name = '';
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array();
+	public array $actions = array();
 
 	/**
 	 * Store delayed logs
-	 *
-	 * @var array
 	 */
-	public $delayed = array();
+	public array $delayed = array();
 
 	/**
-	 * Previous Stream entry in same request
+	 * Previous Stream entry in same request.
+	 * Nothing in the plugin writes this property.
 	 *
-	 * @var int
+	 * @var int|null
 	 */
-	public $prev_stream = null;
+	public ?int $prev_stream = null;
 
 	/**
 	 * Register connector in the WP Admin
-	 *
-	 * @var bool
 	 */
-	public $register_admin = true;
+	public bool $register_admin = true;
 
 	/**
 	 * Register connector in the WP Frontend
-	 *
-	 * @var bool
 	 */
-	public $register_frontend = true;
+	public bool $register_frontend = true;
 
 	/**
 	 * Holds connector registration status flag.
-	 *
-	 * @var bool
 	 */
-	private $is_registered = false;
+	private bool $is_registered = false;
 
 	/**
 	 * Return translated connector label.

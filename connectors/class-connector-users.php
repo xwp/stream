@@ -14,10 +14,8 @@ class Connector_Users extends Connector {
 
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'users';
+	public string $name = 'users';
 
 	/**
 	 * Stores users object before the user being deleted.
@@ -28,10 +26,8 @@ class Connector_Users extends Connector {
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'user_register',
 		'profile_update',
 		'password_reset',

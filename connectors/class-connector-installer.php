@@ -14,17 +14,13 @@ class Connector_Installer extends Connector {
 
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'installer';
+	public string $name = 'installer';
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'upgrader_process_complete', // plugins::installed | themes::installed.
 		'activate_plugin', // plugins::activated.
 		'deactivate_plugin', // plugins::deactivated.
@@ -37,10 +33,8 @@ class Connector_Installer extends Connector {
 
 	/**
 	 * Register connector in the WP Frontend
-	 *
-	 * @var bool
 	 */
-	public $register_frontend = false;
+	public bool $register_frontend = false;
 
 	/**
 	 * Return translated connector label

@@ -13,17 +13,13 @@ namespace WP_Stream;
 class Connector_Editor extends Connector {
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'editor';
+	public string $name = 'editor';
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array();
+	public array $actions = array();
 
 	/**
 	 * Actions registered for this connector
@@ -34,10 +30,8 @@ class Connector_Editor extends Connector {
 
 	/**
 	 * Register connector in the WP Frontend
-	 *
-	 * @var bool
 	 */
-	public $register_frontend = false;
+	public bool $register_frontend = false;
 
 	/**
 	 * Register all context hooks

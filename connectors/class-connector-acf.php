@@ -13,10 +13,8 @@ namespace WP_Stream;
 class Connector_ACF extends Connector {
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'acf';
+	public string $name = 'acf';
 
 	/**
 	 * Holds tracked plugin minimum version required
@@ -27,10 +25,8 @@ class Connector_ACF extends Connector {
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'save_post',
 		'post_updated',
 		'added_post_meta',
@@ -47,17 +43,13 @@ class Connector_ACF extends Connector {
 
 	/**
 	 * Cached location rules, used in shutdown callback to verify changes in meta
-	 *
-	 * @var array
 	 */
-	public $cached_location_rules = array();
+	public array $cached_location_rules = array();
 
 	/**
 	 * Cached field values updates, used by shutdown callback to verify actual changes
-	 *
-	 * @var array
 	 */
-	public $cached_field_values_updates = array();
+	public array $cached_field_values_updates = array();
 
 
 	/**

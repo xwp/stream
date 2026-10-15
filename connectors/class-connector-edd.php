@@ -14,10 +14,8 @@ class Connector_EDD extends Connector {
 
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'edd';
+	public string $name = 'edd';
 
 	/**
 	 * Holds tracked plugin minimum version required
@@ -28,10 +26,8 @@ class Connector_EDD extends Connector {
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'update_option',
 		'add_option',
 		'delete_option',
@@ -53,40 +49,30 @@ class Connector_EDD extends Connector {
 
 	/**
 	 * Tracked option keys
-	 *
-	 * @var array
 	 */
-	public $options = array();
+	public array $options = array();
 
 	/**
 	 * Tracking registered Settings, with overridden data
-	 *
-	 * @var array
 	 */
-	public $options_override = array();
+	public array $options_override = array();
 
 	/**
 	 * Tracking user meta updates related to this connector
-	 *
-	 * @var array
 	 */
-	public $user_meta = array(
+	public array $user_meta = array(
 		'edd_user_public_key',
 	);
 
 	/**
 	 * Flag status changes to not create duplicate entries
-	 *
-	 * @var bool
 	 */
-	public $is_discount_status_change = false;
+	public bool $is_discount_status_change = false;
 
 	/**
 	 * Flag status changes to not create duplicate entries
-	 *
-	 * @var bool
 	 */
-	public $is_payment_status_change = false;
+	public bool $is_payment_status_change = false;
 
 	/**
 	 * Check if plugin dependencies are satisfied and add an admin notice if not

@@ -20,17 +20,13 @@ class Connector_Settings extends Connector {
 
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'settings';
+	public string $name = 'settings';
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'allowed_options',
 		'update_option',
 		'update_site_option',
@@ -41,17 +37,13 @@ class Connector_Settings extends Connector {
 
 	/**
 	 * Labels used for WordPress Settings
-	 *
-	 * @var array
 	 */
-	public $labels = array();
+	public array $labels = array();
 
 	/**
 	 * Option names used in options-permalink.php
-	 *
-	 * @var array
 	 */
-	public $permalink_options = array(
+	public array $permalink_options = array(
 		'permalink_structure',
 		'category_base',
 		'tag_base',
@@ -59,10 +51,8 @@ class Connector_Settings extends Connector {
 
 	/**
 	 * Option names used in network/settings.php
-	 *
-	 * @var array
 	 */
-	public $network_options = array(
+	public array $network_options = array(
 		'registrationnotification',
 		'registration',
 		'add_new_users',
@@ -92,10 +82,8 @@ class Connector_Settings extends Connector {
 
 	/**
 	 * Register connector in the WP Frontend
-	 *
-	 * @var bool
 	 */
-	public $register_frontend = false;
+	public bool $register_frontend = false;
 
 	/**
 	 * Register all context hooks
