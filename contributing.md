@@ -1,5 +1,10 @@
 # Contribute to Stream
 
+## Documentation
+
+- [ARCHITECTURE.md](ARCHITECTURE.md) — boot sequence and connector / alert / exporter lifecycles
+- [docs/adding-a-connector.md](docs/adding-a-connector.md) — how to add a connector, with a copyable noop example
+- [connectors.md](connectors.md) — generated inventory of builtin connectors
 
 ## Development Environment
 
