@@ -568,12 +568,12 @@ class Admin_Purge {
 		// runner tick) exceeds the cost of a single inline DELETE. Only fall
 		// through to the batched chain when the filter says "yes, large".
 		if ( $blog_id > 0 ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- reason: Stream custom tables are not object-cached; purge/count must query $wpdb->stream directly.
 			$record_count = (int) $wpdb->get_var(
 				$wpdb->prepare( "SELECT COUNT(ID) FROM {$wpdb->stream} WHERE `blog_id` = %d", $blog_id )
 			);
 		} else {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- reason: Stream custom tables are not object-cached; purge/count must query $wpdb->stream directly.
 			$record_count = (int) $wpdb->get_var( "SELECT COUNT(ID) FROM {$wpdb->stream}" );
 		}
 
@@ -582,7 +582,7 @@ class Admin_Purge {
 			// the orphan reaper as a one-shot async action so the heal step is
 			// still observable in Tools → Scheduled Actions.
 			if ( $blog_id > 0 ) {
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- reason: Stream custom tables are not object-cached; purge/count must query $wpdb->stream directly.
 				$wpdb->query(
 					$wpdb->prepare(
 						"DELETE `stream`, `meta`
@@ -595,7 +595,7 @@ class Admin_Purge {
 					)
 				);
 			} else {
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- reason: Stream custom tables are not object-cached; purge/count must query $wpdb->stream directly.
 				$wpdb->query(
 					$wpdb->prepare(
 						"DELETE `stream`, `meta`
@@ -697,7 +697,7 @@ class Admin_Purge {
 		// that lies strictly below the previous window's lower bound (when set).
 		// $last_entry=0 means "first batch in chain" — search from the top.
 		if ( $blog_id > 0 && $last_entry > 0 ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- reason: Stream custom tables are not object-cached; purge/count must query $wpdb->stream directly.
 			$start_from = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT ID FROM {$wpdb->stream} WHERE `created` < %s AND `blog_id` = %d AND `ID` < %d ORDER BY ID DESC LIMIT 1",
@@ -707,7 +707,7 @@ class Admin_Purge {
 				)
 			);
 		} elseif ( $blog_id > 0 ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- reason: Stream custom tables are not object-cached; purge/count must query $wpdb->stream directly.
 			$start_from = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT ID FROM {$wpdb->stream} WHERE `created` < %s AND `blog_id` = %d ORDER BY ID DESC LIMIT 1",
@@ -716,7 +716,7 @@ class Admin_Purge {
 				)
 			);
 		} elseif ( $last_entry > 0 ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- reason: Stream custom tables are not object-cached; purge/count must query $wpdb->stream directly.
 			$start_from = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT ID FROM {$wpdb->stream} WHERE `created` < %s AND `ID` < %d ORDER BY ID DESC LIMIT 1",
@@ -725,7 +725,7 @@ class Admin_Purge {
 				)
 			);
 		} else {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- reason: Stream custom tables are not object-cached; purge/count must query $wpdb->stream directly.
 			$start_from = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT ID FROM {$wpdb->stream} WHERE `created` < %s ORDER BY ID DESC LIMIT 1",
@@ -751,7 +751,7 @@ class Admin_Purge {
 		// Multi-table DELETE: parent + meta in one statement. Mirrors
 		// Admin_Purge::erase_large_records().
 		if ( $blog_id > 0 ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- reason: Stream custom tables are not object-cached; purge/count must query $wpdb->stream directly.
 			$wpdb->query(
 				$wpdb->prepare(
 					"DELETE `stream`, `meta`
@@ -769,7 +769,7 @@ class Admin_Purge {
 				)
 			);
 		} else {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- reason: Stream custom tables are not object-cached; purge/count must query $wpdb->stream directly.
 			$wpdb->query(
 				$wpdb->prepare(
 					"DELETE `stream`, `meta`
