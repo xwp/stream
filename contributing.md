@@ -12,12 +12,18 @@ Local WordPress — daily development, PHPUnit, and Playwright — runs on [@wor
 - [Node.js](https://nodejs.org) (see `.nvmrc`)
 - [Composer](https://getcomposer.org)
 - [Docker](https://www.docker.com) Desktop or Engine, running
-- **PHP 8.2+** on the host for `composer test-unit` and other Composer scripts (PHPUnit 11). wp-env defaults to PHP 8.2; use the `switch-to:php*` scripts to test other supported versions locally.
+- **PHP 7.4+** to run the plugin. Host commands that use PHPUnit 11 (`composer test-unit` and the other Composer test scripts) need **PHP 8.2+**. wp-env defaults to PHP 8.2; use the `switch-to:php*` scripts to test other versions locally, including the PHP 7.4 runtime floor.
 
 We suggest using the [Homebrew package manager](https://brew.sh) on macOS:
 
 	brew install node composer
 	brew install --cask docker
+
+### Minimum supported PHP
+
+Raise the minimum supported PHP version only when the combined [WordPress.org PHP usage](https://api.wordpress.org/stats/php/1.1/) of every version below the proposed new minimum is under 5%. This percentage is a minimum floor. A version above the floor stays supported even if its own share is under 5%.
+
+Today that floor is PHP 7.4. PHP 7.2 is about 1.4% and PHP 7.3 is about 1.4%, so the versions below 7.4 are under the 5% bar. PHP 7.4 is about 16%, so it stays supported. Do not move the floor to 8.0, 8.1, or 8.2.
 
 ### Environment Setup
 
@@ -106,14 +112,14 @@ We use npm as the canonical task runner for the project. The following commands 
 - `npm run deploy` to deploy the plugin to the WordPress.org repository.
 - `npm run cli -- wp info` runs WP-CLI inside the wp-env CLI container. For example, `npm run cli -- wp plugin list`.
 - `npm run test` to run PHPUnit (single-site + multisite) inside `wp-env run tests-cli`.
-- `composer test-unit` to run the fast PHP unit suite on the host (no Docker, no WordPress bootstrap). Requires PHP 8.2+ (plugin minimum; PHPUnit 11).
+- `composer test-unit` to run the fast PHP unit suite on the host (no Docker, no WordPress bootstrap). Requires PHP 8.2+ because PHPUnit 11 cannot run on the PHP 7.4 runtime minimum.
 - `npm run test:php-unit` to run the fast PHP unit suite in the wp-env tests container.
 - `npm run test:php` / `npm run test:php-multisite` to run one integration PHPUnit suite only. These pass `--no-coverage` because wp-env does not load a coverage driver.
 - `composer test-coverage` / `composer test-coverage-multisite` write `tests/reports/clover.xml` for `npm run test-report`.
 - `npm run test-xdebug` will run PHPUnit after starting wp-env with Xdebug.
 - `npm run test-e2e` will run the Playwright E2E tests against `http://localhost:8888`.
 - `npm run test-e2e-debug` will run the Playwright E2E tests in debug mode (Chromium + dev tools).
-- `npm run switch-to:php8.2`, `npm run switch-to:php8.3`, and `npm run switch-to:php8.4` restart wp-env with `WP_ENV_PHP_VERSION` set (supported runtime versions). The default in `.wp-env.json` is PHP 8.2. Confirm with `npm run which-php`.
+- `npm run switch-to:php7.4`, `npm run switch-to:php8.2`, `npm run switch-to:php8.3`, and `npm run switch-to:php8.4` restart wp-env with `WP_ENV_PHP_VERSION` set. PHP 7.4 is the runtime minimum. PHP 8.2, 8.3, and 8.4 match the Lint/Test and E2E matrix (PHPUnit 11 cannot run on 7.4). The default in `.wp-env.json` is PHP 8.2. Confirm with `npm run which-php`.
 - `npm run document:connectors` generates [connectors.md](connectors.md). This runs via your local PHP.
 - `npm run large-records-generate` inserts ~1.6M rows to `wp_stream` and ~8.4M rows to `wp_streammeta` for testing
 - `npm run large-records-remove` removes the test data only

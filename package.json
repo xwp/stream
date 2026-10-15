@@ -57,6 +57,7 @@
     "test-report": "composer test-report",
     "start": "wp-env start",
     "start-xdebug": "wp-env start --xdebug",
+    "switch-to:php7.4": "WP_ENV_PHP_VERSION=7.4 wp-env start --update",
     "switch-to:php8.2": "WP_ENV_PHP_VERSION=8.2 wp-env start --update",
     "switch-to:php8.3": "WP_ENV_PHP_VERSION=8.3 wp-env start --update",
     "switch-to:php8.4": "WP_ENV_PHP_VERSION=8.4 wp-env start --update",

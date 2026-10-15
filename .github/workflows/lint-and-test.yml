@@ -16,7 +16,8 @@ jobs:
       contents: read
     strategy:
       fail-fast: false
-      # PHPUnit 11 and the plugin both require PHP >= 8.2.
+      # PHPUnit 11 cannot run on PHP 7.4. The runtime minimum is checked
+      # by the php74-syntax job and by PHPCompatibility testVersion 7.4-.
       matrix:
         php: ['8.2', '8.3', '8.4']
     env:
@@ -160,3 +161,25 @@ jobs:
           name: playwright-report-php-${{ matrix.php }}
           path: playwright-report
           retention-days: 7
+
+  # Syntax-only. PHPUnit 11 cannot run on 7.4, so this job does not
+  # composer install or execute tests. PHPCompatibility against 7.4 runs
+  # on the Lint and Test matrix via phpcs.xml.dist testVersion 7.4-.
+  php74-syntax:
+    name: PHP 7.4 syntax
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+
+      - name: Parse production PHP files
+        run: find . \( -path './vendor' -o -path './tests' -o -path './node_modules' \) -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l
