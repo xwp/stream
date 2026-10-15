@@ -38,6 +38,6 @@ return RectorConfig::configure()
 			// Per-rule skips are appended by the PR that registers the rule (§3, §4).
 		)
 	)
-	->withPhpVersion( PhpVersion::PHP_82 )
+	->withPhpVersion( PhpVersion::PHP_74 )
 	->withCache( __DIR__ . '/artifacts/rector' )
 	->withRules( array() );
