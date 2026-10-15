@@ -53,6 +53,8 @@ class Fail_Php_Version_Unit_Test extends TestCase {
 			->with( 'wp_stream_fail_php_version' );
 
 		require dirname( __DIR__, 3 ) . '/stream.php';
+
+		$this->assertArrayNotHasKey( 'wp_stream', $GLOBALS );
 	}
 
 	public function test_fail_php_version_outputs_notice_for_capable_user() {
