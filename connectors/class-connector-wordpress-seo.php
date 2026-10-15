@@ -282,15 +282,15 @@ class Connector_WordPress_SEO extends Connector {
 				'wpseo_import',
 				'exported'
 			);
-		} elseif ( isset( $_FILES['settings_import_file']['name'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		} elseif ( isset( $_FILES['settings_import_file']['name'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- reason: connector observes an import Yoast already processed; Stream only logs the filename.
 			$this->log(
 				sprintf(
 					/* translators: %s: a filename (e.g. "test.xml") */
 					__( 'Tried importing settings from "%s"', 'stream' ),
-					sanitize_text_field( wp_unslash( $_FILES['settings_import_file']['name'] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Missing
+					sanitize_text_field( wp_unslash( $_FILES['settings_import_file']['name'] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Missing -- reason: filename is sanitized for a log message after Yoast handled the import.
 				),
 				array(
-					'file' => sanitize_text_field( wp_unslash( $_FILES['settings_import_file']['name'] ) ), // phpcs:ignore WordPress.Security.NonceVerification.Missing
+					'file' => sanitize_text_field( wp_unslash( $_FILES['settings_import_file']['name'] ) ), // phpcs:ignore WordPress.Security.NonceVerification.Missing -- reason: filename is sanitized for log meta after Yoast handled the import.
 				),
 				null,
 				'wpseo_import',

@@ -382,9 +382,7 @@ class Connector_Installer extends Connector {
 			return false;
 		}
 
-		// @codingStandardsIgnoreStart
-		$type = isset( $_POST['action2'] ) ? INPUT_POST : INPUT_GET;
-		// @codingStandardsIgnoreEnd
+		$type = isset( $_POST['action2'] ) ? INPUT_POST : INPUT_GET; // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.NonceVerification.Recommended -- reason: chooses which superglobal Filter_Input should read; the plugin list delete is already authorized by core.
 
 		$plugins  = wp_stream_filter_input( $type, 'checked' );
 		$_plugins = $this->get_plugins();
