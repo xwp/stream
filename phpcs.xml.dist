@@ -11,6 +11,8 @@
 
 	<rule ref="WordPress-Docs">
 		<type>warning</type><!-- FIXME Report but ignore for now. -->
+		<!-- Native property types replace @var, so MissingVar would flag every typed property. -->
+		<exclude name="Squiz.Commenting.VariableComment.MissingVar" />
 	</rule>
 
 	<rule ref="WordPress-Extra">
