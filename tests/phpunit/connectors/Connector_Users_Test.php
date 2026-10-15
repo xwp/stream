@@ -10,29 +10,10 @@ namespace WP_Stream;
 class Connector_Users_Test extends WP_StreamTestCase {
 
 	/**
-	 * Recorded log() arguments from mocked connector callbacks.
-	 *
-	 * @var array<int, array<int, mixed>>
-	 */
-	private static $recorded_log_calls = array();
-
-	/**
-	 * Records log() arguments for post-hoc assertions.
-	 *
-	 * @param mixed ...$args Log method arguments.
-	 * @return void
-	 */
-	public static function record_log_call( ...$args ) {
-		self::$recorded_log_calls[] = $args;
-	}
-
-	/**
 	 * Runs before each test
 	 */
 	public function setUp(): void {
 		parent::setUp();
-
-		self::$recorded_log_calls = array();
 
 		// Make partial of Connector_Users class, with mocked "log" function.
 		$this->mock = $this->getMockBuilder( Connector_Users::class )
@@ -65,6 +46,7 @@ class Connector_Users_Test extends WP_StreamTestCase {
 	}
 
 	public function test_callback_user_register_by_logged_in_user() {
+		// This registration runs before expects(), so once() counts only the create below.
 		$user_id = self::factory()->user->create( array( 'display_name' => 'TestGuy' ) );
 		wp_set_current_user( $user_id );
 

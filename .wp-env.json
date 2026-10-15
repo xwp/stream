@@ -8,7 +8,7 @@
     "SCRIPT_DEBUG": true
   },
   "lifecycleScripts": {
-    "afterStart": "wp-env run cli -- wp plugin activate stream wp-email-logger --network"
+    "afterStart": "wp-env run cli -- wp plugin activate \"$(basename \"$PWD\")\" wp-email-logger --network"
   },
   "env": {
     "development": {

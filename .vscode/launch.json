@@ -10,8 +10,7 @@
         "vendor/"
       ],
       "pathMappings": {
-        "/var/www/html/wp-content/plugins/stream": "${workspaceFolder}",
-        "/var/www/html": "${workspaceFolder}/local/public/wp"
+        "/var/www/html/wp-content/plugins/stream": "${workspaceFolder}"
       }
     }
   ]

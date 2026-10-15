@@ -6,7 +6,7 @@
   "author": "XWP",
   "license": "GPLv2+",
   "engines": {
-    "node": "^24.20.0"
+    "node": "^24.21.0"
   },
   "repository": {
     "type": "git",
@@ -24,15 +24,15 @@
     "track"
   ],
   "devDependencies": {
-    "@playwright/test": "^1.62.1",
-    "@types/node": "^24.13.3",
+    "@playwright/test": "^1.64.0",
+    "@types/node": "^24.19.2",
     "@wordpress/e2e-test-utils-playwright": "^1.46.0",
     "@wordpress/env": "^10.39.0",
     "@wordpress/eslint-plugin": "^25.2.0",
     "@wordpress/scripts": "^32.2.0",
     "copy-webpack-plugin": "^14.0.0",
     "eslint-plugin-react-hooks": "^7.1.1",
-    "globals": "^17.12.0",
+    "globals": "^17.13.0",
     "jquery": "4.0.0",
     "npm-run-all2": "^9.0.3"
   },
@@ -47,14 +47,14 @@
     "format:php": "composer format",
     "format:js": "npm run lint:js -- --fix",
     "test": "npm-run-all test:*",
-    "test:php-unit": "wp-env start && wp-env run tests-cli --env-cwd=wp-content/plugins/stream -- composer test-unit",
-    "test:php": "wp-env start && wp-env run tests-cli --env-cwd=wp-content/plugins/stream -- vendor/bin/phpunit --no-coverage",
-    "test:php-multisite": "wp-env start && wp-env run tests-cli --env-cwd=wp-content/plugins/stream -- bash -c 'WP_MULTISITE=1 vendor/bin/phpunit -c phpunit-multisite.xml --no-coverage'",
+    "test:php-unit": "wp-env start && wp-env run tests-cli --env-cwd=wp-content/plugins/$(basename \"$PWD\") -- composer test-unit",
+    "test:php": "wp-env start && wp-env run tests-cli --env-cwd=wp-content/plugins/$(basename \"$PWD\") -- composer test",
+    "test:php-multisite": "wp-env start && wp-env run tests-cli --env-cwd=wp-content/plugins/$(basename \"$PWD\") -- composer test-multisite",
     "test-e2e": "wp-scripts test-playwright",
     "test-e2e-debug": "wp-scripts test-playwright --debug",
-    "test-xdebug": "wp-env start --xdebug && wp-env run tests-cli --env-cwd=wp-content/plugins/stream -- vendor/bin/phpunit",
-    "test-one": "wp-env run tests-cli --env-cwd=wp-content/plugins/stream -- vendor/bin/phpunit --",
-    "test-report": "php-coveralls --verbose",
+    "test-xdebug": "wp-env start --xdebug && wp-env run tests-cli --env-cwd=wp-content/plugins/$(basename \"$PWD\") -- composer test-xdebug",
+    "test-one": "wp-env start && wp-env run tests-cli --env-cwd=wp-content/plugins/$(basename \"$PWD\") -- composer test-one --",
+    "test-report": "composer test-report",
     "start": "wp-env start",
     "start-xdebug": "wp-env start --xdebug",
     "switch-to:php8.2": "WP_ENV_PHP_VERSION=8.2 wp-env start --update",
@@ -66,9 +66,9 @@
     "stop-all": "docker stop $(docker ps -a -q)",
     "logs": "wp-env logs",
     "cli": "wp-env run cli --",
-    "large-records-remove": "wp-env run cli -- bash -c 'wp db query < wp-content/plugins/stream/local/scripts/large-datasets/remove-test-logs.sql'",
-    "large-records-generate": "wp-env run cli -- bash -c 'wp db query < wp-content/plugins/stream/local/scripts/large-datasets/bulk-insert-logs.sql'",
-    "large-records-show": "wp-env run cli -- bash -c 'wp db query < wp-content/plugins/stream/local/scripts/large-datasets/show-stream-db-stats.sql'"
+    "large-records-remove": "slug=$(basename \"$PWD\") && wp-env run cli -- bash -c \"wp db query < wp-content/plugins/$slug/local/scripts/large-datasets/remove-test-logs.sql\"",
+    "large-records-generate": "slug=$(basename \"$PWD\") && wp-env run cli -- bash -c \"wp db query < wp-content/plugins/$slug/local/scripts/large-datasets/bulk-insert-logs.sql\"",
+    "large-records-show": "slug=$(basename \"$PWD\") && wp-env run cli -- bash -c \"wp db query < wp-content/plugins/$slug/local/scripts/large-datasets/show-stream-db-stats.sql\""
   },
   "dependencies": {
     "select2": "^4.1.0",

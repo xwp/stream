@@ -40,6 +40,7 @@ class Connector_Editor_Test extends WP_StreamTestCase {
 
 	public function tearDown(): void {
 		file_put_contents( WP_PLUGIN_DIR . '/hello.php', $this->original_contents ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+		parent::tearDown();
 	}
 
 	public function test_log_changes_theme_file() {

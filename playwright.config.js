@@ -27,6 +27,7 @@ const settingsUiSpecs = [
 	'**/alert-create.spec.js',
 	'**/export-download.spec.js',
 	'**/records-filter.spec.js',
+	'**/settings-save.spec.js',
 ];
 
 /**

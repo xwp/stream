@@ -75,9 +75,9 @@ Start the environment with Xdebug enabled:
 npm run start-xdebug
 ```
 
-That runs `wp-env start --xdebug`. [Step Debugging](https://xdebug.org/docs/step_debug) should work in VS Code via [`.vscode/launch.json`](.vscode/launch.json). The container path for this plugin is `/var/www/html/wp-content/plugins/stream`.
+That runs `wp-env start --xdebug`. [Step Debugging](https://xdebug.org/docs/step_debug) should work in VS Code via [`.vscode/launch.json`](.vscode/launch.json). wp-env mounts this checkout at `/var/www/html/wp-content/plugins/<directory name>`. The launch config maps a checkout named `stream`.
 
-For PhpStorm, follow the [official guide](https://www.jetbrains.com/help/phpstorm/configuring-xdebug.html) and use the same mapping: `${workspaceRoot}` → `/var/www/html/wp-content/plugins/stream`.
+For PhpStorm, follow the [official guide](https://www.jetbrains.com/help/phpstorm/configuring-xdebug.html) and map `${workspaceRoot}` to `/var/www/html/wp-content/plugins/<directory name>`.
 
 ### Mail
 
@@ -108,20 +108,21 @@ We use npm as the canonical task runner for the project. The following commands 
 - `npm run test` to run PHPUnit (single-site + multisite) inside `wp-env run tests-cli`.
 - `composer test-unit` to run the fast PHP unit suite on the host (no Docker, no WordPress bootstrap). Requires PHP 8.2+ (plugin minimum; PHPUnit 11).
 - `npm run test:php-unit` to run the fast PHP unit suite in the wp-env tests container.
-- `npm run test:php` / `npm run test:php-multisite` to run one integration PHPUnit suite only.
+- `npm run test:php` / `npm run test:php-multisite` to run one integration PHPUnit suite only. These pass `--no-coverage` because wp-env does not load a coverage driver.
+- `composer test-coverage` / `composer test-coverage-multisite` write `tests/reports/clover.xml` for `npm run test-report`.
 - `npm run test-xdebug` will run PHPUnit after starting wp-env with Xdebug.
 - `npm run test-e2e` will run the Playwright E2E tests against `http://localhost:8888`.
 - `npm run test-e2e-debug` will run the Playwright E2E tests in debug mode (Chromium + dev tools).
-- `npm run switch-to:php8.2`, `npm run switch-to:php8.3`, and `npm run switch-to:php8.4` restart wp-env with `WP_ENV_PHP_VERSION` set (supported runtime versions).
+- `npm run switch-to:php8.2`, `npm run switch-to:php8.3`, and `npm run switch-to:php8.4` restart wp-env with `WP_ENV_PHP_VERSION` set (supported runtime versions). The default in `.wp-env.json` is PHP 8.2. Confirm with `npm run which-php`.
 - `npm run document:connectors` generates [connectors.md](connectors.md). This runs via your local PHP.
 - `npm run large-records-generate` inserts ~1.6M rows to `wp_stream` and ~8.4M rows to `wp_streammeta` for testing
 - `npm run large-records-remove` removes the test data only
 - `npm run large-records-show` shows how much test data is in the tables, this does not include non-test entries
 
-By default, tests have `WP_DEBUG` as false. To enable it, prefix the PHPUnit command with `WP_STREAM_TEST_DEBUG=yes`, for example:
+By default, tests have `WP_DEBUG` as false. `wp-env run` does not forward host environment variables, so set `WP_STREAM_TEST_DEBUG` inside the container command:
 
 ```sh
-WP_STREAM_TEST_DEBUG=yes npm run test:php
+npx wp-env run tests-cli --env-cwd=wp-content/plugins/"$(basename "$PWD")" -- env WP_STREAM_TEST_DEBUG=yes composer test
 ```
 
 ### wp-env issues

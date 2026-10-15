@@ -93,17 +93,23 @@
       "phpcbf ./tests --standard=./tests/phpcs.xml.dist"
     ],
     "test": [
-      "phpunit --coverage-text",
-      "php local/scripts/make-clover-relative.php ./tests/reports/clover.xml"
+      "phpunit --no-coverage"
     ],
     "test-unit": [
       "phpunit -c phpunit-unit.xml"
     ],
     "test-one": [
-      "phpunit",
-      "WP_MULTISITE=1 phpunit -c phpunit-multisite.xml"
+      "phpunit --no-coverage",
+      "WP_MULTISITE=1 phpunit -c phpunit-multisite.xml --no-coverage"
     ],
     "test-multisite": [
+      "WP_MULTISITE=1 phpunit -c phpunit-multisite.xml --no-coverage"
+    ],
+    "test-coverage": [
+      "phpunit --coverage-text",
+      "php local/scripts/make-clover-relative.php ./tests/reports/clover.xml"
+    ],
+    "test-coverage-multisite": [
       "WP_MULTISITE=1 phpunit -c phpunit-multisite.xml --coverage-text",
       "php local/scripts/make-clover-relative.php ./tests/reports/clover.xml"
     ],

@@ -18,29 +18,10 @@ class Connector_ACF_Test extends WP_StreamTestCase {
 	protected $group_key = 'test_group';
 
 	/**
-	 * Recorded log() arguments from mocked connector callbacks.
-	 *
-	 * @var array<int, array<int, mixed>>
-	 */
-	private static $recorded_log_calls = array();
-
-	/**
-	 * Records log() arguments for post-hoc assertions.
-	 *
-	 * @param mixed ...$args Log method arguments.
-	 * @return void
-	 */
-	public static function record_log_call( ...$args ) {
-		self::$recorded_log_calls[] = $args;
-	}
-
-	/**
 	 * Runs before each test
 	 */
 	public function setUp(): void {
 		parent::setUp();
-
-		self::$recorded_log_calls = array();
 
 		$this->plugin->connectors->unload_connectors();
 

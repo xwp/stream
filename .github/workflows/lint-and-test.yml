@@ -9,19 +9,19 @@ env:
 jobs:
 
   lint:
-    name: Lint and Test (PHP ${{ matrix.php-version }})
+    name: Lint and Test (PHP ${{ matrix.php }})
     runs-on: ubuntu-22.04
     timeout-minutes: 20
-    strategy:
-      fail-fast: false
-      matrix:
-        php-version: ['8.2', '8.3', '8.4']
-    env:
-      WP_ENV_PHP_VERSION: ${{ matrix.php-version }}
-      WORDPRESS_IMAGE_VERSION: php${{ matrix.php-version }}
     permissions:
       contents: read
-      packages: read
+    strategy:
+      fail-fast: false
+      # PHPUnit 11 and the plugin both require PHP >= 8.2.
+      matrix:
+        php: ['8.2', '8.3', '8.4']
+    env:
+      # wp-env reads this instead of a custom WordPress image tag.
+      WP_ENV_PHP_VERSION: ${{ matrix.php }}
     steps:
 
       - name: Checkout
@@ -36,7 +36,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-version }}
+          php-version: ${{ matrix.php }}
           tools: composer:v2
 
       - name: Get Composer cache directory
@@ -47,8 +47,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ hashFiles( 'composer.lock' ) }}
-          restore-keys: ${{ runner.os }}-php-${{ matrix.php-version }}-
+          key: ${{ runner.os }}-php-${{ matrix.php }}-${{ hashFiles( 'composer.lock' ) }}
+          restore-keys: ${{ runner.os }}-php-${{ matrix.php }}-
 
       - name: Install NPM dependencies
         run: npm install
@@ -67,27 +67,26 @@ jobs:
 
       - name: Start wp-env
         run: npx wp-env start
-        env:
-          WP_ENV_PHP_VERSION: ${{ matrix.php-version }}
+
+      - name: Confirm container PHP version
+        run: npm run which-php
 
       - name: Test
         run: npm run test
 
   e2e:
-    name: E2E (PHP ${{ matrix.php-version }})
+    name: E2E (PHP ${{ matrix.php }})
     runs-on: ubuntu-22.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     needs: lint
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
-        php-version: ['8.2', '8.3', '8.4']
+        php: ['8.2', '8.3', '8.4']
     env:
-      WP_ENV_PHP_VERSION: ${{ matrix.php-version }}
-      WORDPRESS_IMAGE_VERSION: php${{ matrix.php-version }}
-    permissions:
-      contents: read
-      packages: read
+      WP_ENV_PHP_VERSION: ${{ matrix.php }}
     steps:
 
       - name: Checkout
@@ -102,7 +101,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-version }}
+          php-version: ${{ matrix.php }}
           tools: composer:v2
 
       - name: Get Composer cache directory
@@ -113,8 +112,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ hashFiles( 'composer.lock' ) }}
-          restore-keys: ${{ runner.os }}-php-${{ matrix.php-version }}-
+          key: ${{ runner.os }}-php-${{ matrix.php }}-${{ hashFiles( 'composer.lock' ) }}
+          restore-keys: ${{ runner.os }}-php-${{ matrix.php }}-
 
       - name: Install NPM dependencies
         run: npm install
@@ -141,8 +140,9 @@ jobs:
 
       - name: Start wp-env
         run: npx wp-env start
-        env:
-          WP_ENV_PHP_VERSION: ${{ matrix.php-version }}
+
+      - name: Confirm container PHP version
+        run: npm run which-php
 
       - name: Run E2E tests
         run: npm run test-e2e
@@ -157,6 +157,6 @@ jobs:
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-php-${{ matrix.php-version }}
+          name: playwright-report-php-${{ matrix.php }}
           path: playwright-report
           retention-days: 7
