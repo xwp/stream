@@ -124,7 +124,7 @@ class Admin_Assets {
 		 *
 		 * The default threshold is 100 items.
 		 *
-		 * @return int
+		 * @param int $bulk_actions_threshold
 		 */
 		$bulk_actions_threshold = apply_filters( 'wp_stream_bulk_actions_threshold', 100 );
 
@@ -191,7 +191,7 @@ class Admin_Assets {
 		/**
 		 * Filter the Stream admin body classes
 		 *
-		 * @return array
+		 * @param array $stream_classes
 		 */
 		$stream_classes = apply_filters( 'wp_stream_admin_body_classes', $stream_classes );
 		$stream_classes = implode( ' ', array_map( 'trim', $stream_classes ) );

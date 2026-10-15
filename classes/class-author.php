@@ -212,6 +212,11 @@ class Author {
 				$this->user->roles
 			);
 
+			/**
+			 * Filter the separator between role names in the author display.
+			 *
+			 * @param string $separator
+			 */
 			$separator = apply_filters( 'wp_stream_get_role_list_separator', ' - ' );
 			$user_role = implode( $separator, $roles );
 		} elseif ( is_multisite() && is_super_admin( $this->id ) ) {
@@ -271,7 +276,7 @@ class Author {
 		/**
 		 * Filter the current agent string
 		 *
-		 * @return string
+		 * @param string $agent
 		 */
 		$agent = apply_filters( 'wp_stream_current_agent', $agent );
 
@@ -298,8 +303,6 @@ class Author {
 		 * Filter agent labels
 		 *
 		 * @param string $agent Key representing agent.
-		 *
-		 * @return string
 		 */
 		$label = apply_filters( 'wp_stream_agent_label', $label, $agent );
 

@@ -75,8 +75,6 @@ class Query {
 		 * the $query using the hook below.
 		 *
 		 * @param string $where  WHERE statement.
-		 *
-		 * @return string
 		 */
 		$where = apply_filters( 'wp_stream_db_query_where', $where );
 
@@ -96,8 +94,6 @@ class Query {
 		 *
 		 * @param string $query
 		 * @param array  $args
-		 *
-		 * @return string
 		 */
 		$query = apply_filters( 'wp_stream_db_query', $query, $args );
 
@@ -112,8 +108,6 @@ class Query {
 		 *
 		 * @param string $query
 		 * @param array  $args
-		 *
-		 * @return string
 		 */
 		$count_query = apply_filters( 'wp_stream_db_count_query', $count_query, $args );
 
