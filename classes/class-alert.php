@@ -57,13 +57,6 @@ class Alert {
 	public $alert_meta;
 
 	/**
-	 * Holds instance of plugin object
-	 *
-	 * @var Plugin
-	 */
-	public $plugin;
-
-	/**
 	 * Class constructor
 	 *
 	 * @param ?object $item   Alert data.
@@ -71,9 +64,7 @@ class Alert {
 	 *
 	 * @return void
 	 */
-	public function __construct( $item, $plugin ) {
-		$this->plugin = $plugin;
-
+	public function __construct( $item, public $plugin ) {
 		$this->ID     = isset( $item->ID ) ? $item->ID : null;
 		$this->status = isset( $item->status ) ? $item->status : 'wp_stream_disabled';
 		$this->date   = isset( $item->date ) ? $item->date : null;

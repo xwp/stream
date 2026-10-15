@@ -12,13 +12,6 @@ namespace WP_Stream;
  */
 class Install {
 	/**
-	 * Holds Instance of plugin object
-	 *
-	 * @var Plugin
-	 */
-	public $plugin;
-
-	/**
 	 * Option key to store database version
 	 */
 	public string $option_key = 'wp_stream_db';
@@ -61,9 +54,7 @@ class Install {
 	 *
 	 * @param Plugin $plugin  Instance of plugin object.
 	 */
-	public function __construct( $plugin ) {
-		$this->plugin = $plugin;
-
+	public function __construct( public $plugin ) {
 		$this->db_version = $this->get_db_version();
 		$this->stream_url = self_admin_url( $this->plugin->admin->admin_parent_page . '&page=' . $this->plugin->admin->settings_page_slug );
 

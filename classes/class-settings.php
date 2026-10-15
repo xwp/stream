@@ -17,13 +17,6 @@ use WP_User_Query;
 class Settings {
 
 	/**
-	 * Holds instance of plugin object
-	 *
-	 * @var Plugin
-	 */
-	public $plugin;
-
-	/**
 	 * Settings key/identifier
 	 *
 	 * @var string
@@ -54,9 +47,7 @@ class Settings {
 	 *
 	 * @param Plugin $plugin Instance of plugin object.
 	 */
-	public function __construct( $plugin ) {
-		$this->plugin = $plugin;
-
+	public function __construct( public $plugin ) {
 		$this->option_key = $this->get_option_key();
 		$this->options    = $this->get_options();
 

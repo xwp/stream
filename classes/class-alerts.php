@@ -40,13 +40,6 @@ class Alerts {
 	const CAPABILITY = WP_STREAM_SETTINGS_CAPABILITY;
 
 	/**
-	 * Holds Instance of plugin object
-	 *
-	 * @var Plugin
-	 */
-	public $plugin;
-
-	/**
 	 * Post meta prefix
 	 */
 	public string $meta_prefix = 'wp_stream';
@@ -70,9 +63,7 @@ class Alerts {
 	 *
 	 * @param Plugin $plugin Instance of plugin object.
 	 */
-	public function __construct( $plugin ) {
-		$this->plugin = $plugin;
-
+	public function __construct( public $plugin ) {
 		// Register custom post type.
 		add_action( 'init', array( $this, 'register_post_type' ) );
 

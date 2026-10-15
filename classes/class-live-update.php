@@ -12,13 +12,6 @@ namespace WP_Stream;
  */
 class Live_Update {
 	/**
-	 * Holds instance of plugin object
-	 *
-	 * @var Plugin
-	 */
-	public $plugin;
-
-	/**
 	 * User meta key/identifier
 	 */
 	public string $user_meta_key = 'stream_live_update_records';
@@ -33,9 +26,7 @@ class Live_Update {
 	 *
 	 * @param Plugin $plugin Instance of plugin object.
 	 */
-	public function __construct( $plugin ) {
-		$this->plugin = $plugin;
-
+	public function __construct( public $plugin ) {
 		// Heartbeat live update.
 		add_filter( 'heartbeat_received', array( $this, 'heartbeat_received' ), 10, 2 );
 

@@ -15,13 +15,6 @@ namespace WP_Stream;
 abstract class Alert_Trigger {
 
 	/**
-	 * Holds instance of plugin object
-	 *
-	 * @var Plugin
-	 */
-	public $plugin;
-
-	/**
 	 * Unique identifier
 	 *
 	 * @var string
@@ -33,9 +26,7 @@ abstract class Alert_Trigger {
 	 *
 	 * @param Plugin $plugin Instance of plugin object.
 	 */
-	public function __construct( $plugin ) {
-		$this->plugin = $plugin;
-
+	public function __construct( public $plugin ) {
 		add_action( 'wp_stream_alert_trigger_form_display', array( $this, 'add_fields' ), 10, 2 );
 		add_action( 'wp_stream_alert_trigger_form_save', array( $this, 'save_fields' ), 10, 1 );
 		add_filter( 'wp_stream_alert_trigger_check', array( $this, 'check_record' ), 10, 4 );
