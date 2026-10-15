@@ -197,6 +197,9 @@ class Form_Generator {
 
 				$output .= '</select>';
 				break;
+			case 'user_combobox':
+				$output = $this->render_user_combobox( $args );
+				break;
 			case 'checkbox':
 				$output = sprintf(
 					'<input type="checkbox" name="%1$s" id="%1$s" value="1" %2$s>%3$s',
@@ -219,6 +222,73 @@ class Form_Generator {
 		}
 
 		echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+
+	/**
+	 * Accessible user search combobox (hidden value + search input + listbox).
+	 *
+	 * Optional `role_options` render as a "Roles" group inside the listbox
+	 * (single control), mirroring the previous Select2 dropdown's grouping.
+	 * The hidden input carries the submitted value: a user id or role slug.
+	 *
+	 * @param array $args Field args.
+	 * @return string Markup.
+	 */
+	private function render_user_combobox( $args ) {
+		$placeholder = '';
+		if ( ! empty( $args['data']['placeholder'] ) ) {
+			$placeholder = (string) $args['data']['placeholder'];
+		}
+
+		$selected_label = isset( $args['selected_label'] ) ? (string) $args['selected_label'] : '';
+		$search_label   = $placeholder ? $placeholder : __( 'Search users', 'stream' );
+		$value          = (string) $args['value'];
+		$hidden_classes = trim( 'stream-user-combobox__value ' . (string) $args['classes'] );
+
+		$role_options_attr = '';
+		if ( ! empty( $args['role_options'] ) && is_array( $args['role_options'] ) ) {
+			$role_data = array();
+			foreach ( $args['role_options'] as $role_option ) {
+				$role_option = wp_parse_args(
+					$role_option,
+					array(
+						'value' => '',
+						'text'  => '',
+					)
+				);
+				if ( '' === (string) $role_option['value'] ) {
+						continue;
+				}
+				$role_data[] = array(
+					'value' => (string) $role_option['value'],
+					'label' => (string) $role_option['text'],
+				);
+			}
+			$role_options_attr = sprintf(
+				' data-role-options="%s"',
+				esc_attr( wp_json_encode( $role_data ) )
+			);
+		}
+
+		$hidden_id = '';
+		if ( ! empty( $args['id'] ) ) {
+			$hidden_id = (string) $args['id'];
+		} elseif ( false === strpos( (string) $args['name'], '[' ) ) {
+			$hidden_id = (string) $args['name'];
+		}
+		$id_attr = '' !== $hidden_id ? sprintf( ' id="%s"', esc_attr( $hidden_id ) ) : '';
+
+		return sprintf(
+			'<div class="stream-user-combobox" data-placeholder="%1$s" data-selected-label="%2$s"%3$s><input type="search" class="stream-user-combobox__input" role="combobox" aria-expanded="false" aria-autocomplete="list" autocomplete="off" placeholder="%4$s" aria-label="%4$s" /><input type="hidden" name="%5$s"%6$s class="%7$s" value="%8$s" /><ul class="stream-user-combobox__listbox" role="listbox" hidden></ul></div>',
+			esc_attr( $placeholder ),
+			esc_attr( $selected_label ),
+			$role_options_attr,
+			esc_attr( $search_label ),
+			esc_attr( $args['name'] ),
+			$id_attr,
+			esc_attr( $hidden_classes ),
+			esc_attr( $value )
+		);
 	}
 
 	/**

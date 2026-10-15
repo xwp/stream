@@ -28,6 +28,8 @@ const settingsUiSpecs = [
 	'**/export-download.spec.js',
 	'**/records-filter.spec.js',
 	'**/settings-save.spec.js',
+	'**/exclude-rules.spec.js',
+	'**/user-combobox.spec.js',
 ];
 
 /**

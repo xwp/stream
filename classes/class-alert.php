@@ -52,9 +52,9 @@ class Alert {
 	/**
 	 * Alert meta data
 	 *
-	 * @var int
+	 * @var array
 	 */
-	public $alert_meta;
+	public array $alert_meta;
 
 	/**
 	 * Class constructor
@@ -71,7 +71,11 @@ class Alert {
 		$this->author = isset( $item->author ) ? $item->author : null;
 
 		$this->alert_type = isset( $item->alert_type ) ? $item->alert_type : null;
-		$this->alert_meta = isset( $item->alert_meta ) ? $item->alert_meta : array();
+		// get_post_meta() returns an empty string for posts with no stored
+		// meta; only accept real arrays so the typed property stays honest.
+		$this->alert_meta = isset( $item->alert_meta ) && is_array( $item->alert_meta )
+			? $item->alert_meta
+			: array();
 	}
 
 	/**
