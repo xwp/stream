@@ -150,7 +150,7 @@ Thank you for wanting to make Stream better for everyone!
 
 = Unreleased =
 
-Custom connectors must declare typed properties, for example `public string $name`. An untyped declaration causes a fatal error. See the changelog for details.
+Custom connectors, alert types, alert triggers, and exporters must declare typed properties, for example `public string $slug`. An untyped declaration causes a fatal error. See the changelog for details.
 
 = 4.4.0 =
 
