@@ -68,7 +68,7 @@ class Alert_Type_Webhook extends Alert_Type {
 	 *
 	 * @param Plugin $plugin Plugin object.
 	 */
-	public function __construct( public Plugin $plugin ) {
+	public function __construct( Plugin $plugin ) {
 		parent::__construct( $plugin );
 
 		$this->register_hooks();

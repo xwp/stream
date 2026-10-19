@@ -54,7 +54,7 @@ class Alert_Type_Highlight extends Alert_Type {
 	 * @param Plugin $plugin Plugin object.
 	 * @return void
 	 */
-	public function __construct( public Plugin $plugin ) {
+	public function __construct( Plugin $plugin ) {
 		parent::__construct( $plugin );
 		if ( ! is_admin() ) {
 			return;

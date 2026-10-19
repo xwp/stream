@@ -271,7 +271,7 @@ class Alerts_Admin_UI {
 		}
 
 		$type_obj = $this->plugin->alerts->alert_types[ $alert_type ];
-		if ( empty( $type_obj?->creatable ) && ( empty( $post_id ) || 'new' === $post_id ) ) {
+		if ( empty( $type_obj->creatable ) && ( empty( $post_id ) || 'new' === $post_id ) ) {
 			wp_send_json_error(
 				array(
 					'message' => 'Could not find alert type.',
@@ -508,7 +508,7 @@ class Alerts_Admin_UI {
 		$alert_status   = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_status' );
 
 		$registered_types = $this->plugin->alerts->alert_types;
-		if ( ! $registered_types[ $alert_type ]?->creatable ) {
+		if ( empty( $registered_types[ $alert_type ]->creatable ) ) {
 			wp_send_json_error(
 				array(
 					'message' => 'Alert type is not creatable.',
