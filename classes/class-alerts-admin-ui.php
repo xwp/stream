@@ -15,11 +15,19 @@ namespace WP_Stream;
 class Alerts_Admin_UI {
 
 	/**
+	 * Holds Instance of plugin object
+	 *
+	 * @var Plugin
+	 */
+	public $plugin;
+
+	/**
 	 * Class constructor.
 	 *
 	 * @param Plugin $plugin Instance of plugin object.
 	 */
-	public function __construct( public $plugin ) {
+	public function __construct( $plugin ) {
+		$this->plugin = $plugin;
 		$this->register_hooks();
 	}
 
