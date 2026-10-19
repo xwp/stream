@@ -150,9 +150,10 @@ jobs:
 
       - name: Dump wp-env logs on failure
         if: failure()
+        timeout-minutes: 2
         run: |
-          npx wp-env logs || true
-          npx wp-env logs tests || true
+          npx wp-env logs --no-watch || true
+          npx wp-env logs tests --no-watch || true
 
       - name: Upload Playwright report
         if: ${{ !cancelled() }}
