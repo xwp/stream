@@ -388,10 +388,6 @@ class Admin_Ajax_Test extends WP_StreamTestCase {
 	 * @group ajax
 	 */
 	public function test_ajax_filters_requires_valid_nonce() {
-		if ( ! defined( 'DOING_AJAX' ) ) {
-			define( 'DOING_AJAX', true );
-		}
-
 		$this->_setRole( 'administrator' );
 		$_GET['filter'] = 'user_id';
 		$_GET['q']      = 'adm';

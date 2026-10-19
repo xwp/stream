@@ -146,7 +146,7 @@ class Admin_Ajax {
 	 * @action wp_ajax_wp_stream_filters
 	 */
 	public function ajax_filters() {
-		if ( ! defined( 'DOING_AJAX' ) || ! current_user_can( $this->admin->settings_cap ) ) {
+		if ( ! wp_doing_ajax() || ! current_user_can( $this->admin->settings_cap ) ) {
 			wp_die( '-1' );
 		}
 
