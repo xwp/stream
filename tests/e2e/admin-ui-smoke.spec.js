@@ -139,9 +139,14 @@ test.describe( 'Admin UI smoke', () => {
 		const empty = page.locator( '.no-items, .post-state' );
 		await expect( list.or( empty ).first() ).toBeVisible();
 		await expect( page.locator( '.select2-dropdown' ) ).toHaveCount( 0 );
+		// WordPress hides the bulk actions while the list is empty, and a
+		// hidden select has no width to measure.
 		const bulkWidth = await page
 			.locator( '#bulk-action-selector-top' )
-			.evaluate( ( el ) => parseFloat( window.getComputedStyle( el ).width ) );
+			.evaluate( ( el ) => {
+				el.closest( '.bulkactions' )?.classList.remove( 'hidden' );
+				return parseFloat( window.getComputedStyle( el ).width );
+			} );
 		expect( bulkWidth ).toBeLessThan( 250 );
 	} );
 
