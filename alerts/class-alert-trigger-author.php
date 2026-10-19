@@ -197,7 +197,7 @@ class Alert_Trigger_Author extends Alert_Trigger {
 	 */
 	public function get_display_value( $context = 'normal', $alert = null ) {
 		// Note: the stored value may be '0' (WP-CLI), which is falsy — use isset().
-		$trigger_author = $alert?->alert_meta['trigger_author'] ?? '';
+		$trigger_author = $alert->alert_meta['trigger_author'] ?? '';
 
 		if ( '' === $trigger_author ) {
 			return __( 'Any User', 'stream' );
