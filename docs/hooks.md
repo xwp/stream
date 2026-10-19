@@ -39,7 +39,7 @@ Filter the action link URL for Settings connector records.
 ### `wp_stream_action_links_{connector}`
 
 - **Type:** filter
-- **Location:** `classes/class-list-table-column-renderer.php:167`
+- **Location:** `classes/class-list-table-column-renderer.php:175`
 - **Parameters:** `$action_links` — Action links.; `$record` — Record.
 
 Filter allows modification of action links for a specific connector
@@ -47,7 +47,7 @@ Filter allows modification of action links for a specific connector
 ### `wp_stream_admin_body_classes`
 
 - **Type:** filter
-- **Location:** `classes/class-admin-assets.php:196`
+- **Location:** `classes/class-admin-assets.php:204`
 - **Parameters:** `$stream_classes`
 
 Filter the Stream admin body classes
@@ -55,21 +55,21 @@ Filter the Stream admin body classes
 ### `wp_stream_admin_menu`
 
 - **Type:** action
-- **Location:** `classes/class-admin-menu.php:106`
+- **Location:** `classes/class-admin-menu.php:114`
 
 Fires before submenu items are added to the Stream menu allowing plugins to add menu items before Settings
 
 ### `wp_stream_admin_menu_screens`
 
 - **Type:** action
-- **Location:** `classes/class-admin-menu.php:128`
+- **Location:** `classes/class-admin-menu.php:136`
 
 Fires just before the Stream list table is registered.
 
 ### `wp_stream_admin_menu_title`
 
 - **Type:** filter
-- **Location:** `classes/class-admin-menu.php:74`
+- **Location:** `classes/class-admin-menu.php:82`
 - **Parameters:** `$main_menu_title`
 
 Filter the main admin menu title
@@ -77,7 +77,7 @@ Filter the main admin menu title
 ### `wp_stream_admin_page_title`
 
 - **Type:** filter
-- **Location:** `classes/class-admin-menu.php:90`
+- **Location:** `classes/class-admin-menu.php:98`
 - **Parameters:** `$main_page_title`
 
 Filter the main admin page title
@@ -85,7 +85,7 @@ Filter the main admin page title
 ### `wp_stream_after_connectors_registration`
 
 - **Type:** action
-- **Location:** `classes/class-connectors.php:229`
+- **Location:** `classes/class-connectors.php:240`
 - **Parameters:** `$labels` — All register connectors labels array; `$connector_classes` — The Connectors object
 
 Fires after all connectors have been registered.
@@ -93,7 +93,7 @@ Fires after all connectors have been registered.
 ### `wp_stream_after_list_table`
 
 - **Type:** action
-- **Location:** `classes/class-list-table.php:904`
+- **Location:** `classes/class-list-table.php:937`
 
 Fires after the list table is displayed.
 
@@ -104,6 +104,22 @@ Fires after the list table is displayed.
 - **Parameters:** `$agent` — Key representing agent.
 
 Filter agent labels
+
+### `wp_stream_ai_client_log_prompt`
+
+- **Type:** filter
+- **Location:** `connectors/class-connector-ai-client.php:252`
+- **Parameters:** `$prompt_text` — The prompt text about to be logged.; `$event` — The BeforeGenerateResultEvent instance.
+
+Filters the AI prompt text before Stream stores it. Return an empty string to omit the text.
+
+### `wp_stream_ai_client_log_response`
+
+- **Type:** filter
+- **Location:** `connectors/class-connector-ai-client.php:317`
+- **Parameters:** `$response_text` — The response text about to be logged.; `$event` — The AfterGenerateResultEvent instance.
+
+Filters the AI response text before Stream stores it. Return an empty string to omit the text.
 
 ### `wp_stream_alert_ifttt_date_format`
 
@@ -148,7 +164,7 @@ Filter the second IFTTT alert value
 ### `wp_stream_alert_trigger_check`
 
 - **Type:** filter
-- **Location:** `classes/class-alert.php:253`
+- **Location:** `classes/class-alert.php:262`
 - **Parameters:** `$match`; `$record_id`; `$recordarr`; `$alert`
 
 Filter whether an alert trigger matches a record.
@@ -156,7 +172,7 @@ Filter whether an alert trigger matches a record.
 ### `wp_stream_alert_trigger_form_display`
 
 - **Type:** action
-- **Location:** `classes/class-alerts-admin-ui.php:311`
+- **Location:** `classes/class-alerts-admin-ui.php:319`
 - **Parameters:** `$form`; `$alert`
 
 Fires when displaying the alert trigger form.
@@ -164,7 +180,7 @@ Fires when displaying the alert trigger form.
 ### `wp_stream_alert_triggers`
 
 - **Type:** filter
-- **Location:** `classes/class-alerts.php:178`
+- **Location:** `classes/class-alerts.php:186`
 - **Parameters:** `$classes` — An array of Notifier objects. In the format alert_trigger_slug =&gt; Notifier_Class()
 
 Allows for adding additional alert_triggers via classes that extend Notifier.
@@ -172,7 +188,7 @@ Allows for adding additional alert_triggers via classes that extend Notifier.
 ### `wp_stream_alert_types`
 
 - **Type:** filter
-- **Location:** `classes/class-alerts.php:134`
+- **Location:** `classes/class-alerts.php:142`
 - **Parameters:** `$classes` — An array of Notifier objects. In the format alert_type_slug =&gt; Notifier_Class()
 
 Allows for adding additional alert_types via classes that extend Notifier.
@@ -180,8 +196,8 @@ Allows for adding additional alert_types via classes that extend Notifier.
 ### `wp_stream_alerts_save_meta`
 
 - **Type:** filter
-- **Location:** `classes/class-alerts-admin-ui.php:557`
-- **Location:** `classes/class-alerts-list.php:428`
+- **Location:** `classes/class-alerts-admin-ui.php:565`
+- **Location:** `classes/class-alerts-list.php:437`
 - **Parameters:** `$alert_meta`; `$alert_type`
 
 Filter alert trigger meta before it is saved.
@@ -189,16 +205,16 @@ Filter alert trigger meta before it is saved.
 ### `wp_stream_auto_purge`
 
 - **Type:** action
-- **Location:** `classes/class-admin-purge.php:551`
-- **Location:** `classes/class-settings.php:323`
+- **Location:** `classes/class-admin-purge.php:559`
+- **Location:** `classes/class-settings.php:331`
 
 Fires once per auto-purge cycle, after all bail-out checks pass and immediately before deletion work is enqueued. Preserved for backward compatibility with consumers that hooked the legacy WP-Cron event of the same name in Stream <= 4.1.x. Note that since 4.2.0 this fires only when a purge is actually about to run — it no longer fires on every cron tick regardless of whether work happens. Hook into the recurring AS action (Admin::AUTO_PURGE_ACTION) directly if you need the older "every tick" semantics.
 
 ### `wp_stream_batch_size`
 
 - **Type:** filter
-- **Location:** `classes/class-admin-purge.php:318`
-- **Location:** `classes/class-admin-purge.php:691`
+- **Location:** `classes/class-admin-purge.php:326`
+- **Location:** `classes/class-admin-purge.php:699`
 - **Parameters:** `$batch_size` — The batch size, default 250000.
 
 Filters the number of records in the {$wpdb->stream} table to do at a time.
@@ -206,12 +222,12 @@ Filters the number of records in the {$wpdb->stream} table to do at a time.
 ### `wp_stream_blog_id_logged`
 
 - **Type:** filter
-- **Location:** `classes/class-log.php:124`
+- **Location:** `classes/class-log.php:133`
 
 ### `wp_stream_bulk_actions_threshold`
 
 - **Type:** filter
-- **Location:** `classes/class-admin-assets.php:129`
+- **Location:** `classes/class-admin-assets.php:137`
 - **Parameters:** `$bulk_actions_threshold`
 
 The maximum number of items that can be updated in bulk without receiving a warning. Stream watches for bulk actions performed in the WordPress Admin (such as updating many posts at once) and warns the user before proceeding if the number of items they are attempting to update exceeds this threshold value. Since Stream will try to save a log for each item, it will take longer than usual to complete the operation. The default threshold is 100 items.
@@ -219,7 +235,7 @@ The maximum number of items that can be updated in bulk without receiving a warn
 ### `wp_stream_check_connector_is_excluded`
 
 - **Type:** filter
-- **Location:** `classes/class-connectors.php:187`
+- **Location:** `classes/class-connectors.php:193`
 - **Parameters:** `$is_excluded` — True if excluded, otherwise false.; `$connector` — The current connector&#039;s slug.; `$excluded_connectors` — An array of all excluded connector slugs.
 
 Allows excluded connectors to be overridden and registered.
@@ -227,7 +243,7 @@ Allows excluded connectors to be overridden and registered.
 ### `wp_stream_client_ip_address`
 
 - **Type:** filter
-- **Location:** `classes/class-plugin.php:478`
+- **Location:** `classes/class-plugin.php:485`
 - **Parameters:** `$client_ip_address`
 
 Filter the client IP address stored on Stream records.
@@ -251,7 +267,7 @@ Filter excluded comment types for the Comments connector.
 ### `wp_stream_connectors`
 
 - **Type:** filter
-- **Location:** `classes/class-connectors.php:244`
+- **Location:** `classes/class-connectors.php:267`
 - **Parameters:** `$instances` — An array of Connector objects.
 
 Allows for adding additional connectors via classes that extend Connector.
@@ -267,7 +283,7 @@ Filter the current agent string
 ### `wp_stream_custom_action_links_{connector}`
 
 - **Type:** filter
-- **Location:** `classes/class-list-table-column-renderer.php:175`
+- **Location:** `classes/class-list-table-column-renderer.php:183`
 - **Parameters:** `$custom_links` — Custom links.; `$record` — Record.
 
 Filter allows addition of custom links for a specific connector
@@ -275,7 +291,7 @@ Filter allows addition of custom links for a specific connector
 ### `wp_stream_db_count_query`
 
 - **Type:** filter
-- **Location:** `classes/class-query.php:111`
+- **Location:** `classes/class-query.php:112`
 - **Parameters:** `$query`; `$args`
 
 Filter allows the result count query to be modified before execution.
@@ -284,7 +300,7 @@ Filter allows the result count query to be modified before execution.
 
 - **Type:** filter
 - **Location:** `classes/class-plugin.php:193`
-- **Location:** `classes/class-plugin.php:417`
+- **Location:** `classes/class-plugin.php:424`
 - **Parameters:** `$driver_class` — Database driver class name.
 
 Filter the database driver class name used by Stream.
@@ -292,7 +308,7 @@ Filter the database driver class name used by Stream.
 ### `wp_stream_db_query`
 
 - **Type:** filter
-- **Location:** `classes/class-query.php:97`
+- **Location:** `classes/class-query.php:98`
 - **Parameters:** `$query`; `$args`
 
 Filter allows the final query to be modified before execution
@@ -300,7 +316,7 @@ Filter allows the final query to be modified before execution
 ### `wp_stream_db_query_where`
 
 - **Type:** filter
-- **Location:** `classes/class-query.php:78`
+- **Location:** `classes/class-query.php:79`
 - **Parameters:** `$where` — WHERE statement.
 
 Filters query WHERE statement as an alternative to filtering the $query using the hook below.
@@ -316,7 +332,7 @@ Filter the database table prefix used for Stream tables.
 ### `wp_stream_db_update_versions`
 
 - **Type:** filter
-- **Location:** `classes/class-install.php:309`
+- **Location:** `classes/class-install.php:318`
 - **Parameters:** `$db_update_versions`
 
 Filter to alter the DB update versions array
@@ -340,8 +356,8 @@ Filter available context labels for the Editor connector
 ### `wp_stream_enable_auto_purge`
 
 - **Type:** filter
-- **Location:** `classes/class-admin-purge.php:377`
-- **Location:** `classes/class-admin-purge.php:485`
+- **Location:** `classes/class-admin-purge.php:385`
+- **Location:** `classes/class-admin-purge.php:493`
 - **Parameters:** `$enabled` — Whether auto-purge scheduling is enabled.
 
 Filter whether Stream schedules its TTL record auto-purge at all. Custom storage drivers that manage retention externally (TTL indexes, partition rotation, a warehouse job, etc.) can return false to disable all TTL purge scheduling regardless of the scheduler backend. Any already-registered recurring purge is unscheduled from both backends so it cannot keep firing.
@@ -349,7 +365,7 @@ Filter whether Stream schedules its TTL record auto-purge at all. Custom storage
 ### `wp_stream_export_limit`
 
 - **Type:** filter
-- **Location:** `classes/class-export.php:169`
+- **Location:** `classes/class-export.php:178`
 - **Parameters:** `$limit` — The number of records to export.
 
 Filter to change how many records are exported. Increasing this too much could cause your export to time out.
@@ -357,7 +373,7 @@ Filter to change how many records are exported. Increasing this too much could c
 ### `wp_stream_exporters`
 
 - **Type:** filter
-- **Location:** `classes/class-export.php:228`
+- **Location:** `classes/class-export.php:237`
 - **Parameters:** `$classes` — An array of Exporter objects. In the format exporter_slug =&gt; Exporter_Class()
 
 Allows for adding additional exporters via classes that extend Exporter.
@@ -373,7 +389,7 @@ Filter HTML for an unrecognized form field type.
 ### `wp_stream_frontend_indicator`
 
 - **Type:** filter
-- **Location:** `classes/class-plugin.php:380`
+- **Location:** `classes/class-plugin.php:387`
 - **Parameters:** `$comment` — The content of the HTML comment
 
 Filter allows the HTML output of the frontend indicator comment to be altered or removed, if desired.
@@ -389,7 +405,7 @@ Filter the separator between role names in the author display.
 ### `wp_stream_hidden_option_fields`
 
 - **Type:** filter
-- **Location:** `classes/class-network.php:274`
+- **Location:** `classes/class-network.php:283`
 - **Parameters:** `$stream_hidden_options` — Stream hidden options.
 
 Filter hidden option fields on per-site settings when network activated.
@@ -397,7 +413,7 @@ Filter hidden option fields on per-site settings when network activated.
 ### `wp_stream_insert_column_default_{column_name}`
 
 - **Type:** filter
-- **Location:** `classes/class-list-table-column-renderer.php:145`
+- **Location:** `classes/class-list-table-column-renderer.php:153`
 - **Parameters:** `$out` — Column content.; `$record` — Record with row content.; `$column_name` — Column name.
 
 Allows for the addition of content under a specified column.
@@ -405,7 +421,7 @@ Allows for the addition of content under a specified column.
 ### `wp_stream_is_large_records_table`
 
 - **Type:** filter
-- **Location:** `classes/class-plugin.php:514`
+- **Location:** `classes/class-plugin.php:521`
 - **Parameters:** `$is_large_table` — Whether or not the number of records should be considered large.; `$record_number` — The number of records being checked.
 
 Filters whether or not the number of records should be considered a large table.
@@ -413,7 +429,7 @@ Filters whether or not the number of records should be considered a large table.
 ### `wp_stream_is_network_activated`
 
 - **Type:** filter
-- **Location:** `classes/class-plugin.php:449`
+- **Location:** `classes/class-plugin.php:456`
 - **Parameters:** `$is_network_activated` — Whether the plugin is network activated.; `$plugin` — The stream plugin object.
 
 Filter allows the network activated detection to be overridden.
@@ -429,7 +445,7 @@ Filters the boolean output for is_option_ignored().
 ### `wp_stream_is_record_excluded`
 
 - **Type:** filter
-- **Location:** `classes/class-log.php:219`
+- **Location:** `classes/class-log.php:228`
 - **Parameters:** `$exclude_record` — Whether the record should excluded.; `$recordarr` — The record to log.
 
 Filters whether or not a record should be excluded from the log. If true, the record is not logged.
@@ -437,7 +453,7 @@ Filters whether or not a record should be excluded from the log. If true, the re
 ### `wp_stream_list_table_columns`
 
 - **Type:** filter
-- **Location:** `classes/class-list-table.php:135`
+- **Location:** `classes/class-list-table.php:144`
 - **Parameters:** `$columns` — Columns.
 
 Allows devs to add new columns to table
@@ -445,7 +461,7 @@ Allows devs to add new columns to table
 ### `wp_stream_list_table_filters`
 
 - **Type:** filter
-- **Location:** `classes/class-list-table.php:487`
+- **Location:** `classes/class-list-table.php:520`
 - **Parameters:** `$filters` — Filters.
 
 Filter allows additional filters in the list table dropdowns Note the format of the filters above, with they key and array containing a title and array of items.
@@ -453,7 +469,7 @@ Filter allows additional filters in the list table dropdowns Note the format of 
 ### `wp_stream_list_table_screen_id`
 
 - **Type:** filter
-- **Location:** `classes/class-list-table.php:50`
+- **Location:** `classes/class-list-table.php:59`
 - **Parameters:** `$screen_id` — Screen ID.
 
 Filter the list table screen ID
@@ -477,7 +493,7 @@ Filter the log handler instance used to persist Stream records.
 ### `wp_stream_menu_position`
 
 - **Type:** filter
-- **Location:** `classes/class-admin-menu.php:83`
+- **Location:** `classes/class-admin-menu.php:91`
 - **Parameters:** `$main_menu_position`
 
 Filter the main admin menu position Note: Using longtail decimal string to reduce the chance of position conflicts, see Codex
@@ -485,7 +501,7 @@ Filter the main admin menu position Note: Using longtail decimal string to reduc
 ### `wp_stream_network_option_fields`
 
 - **Type:** filter
-- **Location:** `classes/class-network.php:291`
+- **Location:** `classes/class-network.php:300`
 - **Parameters:** `$network_hidden_options` — Network hidden options.
 
 Filter hidden option fields on network settings when network activated.
@@ -509,7 +525,7 @@ Allow other plugins to filter the predefined date intervals.
 ### `wp_stream_preload_users_max`
 
 - **Type:** filter
-- **Location:** `classes/class-admin.php:146`
+- **Location:** `classes/class-admin.php:153`
 - **Parameters:** `$preload_users_max` — Default cap (50).
 
 Filters the maximum number of users preloaded into a picker. Above this cap the picker switches to Ajax search. Zero forces Ajax.
@@ -517,7 +533,7 @@ Filters the maximum number of users preloaded into a picker. Above this cap the 
 ### `wp_stream_query_args`
 
 - **Type:** filter
-- **Location:** `classes/class-db.php:232`
+- **Location:** `classes/class-db.php:240`
 - **Parameters:** `$args` — Array of query arguments
 
 Filter allows additional arguments to query $args
@@ -525,7 +541,7 @@ Filter allows additional arguments to query $args
 ### `wp_stream_query_properties`
 
 - **Type:** filter
-- **Location:** `classes/class-db.php:213`
+- **Location:** `classes/class-db.php:221`
 - **Parameters:** `$properties` — Array of query properties
 
 Filter allows additional query properties to be added
@@ -533,7 +549,7 @@ Filter allows additional query properties to be added
 ### `wp_stream_record_actions_menu`
 
 - **Type:** filter
-- **Location:** `classes/class-list-table.php:811`
+- **Location:** `classes/class-list-table.php:844`
 - **Parameters:** `$actions` — Should be in the format of action_slug =&gt; &#039;Action Name&#039;
 
 Filter the records screen actions dropdown menu
@@ -541,7 +557,7 @@ Filter the records screen actions dropdown menu
 ### `wp_stream_record_array`
 
 - **Type:** filter
-- **Location:** `classes/class-db.php:46`
+- **Location:** `classes/class-db.php:54`
 - **Parameters:** `$record`
 
 Filter allows modification of record information
@@ -549,7 +565,7 @@ Filter allows modification of record information
 ### `wp_stream_record_classes`
 
 - **Type:** filter
-- **Location:** `classes/class-list-table.php:870`
+- **Location:** `classes/class-list-table.php:903`
 - **Parameters:** `$classes`; `$item`
 
 Filter CSS classes on a Stream list table row.
@@ -557,7 +573,7 @@ Filter CSS classes on a Stream list table row.
 ### `wp_stream_record_insert_error`
 
 - **Type:** action
-- **Location:** `classes/class-db.php:62`
+- **Location:** `classes/class-db.php:70`
 - **Parameters:** `$record`; `$result`
 
 Fires on a record insertion error
@@ -565,7 +581,7 @@ Fires on a record insertion error
 ### `wp_stream_record_inserted`
 
 - **Type:** action
-- **Location:** `classes/class-db.php:73`
+- **Location:** `classes/class-db.php:81`
 - **Parameters:** `$record_id`; `$record`
 
 Fires after a record has been inserted
@@ -574,7 +590,7 @@ Fires after a record has been inserted
 
 - **Type:** filter
 - **Deprecated:** via `apply_filters_deprecated`
-- **Location:** `classes/class-list-table-column-renderer.php:129`
+- **Location:** `classes/class-list-table-column-renderer.php:137`
 - **Parameters:** `$new_columns` — Columns injected in the table.
 
 Registers new Columns to be inserted into the table. The cell contents of this column is set below with 'wp_stream_insert_column_default_'
@@ -582,7 +598,7 @@ Registers new Columns to be inserted into the table. The cell contents of this c
 ### `wp_stream_secret_alert_meta_keys`
 
 - **Type:** filter
-- **Location:** `classes/class-ability.php:174`
+- **Location:** `classes/class-ability.php:180`
 - **Parameters:** `$keys` — Meta keys to redact.; `$alert_meta` — The alert meta being redacted.
 
 Filters the alert_meta keys treated as credentials and withheld from ability output. Third-party alert types registered via `wp_stream_alert_types` may store their own destination secrets under names Stream cannot know about; add them here so they are redacted too.
@@ -598,7 +614,7 @@ Filter allows for insertion of serialized labels
 ### `wp_stream_settings_form_action`
 
 - **Type:** filter
-- **Location:** `classes/class-admin-screen-settings.php:63`
+- **Location:** `classes/class-admin-screen-settings.php:71`
 - **Parameters:** `$form_action`
 
 Filter the settings form action URL.
@@ -606,7 +622,7 @@ Filter the settings form action URL.
 ### `wp_stream_settings_form_description`
 
 - **Type:** filter
-- **Location:** `classes/class-admin-screen-settings.php:70`
+- **Location:** `classes/class-admin-screen-settings.php:78`
 - **Parameters:** `$page_description`
 
 Filter the settings page description.
@@ -614,7 +630,7 @@ Filter the settings page description.
 ### `wp_stream_settings_form_title`
 
 - **Type:** filter
-- **Location:** `classes/class-admin-menu.php:113`
+- **Location:** `classes/class-admin-menu.php:121`
 - **Parameters:** `$settings_page_title`
 
 Filter the Settings admin page title
@@ -622,7 +638,7 @@ Filter the Settings admin page title
 ### `wp_stream_settings_option_fields`
 
 - **Type:** filter
-- **Location:** `classes/class-settings-registry.php:152`
+- **Location:** `classes/class-settings-registry.php:160`
 - **Parameters:** `$fields` — Option fields.
 
 Filter allows for modification of options fields
@@ -630,7 +646,7 @@ Filter allows for modification of options fields
 ### `wp_stream_settings_option_key`
 
 - **Type:** filter
-- **Location:** `classes/class-settings.php:123`
+- **Location:** `classes/class-settings.php:131`
 - **Parameters:** `$option_key`
 
 Filter the settings option key.
@@ -638,7 +654,7 @@ Filter the settings option key.
 ### `wp_stream_settings_options`
 
 - **Type:** filter
-- **Location:** `classes/class-settings.php:245`
+- **Location:** `classes/class-settings.php:253`
 - **Parameters:** `$options` — Options.; `$option_key` — Option key.
 
 Filter allows for modification of options
@@ -662,7 +678,7 @@ Action fires during testing to test the current callback
 ### `wp_stream_use_action_scheduler`
 
 - **Type:** filter
-- **Location:** `classes/class-plugin.php:284`
+- **Location:** `classes/class-plugin.php:291`
 - **Parameters:** `$use_action_scheduler` — Whether to use Action Scheduler.
 
 Filter whether Stream uses Action Scheduler for its deferred work. IMPORTANT — timing: this filter is applied in Plugin::boot(), which runs from the constructor when the Stream plugin file is included, i.e. BEFORE the `plugins_loaded` action. Callbacks must therefore be registered from code that loads before Stream: an mu-plugin, wp-config.php, or a plugin guaranteed to load earlier. Registering it from a regular plugin's `plugins_loaded` hook is too late and will be ignored.                                   Defaults to true when the bundled                                   AS library is present. Return a                                   real boolean: the value is cast                                   with (bool), so PHP string                                   truthiness applies to strings                                   (e.g. 'false' is truthy).
