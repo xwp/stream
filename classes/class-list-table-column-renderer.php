@@ -13,11 +13,19 @@ namespace WP_Stream;
 class List_Table_Column_Renderer {
 
 	/**
+	 * Plugin instance.
+	 *
+	 * @var Plugin
+	 */
+	private Plugin $plugin;
+
+	/**
 	 * Class constructor.
 	 *
 	 * @param Plugin $plugin Plugin instance.
 	 */
-	public function __construct( private Plugin $plugin ) {
+	public function __construct( Plugin $plugin ) {
+		$this->plugin = $plugin;
 	}
 
 	/**
