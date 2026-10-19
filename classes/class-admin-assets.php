@@ -13,11 +13,19 @@ namespace WP_Stream;
 class Admin_Assets {
 
 	/**
+	 * Admin façade.
+	 *
+	 * @var Admin
+	 */
+	private Admin $admin;
+
+	/**
 	 * Class constructor.
 	 *
 	 * @param Admin $admin Admin façade.
 	 */
-	public function __construct( private Admin $admin ) {
+	public function __construct( Admin $admin ) {
+		$this->admin = $admin;
 		$this->register_hooks();
 	}
 

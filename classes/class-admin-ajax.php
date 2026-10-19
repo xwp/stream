@@ -13,12 +13,28 @@ namespace WP_Stream;
 class Admin_Ajax {
 
 	/**
+	 * Admin façade.
+	 *
+	 * @var Admin
+	 */
+	private Admin $admin;
+
+	/**
+	 * Purge / erase collaborator.
+	 *
+	 * @var Admin_Purge
+	 */
+	private Admin_Purge $purge;
+
+	/**
 	 * Class constructor.
 	 *
 	 * @param Admin       $admin Admin façade.
 	 * @param Admin_Purge $purge Purge / erase collaborator.
 	 */
-	public function __construct( private Admin $admin, private Admin_Purge $purge ) {
+	public function __construct( Admin $admin, Admin_Purge $purge ) {
+		$this->admin = $admin;
+		$this->purge = $purge;
 		$this->register_hooks();
 	}
 
