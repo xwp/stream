@@ -3,7 +3,7 @@
  * Plugin Name: Stream Error Log Alert (example)
  * Description: Sample Stream alert type that writes triggered records to the PHP error log. Copy this folder into wp-content/plugins to try it. Stream does not load this plugin itself.
  * Version: 1.0.0
- * Requires PHP: 8.2
+ * Requires PHP: 7.4
  * Author: XWP
  * Author URI: https://xwp.co
  * License: GPL-2.0-or-later
