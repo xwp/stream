@@ -8,6 +8,7 @@ import { test, expect } from '@wordpress/e2e-test-utils-playwright';
  */
 import {
 	clearNetworkExcludeRulesViaWpCli,
+	dropAllNetworkExcludeRulesViaWpCli,
 	newAuthedPage,
 	setJQuerySelect,
 } from './helpers/stream-plugin';
@@ -73,13 +74,13 @@ test.describe( 'Settings save', () => {
 	} );
 
 	test( 'role exclude rule round trips and deletes', async ( { page } ) => {
+		dropAllNetworkExcludeRulesViaWpCli();
 		await page.goto( `${ SETTINGS_URL }&tab=exclude` );
 		await page.locator( '#exclude_rules_new_rule' ).click();
 		await setJQuerySelect(
 			page,
 			'.stream-exclude-list tbody tr:not(.hidden):not(.helper) select.author_or_role',
 			'editor',
-			'optgroup[label="Users"] option, optgroup[label="Roles"] option',
 		);
 
 		await Promise.all( [
@@ -112,6 +113,9 @@ test.describe( 'Settings save', () => {
 				'.stream-exclude-list tbody tr:not(.hidden):not(.helper) select.author_or_role',
 			),
 		).toHaveCount( 0 );
+
+		// The delete is not saved, so drop the stored rule for later specs.
+		dropAllNetworkExcludeRulesViaWpCli();
 	} );
 
 	test( 'persists one change per tab after save and reload', async ( {

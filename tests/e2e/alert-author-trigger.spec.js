@@ -15,8 +15,9 @@ import { test, expect } from '@wordpress/e2e-test-utils-playwright';
  * Internal dependencies
  */
 import {
+	deleteAlertRowsViaWpCli,
+	ensureAliceEditorViaWpCli,
 	forceUserComboboxViaWpCli,
-	newAuthedPage,
 	restorePreloadUsersCapViaWpCli,
 	seedAuthorRecordViaWpCli,
 	selectUserCombobox,
@@ -24,23 +25,18 @@ import {
 
 test.describe.configure( { mode: 'serial' } );
 
-const ALICE_ID = '3';
 const ALICE_NAME = 'Alice Editor';
+let aliceId = '';
 
 /** Row ids created by this spec, trashed in afterAll. */
 const createdRowIds = [];
 
-test.afterAll( async ( { browser } ) => {
-	const page = await newAuthedPage( browser );
-	await page.goto( '/wp-admin/edit.php?post_type=wp_stream_alerts' );
-	for ( const rowId of createdRowIds ) {
-		await page.evaluate( async ( id ) => {
-			await fetch( `/wp-admin/post.php?post=${ id }&action=trash`, {
-				credentials: 'same-origin',
-			} ).catch( () => {} );
-		}, rowId );
-	}
-	await page.context().close();
+test.beforeAll( () => {
+	aliceId = ensureAliceEditorViaWpCli();
+} );
+
+test.afterAll( () => {
+	deleteAlertRowsViaWpCli( createdRowIds );
 } );
 
 /**
@@ -100,10 +96,10 @@ test.describe( 'Alert author trigger (native picker)', () => {
 					select.value = author;
 					select.dispatchEvent( new Event( 'change', { bubbles: true } ) );
 				},
-				ALICE_ID,
+				aliceId,
 			);
 
-		const rowId = await createAlertWithAuthor( page, ALICE_ID, setAuthor );
+		const rowId = await createAlertWithAuthor( page, aliceId, setAuthor );
 
 		// The list title regenerates from the saved trigger.
 		await expect( page.locator( `#${ rowId }` ) ).toContainText( ALICE_NAME );
@@ -113,7 +109,7 @@ test.describe( 'Alert author trigger (native picker)', () => {
 		// pre-existing alerts on the install cannot skew the result).
 		const marker = `E2E fires ${ Date.now() } `;
 		seedAuthorRecordViaWpCli( 1, marker + 'by-admin' );
-		seedAuthorRecordViaWpCli( ALICE_ID, marker + 'by-alice' );
+		seedAuthorRecordViaWpCli( aliceId, marker + 'by-alice' );
 
 		await page.goto( '/wp-admin/admin.php?page=wp_stream' );
 		const adminRow = page
@@ -159,9 +155,9 @@ test.describe( 'Alert author trigger (native picker)', () => {
 					select.value = author;
 					select.dispatchEvent( new Event( 'change', { bubbles: true } ) );
 				},
-				ALICE_ID,
+				aliceId,
 			);
-		const rowId = await createAlertWithAuthor( page, ALICE_ID, setAuthor );
+		const rowId = await createAlertWithAuthor( page, aliceId, setAuthor );
 
 		// Open Quick Edit on the new row.
 		await page.evaluate( ( id ) => {
@@ -175,7 +171,7 @@ test.describe( 'Alert author trigger (native picker)', () => {
 		// The saved author is preselected (the previously-dropped value).
 		await expect(
 			editRow.locator( 'select[name="wp_stream_trigger_author"]' ),
-		).toHaveValue( ALICE_ID );
+		).toHaveValue( aliceId );
 
 		// Change it to admin and save; the title follows (regeneration fix).
 		await editRow.locator( 'select[name="wp_stream_trigger_author"]' ).selectOption( '1' );

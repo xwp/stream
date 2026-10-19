@@ -21,9 +21,11 @@ const desktopChromeAuth = {
 /**
  * Specs that save Settings → General (options-general.php) to seed a Stream
  * record. Concurrent saves race on the success notice, so they run in the
- * serial `settings-ui` project instead of `chromium`.
+ * serial `settings-ui` project instead of `chromium`. Specs whose records a
+ * network exclude rule could hide run here too.
  */
 const settingsUiSpecs = [
+	'**/alert-author-trigger.spec.js',
 	'**/alert-create.spec.js',
 	'**/export-download.spec.js',
 	'**/records-filter.spec.js',

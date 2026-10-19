@@ -14,16 +14,21 @@ import { test, expect } from '@wordpress/e2e-test-utils-playwright';
  */
 import {
 	dropAllNetworkExcludeRulesViaWpCli,
+	ensureAliceEditorViaWpCli,
 	newAuthedPage,
 	seedAuthorRecordViaWpCli,
 } from './helpers/stream-plugin';
 
 const NETWORK_EXCLUDE_URL =
 	'/wp-admin/network/admin.php?page=wp_stream_network_settings&tab=exclude';
-/** Alice Editor (id 3) has the editor role on this install. */
-const EDITOR_ID = 3;
+/** Alice Editor has the editor role. */
+let editorId = '';
 
 test.describe.configure( { mode: 'serial' } );
+
+test.beforeAll( () => {
+	editorId = ensureAliceEditorViaWpCli();
+} );
 
 test.afterAll( () => {
 	dropAllNetworkExcludeRulesViaWpCli();
@@ -49,7 +54,7 @@ async function countRecordsFor( page, marker ) {
  * Add an exclude rule with the given author-or-role value via the UI.
  *
  * @param {import('@playwright/test').Page} page         Authed page on the exclude tab.
- * @param {string}                          desiredValue 'editor' (role) or '3' (user id).
+ * @param {string}                          desiredValue Role slug or user ID.
  * @param {string}                          desiredLabel Label to pick in the control.
  */
 async function addAuthorOrRoleRule( page, desiredValue, desiredLabel ) {
@@ -93,13 +98,13 @@ test.describe( 'Exclude rules suppress records', () => {
 
 		await addAuthorOrRoleRule( page, 'editor', 'Editor' );
 
-		seedAuthorRecordViaWpCli( EDITOR_ID, marker );
+		seedAuthorRecordViaWpCli( editorId, marker );
 		const visible = await countRecordsFor( page, marker );
 		expect( visible ).toBe( 0 );
 
 		// Removing the rule lets the (already fired) record show up.
 		dropAllNetworkExcludeRulesViaWpCli();
-		seedAuthorRecordViaWpCli( EDITOR_ID, marker );
+		seedAuthorRecordViaWpCli( editorId, marker );
 		await expect
 			.poll( () => countRecordsFor( page, marker ) )
 			.toBeGreaterThan( 0 );
@@ -111,15 +116,15 @@ test.describe( 'Exclude rules suppress records', () => {
 		const page = await newAuthedPage( browser );
 		const marker = 'E2E user rule ' + Date.now();
 
-		await addAuthorOrRoleRule( page, '3', 'Alice Editor' );
+		await addAuthorOrRoleRule( page, editorId, 'Alice Editor' );
 
-		seedAuthorRecordViaWpCli( EDITOR_ID, marker );
+		seedAuthorRecordViaWpCli( editorId, marker );
 		await expect
 			.poll( () => countRecordsFor( page, marker ) )
 			.toBe( 0 );
 
 		dropAllNetworkExcludeRulesViaWpCli();
-		seedAuthorRecordViaWpCli( EDITOR_ID, marker );
+		seedAuthorRecordViaWpCli( editorId, marker );
 		await expect
 			.poll( () => countRecordsFor( page, marker ) )
 			.toBeGreaterThan( 0 );

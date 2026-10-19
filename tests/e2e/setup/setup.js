@@ -9,6 +9,7 @@ import { test as setup } from '@playwright/test';
 import {
 	clearAutoPurgeQueueViaWpCli,
 	clearNetworkExcludeRulesViaWpCli,
+	ensureAliceEditorViaWpCli,
 	followAdminLink,
 	loginAsAdmin,
 } from '../helpers/stream-plugin';
@@ -39,6 +40,9 @@ setup( 'authenticate', async ( { page } ) => {
 	// rows that hide the orphan-cleanup link or swallow later records.
 	clearAutoPurgeQueueViaWpCli();
 	clearNetworkExcludeRulesViaWpCli();
+
+	// Created here, before specs run in parallel, so they never race to add it.
+	ensureAliceEditorViaWpCli();
 
 	// End of authentication steps.
 	await page.context().storageState( { path: authFile } );

@@ -9,8 +9,9 @@ import { test, expect } from '@wordpress/e2e-test-utils-playwright';
 import {
 	clearNetworkExcludeRulesViaWpCli,
 	clearUserCombobox,
+	deleteAlertRowsViaWpCli,
+	dropAllNetworkExcludeRulesViaWpCli,
 	forceUserComboboxViaWpCli,
-	newAuthedPage,
 	restorePreloadUsersCapViaWpCli,
 	seedSettingsRecord,
 	selectUserCombobox,
@@ -32,22 +33,10 @@ test.beforeEach( async ( { page } ) => {
 	}
 } );
 
-test.afterAll( async ( { browser } ) => {
+test.afterAll( () => {
 	try {
-		const page = await newAuthedPage( browser );
 		clearNetworkExcludeRulesViaWpCli();
-		if ( createdAlertRowId ) {
-			await page.goto( '/wp-admin/edit.php?post_type=wp_stream_alerts' );
-			const row = page.locator( `#the-list tr#${ createdAlertRowId }` );
-			if ( await row.isVisible().catch( () => false ) ) {
-				await row.hover();
-				const trash = row.getByRole( 'link', { name: /Trash/i } );
-				if ( await trash.isVisible().catch( () => false ) ) {
-					await trash.click();
-				}
-			}
-		}
-		await page.context().close();
+		deleteAlertRowsViaWpCli( [ createdAlertRowId ] );
 	} finally {
 		restorePreloadUsersCapViaWpCli();
 	}
@@ -316,6 +305,7 @@ test.describe( 'User combobox', () => {
 	} );
 
 	test( 'exclude user rule round trips through save and reload', async ( { page } ) => {
+		dropAllNetworkExcludeRulesViaWpCli();
 		await page.goto(
 			'/wp-admin/network/admin.php?page=wp_stream_network_settings&tab=exclude',
 		);
@@ -347,6 +337,9 @@ test.describe( 'User combobox', () => {
 		await expect( reloaded.locator( '.stream-user-combobox__input' ) ).toHaveValue(
 			/Alice|admin|Editor|Author|Contributor|Shopper|Beta|Alpha|Gamma|Charlie|Bob|Eve|Frank|Grace|Dana/i,
 		);
+
+		// A saved user rule would hide that user's records from later specs.
+		dropAllNetworkExcludeRulesViaWpCli();
 	} );
 
 	test( 'new alert author can search, select, and clear', async ( { page } ) => {

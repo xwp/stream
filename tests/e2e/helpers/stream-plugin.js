@@ -199,6 +199,33 @@ export function seedAuthorRecordViaWpCli( userId = 1, titlePrefix = 'E2E author 
 	runWpCli( [ 'eval', php ] );
 }
 
+/**
+ * Create the `alice` editor that the author and role specs act as, or reuse it.
+ *
+ * A fresh wp-env only has `admin`, so specs must look the ID up instead of
+ * assuming one.
+ *
+ * @return {string} Alice's user ID.
+ */
+export function ensureAliceEditorViaWpCli() {
+	const php = `$user = get_user_by( 'login', 'alice' ); if ( ! $user ) { $id = wp_insert_user( array( 'user_login' => 'alice', 'user_pass' => wp_generate_password(), 'user_email' => 'alice@example.com', 'display_name' => 'Alice Editor', 'role' => 'editor' ) ); $user = is_wp_error( $id ) ? get_user_by( 'login', 'alice' ) : get_user_by( 'id', $id ); } echo $user->ID;`;
+	return runWpCli( [ 'eval', php ] ).trim();
+}
+
+/**
+ * Permanently delete alerts by their list-table row ids (`post-{ID}`).
+ *
+ * @param {string[]} rowIds Row ids collected after creating alerts.
+ */
+export function deleteAlertRowsViaWpCli( rowIds ) {
+	const ids = rowIds
+		.map( ( rowId ) => String( rowId ).replace( /^post-/, '' ) )
+		.filter( ( id ) => /^\d+$/.test( id ) );
+	if ( ids.length ) {
+		runWpCli( [ 'post', 'delete', ...ids, '--force' ] );
+	}
+}
+
 export function clearAutoPurgeQueueViaWpCli() {
 	runWpCli( [
 		'db',
@@ -318,7 +345,11 @@ export async function setJQuerySelect( page, selector, value, optionSelector ) {
 export async function selectUserCombobox( combobox, query ) {
 	const search = combobox.locator( '.stream-user-combobox__input' );
 	await search.fill( query );
-	const option = combobox.locator( '[role="option"]' ).first();
+	// Focus opens the roles list before the search results arrive.
+	const escaped = query.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' );
+	const option = combobox
+		.locator( '[role="option"]', { hasText: new RegExp( escaped, 'i' ) } )
+		.first();
 	await option.waitFor( { state: 'visible', timeout: 10_000 } );
 	await option.evaluate( ( node ) => {
 		node.dispatchEvent( new MouseEvent( 'mousedown', { bubbles: true } ) );
