@@ -6,7 +6,7 @@ use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Yoast\WPTestUtils\BrainMonkey\TestCase;
 
-require_once __DIR__ . '/settings-registry-wp-roles-stub.php';
+require_once dirname( __DIR__ ) . '/settings-registry-wp-roles-stub.php';
 
 class Settings_Renderer_Unit_Test extends TestCase {
 	/**
