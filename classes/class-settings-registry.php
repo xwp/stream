@@ -15,11 +15,19 @@ use WP_Roles;
 class Settings_Registry {
 
 	/**
+	 * Instance of plugin object.
+	 *
+	 * @var Plugin
+	 */
+	private Plugin $plugin;
+
+	/**
 	 * Class constructor.
 	 *
 	 * @param Plugin $plugin Instance of plugin object.
 	 */
-	public function __construct( private Plugin $plugin ) {
+	public function __construct( Plugin $plugin ) {
+		$this->plugin = $plugin;
 	}
 
 	/**
