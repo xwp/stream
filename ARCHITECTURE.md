@@ -12,7 +12,7 @@ WordPress loads [stream.php](stream.php) before `plugins_loaded`. Connectors, al
 
 ```mermaid
 flowchart TD
-  start[stream.php loaded] --> php{PHP ≥ 8.2?}
+  start[stream.php loaded] --> php{PHP ≥ 7.4?}
   php -->|no| fail["admin_notices only — plugin inactive<br/>global never set"]
   php -->|yes| a1
 
@@ -51,7 +51,7 @@ flowchart TD
 
 | # | Phase | When | What runs | File |
 |---|-------|------|-----------|------|
-| 1 | A | plugin file include | `ABSPATH` guard; define `WP_STREAM_SETTINGS_CAPABILITY` (`manage_options`), `WP_STREAM_MIN_PHP_VERSION` (`8.2`) | [stream.php](stream.php) |
+| 1 | A | plugin file include | `ABSPATH` guard; define `WP_STREAM_SETTINGS_CAPABILITY` (`manage_options`), `WP_STREAM_MIN_PHP_VERSION` (`7.4`) | [stream.php](stream.php) |
 | 2 | A | | PHP gate: too old → hook `wp_stream_fail_php_version` on `admin_notices` / `network_admin_notices` and stop (global unset); else `require` [classes/class-plugin.php](classes/class-plugin.php) and `$GLOBALS['wp_stream'] = new Plugin()` | [stream.php](stream.php) |
 | 3 | A | `Plugin::__construct()` | `locate_plugin()` → `$locations` (`plugin`, `dir`, `url`, `inc_dir`, `class_dir`) | [classes/class-plugin.php](classes/class-plugin.php) |
 | 4 | A | `Plugin::boot()` | `spl_autoload_register` (classes under `classes/` only) | |
