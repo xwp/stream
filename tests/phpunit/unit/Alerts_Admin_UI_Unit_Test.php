@@ -187,9 +187,10 @@ class Alerts_Admin_UI_Unit_Test extends TestCase {
 	}
 
 	public function test_display_notification_box_without_post_renders_type_select() {
-		$none       = Mockery::mock();
-		$none->slug = 'none';
-		$none->name = 'Do Nothing';
+		$none            = Mockery::mock();
+		$none->slug      = 'none';
+		$none->name      = 'Do Nothing';
+		$none->creatable = true;
 		$none->shouldReceive( 'display_fields' )->once()->with( array() );
 		$this->plugin->alerts->alert_types['none'] = $none;
 
