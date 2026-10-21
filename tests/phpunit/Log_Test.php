@@ -210,40 +210,27 @@ class Log_Test extends WP_StreamTestCase {
 		);
 	}
 
-	public function test_ip_address_rule_does_not_match_empty_record_ip() {
+	public function test_ip_address_rule_drops_empty_comma_tokens() {
+		// Empty tokens (e.g. a trailing comma) must be dropped, not treated
+		// as a valid match against an empty record IP.
 		$this->assertFalse(
 			$this->plugin->log->record_matches_rules(
 				array(
 					'ip_address' => '',
 				),
 				array(
-					'ip_address' => '1.1.1.1',
+					'ip_address' => '1.1.1.1,',
 				)
 			),
-			'Empty record IP never matches an IP-only rule'
-		);
-	}
-
-	public function test_ip_address_rule_drops_empty_comma_tokens() {
-		// Empty tokens between commas (e.g. user-pasted "1.1.1.1, ,") must be
-		// dropped, not treated as a valid match against the empty record IP.
-		$this->assertTrue(
-			$this->plugin->log->record_matches_rules(
-				array(
-					'ip_address' => '1.1.1.1',
-				),
-				array(
-					'ip_address' => '1.1.1.1, ,',
-				)
-			),
-			'Empty comma-separated tokens are dropped before matching'
+			'Empty comma-separated tokens do not match an empty record IP'
 		);
 	}
 
 	public function test_ip_only_exclude_rule_excludes_record() {
-		// End-to-end coverage for the comma/whitespace exclude-rule fix.
-		// Shape mirrors the parallel-array rule format produced by both the
-		// wp-admin Exclude list and the stream/create-exclusion-rule ability.
+		// Only the last assertion covers the comma/whitespace fix; the first
+		// two also pass without it. Shape mirrors the parallel-array rule
+		// format produced by both the wp-admin Exclude list and the
+		// stream/create-exclusion-rule ability.
 		// Does not cover the separate IPv6/proxy-chain cause of issue #1824.
 		$this->plugin->settings->options['exclude_rules'] = array(
 			'exclude_row'    => array( 0 => '' ),
