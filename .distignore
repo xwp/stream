@@ -35,3 +35,6 @@ tests
 
 # JS and SCSS source files.
 /src/
+
+# Rector
+/rector.php

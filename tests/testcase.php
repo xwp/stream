@@ -201,7 +201,7 @@ class WP_StreamTestCase extends \WP_Ajax_UnitTestCase {
 	 * @link https://core.trac.wordpress.org/ticket/62004
 	 * @return void
 	 */
-	public function expectDeprecated(): void { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function expectDeprecated(): void { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- reason: method name matches the WP_UnitTestCase API.
 		add_action( 'deprecated_function_run', array( $this, 'deprecated_function_run' ), 10, 3 );
 		add_action( 'deprecated_argument_run', array( $this, 'deprecated_function_run' ), 10, 3 );
 		add_action( 'deprecated_class_run', array( $this, 'deprecated_function_run' ), 10, 3 );
@@ -215,6 +215,20 @@ class WP_StreamTestCase extends \WP_Ajax_UnitTestCase {
 		add_action( 'deprecated_file_trigger_error', '__return_false' );
 		add_action( 'deprecated_hook_trigger_error', '__return_false' );
 		add_action( 'doing_it_wrong_trigger_error', '__return_false' );
+	}
+
+	/**
+	 * Resolve an Admin collaborator.
+	 *
+	 * Collaborators are public on Admin; this helper remains for tests that
+	 * prefer a named lookup.
+	 *
+	 * @param Admin  $admin Admin instance.
+	 * @param string $name  Property name (menu|assets|records|settings|ajax|purge).
+	 * @return object
+	 */
+	protected function get_admin_collaborator( Admin $admin, string $name ) {
+		return $admin->{$name};
 	}
 
 	/**
@@ -244,6 +258,23 @@ class WP_StreamTestCase extends \WP_Ajax_UnitTestCase {
 				"Class '$class' doesn't implement the '$function' function"
 			);
 		}
+	}
+
+	/**
+	 * Delete a user from the current site, or the network when tests run as multisite.
+	 *
+	 * `wp_delete_user()` only removes the account from the blog on a network, so
+	 * `get_userdata()` would still succeed and picker labels would keep the display name.
+	 *
+	 * @param int $user_id User ID.
+	 * @return bool
+	 */
+	protected static function delete_user_completely( int $user_id ): bool {
+		if ( is_multisite() ) {
+			return wpmu_delete_user( $user_id );
+		}
+
+		return wp_delete_user( $user_id );
 	}
 
 	/**

@@ -13,6 +13,18 @@
 ### Breaking Changes
 
 - Raise the minimum PHP version from 7.2 to **7.4**. Sites running PHP below 7.4 see an admin notice (for users who can activate plugins) and Stream remains inactive — no fatal error. PHP 7.2 and PHP 7.3 are no longer supported ([XWPENG-46](https://xwp-co.atlassian.net/browse/XWPENG-46)).
+- Add native PHP types to the public properties of `Connector` and the built-in connectors. A custom connector must declare the same types, for example `public string $name = 'my_plugin';`, `public array $actions = array();`, and `public bool $register_frontend = false;`. A connector that declares these properties without types causes a PHP fatal error when it loads ([XWPENG-47](https://xwp-co.atlassian.net/browse/XWPENG-47)).
+- Add native PHP types to the `$slug` property of `Alert_Type` and `Alert_Trigger`, the `$slug` and `$name` properties of `Exporter`, and the public properties of the built-in alert types, alert triggers, and exporters. A custom alert type, alert trigger, or exporter that redeclares these properties must use the same type, for example `public string $slug = 'my_alert';`. A class that redeclares them without a type causes a PHP fatal error when it loads ([XWPENG-47](https://xwp-co.atlassian.net/browse/XWPENG-47)).
+
+### Enhancements
+
+- Add an Outgoing Webhook alert (HTTP POST or PUT, optional headers, JSON body with record-field placeholders). IFTTT is no longer offered when creating a new alert; existing IFTTT alerts still fire. To keep using Maker, configure a webhook whose URL is `https://maker.ifttt.com/trigger/{event}/with/key/{key}`.
+- Replace Select2 with native `<select>` elements across the admin (records filters, settings exclude rules, alert triggers). Author/role filters offer every user in grouped native selects; IP exclusion rules accept a comma-separated list in a plain text field. Relative timestamps now use `Intl.RelativeTimeFormat` (locale-aware) with the same bold relative + absolute date presentation as before. The `select2` and `jquery-timeago` dependencies and their bundled vendor copies are gone, and the unused `stream_get_users` and `stream_get_ips` Ajax actions were removed. User pickers preload every user in a native `<select>` while the site stays under the new `wp_stream_preload_users_max` filter (default 50); larger sites get an accessible Ajax combobox (keyboard navigation, `wp.a11y` announcements) backed by the same `wp_stream_filters` endpoint. Quick-editing an alert no longer drops its author trigger; `WP-CLI` shows as itself instead of "N/A" in pickers and alert summaries; and a stored `WP-CLI` author trigger now actually matches only WP-CLI records (the numeric string `"0"` was previously treated as unset). Editing an alert now also regenerates its list title ("Author > Context > Action") so it matches the saved triggers instead of keeping the creation-time summary.
+- Stop tracking Jetpack modules that no longer exist (Google+ authorship, Mobile theme, Custom CSS). Remaining Jetpack module logging was audited against Jetpack 15.5 on 2026-09-07.
+
+### Tweaks
+
+- Remove bundled `languages/stream-en_US.po` and `.mo` files and the `load_plugin_textdomain()` calls. Stream is hosted on WordPress.org, so translations load from language packs in `wp-content/languages/plugins/` (WordPress 4.6+ just-in-time loading). Custom `.mo` files belong in that same directory so they survive plugin updates; use the `load_textdomain_mofile` filter for any other path ([XWPENG-35](https://xwp-co.atlassian.net/browse/XWPENG-35), [#1457](https://github.com/xwp/stream/pull/1457), [#1458](https://github.com/xwp/stream/issues/1458)).
 
 ### Development
 

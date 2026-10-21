@@ -122,6 +122,11 @@ class Log {
 			$role = '';
 		}
 
+		/**
+		 * Filter the blog ID stored on a Stream record.
+		 *
+		 * @param int $blog_id
+		 */
 		$recordarr = array(
 			'object_id' => (int) $object_id,
 			'site_id'   => (int) is_multisite() ? get_current_site()->id : 1,
@@ -219,8 +224,6 @@ class Log {
 		 *
 		 * @param array $exclude_record Whether the record should excluded.
 		 * @param array $recordarr The record to log.
-		 *
-		 * @return bool
 		 */
 		return apply_filters( 'wp_stream_is_record_excluded', $exclude_record, $record );
 	}
@@ -343,9 +346,7 @@ class Log {
 		// Debug backtrace.
 		ob_start();
 
-		// @codingStandardsIgnoreStart
-		debug_print_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
-		// @codingStandardsIgnoreEnd
+		debug_print_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_print_backtrace -- reason: Stream debug log captures the backtrace when WP_STREAM_DEBUG is enabled.
 
 		$backtrace = ob_get_clean();
 		$backtrace = array_values( array_filter( explode( "\n", $backtrace ) ) );

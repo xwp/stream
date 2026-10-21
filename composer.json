@@ -25,6 +25,7 @@
     "phpcompatibility/php-compatibility": "dev-develop as 9.99.99",
     "phpcompatibility/phpcompatibility-wp": "^2.1",
     "phpunit/phpunit": "^11.3.3",
+    "rector/rector": "^2.6",
     "roots/wordpress": "^6.9",
     "wordpress/mcp-adapter": "^0.5",
     "wp-cli/wp-cli-bundle": "^2.6",
@@ -87,6 +88,12 @@
     ],
     "lint-tests": [
       "phpcs ./tests --standard=./tests/phpcs.xml.dist"
+    ],
+    "lint-rector": [
+      "rector process --dry-run"
+    ],
+    "rector": [
+      "rector process"
     ],
     "format": [
       "phpcbf .",

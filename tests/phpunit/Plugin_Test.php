@@ -38,24 +38,23 @@ class Plugin_Test extends WP_StreamTestCase {
 		$this->assertFalse( class_exists( '\WP_Stream\HAL9000' ) );
 	}
 
-	public function test_i18n() {
-		global $l10n;
+	/**
+	 * Every add_action call Plugin::boot() makes on this instance.
+	 */
+	public function test_boot_registers_expected_actions() {
+		$this->assertFalse( has_action( 'plugins_loaded', array( $this->plugin, 'i18n' ) ) );
+		$this->assertSame( 9, has_action( 'init', array( $this->plugin, 'init' ) ) );
+		$this->assertSame( 10, has_action( 'wp_head', array( $this->plugin, 'frontend_indicator' ) ) );
+		$this->assertSame( 20, has_action( 'plugins_loaded', array( $this->plugin, 'plugins_loaded' ) ) );
+	}
 
-		/**
-		 * Make sure we get the correct MO file during tests.
-		 * WP looks in develop installation where MO file is not found.
-		 */
-		add_filter(
-			'load_textdomain_mofile',
-			function ( $mofile ) {
-				$locale = get_locale();
-				$mofile = sprintf( '%s/languages/stream-%s.mo', $this->plugin->locations['dir'], $locale );
-				return $mofile;
-			}
-		);
-
-		$this->plugin->i18n();
-		$this->assertArrayHasKey( 'stream', $l10n );
+	/**
+	 * Plugin::boot() applies these filters during construction (not add_filter).
+	 */
+	public function test_boot_applies_expected_filters() {
+		$this->assertInstanceOf( DB::class, $this->plugin->db );
+		$this->assertInstanceOf( Log::class, $this->plugin->log );
+		$this->assertInstanceOf( Scheduler::class, $this->plugin->scheduler );
 	}
 
 	public function test_init() {

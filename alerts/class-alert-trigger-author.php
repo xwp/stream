@@ -16,17 +16,13 @@ class Alert_Trigger_Author extends Alert_Trigger {
 
 	/**
 	 * Unique identifier
-	 *
-	 * @var string
 	 */
-	public $slug = 'author';
+	public string $slug = 'author';
 
 	/**
 	 * Field key used in database
-	 *
-	 * @var string
 	 */
-	public $field_key = 'wp_stream_trigger_author';
+	public string $field_key = 'wp_stream_trigger_author';
 
 	/**
 	 * Checks if a record matches the criteria from the trigger.
@@ -41,7 +37,10 @@ class Alert_Trigger_Author extends Alert_Trigger {
 	 * @return bool False on failure, otherwise should return original value of $success.
 	 */
 	public function check_record( $success, $record_id, $recordarr, $alert ) {
-		if ( ! empty( $alert->alert_meta['trigger_author'] ) && intval( $alert->alert_meta['trigger_author'] ) !== intval( $recordarr['user_id'] ) ) {
+		// The stored value may be '0' (WP-CLI), which empty() would drop and
+		// turn the trigger into "any author".
+		$trigger_author = isset( $alert->alert_meta['trigger_author'] ) ? (string) $alert->alert_meta['trigger_author'] : '';
+		if ( '' !== $trigger_author && (int) $trigger_author !== (int) $recordarr['user_id'] ) {
 			return false;
 		}
 
@@ -64,16 +63,35 @@ class Alert_Trigger_Author extends Alert_Trigger {
 			$value = $alert->alert_meta['trigger_author'];
 		}
 
-		$args = array(
-			'name'    => esc_attr( $this->field_key ),
-			'value'   => esc_attr( $value ),
-			'options' => $this->get_values(),
-			'classes' => 'wp_stream_ajax_forward',
-			'data'    => array(
-				'placeholder' => __( 'Any Author', 'stream' ),
-			),
+		$picker = $this->plugin->user_picker->get( $this->plugin->admin->get_preload_users_max() );
+
+		// Over the preload cap: Ajax user combobox instead of a preloaded select.
+		if ( $picker['ajax'] ) {
+			$form->add_field(
+				'user_combobox',
+				array(
+					'name'           => esc_attr( $this->field_key ),
+					'value'          => esc_attr( $value ),
+					'selected_label' => $this->plugin->user_picker->label_for_value( $value ),
+					'data'           => array(
+						'placeholder' => __( 'Any Author', 'stream' ),
+					),
+				)
+			);
+			return;
+		}
+
+		$form->add_field(
+			'grouped_select',
+			array(
+				'name'    => esc_attr( $this->field_key ),
+				'value'   => esc_attr( $value ),
+				'options' => $this->append_stored_value_option( $this->get_values(), $value ),
+				'data'    => array(
+					'placeholder' => __( 'Any Author', 'stream' ),
+				),
+			)
 		);
-		$form->add_field( 'select2', $args );
 	}
 
 	/**
@@ -83,13 +101,6 @@ class Alert_Trigger_Author extends Alert_Trigger {
 	 */
 	public function get_values() {
 		$all_records = array();
-
-		$user_count  = count_users();
-		$total_users = $user_count['total_users'];
-
-		if ( $total_users > $this->plugin->admin->preload_users_max ) {
-			return array();
-		}
 
 		$users = array_map(
 			function ( $user_id ) {
@@ -123,7 +134,7 @@ class Alert_Trigger_Author extends Alert_Trigger {
 			$all_records[] = array(
 				'id'    => $user->id,
 				'value' => $user->id,
-				'text'  => $user->get_display_name(),
+				'text'  => $this->plugin->user_picker->label( $user->id ),
 			);
 		}
 
@@ -141,11 +152,37 @@ class Alert_Trigger_Author extends Alert_Trigger {
 	 */
 	public function save_fields( $alert ) {
 		$input = wp_stream_filter_input( INPUT_POST, $this->field_key );
-		if ( array_key_exists( $input, $this->get_values( $alert ) ) ) {
-			$alert->alert_meta['trigger_author'] = $input;
-		} else {
-			$alert->alert_meta['trigger_author'] = '';
+		$input = is_scalar( $input ) ? (string) $input : '';
+
+		// Only a user ID (or 0 for WP-CLI) is stored; anything else clears the
+		// trigger. Membership checks are impossible in combobox (Ajax) mode,
+		// where the option list is not rendered server-side.
+		$alert->alert_meta['trigger_author'] = ctype_digit( $input ) ? $input : '';
+	}
+
+	/**
+	 * Append the stored author to the option list when missing (e.g. deleted user).
+	 *
+	 * @param array  $options Picker options.
+	 * @param string $current Stored author id.
+	 * @return array
+	 */
+	private function append_stored_value_option( array $options, $current ) {
+		if ( ! ctype_digit( (string) $current ) ) {
+			return $options;
 		}
+
+		$values = array_map( 'strval', array_column( $options, 'value' ) );
+		if ( in_array( (string) $current, $values, true ) ) {
+			return $options;
+		}
+
+		$options[] = array(
+			'value' => (string) $current,
+			'text'  => $this->plugin->user_picker->label( (int) $current ),
+		);
+
+		return $options;
 	}
 
 	/**
@@ -159,18 +196,17 @@ class Alert_Trigger_Author extends Alert_Trigger {
 	 * @return string
 	 */
 	public function get_display_value( $context = 'normal', $alert = null ) {
-		$author = ( ! empty( $alert->alert_meta['trigger_author'] ) ) ? $alert->alert_meta['trigger_author'] : null;
-		if ( empty( $author ) ) {
-			$author = __( 'Any User', 'stream' );
-		} elseif ( is_numeric( $author ) ) {
-			$author_data = get_userdata( $author );
-			if ( $author_data ) {
-				$author = $author_data->display_name;
-			} else {
-				$author = __( 'Unknown User', 'stream' );
-			}
+		// Note: the stored value may be '0' (WP-CLI), which is falsy — use isset().
+		$trigger_author = $alert->alert_meta['trigger_author'] ?? '';
+
+		if ( '' === $trigger_author ) {
+			return __( 'Any User', 'stream' );
 		}
 
-		return ucfirst( $author );
+		if ( ctype_digit( $trigger_author ) ) {
+			return $this->plugin->user_picker->label( (int) $trigger_author );
+		}
+
+		return ucfirst( $trigger_author );
 	}
 }

@@ -14,10 +14,8 @@ class Connector_WordPress_SEO extends Connector {
 
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'wordpressseo';
+	public string $name = 'wordpressseo';
 
 	/**
 	 * Holds tracked plugin minimum version required
@@ -28,10 +26,8 @@ class Connector_WordPress_SEO extends Connector {
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'wpseo_handle_import',
 		'wpseo_import',
 		'seo_page_wpseo_files',
@@ -42,10 +38,8 @@ class Connector_WordPress_SEO extends Connector {
 
 	/**
 	 * Tracking registered Settings, with overridden data
-	 *
-	 * @var array
 	 */
-	public $option_groups = array();
+	public array $option_groups = array();
 
 	/**
 	 * Check if plugin dependencies are satisfied and add an admin notice if not
@@ -288,15 +282,15 @@ class Connector_WordPress_SEO extends Connector {
 				'wpseo_import',
 				'exported'
 			);
-		} elseif ( isset( $_FILES['settings_import_file']['name'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		} elseif ( isset( $_FILES['settings_import_file']['name'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- reason: connector observes an import Yoast already processed; Stream only logs the filename.
 			$this->log(
 				sprintf(
 					/* translators: %s: a filename (e.g. "test.xml") */
 					__( 'Tried importing settings from "%s"', 'stream' ),
-					sanitize_text_field( wp_unslash( $_FILES['settings_import_file']['name'] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Missing
+					sanitize_text_field( wp_unslash( $_FILES['settings_import_file']['name'] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Missing -- reason: filename is sanitized for a log message after Yoast handled the import.
 				),
 				array(
-					'file' => sanitize_text_field( wp_unslash( $_FILES['settings_import_file']['name'] ) ), // phpcs:ignore WordPress.Security.NonceVerification.Missing
+					'file' => sanitize_text_field( wp_unslash( $_FILES['settings_import_file']['name'] ) ), // phpcs:ignore WordPress.Security.NonceVerification.Missing -- reason: filename is sanitized for log meta after Yoast handled the import.
 				),
 				null,
 				'wpseo_import',

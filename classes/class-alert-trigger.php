@@ -26,7 +26,7 @@ abstract class Alert_Trigger {
 	 *
 	 * @var string
 	 */
-	public $slug;
+	public string $slug = '';
 
 	/**
 	 * Class constructor

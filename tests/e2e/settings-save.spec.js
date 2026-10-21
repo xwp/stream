@@ -7,8 +7,10 @@ import { test, expect } from '@wordpress/e2e-test-utils-playwright';
  * Internal dependencies
  */
 import {
-	newAuthedPage,
 	clearNetworkExcludeRulesViaWpCli,
+	dropAllNetworkExcludeRulesViaWpCli,
+	newAuthedPage,
+	setJQuerySelect,
 } from './helpers/stream-plugin';
 
 /**
@@ -19,7 +21,7 @@ import {
 
 const SETTINGS_URL =
 	'/wp-admin/network/admin.php?page=wp_stream_network_settings';
-const EXCLUDE_IP = '203.0.113.44';
+const EXCLUDE_IP = '198.51.100.44';
 
 /** Captured before mutation so afterAll can restore the live install. */
 let originalTtl = null;
@@ -34,6 +36,88 @@ test.afterAll( async ( { browser } ) => {
 } );
 
 test.describe( 'Settings save', () => {
+	test( 'multi-IP exclude rule round trips through save and reload', async ( {
+		page,
+	} ) => {
+		const firstIp = '198.51.100.23';
+		const secondIp = '203.0.113.77';
+
+		await page.goto( `${ SETTINGS_URL }&tab=exclude` );
+		await page.locator( '#exclude_rules_new_rule' ).click();
+		await page
+			.locator(
+				'.stream-exclude-list tbody tr:not(.hidden):not(.helper) input.ip_address',
+			)
+			.last()
+			.fill( `${ firstIp }, ${ secondIp }` );
+		await page.evaluate( ( v ) => {
+			window.__expectedIp = v;
+		}, `${ firstIp }, ${ secondIp }` );
+		await Promise.all( [
+			page.waitForURL( /settings-updated=true/ ),
+			page.getByRole( 'button', { name: 'Save Changes' } ).click( {
+				noWaitAfter: true,
+			} ),
+		] );
+		await page.waitForLoadState( 'load' );
+
+		await expect
+			.poll( () =>
+				page
+					.locator( '.stream-exclude-list input.ip_address' )
+					.evaluateAll(
+						( els, expected ) => els.map( ( el ) => el.value ).includes( expected ),
+						`${ firstIp }, ${ secondIp }`,
+					),
+			)
+			.toBe( true );
+	} );
+
+	test( 'role exclude rule round trips and deletes', async ( { page } ) => {
+		dropAllNetworkExcludeRulesViaWpCli();
+		await page.goto( `${ SETTINGS_URL }&tab=exclude` );
+		await page.locator( '#exclude_rules_new_rule' ).click();
+		await setJQuerySelect(
+			page,
+			'.stream-exclude-list tbody tr:not(.hidden):not(.helper) select.author_or_role',
+			'editor',
+		);
+
+		await Promise.all( [
+			page.waitForURL( /settings-updated=true/ ),
+			page.getByRole( 'button', { name: 'Save Changes' } ).click( {
+				noWaitAfter: true,
+			} ),
+		] );
+		await page.waitForLoadState( 'load' );
+
+		// Reloaded row keeps the role selected.
+		await expect(
+			page.locator(
+				'.stream-exclude-list tbody tr:not(.hidden):not(.helper) select.author_or_role',
+			)
+				.first(),
+		).toHaveValue( 'editor' );
+
+		// Deleting the row removes it (guards the Delete Selected Rules flow).
+		await page
+			.locator(
+				'.stream-exclude-list tbody tr:not(.hidden):not(.helper) input.cb-select',
+			)
+			.first()
+			.check();
+		await page.locator( '#exclude_rules_remove_rules' ).click();
+		await page.waitForTimeout( 300 );
+		await expect(
+			page.locator(
+				'.stream-exclude-list tbody tr:not(.hidden):not(.helper) select.author_or_role',
+			),
+		).toHaveCount( 0 );
+
+		// The delete is not saved, so drop the stored rule for later specs.
+		dropAllNetworkExcludeRulesViaWpCli();
+	} );
+
 	test( 'persists one change per tab after save and reload', async ( {
 		page,
 	} ) => {
@@ -47,14 +131,12 @@ test.describe( 'Settings save', () => {
 
 		await page.getByRole( 'link', { name: 'Exclude' } ).click();
 		await page.locator( '#exclude_rules_new_rule' ).click();
-		await page.evaluate( ( ip ) => {
-			const select = document.querySelector(
-				'.stream-exclude-list tbody tr:not(.hidden):not(.helper) select.ip_address',
-			);
-			const option = new Option( ip, ip, true, true );
-			select.appendChild( option );
-			window.jQuery( select ).trigger( 'change' );
-		}, EXCLUDE_IP );
+		const ipInput = page
+			.locator(
+				'.stream-exclude-list tbody tr:not(.hidden):not(.helper) input.ip_address',
+			)
+			.last();
+		await ipInput.fill( EXCLUDE_IP );
 
 		await page.getByRole( 'link', { name: 'Advanced' } ).click();
 		const cron = page.locator(
@@ -84,10 +166,10 @@ test.describe( 'Settings save', () => {
 		await expect(
 			page
 				.locator(
-					`.stream-exclude-list select.ip_address option[value="${ EXCLUDE_IP }"]`,
+					'.stream-exclude-list tbody tr:not(.hidden):not(.helper) input.ip_address',
 				)
-				.first(),
-		).toBeAttached();
+				.last(),
+		).toHaveValue( EXCLUDE_IP );
 
 		await page.getByRole( 'link', { name: 'Advanced' } ).click();
 		if ( cronWasChecked ) {

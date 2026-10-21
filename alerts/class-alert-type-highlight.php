@@ -33,17 +33,13 @@ class Alert_Type_Highlight extends Alert_Type {
 
 	/**
 	 * Alert type name
-	 *
-	 * @var string
 	 */
-	public $name = 'Highlight';
+	public string $name = 'Highlight';
 
 	/**
 	 * Alert type slug
-	 *
-	 * @var string
 	 */
-	public $slug = 'highlight';
+	public string $slug = 'highlight';
 
 	/**
 	 * The single Alert ID.
@@ -53,21 +49,13 @@ class Alert_Type_Highlight extends Alert_Type {
 	public $single_alert_id;
 
 	/**
-	 * The Plugin
-	 *
-	 * @var Plugin
-	 */
-	public $plugin;
-
-	/**
 	 * Class Constructor
 	 *
 	 * @param Plugin $plugin Plugin object.
 	 * @return void
 	 */
-	public function __construct( $plugin ) {
+	public function __construct( Plugin $plugin ) {
 		parent::__construct( $plugin );
-		$this->plugin = $plugin;
 		if ( ! is_admin() ) {
 			return;
 		}

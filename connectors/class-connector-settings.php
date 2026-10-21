@@ -20,17 +20,13 @@ class Connector_Settings extends Connector {
 
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'settings';
+	public string $name = 'settings';
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'allowed_options',
 		'update_option',
 		'update_site_option',
@@ -41,17 +37,13 @@ class Connector_Settings extends Connector {
 
 	/**
 	 * Labels used for WordPress Settings
-	 *
-	 * @var array
 	 */
-	public $labels = array();
+	public array $labels = array();
 
 	/**
 	 * Option names used in options-permalink.php
-	 *
-	 * @var array
 	 */
-	public $permalink_options = array(
+	public array $permalink_options = array(
 		'permalink_structure',
 		'category_base',
 		'tag_base',
@@ -59,10 +51,8 @@ class Connector_Settings extends Connector {
 
 	/**
 	 * Option names used in network/settings.php
-	 *
-	 * @var array
 	 */
-	public $network_options = array(
+	public array $network_options = array(
 		'registrationnotification',
 		'registration',
 		'add_new_users',
@@ -92,10 +82,8 @@ class Connector_Settings extends Connector {
 
 	/**
 	 * Register connector in the WP Frontend
-	 *
-	 * @var bool
 	 */
-	public $register_frontend = false;
+	public bool $register_frontend = false;
 
 	/**
 	 * Register all context hooks
@@ -135,7 +123,7 @@ class Connector_Settings extends Connector {
 			'show_on_front'                 => esc_html__( 'Front page displays', 'stream' ),
 			'page_on_front'                 => esc_html__( 'Front page displays', 'stream' ),
 			'page_for_posts'                => esc_html__( 'Front page displays', 'stream' ),
-			'posts_per_page'                => esc_html__( 'Blog pages show at most', 'stream' ), // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page, because this is not a query.
+			'posts_per_page'                => esc_html__( 'Blog pages show at most', 'stream' ), // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page -- reason: this is a settings option label, not a WP_Query argument.
 			'posts_per_rss'                 => esc_html__( 'Syndication feeds show the most recent', 'stream' ),
 			'rss_use_excerpt'               => esc_html__( 'For each article in a feed, show', 'stream' ),
 			'blog_public'                   => esc_html__( 'Search Engine Visibility', 'stream' ),
@@ -367,8 +355,6 @@ class Connector_Settings extends Connector {
 		 * @param boolean $is_ignored True if ignored, otherwise false.
 		 * @param string  $option_name Current option name.
 		 * @param array   $default_ignored Default options for Stream to ignore.
-		 *
-		 * @return boolean
 		 */
 		return apply_filters(
 			'wp_stream_is_option_ignored',
@@ -460,7 +446,6 @@ class Connector_Settings extends Connector {
 		 * Filter allows for insertion of serialized labels
 		 *
 		 * @param  array  $labels  Serialized labels
-		 * @return array  Updated array of serialzed labels
 		 */
 		$labels = apply_filters( 'wp_stream_serialized_labels', $labels );
 
@@ -494,7 +479,7 @@ class Connector_Settings extends Connector {
 					$url_tab    = null;
 
 					if ( '' !== $option_key ) {
-						foreach ( $plugin->settings->get_fields() as $tab_name => $tab_properties ) {
+						foreach ( $plugin->settings->registry->get_fields() as $tab_name => $tab_properties ) {
 							foreach ( $tab_properties['fields'] as $field ) {
 								$field_key = sprintf( '%s_%s', $tab_name, $field['name'] );
 								if ( $field_key === $option_key ) {
@@ -589,6 +574,12 @@ class Connector_Settings extends Connector {
 					list( $menu_title, $capability ) = $target_submenu;
 
 					if ( current_user_can( $capability ) ) {
+						/**
+						 * Filter the action link URL for Settings connector records.
+						 *
+						 * @param string $url
+						 * @param object $record
+						 */
 						$url        = apply_filters( 'wp_stream_action_link_url', $url, $record );
 						$field_name = $record->get_meta( 'option_key', true );
 

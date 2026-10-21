@@ -122,6 +122,17 @@ Developers can filter stored text when the setting is enabled:
  * We have temporarily disabled the data removal feature through plugin uninstallation, starting with version 3.9.3. We identified a few edge cases that did not behave as expected and we decided that a temporary removal is preferable at this time for such an impactful and irreversible operation. Our team is actively working on refining this feature to ensure it performs optimally and securely. We plan to reintroduce it in a future update with enhanced safeguards.
 
 
+== Frequently Asked Questions ==
+
+= How do I use a custom translation? =
+
+Stream no longer ships translation files inside the plugin. WordPress loads translations from language packs installed in `wp-content/languages/plugins/` (for example `stream-fr_FR.mo`). Files in that directory survive plugin updates.
+
+To override a language pack, place your compiled `stream-{locale}.mo` in `wp-content/languages/plugins/`. To load a file from another location, use the [`load_textdomain_mofile`](https://developer.wordpress.org/reference/hooks/load_textdomain_mofile/) filter.
+
+Contributions belong on [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/stream/).
+
+
 == Contribute ==
 
 There are several ways you can get involved to help make Stream better:
@@ -147,6 +158,10 @@ Thank you for wanting to make Stream better for everyone!
 
 
 == Upgrade Notice ==
+
+= Unreleased =
+
+Custom connectors, alert types, alert triggers, and exporters must declare typed properties, for example `public string $slug`. An untyped declaration causes a fatal error. See the changelog for details.
 
 = 4.4.0 =
 

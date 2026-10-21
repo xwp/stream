@@ -53,45 +53,33 @@ class Plugin {
 
 	/**
 	 * Holds and manages WordPress Admin configurations.
-	 *
-	 * @var Admin
 	 */
-	public $admin;
+	public ?Admin $admin = null;
 
 	/**
 	 * Holds and manages alerts.
-	 *
-	 * @var Alerts
 	 */
-	public $alerts;
+	public ?Alerts $alerts = null;
 
 	/**
 	 * Holds and manages alerts lists.
-	 *
-	 * @var Alerts_List
 	 */
-	public $alerts_list;
+	public ?Alerts_List $alerts_list = null;
 
 	/**
 	 * Holds and manages WordPress Abilities API integration.
-	 *
-	 * @var Abilities
 	 */
-	public $abilities;
+	public ?Abilities $abilities = null;
 
 	/**
 	 * Holds and manages connectors
-	 *
-	 * @var Connectors
 	 */
-	public $connectors;
+	public ?Connectors $connectors = null;
 
 	/**
 	 * Holds and manages DB connections.
-	 *
-	 * @var DB
 	 */
-	public $db;
+	public ?DB $db = null;
 
 	/**
 	 * Holds and manages records.
@@ -102,17 +90,18 @@ class Plugin {
 
 	/**
 	 * Stores and manages WordPress settings.
-	 *
-	 * @var Settings
 	 */
-	public $settings;
+	public ?Settings $settings = null;
+
+	/**
+	 * Server-side backend for user pickers (native select / Ajax combobox).
+	 */
+	public ?User_Picker $user_picker = null;
 
 	/**
 	 * Process DB migrations.
-	 *
-	 * @var Install
 	 */
-	public $install;
+	public ?Install $install = null;
 
 	/**
 	 * Backend used to schedule Stream's deferred work (purge / reset).
@@ -120,28 +109,22 @@ class Plugin {
 	 * Either an {@see AS_Scheduler} (Action Scheduler, default) or a
 	 * {@see Cron_Scheduler} (WP-Cron fallback), selected at construction via
 	 * the `wp_stream_use_action_scheduler` filter.
-	 *
-	 * @var Scheduler
 	 */
-	public $scheduler;
+	public Scheduler $scheduler;
 
 	/**
 	 * Whether the bundled Action Scheduler library was loaded.
 	 *
-	 * Set from a file_exists() check at construction (see __construct), so it
-	 * is reliable on `plugins_loaded` even though AS only declares its as_*()
-	 * API later on `init`.
-	 *
-	 * @var bool
+	 * Set from a file_exists() check during boot() (called from the
+	 * constructor), so it is reliable on `plugins_loaded` even though AS
+	 * only declares its as_*() API later on `init`.
 	 */
-	protected $action_scheduler_available = false;
+	protected bool $action_scheduler_available = false;
 
 	/**
 	 * URLs and Paths used by the plugin
-	 *
-	 * @var array
 	 */
-	public $locations = array();
+	public array $locations = array();
 
 	/**
 	 * IP address for the current request to be associated with the log entry.
@@ -151,7 +134,9 @@ class Plugin {
 	protected $client_ip_address;
 
 	/**
-	 * Class constructor
+	 * Class constructor.
+	 *
+	 * Sets plugin locations that the autoloader needs, then boots subsystems.
 	 */
 	public function __construct() {
 		$locate = $this->locate_plugin();
@@ -164,6 +149,17 @@ class Plugin {
 			'class_dir' => $locate['dir_path'] . 'classes/',
 		);
 
+		$this->boot();
+	}
+
+	/**
+	 * Load dependencies, instantiate subsystems, and register hooks.
+	 *
+	 * Called from the constructor after locations are set so the autoloader
+	 * can resolve plugin classes. Hook names, priorities, and registration
+	 * order match the previous constructor body.
+	 */
+	public function boot() {
 		spl_autoload_register( array( $this, 'autoload' ) );
 
 		// Determine the scheduler backend, then load Action Scheduler only if
@@ -174,7 +170,7 @@ class Plugin {
 		//
 		// Availability is tracked from a file_exists() check rather than
 		// function_exists(): AS only declares its as_*() API on `init`, but
-		// this constructor runs at plugin-file inclusion time (before the
+		// boot() runs at plugin-file inclusion time (before the
 		// `plugins_loaded` action fires), so the functions are not defined
 		// yet. Scheduler methods are only ever called on/after `init`
 		// (wp_loaded, AJAX, cron), by which point the API is loaded.
@@ -189,6 +185,11 @@ class Plugin {
 		require_once $this->locations['inc_dir'] . 'functions.php';
 
 		// Load DB helper interface/class.
+		/**
+		 * Filter the database driver class name used by Stream.
+		 *
+		 * @param string $driver_class Database driver class name.
+		 */
 		$driver_class = apply_filters( 'wp_stream_db_driver', '\WP_Stream\DB_Driver_WPDB' );
 		$driver       = null;
 
@@ -211,10 +212,12 @@ class Plugin {
 			);
 		}
 
-		// Load languages.
-		add_action( 'plugins_loaded', array( $this, 'i18n' ) );
-
 		// Load logger class.
+		/**
+		 * Filter the log handler instance used to persist Stream records.
+		 *
+		 * @param Log $log Log handler instance.
+		 */
 		$this->log = apply_filters( 'wp_stream_log_handler', new Log( $this ) );
 
 		// Set the IP address for the current request.
@@ -231,8 +234,15 @@ class Plugin {
 
 		// Load admin area classes.
 		if ( is_admin() || ( defined( 'WP_STREAM_DEV_DEBUG' ) && WP_STREAM_DEV_DEBUG ) || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
-			$this->admin   = new Admin( $this );
-			$this->install = $driver->setup_storage( $this );
+			$this->admin = new Admin( $this );
+			$install     = $driver->setup_storage( $this );
+			if ( ! $install instanceof Install ) {
+				wp_die(
+					esc_html__( 'Stream: DB driver setup_storage() must return an Install instance.', 'stream' ),
+					esc_html__( 'Stream DB Error', 'stream' )
+				);
+			}
+			$this->install = $install;
 		} elseif ( defined( 'DOING_CRON' ) && DOING_CRON ) {
 			$this->admin = new Admin( $this, $driver );
 		}
@@ -259,12 +269,13 @@ class Plugin {
 		/**
 		 * Filter whether Stream uses Action Scheduler for its deferred work.
 		 *
-		 * IMPORTANT — timing: this filter is applied in Plugin::__construct(),
-		 * which runs when the Stream plugin file is included, i.e. BEFORE the
-		 * `plugins_loaded` action. Callbacks must therefore be registered from
-		 * code that loads before Stream: an mu-plugin, wp-config.php, or a
-		 * plugin guaranteed to load earlier. Registering it from a regular
-		 * plugin's `plugins_loaded` hook is too late and will be ignored.
+		 * IMPORTANT — timing: this filter is applied in Plugin::boot(),
+		 * which runs from the constructor when the Stream plugin file is
+		 * included, i.e. BEFORE the `plugins_loaded` action. Callbacks must
+		 * therefore be registered from code that loads before Stream: an
+		 * mu-plugin, wp-config.php, or a plugin guaranteed to load earlier.
+		 * Registering it from a regular plugin's `plugins_loaded` hook is too
+		 * late and will be ignored.
 		 *
 		 * @param bool $use_action_scheduler Whether to use Action Scheduler.
 		 *                                   Defaults to true when the bundled
@@ -330,15 +341,6 @@ class Plugin {
 	}
 
 	/**
-	 * Loads the translation files.
-	 *
-	 * @action plugins_loaded
-	 */
-	public function i18n() {
-		load_plugin_textdomain( 'stream', false, dirname( $this->locations['plugin'] ) . '/languages/' );
-	}
-
-	/**
 	 * Load Settings, Notifications, and Connectors
 	 *
 	 * @action init
@@ -349,6 +351,7 @@ class Plugin {
 		$this->alerts      = new Alerts( $this );
 		$this->alerts_list = new Alerts_List( $this );
 		$this->abilities   = new Abilities( $this );
+		$this->user_picker = new User_Picker();
 	}
 
 	/**
@@ -367,7 +370,7 @@ class Plugin {
 		 * Filter allows the HTML output of the frontend indicator comment
 		 * to be altered or removed, if desired.
 		 *
-		 * @return string  The content of the HTML comment
+		 * @param string $comment The content of the HTML comment
 		 */
 		$comment = apply_filters( 'wp_stream_frontend_indicator', $comment );
 
@@ -405,6 +408,7 @@ class Plugin {
 	 */
 	public function plugins_loaded() {
 		// Load DB helper interface/class.
+		/** This filter is documented in classes/class-plugin.php in Plugin::boot() */
 		$driver_class = apply_filters( 'wp_stream_db_driver', '\WP_Stream\DB_Driver_WPDB' );
 
 		if ( class_exists( $driver_class ) ) {
@@ -461,6 +465,11 @@ class Plugin {
 	 * @return false|null|string Valid IP address, null if not set, false if invalid.
 	 */
 	public function get_client_ip_address() {
+		/**
+		 * Filter the client IP address stored on Stream records.
+		 *
+		 * @param string|false|null $client_ip_address
+		 */
 		return apply_filters( 'wp_stream_client_ip_address', $this->client_ip_address );
 	}
 
@@ -552,7 +561,7 @@ class Plugin {
 			throw new RuntimeException( 'Built JavaScript assets not found. Please run `npm run build`' );
 		}
 
-		$script_asset = require $script_asset_path; // phpcs:disable WPThemeReview.CoreFunctionality.FileInclude.FileIncludeFound
+		$script_asset = require $script_asset_path; // phpcs:ignore WPThemeReview.CoreFunctionality.FileInclude.FileIncludeFound -- reason: webpack asset.php returns a generated dependency array, not a template.
 
 		wp_enqueue_script(
 			"wp-stream-$handle",
@@ -581,99 +590,5 @@ class Plugin {
 				'before'
 			);
 		}
-	}
-
-	/**
-	 * Enqueue select2 script and locale file if exists.
-	 *
-	 * @return string Script handle.
-	 */
-	public function with_select2() {
-		$handle = 'wp-stream-select2';
-
-		// If is enqueued already, bail out.
-		if ( wp_script_is( $handle ) ) {
-			return $handle;
-		}
-
-		$path = untrailingslashit( $this->locations['dir'] );
-		$url  = untrailingslashit( $this->locations['url'] );
-
-		wp_enqueue_script(
-			$handle,
-			"$url/build/select2/js/select2.full.min.js",
-			array( 'jquery' ),
-			filemtime( "$path/build/select2/js/select2.full.min.js" ),
-			true
-		);
-		wp_enqueue_style(
-			$handle,
-			"$url/build/select2/css/select2.min.css",
-			array(),
-			filemtime( "$path/build/select2/css/select2.min.css" )
-		);
-
-		$locale       = get_locale();
-		$lang         = substr( $locale, 0, 2 );
-		$search_files = array( $locale, $lang, 'en' );
-
-		foreach ( $search_files as $search_file ) {
-			if ( file_exists( "$path/build/select2/js/i18n/$search_file.js" ) ) {
-				wp_enqueue_script(
-					sanitize_title( "$handle-$search_file" ),
-					"$url/build/select2/js/i18n/$search_file.js",
-					array( $handle ),
-					filemtime( "$path/build/select2/js/i18n/$search_file.js" ),
-					true
-				);
-				break;
-			}
-		}
-
-		return $handle;
-	}
-
-	/**
-	 * Enqueue jquery.timeago script and locale file if exists.
-	 *
-	 * @return string Script handle.
-	 */
-	public function with_jquery_timeago() {
-		$handle = 'wp-stream-jquery-timeago';
-
-		// If is enqueued already, bail out.
-		if ( wp_script_is( $handle ) ) {
-			return $handle;
-		}
-
-		$path = untrailingslashit( $this->locations['dir'] );
-		$url  = untrailingslashit( $this->locations['url'] );
-
-		wp_enqueue_script(
-			$handle,
-			"$url/build/timeago/js/jquery.timeago.js",
-			array( 'jquery' ),
-			filemtime( "$path/build/timeago/js/jquery.timeago.js" ),
-			true
-		);
-
-		$locale       = get_locale();
-		$lang         = substr( $locale, 0, 2 );
-		$search_files = array( $locale, $lang, 'en' );
-
-		foreach ( $search_files as $search_file ) {
-			if ( file_exists( "$path/build/timeago/js/locales/jquery.timeago.$search_file.js" ) ) {
-				wp_enqueue_script(
-					sanitize_title( "$handle-$search_file" ),
-					"$url/build/timeago/js/locales/jquery.timeago.$search_file.js",
-					array( $handle ),
-					filemtime( "$path/build/timeago/js/locales/jquery.timeago.$search_file.js" ),
-					true
-				);
-				break;
-			}
-		}
-
-		return $handle;
 	}
 }

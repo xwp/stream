@@ -176,7 +176,7 @@ class Network_Test extends WP_StreamTestCase {
 		wp_set_current_user( $user_id );
 
 		$original_referer        = isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : null;
-		$_SERVER['HTTP_REFERER'] = network_admin_url(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+		$_SERVER['HTTP_REFERER'] = network_admin_url(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- reason: the test assigns a known URL to $_SERVER then compares it.
 		add_filter( 'wp_doing_ajax', '__return_true' );
 
 		try {
@@ -194,7 +194,7 @@ class Network_Test extends WP_StreamTestCase {
 			if ( null === $original_referer ) {
 				unset( $_SERVER['HTTP_REFERER'] );
 			} else {
-				$_SERVER['HTTP_REFERER'] = $original_referer; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+				$_SERVER['HTTP_REFERER'] = $original_referer; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- reason: the test assigns a known URL to $_SERVER then compares it.
 			}
 		}
 	}
@@ -212,12 +212,12 @@ class Network_Test extends WP_StreamTestCase {
 		grant_super_admin( $user_id );
 
 		$original_referer        = isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : null;
-		$_SERVER['HTTP_REFERER'] = network_admin_url(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+		$_SERVER['HTTP_REFERER'] = network_admin_url(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- reason: the test assigns a known URL to $_SERVER then compares it.
 		add_filter( 'wp_doing_ajax', '__return_true' );
 
 		try {
 			$this->assertTrue(
-				0 === stripos( $_SERVER['HTTP_REFERER'], network_admin_url() ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+				0 === stripos( $_SERVER['HTTP_REFERER'], network_admin_url() ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- reason: the test assigns a known URL to $_SERVER then compares it.
 				&& $this->network->can_view_network_records(),
 				'A super admin must keep network-admin context over ajax.'
 			);
@@ -228,7 +228,7 @@ class Network_Test extends WP_StreamTestCase {
 			if ( null === $original_referer ) {
 				unset( $_SERVER['HTTP_REFERER'] );
 			} else {
-				$_SERVER['HTTP_REFERER'] = $original_referer; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+				$_SERVER['HTTP_REFERER'] = $original_referer; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- reason: the test assigns a known URL to $_SERVER then compares it.
 			}
 		}
 	}

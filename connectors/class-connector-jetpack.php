@@ -1,6 +1,14 @@
 <?php
 /**
- * Connector for Jetpack
+ * Connector for Jetpack.
+ *
+ * Tracks Jetpack modules that still exist on disk as of 2026-09-07 (Jetpack 15.5):
+ * carousel, comments, infinite-scroll, likes, monitor, post-by-email, protect,
+ * publicize, related-posts, sharedaddy, sso, stats, subscriptions, tiled-gallery,
+ * verification-tools, videopress.
+ *
+ * Context labels for modules Jetpack no longer ships (custom-css, gplus-authorship,
+ * minileven) stay so existing Stream records still show a translated name.
  *
  * @package WP_Stream
  */
@@ -13,10 +21,8 @@ namespace WP_Stream;
 class Connector_Jetpack extends Connector {
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'jetpack';
+	public string $name = 'jetpack';
 
 	/**
 	 * Holds tracked plugin minimum version required
@@ -27,10 +33,8 @@ class Connector_Jetpack extends Connector {
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'jetpack_log_entry',
 		'sharing_get_services_state',
 		'update_option',
@@ -44,24 +48,18 @@ class Connector_Jetpack extends Connector {
 
 	/**
 	 * Register connector in the WP Frontend
-	 *
-	 * @var bool
 	 */
-	public $register_frontend = false;
+	public bool $register_frontend = false;
 
 	/**
 	 * Tracked option keys
-	 *
-	 * @var array
 	 */
-	public $options = array();
+	public array $options = array();
 
 	/**
 	 * Tracking registered Settings, with overridden data
-	 *
-	 * @var array
 	 */
-	public $options_override = array();
+	public array $options_override = array();
 
 	/**
 	 * Check if plugin dependencies are satisfied and add an admin notice if not
@@ -107,18 +105,21 @@ class Connector_Jetpack extends Connector {
 	/**
 	 * Return translated context labels
 	 *
+	 * Labels for modules Jetpack no longer ships remain so historical records
+	 * do not fall back to the raw context slug.
+	 *
 	 * @return array Context label translations
 	 */
 	public function get_context_labels() {
 		return array(
 			'blogs'              => esc_html_x( 'Blogs', 'jetpack', 'stream' ),
 			'carousel'           => esc_html_x( 'Carousel', 'jetpack', 'stream' ),
-			'custom-css'         => esc_html_x( 'Custom CSS', 'jetpack', 'stream' ),
-			'gplus-authorship'   => esc_html_x( 'Google+ Profile', 'jetpack', 'stream' ),
+			'custom-css'         => esc_html_x( 'Custom CSS', 'jetpack', 'stream' ), // DEPRECATED.
+			'gplus-authorship'   => esc_html_x( 'Google+ Profile', 'jetpack', 'stream' ), // DEPRECATED.
 			'infinite-scroll'    => esc_html_x( 'Infinite Scroll', 'jetpack', 'stream' ),
 			'jetpack-comments'   => esc_html_x( 'Comments', 'jetpack', 'stream' ),
 			'likes'              => esc_html_x( 'Likes', 'jetpack', 'stream' ),
-			'minileven'          => esc_html_x( 'Mobile', 'jetpack', 'stream' ),
+			'minileven'          => esc_html_x( 'Mobile', 'jetpack', 'stream' ), // DEPRECATED.
 			'modules'            => esc_html_x( 'Modules', 'jetpack', 'stream' ),
 			'monitor'            => esc_html_x( 'Monitor', 'jetpack', 'stream' ),
 			'options'            => esc_html_x( 'Options', 'jetpack', 'stream' ),
@@ -158,6 +159,7 @@ class Connector_Jetpack extends Connector {
 				}
 
 				if ( \Jetpack::is_module_active( $slug ) ) {
+					/** This filter is documented in Jetpack. */
 					if ( apply_filters( 'jetpack_module_configurable_' . $slug, false ) ) {
 						$links[ esc_html__( 'Configure', 'stream' ) ] = \Jetpack::module_configuration_url( $slug );
 					}
@@ -187,6 +189,7 @@ class Connector_Jetpack extends Connector {
 			} elseif ( \Jetpack::is_module_active( str_replace( 'jetpack-', '', $record->context ) ) ) {
 				$slug = str_replace( 'jetpack-', '', $record->context ); // handling jetpack-comment anomaly.
 
+				/** This filter is documented in Jetpack. */
 				if ( apply_filters( 'jetpack_module_configurable_' . $slug, false ) ) {
 					$links[ esc_html__( 'Configure module', 'stream' ) ] = \Jetpack::module_configuration_url( $slug );
 				}
@@ -207,8 +210,6 @@ class Connector_Jetpack extends Connector {
 		$this->options = array(
 			'jetpack_options'                   => null,
 			// Sharing module.
-			'hide_gplus'                        => null,
-			'gplus_authors'                     => null,
 			'sharing-options'                   => array(
 				'label'   => esc_html__( 'Sharing options', 'stream' ),
 				'context' => 'sharedaddy',
@@ -232,15 +233,6 @@ class Connector_Jetpack extends Connector {
 			'disabled_likes'                    => array(
 				'label'   => esc_html__( 'WP.com Site-wide Likes', 'stream' ),
 				'context' => 'likes',
-			),
-			// Mobile.
-			'wp_mobile_excerpt'                 => array(
-				'label'   => esc_html__( 'Excerpts appearance', 'stream' ),
-				'context' => 'minileven',
-			),
-			'wp_mobile_app_promos'              => array(
-				'label'   => esc_html__( 'App promos', 'stream' ),
-				'context' => 'minileven',
 			),
 		);
 
@@ -391,8 +383,7 @@ class Connector_Jetpack extends Connector {
 			$context      = 'blogs';
 			$action       = str_replace( 'subsite', '', $method );
 			$is_multisite = ( 0 === strpos( $method, 'subsite' ) );
-			// @codingStandardsIgnoreLine
-			$blog_id      = $is_multisite ? ( isset( $_GET['site_id'] ) ? intval( wp_unslash( $_GET['site_id'] ) ) : null ) : get_current_blog_id();
+			$blog_id      = $is_multisite ? ( isset( $_GET['site_id'] ) ? intval( wp_unslash( $_GET['site_id'] ) ) : null ) : get_current_blog_id(); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- reason: Jetpack network action already ran; Stream only logs the site_id from the request.
 
 			if ( empty( $blog_id ) ) {
 				return;
@@ -675,59 +666,6 @@ class Connector_Jetpack extends Connector {
 	}
 
 	/**
-	 * Logs Google+ profile display status
-	 *
-	 * @param string $old_value  Old status.
-	 * @param string $new_value  New status.
-	 * @return null|bool
-	 */
-	public function check_hide_gplus( $old_value, $new_value ) {
-		$status = ! is_null( $new_value );
-
-		if ( $status && $old_value ) {
-			return false;
-		}
-
-		$this->log(
-			/* translators: Placeholder refers to a status (e.g. "enabled") */
-			__( 'G+ profile display %s', 'stream' ),
-			array(
-				'action' => $status ? esc_html__( 'enabled', 'stream' ) : esc_html__( 'disabled', 'stream' ),
-			),
-			null,
-			'gplus-authorship',
-			'updated'
-		);
-	}
-
-	/**
-	 * Logs if current user's Google+ account connection status
-	 *
-	 * @param string $old_value  Old status.
-	 * @param string $new_value  New status.
-	 * @return void
-	 */
-	public function check_gplus_authors( $old_value, $new_value ) {
-		unset( $old_value );
-
-		$user      = wp_get_current_user();
-		$connected = is_array( $new_value ) && array_key_exists( $user->ID, $new_value );
-
-		$this->log(
-			/* translators: %1$s: a user display name, %2$s: a status (e.g. "Jane Doe", "connected") */
-			__( '%1$s\'s Google+ account %2$s', 'stream' ),
-			array(
-				'display_name' => $user->display_name,
-				'action'       => $connected ? esc_html__( 'connected', 'stream' ) : esc_html__( 'disconnected', 'stream' ),
-				'user_id'      => $user->ID,
-			),
-			$user->ID,
-			'gplus-authorship',
-			'updated'
-		);
-	}
-
-	/**
 	 * Logs sharedaddy resource status.
 	 *
 	 * @param string $old_value  Old status.
@@ -777,18 +715,6 @@ class Connector_Jetpack extends Connector {
 				$data['context']         = $overrides['context'];
 				$data['connector']       = $this->name;
 			}
-		} elseif ( 'posts' === $data['connector'] && 'safecss' === $data['context'] ) {
-			$data = array_merge(
-				$data,
-				array(
-					'connector' => $this->name,
-					'message'   => esc_html__( 'Custom CSS updated', 'stream' ),
-					'args'      => array(),
-					'object_id' => null,
-					'context'   => 'custom-css',
-					'action'    => 'updated',
-				)
-			);
 		}
 
 		return $data;

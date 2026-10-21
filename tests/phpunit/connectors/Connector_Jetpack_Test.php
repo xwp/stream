@@ -26,7 +26,7 @@ class Connector_Jetpack_Test extends WP_StreamTestCase {
 
 		global $wp_rest_server;
 
-		$wp_rest_server = new \WP_REST_Server(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$wp_rest_server = new \WP_REST_Server(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 		$this->server   = $wp_rest_server;
 
 		do_action( 'rest_api_init' );
@@ -42,6 +42,35 @@ class Connector_Jetpack_Test extends WP_StreamTestCase {
 
 	public function test_jetpack_installed_and_activated() {
 		$this->assertTrue( class_exists( 'Jetpack', 'Jetpack is inactive' ) );
+	}
+
+	/**
+	 * Dead modules are not tracked. Their context labels stay for historical records.
+	 */
+	public function test_removed_modules_are_not_tracked() {
+		$labels = $this->mock->get_context_labels();
+
+		$this->assertArrayHasKey( 'gplus-authorship', $labels );
+		$this->assertArrayHasKey( 'minileven', $labels );
+		$this->assertArrayHasKey( 'custom-css', $labels );
+
+		$this->assertArrayHasKey( 'carousel', $labels );
+		$this->assertArrayHasKey( 'sharedaddy', $labels );
+		$this->assertArrayHasKey( 'videopress', $labels );
+
+		$this->assertArrayNotHasKey( 'hide_gplus', $this->mock->options );
+		$this->assertArrayNotHasKey( 'gplus_authors', $this->mock->options );
+		$this->assertArrayNotHasKey( 'wp_mobile_excerpt', $this->mock->options );
+		$this->assertArrayNotHasKey( 'wp_mobile_app_promos', $this->mock->options );
+
+		$safecss = array(
+			'connector' => 'posts',
+			'context'   => 'safecss',
+			'message'   => 'Post updated',
+			'args'      => array( 'option' => 'unused' ),
+		);
+
+		$this->assertSame( $safecss, $this->mock->log_override( $safecss ) );
 	}
 
 	public function test_callback_jetpack_log_entry_activate() {
@@ -438,7 +467,7 @@ class Connector_Jetpack_Test extends WP_StreamTestCase {
 		global $publicize_ui;
 
 		$original_publicize_ui = $publicize_ui;
-		$publicize_ui          = new class() { // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$publicize_ui          = new class() { // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 			/**
 			 * Publicize stub.
 			 *
@@ -482,7 +511,7 @@ class Connector_Jetpack_Test extends WP_StreamTestCase {
 		try {
 			$connector->check_jetpack_options( $old_value, $new_value );
 		} finally {
-			$publicize_ui = $original_publicize_ui; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+			$publicize_ui = $original_publicize_ui; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- reason: PHPUnit must mutate WP globals to simulate runtime.
 		}
 	}
 

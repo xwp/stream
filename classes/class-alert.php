@@ -52,9 +52,9 @@ class Alert {
 	/**
 	 * Alert meta data
 	 *
-	 * @var int
+	 * @var array
 	 */
-	public $alert_meta;
+	public array $alert_meta;
 
 	/**
 	 * Holds instance of plugin object
@@ -80,7 +80,11 @@ class Alert {
 		$this->author = isset( $item->author ) ? $item->author : null;
 
 		$this->alert_type = isset( $item->alert_type ) ? $item->alert_type : null;
-		$this->alert_meta = isset( $item->alert_meta ) ? $item->alert_meta : array();
+		// get_post_meta() returns an empty string for posts with no stored
+		// meta; only accept real arrays so the typed property stays honest.
+		$this->alert_meta = isset( $item->alert_meta ) && is_array( $item->alert_meta )
+			? $item->alert_meta
+			: array();
 	}
 
 	/**
@@ -247,6 +251,14 @@ class Alert {
 	 * @return bool True if a positive match. False otherwise.
 	 */
 	public function check_record( $record_id, $recordarr ) {
+		/**
+		 * Filter whether an alert trigger matches a record.
+		 *
+		 * @param bool  $match
+		 * @param int   $record_id
+		 * @param array $recordarr
+		 * @param Alert $alert
+		 */
 		return apply_filters( 'wp_stream_alert_trigger_check', true, $record_id, $recordarr, $this );
 	}
 

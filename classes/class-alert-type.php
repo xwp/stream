@@ -28,14 +28,23 @@ abstract class Alert_Type {
 	 *
 	 * @var string
 	 */
-	public $slug;
+	public string $slug = '';
+
+	/**
+	 * Whether this type can be selected when creating a new alert.
+	 *
+	 * Existing alerts of a non-creatable type still fire and remain editable.
+	 *
+	 * @var bool
+	 */
+	public bool $creatable = true;
 
 	/**
 	 * Class constructor.
 	 *
 	 * @param Plugin $plugin Plugin object.
 	 */
-	public function __construct( $plugin ) {
+	public function __construct( Plugin $plugin ) {
 		$this->plugin = $plugin;
 	}
 

@@ -26,10 +26,8 @@ class Query {
 
 	/**
 	 * Hold the number of records found
-	 *
-	 * @var int
 	 */
-	public $found_records = 0;
+	public int $found_records = 0;
 
 	/**
 	 * Database handle. Set from the global $wpdb in the constructor.
@@ -77,8 +75,6 @@ class Query {
 		 * the $query using the hook below.
 		 *
 		 * @param string $where  WHERE statement.
-		 *
-		 * @return string
 		 */
 		$where = apply_filters( 'wp_stream_db_query_where', $where );
 
@@ -98,8 +94,6 @@ class Query {
 		 *
 		 * @param string $query
 		 * @param array  $args
-		 *
-		 * @return string
 		 */
 		$query = apply_filters( 'wp_stream_db_query', $query, $args );
 
@@ -114,8 +108,6 @@ class Query {
 		 *
 		 * @param string $query
 		 * @param array  $args
-		 *
-		 * @return string
 		 */
 		$count_query = apply_filters( 'wp_stream_db_count_query', $count_query, $args );
 
@@ -123,8 +115,8 @@ class Query {
 		 * QUERY THE DATABASE FOR RESULTS
 		 */
 		$result = array(
-			'items' => $wpdb->get_results( $query ), // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			'count' => absint( $wpdb->get_var( $count_query ) ), // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			'items' => $wpdb->get_results( $query ), // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- reason: SQL is assembled from allowlisted fragments and $wpdb->prepare() calls.
+			'count' => absint( $wpdb->get_var( $count_query ) ), // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- reason: count SQL is assembled from the same allowlisted fragments.
 		);
 
 		return $result;
@@ -142,7 +134,7 @@ class Query {
 
 		foreach ( array( 'site_id', 'blog_id', 'object_id', 'user_id' ) as $column ) {
 			if ( is_numeric( $args[ $column ] ) ) {
-				$where .= $wpdb->prepare( " AND $wpdb->stream.{$column} = %d", $args[ $column ] ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$where .= $wpdb->prepare( " AND $wpdb->stream.{$column} = %d", $args[ $column ] ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- reason: $column is a hard-coded allowlist member; the value is prepared.
 			}
 		}
 
@@ -155,13 +147,13 @@ class Query {
 			$field = ! empty( $args['search_field'] ) ? $args['search_field'] : 'summary';
 
 			if ( in_array( $field, self::ALLOWED_FIELDS, true ) ) {
-				$where .= $wpdb->prepare( " AND $wpdb->stream.{$field} LIKE %s", "%{$args['search']}%" ); // @codingStandardsIgnoreLine can't prepare column name
+				$where .= $wpdb->prepare( " AND $wpdb->stream.{$field} LIKE %s", "%{$args['search']}%" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- reason: $field is restricted to ALLOWED_FIELDS; the LIKE value is prepared.
 			}
 		}
 
 		foreach ( array( 'connector', 'context', 'action' ) as $column ) {
 			if ( ! empty( $args[ $column ] ) ) {
-				$where .= $wpdb->prepare( " AND $wpdb->stream.{$column} = %s", $args[ $column ] ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$where .= $wpdb->prepare( " AND $wpdb->stream.{$column} = %s", $args[ $column ] ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- reason: $column is a hard-coded allowlist member; the value is prepared.
 			}
 		}
 
@@ -253,7 +245,7 @@ class Query {
 				$format = '(' . join( ',', array_fill( 0, count( $values ), $type ) ) . ')';
 
 				$where .= $wpdb->prepare(
-					" AND $wpdb->stream.{$field} {$sql_op} {$format}", // @codingStandardsIgnoreLine column name allowlisted
+					" AND $wpdb->stream.{$field} {$sql_op} {$format}", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- reason: $field is allowlisted, $sql_op is IN/NOT IN, $format is a generated placeholder list.
 					...$values
 				);
 			}
@@ -348,7 +340,7 @@ class Query {
 		}
 
 		return $wpdb->prepare(
-			"LEFT JOIN $wpdb->streammeta ON $wpdb->streammeta.record_id = $wpdb->stream.ID AND $wpdb->streammeta.meta_key = %s", // @codingStandardsIgnoreLine table names from wpdb properties
+			"LEFT JOIN $wpdb->streammeta ON $wpdb->streammeta.record_id = $wpdb->stream.ID AND $wpdb->streammeta.meta_key = %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- reason: table names come from $wpdb properties; meta_key is prepared.
 			$args['meta_key']
 		);
 	}

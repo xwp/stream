@@ -13,17 +13,13 @@ namespace WP_Stream;
 class Connector_Posts extends Connector {
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'posts';
+	public string $name = 'posts';
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'transition_post_status',
 		'deleted_post',
 	);
@@ -347,6 +343,11 @@ class Connector_Posts extends Connector {
 	 * @return array List of excluded post types
 	 */
 	public function get_excluded_post_types() {
+		/**
+		 * Filter excluded post types for the Posts connector.
+		 *
+		 * @param array $excluded_post_types
+		 */
 		return apply_filters(
 			'wp_stream_posts_exclude_post_types',
 			array(
@@ -393,8 +394,8 @@ class Connector_Posts extends Connector {
 		$order    = ( $previous ) ? 'DESC' : 'ASC';
 
 		global $wpdb;
-		// @codingStandardsIgnoreStart
-		$revision_id = $wpdb->get_var( // db call okay
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- reason: $operator/$order are fixed comparators from a boolean; values are prepared. Adjacent-revision lookup cannot use WP_Query.
+		$revision_id = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT p.ID
 				FROM $wpdb->posts AS p
@@ -407,8 +408,7 @@ class Connector_Posts extends Connector {
 				$revision->post_parent
 			)
 		);
-		// @codingStandardsIgnoreEnd
-		// prepare okay
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		$revision_id = absint( $revision_id );
 

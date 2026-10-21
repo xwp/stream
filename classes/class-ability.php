@@ -19,10 +19,8 @@ abstract class Ability {
 
 	/**
 	 * Holds instance of plugin object.
-	 *
-	 * @var Plugin
 	 */
-	protected $plugin;
+	protected Plugin $plugin;
 
 	/**
 	 * Class constructor.
@@ -145,6 +143,8 @@ abstract class Ability {
 	const SECRET_ALERT_META_KEYS = array(
 		'webhook',
 		'maker_key',
+		'url',
+		'headers',
 	);
 
 	/**

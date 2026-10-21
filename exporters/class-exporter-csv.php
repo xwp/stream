@@ -13,17 +13,13 @@ namespace WP_Stream;
 class Exporter_CSV extends Exporter {
 	/**
 	 * Exporter name
-	 *
-	 * @var string
 	 */
-	public $name = 'CSV';
+	public string $name = 'CSV';
 
 	/**
 	 * Exporter slug
-	 *
-	 * @var string
 	 */
-	public $slug = 'csv';
+	public string $slug = 'csv';
 
 	/**
 	 * Outputs CSV data for download
@@ -46,9 +42,9 @@ class Exporter_CSV extends Exporter {
 		foreach ( $data as $row ) {
 			fputcsv( $csv, $row, ',', '"', '\\' );
 		}
-		fclose( $csv ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+		fclose( $csv ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- reason: php://output is a stream handle, not a filesystem path WP_Filesystem can close.
 
-		echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- reason: CSV download body, not HTML.
 
 		if ( ! defined( 'WP_STREAM_TESTS' ) || ( defined( 'WP_STREAM_TESTS' ) && ! WP_STREAM_TESTS ) ) {
 			exit;

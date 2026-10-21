@@ -14,10 +14,8 @@ class Filter_Input {
 
 	/**
 	 * Callbacks to be used for input validation/sanitation.
-	 *
-	 * @var array
 	 */
-	public static $filter_callbacks = array(
+	public static array $filter_callbacks = array(
 		FILTER_DEFAULT                     => null,
 		// Validate.
 		FILTER_VALIDATE_BOOLEAN            => 'is_bool',
@@ -52,25 +50,25 @@ class Filter_Input {
 	public static function super( $type, $variable_name, $filter = null, $options = array() ) {
 		$super = null;
 
-		// @codingStandardsIgnoreStart
+		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.NonceVerification.Missing,WordPress.Security.NonceVerification.Recommended -- reason: this helper returns raw superglobals so callers can apply their own filter; it is not a form handler.
 		switch ( $type ) {
-			case INPUT_POST :
+			case INPUT_POST:
 				$super = $_POST;
 				break;
-			case INPUT_GET :
+			case INPUT_GET:
 				$super = $_GET;
 				break;
-			case INPUT_COOKIE :
+			case INPUT_COOKIE:
 				$super = $_COOKIE;
 				break;
-			case INPUT_ENV :
+			case INPUT_ENV:
 				$super = $_ENV;
 				break;
-			case INPUT_SERVER :
+			case INPUT_SERVER:
 				$super = $_SERVER;
 				break;
 		}
-		// @codingStandardsIgnoreEnd
+		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.NonceVerification.Missing,WordPress.Security.NonceVerification.Recommended
 
 		if ( is_null( $super ) ) {
 			throw new \Exception( esc_html__( 'Invalid use, type must be one of INPUT_* family.', 'stream' ) );
@@ -147,7 +145,7 @@ class Filter_Input {
 	 * @return boolean
 	 */
 	public static function is_regex( $maybe_regex ) {
-		$test = @preg_match( $maybe_regex, '' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+		$test = @preg_match( $maybe_regex, '' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- reason: invalid user regex must not emit a PHP warning; false return is the API.
 
 		return false !== $test;
 	}

@@ -13,17 +13,13 @@ namespace WP_Stream;
 class Connector_Comments extends Connector {
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'comments';
+	public string $name = 'comments';
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'comment_flood_trigger',
 		'wp_insert_comment',
 		'edit_comment',
@@ -93,6 +89,11 @@ class Connector_Comments extends Connector {
 	 * @return array Comment type label translations
 	 */
 	public function get_comment_type_labels() {
+		/**
+		 * Filter comment type labels for the Comments connector.
+		 *
+		 * @param array $comment_type_labels
+		 */
 		return apply_filters(
 			'wp_stream_comments_comment_type_labels',
 			array(
@@ -660,6 +661,11 @@ class Connector_Comments extends Connector {
 	 * @return  array  List of ignored comment types
 	 */
 	public function get_ignored_comment_types() {
+		/**
+		 * Filter excluded comment types for the Comments connector.
+		 *
+		 * @param array $ignored_comment_types
+		 */
 		return apply_filters(
 			'wp_stream_comments_exclude_comment_types',
 			array()
