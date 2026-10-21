@@ -723,6 +723,12 @@ class Connector_Woocommerce extends Connector {
 				continue;
 			}
 
+			// Payment gateway options are whole settings arrays belonging to
+			// third-party gateways, and they routinely co-locate operational
+			// settings with live API secrets and webhook signing keys. Redact
+			// credential-looking members before serializing, otherwise the
+			// secret is persisted in stream_meta and readable by every Stream
+			// viewer and record-detail API consumer.
 			$this->log(
 				/* translators: %1$s: a setting name, %2$s: a setting type (e.g. "Direct Deposit", "Payment Method") */
 				__( '"%1$s" %2$s updated', 'stream' ),
@@ -733,8 +739,8 @@ class Connector_Woocommerce extends Connector {
 					'tab'       => $this->settings[ $option ]['tab'],
 					'section'   => $this->settings[ $option ]['section'],
 					'option'    => $option,
-					'old_value' => maybe_serialize( $old_value ),
-					'value'     => maybe_serialize( $value ),
+					'old_value' => maybe_serialize( $this->redact_secret_values( $old_value, $option ) ),
+					'value'     => maybe_serialize( $this->redact_secret_values( $value, $option ) ),
 				),
 				null,
 				$this->settings[ $option ]['tab'],

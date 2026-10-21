@@ -33,6 +33,19 @@ class Ability_Create_Exclusion_Rule extends Ability {
 	}
 
 	/**
+	 * Exclusion rules suppress future audit records. On a network-activated
+	 * install the rule is written to the network option and therefore applies
+	 * across every site, so require a network capability in that case.
+	 *
+	 * @param array $input Input that will be passed to execute().
+	 * @return bool
+	 */
+	public function permission_callback( $input = array() ) {
+		unset( $input );
+		return $this->can_write_settings();
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function get_label() {
@@ -152,16 +165,10 @@ class Ability_Create_Exclusion_Rule extends Ability {
 			);
 		}
 
-		// Validate connector against the full site-wide list, including
-		// admin-only connectors (settings, editor, menus, etc.). get_slugs()
-		// alone returns only request-context-loaded connectors, so REST
-		// callers would otherwise be unable to exclude valid admin-only
-		// connectors even though those are real and configurable in wp-admin.
-		if ( '' !== $sanitized['connector'] ) {
-			$known = isset( $this->plugin->connectors )
-				? $this->plugin->connectors->get_all_slugs_including_admin_only()
-				: array();
-			if ( ! empty( $known ) && ! in_array( $sanitized['connector'], $known, true ) ) {
+		// Validate connector against all available connectors, including non-active connectors (eg: admin-only).
+		if ( '' !== $sanitized['connector'] && isset( $this->plugin->connectors ) ) {
+			$known = $this->plugin->connectors->get_slugs( true );
+			if ( ! in_array( $sanitized['connector'], $known, true ) ) {
 				return new \WP_Error(
 					'stream_unknown_connector',
 					/* translators: %s: connector slug */

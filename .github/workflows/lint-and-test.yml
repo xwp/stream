@@ -9,12 +9,20 @@ env:
 jobs:
 
   lint:
-    name: Lint and Test
+    name: Lint and Test (PHP ${{ matrix.php }})
     runs-on: ubuntu-22.04
-    timeout-minutes: 10
+    timeout-minutes: 20
     permissions:
       contents: read
-      packages: read
+    strategy:
+      fail-fast: false
+      # PHPUnit 11 cannot run on PHP 7.4. The runtime minimum is checked
+      # by the php74-syntax job and by PHPCompatibility testVersion 7.4-.
+      matrix:
+        php: ['8.2', '8.3', '8.4']
+    env:
+      # wp-env reads this instead of a custom WordPress image tag.
+      WP_ENV_PHP_VERSION: ${{ matrix.php }}
     steps:
 
       - name: Checkout
@@ -29,7 +37,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: ${{ matrix.php }}
           tools: composer:v2
 
       - name: Get Composer cache directory
@@ -40,21 +48,17 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-php-${{ hashFiles( 'composer.lock' ) }}
-          restore-keys: ${{ runner.os }}-php-
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          key: ${{ runner.os }}-php-${{ matrix.php }}-${{ hashFiles( 'composer.lock' ) }}
+          restore-keys: ${{ runner.os }}-php-${{ matrix.php }}-
 
       - name: Install NPM dependencies
         run: npm install
 
       - name: Install Composer dependencies
         run: composer install
+
+      - name: Check Composer platform requirements
+        run: composer check-platform-reqs
 
       - name: Lint
         run: npm run lint
@@ -62,20 +66,28 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Pull custom Docker images
-        run: docker compose pull wordpress
+      - name: Start wp-env
+        run: npx wp-env start
+
+      - name: Confirm container PHP version
+        run: npm run which-php
 
       - name: Test
         run: npm run test
 
   e2e:
-    name: E2E
+    name: E2E (PHP ${{ matrix.php }})
     runs-on: ubuntu-22.04
-    timeout-minutes: 12
+    timeout-minutes: 20
     needs: lint
     permissions:
       contents: read
-      packages: read
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.3', '8.4']
+    env:
+      WP_ENV_PHP_VERSION: ${{ matrix.php }}
     steps:
 
       - name: Checkout
@@ -90,7 +102,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: ${{ matrix.php }}
           tools: composer:v2
 
       - name: Get Composer cache directory
@@ -101,24 +113,17 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-php-${{ hashFiles( 'composer.lock' ) }}
-          restore-keys: ${{ runner.os }}-php-
-
-      - name: Map stream.wpenv.net to localhost
-        run: echo "127.0.0.1 stream.wpenv.net" | sudo tee -a /etc/hosts
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          key: ${{ runner.os }}-php-${{ matrix.php }}-${{ hashFiles( 'composer.lock' ) }}
+          restore-keys: ${{ runner.os }}-php-${{ matrix.php }}-
 
       - name: Install NPM dependencies
         run: npm install
 
       - name: Install Composer dependencies
         run: composer install
+
+      - name: Check Composer platform requirements
+        run: composer check-platform-reqs
 
       - name: Refresh apt metadata
         # `shivammathur/setup-php` adds the ondrej/php PPA, which recently
@@ -134,60 +139,47 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Pull custom Docker images
-        # `--ignore-pull-failures` so the first push of this branch (before
-        # docker-images.yml has published ghcr.io/xwp/stream-mkcert) still
-        # passes CI. Docker Compose then falls back to the local build:
-        # context for any image it couldn't pull, keeping the workflow
-        # green while a master push backfills the registry.
-        run: docker compose pull --ignore-pull-failures wordpress mkcert
+      - name: Start wp-env
+        run: npx wp-env start
 
-      - name: Rebuild WordPress image on top of the pulled base
-        # The published ghcr.io/xwp/stream-wordpress image is updated only by
-        # docker-images.yml on master pushes. When this branch changes
-        # local/docker/wordpress/Dockerfile (e.g. to enable mod_ssl), the
-        # pulled image lags behind the branch's intent and Apache rejects
-        # :443 with ERR_CONNECTION_CLOSED. Build locally so the branch's
-        # Dockerfile actually applies; Docker layer caching keeps this cheap
-        # when the Dockerfile hasn't changed since the last published build.
-        run: docker compose build wordpress
-
-      - name: Start WordPress
-        run: npm run start
-
-      - name: Wait for MySQL (from inside the wordpress container)
-        run: |
-          npm run cli -- php -r '
-            require "/var/www/html/wp-content/plugins/stream-src/vendor/autoload.php";
-            ( new XWP\Wait_For\Tcp_Connection( "mysql", 3306 ) )->connect( 120 );
-            echo "MySQL is accepting connections on mysql:3306.\n";
-          '
-
-      - name: Wait for WordPress (from the runner)
-        run: |
-          php -r '
-            require "vendor/autoload.php";
-            ( new XWP\Wait_For\Tcp_Connection( "127.0.0.1", 443 ) )->connect( 60 );
-            echo "WordPress is accepting HTTPS connections on 127.0.0.1:443.\n";
-          '
-
-      - name: Install WordPress multisite
-        run: npm run install-wordpress
+      - name: Confirm container PHP version
+        run: npm run which-php
 
       - name: Run E2E tests
         run: npm run test-e2e
 
-      - name: Dump container state on failure
+      - name: Dump wp-env logs on failure
         if: failure()
         run: |
-          docker compose ps || true
-          docker compose logs --tail=80 mysql || true
-          docker compose logs --tail=80 wordpress || true
+          npx wp-env logs || true
+          npx wp-env logs tests || true
 
       - name: Upload Playwright report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report-php-${{ matrix.php }}
           path: playwright-report
           retention-days: 7
+
+  # Syntax-only. PHPUnit 11 cannot run on 7.4, so this job does not
+  # composer install or execute tests. PHPCompatibility against 7.4 runs
+  # on the Lint and Test matrix via phpcs.xml.dist testVersion 7.4-.
+  php74-syntax:
+    name: PHP 7.4 syntax
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+
+      - name: Parse production PHP files
+        run: find . \( -path './vendor' -o -path './tests' -o -path './node_modules' \) -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l

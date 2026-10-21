@@ -1,6 +1,53 @@
 # Stream Changelog
 
-## Unreleased
+## [Unreleased]
+
+### New Features
+
+- Add AI Client connector for WordPress 7.0+: logs every AI generation call (operation, provider, model, token counts, duration, finish reason, and extended metadata) to Stream when `WP_AI_Client_Event_Dispatcher` is available (XWPENG-20).
+
+### Enhancements
+
+- Show only the first line of multiline summaries in the Stream list table so long entries stay readable in the activity feed.
+
+### Breaking Changes
+
+- Raise the minimum PHP version from 7.2 to **7.4**. Sites running PHP below 7.4 see an admin notice (for users who can activate plugins) and Stream remains inactive — no fatal error. PHP 7.2 and PHP 7.3 are no longer supported ([XWPENG-46](https://xwp-co.atlassian.net/browse/XWPENG-46)).
+
+### Development
+
+- Align Composer (`require.php` `>=7.4`), plugin headers, `readme.txt`, and production PHPCS `testVersion` (`7.4-`) with the PHP 7.4 floor. Lint/Test and E2E stay on PHP 8.2, 8.3, and 8.4 because PHPUnit 11 cannot run on 7.4. A separate CI job parses production PHP with `php -l` on PHP 7.4 ([XWPENG-46](https://xwp-co.atlassian.net/browse/XWPENG-46)).
+
+## 4.4.0 - August 31, 2026
+
+### Security
+
+- Keep multisite record reads inside the current site. `Network::network_query_args()` kept any numeric `blog_id` from the request. Because the Stream tables are shared across the network, a site-level `view_stream` user could read the activity of another site with `?blog_id=N`. Stream now accepts a requested blog ID only from users with `manage_network_options`. All other users get the current blog. WP-CLI keeps its exemption ([#1958](https://github.com/xwp/stream/pull/1958)).
+- Stop the use of `HTTP_REFERER` as proof of network-admin authority in `ajax_network_admin()`. The Referer comes from the caller. A site user could use it to remove the per-blog query restriction, and, through `blog_id_logged()`, record their actions against `blog_id` 0. This made the site attribution incorrect. Stream now uses the Referer only as a hint about the user interface. A true network capability is also necessary ([#1958](https://github.com/xwp/stream/pull/1958)).
+- Make a network capability necessary for the `update-settings` and `create-exclusion-rule` abilities when the write goes to `update_site_option()` on a network-activated multisite. Both abilities used the default `manage_options` permission callback before ([#1958](https://github.com/xwp/stream/pull/1958)).
+- Remove secret values from option-change records. The WooCommerce, EDD, Jetpack, Gravity Forms, and Settings connectors wrote integration credentials into `stream_meta` as cleartext. This included payment gateway API keys, webhook signing keys, the `mailserver_pass` mailbox password, and the Gravity Forms license and reCAPTCHA private keys. Any user who can read the activity log or export it could read these values. Stream now replaces a secret value with `[redacted]`. A credential that was never set continues to log as an empty value, so you can tell the difference between "not set" and "set but withheld" ([#1958](https://github.com/xwp/stream/pull/1958)).
+- Withhold alert destination credentials from the `stream/get-alerts` ability. The ability needs only `view_stream`, but you configure alert destinations behind the Stream settings capability. The ability returned `alert_meta` without change, which moved Slack webhook URLs and IFTTT Maker keys across a privilege boundary. Stream now replaces each secret with a `{key}_configured` boolean, so a caller can still see if a destination is configured. Non-secret configuration, such as the channel, the user name, and the event name, does not change ([#1958](https://github.com/xwp/stream/pull/1958)).
+- Log only the changed field for Jetpack options, and withhold Publicize connection payloads. Jetpack attached the complete `jetpack_options` value to a record about one field, so a single miss could expose all tokens ([#1958](https://github.com/xwp/stream/pull/1958)).
+- Correct the GHCR publish condition in `docker-images.yml`. The `contains( github.ref_name, 'master' )` guard also matched an unprotected branch name such as `feature-master-publish`. The workflow now compares the ref exactly ([#1958](https://github.com/xwp/stream/pull/1958)).
+
+### Bug Fixes
+
+- Correct a false "SITE IS DISCONNECTED" error from `wp stream query`. The CLI treated every empty result as a disconnected site, because `db->query()` returns an empty array both for "no matching records" and for a failure. The CLI now reads `$wpdb->last_error`, which WordPress sets only after a true database error. A site with no records no longer reports the error. This affected new installations and multisite subsites with no activity ([#1829](https://github.com/xwp/stream/issues/1829), [#1966](https://github.com/xwp/stream/pull/1966)).
+- Correct a fatal error in `role_can_view()` when the capability check runs before `init` and the `general_role_access` setting is not yet available ([#1963](https://github.com/xwp/stream/pull/1963)).
+- Correct a PHP warning for a password reset request that gives an unknown user. The `retrieve_password` handler now stops when `get_user_by()` returns `false`. Before, it read properties from `false` ([#1838](https://github.com/xwp/stream/issues/1838), [#1931](https://github.com/xwp/stream/pull/1931)).
+
+### Enhancements
+
+- Add the `wp_stream_secret_alert_meta_keys` filter. Use it to declare the destination secrets of a custom alert type that you register with `wp_stream_alert_types`, so Stream removes them from ability output ([#1958](https://github.com/xwp/stream/pull/1958)).
+- Add `Connector::is_secret_key()` and `Connector::redact_secret_values()`, with the `SECRET_KEY_PATTERNS`, `SECRET_KEY_SUFFIXES`, `PUBLIC_KEY_PATTERNS`, and `REDACTED_PLACEHOLDER` constants. Custom connectors can use these helpers for the same redaction. Matching uses substrings and suffixes, because connectors log option values that belong to plugins Stream does not control. `PUBLIC_KEY_PATTERNS` keeps the published half of a key pair, such as `public_key`, `publishable_key`, and `site_key`, unless the name also holds a secret marker ([#1958](https://github.com/xwp/stream/pull/1958)).
+- Add `Network::can_view_network_records()` as the single authority check for access to network-scoped records ([#1958](https://github.com/xwp/stream/pull/1958)).
+
+### Development
+
+- Add PHPUnit coverage for the hardened paths: `Network`, the `Connector` redaction helpers, `CLI::connection()`, `Admin`, the Gravity Forms, Jetpack, Settings, and Users connectors, and the `get-alerts` and `update-settings` abilities. `Network` had almost no direct coverage before ([#1958](https://github.com/xwp/stream/pull/1958), [#1966](https://github.com/xwp/stream/pull/1966)).
+- Update Node.js to `^24.20.0` ([#1951](https://github.com/xwp/stream/pull/1951), [#1954](https://github.com/xwp/stream/pull/1954), [#1970](https://github.com/xwp/stream/pull/1970)), `globals` to `^17.11.0` ([#1947](https://github.com/xwp/stream/pull/1947), [#1953](https://github.com/xwp/stream/pull/1953), [#1964](https://github.com/xwp/stream/pull/1964), [#1965](https://github.com/xwp/stream/pull/1965)), `@playwright/test` to `^1.62.1` ([#1943](https://github.com/xwp/stream/pull/1943), [#1952](https://github.com/xwp/stream/pull/1952)), `npm-run-all2` to `^9.0.3` ([#1949](https://github.com/xwp/stream/pull/1949)), and `squizlabs/php_codesniffer` to 3.13.6 ([#1960](https://github.com/xwp/stream/pull/1960)).
+
+## 4.3.0 - July 18, 2026
 
 ### Enhancements
 
@@ -8,6 +55,16 @@
 - Guard the Action Scheduler `require_once` so an environment that already provides or deliberately omits Action Scheduler no longer fatals on load. When the WP-Cron fallback is selected, Action Scheduler is no longer loaded at all.
 - Add the `wp_stream_enable_auto_purge` filter (default `true`). Returning `false` disables all TTL record auto-purge scheduling regardless of backend — for storage drivers that manage retention externally — and clears any already-registered recurring purge ([#1907](https://github.com/xwp/stream/issues/1907)).
 - On the WP-Cron fallback, surface a warning when a large-table purge or reset is queued, recommending `wp cron event run` to drain the batch chain deterministically. Under WP-CLI this is an immediate `WP_CLI::warning`; in the dashboard the warning is persisted and rendered as an admin notice on the next admin page load, since the queueing contexts (cron callback, reset redirect) produce no visible output themselves ([#1907](https://github.com/xwp/stream/issues/1907)).
+
+### Bug Fixes
+
+- Log the WooCommerce order ID instead of the `WC_Order` object in order event records ([#1929](https://github.com/xwp/stream/pull/1929)).
+- Fix PHP 8.4 deprecation warnings ([#1923](https://github.com/xwp/stream/pull/1923)).
+- Fix PHPCS violations in the BuddyPress connector ([#1925](https://github.com/xwp/stream/pull/1925)).
+
+### Development
+
+- Refresh the readme.txt description, tags, and SEO copy ([#1924](https://github.com/xwp/stream/pull/1924)).
 
 ## 4.2.2 - July 6, 2026
 

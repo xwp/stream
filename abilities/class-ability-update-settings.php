@@ -20,6 +20,18 @@ class Ability_Update_Settings extends Ability {
 	}
 
 	/**
+	 * Writes land on the network option when Stream is network activated, so
+	 * require a network capability in that case.
+	 *
+	 * @param array $input Input that will be passed to execute().
+	 * @return bool
+	 */
+	public function permission_callback( $input = array() ) {
+		unset( $input );
+		return $this->can_write_settings();
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function get_label() {

@@ -223,14 +223,19 @@ class CLI extends \WP_CLI_Command {
 	 * @return void
 	 */
 	private function connection() {
-		$query = wp_stream_get_instance()->db->query(
+		global $wpdb;
+
+		wp_stream_get_instance()->db->query(
 			array(
 				'records_per_page' => 1,
 				'fields'           => 'created',
 			)
 		);
 
-		if ( ! $query ) {
+		// An empty result set is valid (e.g. a fresh site with no logged
+		// activity yet); only a genuine database error means the site is
+		// disconnected.
+		if ( ! empty( $wpdb->last_error ) ) {
 			\WP_CLI::error( esc_html__( 'SITE IS DISCONNECTED', 'stream' ) );
 		}
 	}

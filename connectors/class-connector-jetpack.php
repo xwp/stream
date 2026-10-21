@@ -620,10 +620,12 @@ class Connector_Jetpack extends Connector {
 				continue;
 			}
 
+			// Log only the changed field: attaching the full `jetpack_options`
+			// blob would expose every credential on a single redaction miss.
 			$settings['meta'] += array(
 				'option'    => $option,
-				'old_value' => $old_value,
-				'value'     => $new_value,
+				'old_value' => $this->get_redacted_option_field( $old_value, $option ),
+				'value'     => $this->get_redacted_option_field( $new_value, $option ),
 			);
 
 			$this->log(
@@ -634,6 +636,42 @@ class Connector_Jetpack extends Connector {
 				$settings['action']
 			);
 		}
+	}
+
+	/**
+	 * Get one changed field from a Jetpack option value, and redact it.
+	 *
+	 * `get_changed_keys()` gives nested fields as `parent::child`. Thus this
+	 * method goes through the path one segment at a time. If the path does not
+	 * exist, the result is null. The field was added or removed.
+	 *
+	 * @param mixed  $option_value Whole option value, before or after the change.
+	 * @param string $field_path   Changed field, e.g. `publicize_connections::facebook`.
+	 * @return mixed
+	 */
+	private function get_redacted_option_field( $option_value, $field_path ) {
+		if ( ! is_array( $option_value ) ) {
+			return null;
+		}
+
+		$segments = explode( '::', $field_path );
+		$field    = $option_value;
+
+		foreach ( $segments as $segment ) {
+			if ( ! is_array( $field ) || ! array_key_exists( $segment, $field ) ) {
+				return null;
+			}
+
+			$field = $field[ $segment ];
+		}
+
+		// Publicize connections hold only credentials under opaque IDs, and
+		// the `connection` meta already names the service, so withhold them.
+		if ( 'publicize_connections' === $segments[0] && ! empty( $field ) ) {
+			return self::REDACTED_PLACEHOLDER;
+		}
+
+		return $this->redact_secret_values( $field, $segments[ count( $segments ) - 1 ] );
 	}
 
 	/**

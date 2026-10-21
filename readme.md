@@ -1,6 +1,6 @@
 # Stream for WordPress
 
-[![Lint and Test](https://github.com/xwp/stream/actions/workflows/ci.yml/badge.svg)](https://github.com/xwp/stream/actions/workflows/ci.yml)
+[![Lint and Test](https://github.com/xwp/stream/actions/workflows/lint-and-test.yml/badge.svg)](https://github.com/xwp/stream/actions/workflows/lint-and-test.yml)
 [![Coverage Status](https://coveralls.io/repos/github/xwp/stream/badge.svg?branch=develop)](https://coveralls.io/github/xwp/stream?branch=develop)
 
 **Activity log and audit trail for WordPress.** Track every user and system action for debugging, security, and compliance.
@@ -17,6 +17,8 @@ View the [plugin description on WordPress.org](https://wordpress.org/plugins/str
 A list of the connectors is in [connectors.md](connectors.md).
 
 ### Configuration
+
+See [readme.txt](readme.txt) for configuration details, including the [AI Client connector (WordPress 7.0+)](readme.txt#ai-client-wordpress-70).
 
 To customize who can manage Stream settings, you can define the `WP_STREAM_SETTINGS_CAPABILITY` constant in your `wp-config.php` file. By default, capability will be set to `manage_options`.
 

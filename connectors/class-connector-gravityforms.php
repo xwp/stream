@@ -507,6 +507,12 @@ class Connector_GravityForms extends Connector {
 			$option_title = $data['label'];
 			$context      = isset( $data['context'] ) ? $data['context'] : 'settings';
 
+			// Tracked options include credentials such as
+			// rg_gforms_captcha_private_key; record that they changed without
+			// retaining the value.
+			$old_value = $this->redact_secret_values( $old_value, $option );
+			$new_value = $this->redact_secret_values( $new_value, $option );
+
 			$this->log(
 				/* translators: %s: a setting title (e.g. "Language") */
 				__( '"%s" setting updated', 'stream' ),
@@ -528,6 +534,12 @@ class Connector_GravityForms extends Connector {
 	public function check_rg_gforms_key( $old_value, $new_value ) {
 		$is_update = ( $new_value && strlen( $new_value ) );
 		$option    = 'rg_gforms_key';
+
+		// The license key is a reusable vendor credential granting account and
+		// paid-download access, so only the fact of the change is recorded. The
+		// message already conveys whether it was set or removed.
+		$old_value = $this->redact_secret_values( $old_value, $option );
+		$new_value = $this->redact_secret_values( $new_value, $option );
 
 		$this->log(
 			sprintf(

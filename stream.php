@@ -3,7 +3,8 @@
  * Plugin Name: Stream - Activity Log & Audit Trail
  * Plugin URI: https://xwp.co/work/stream/
  * Description: Stream is an activity log and audit trail for WordPress — track every change made on your site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
- * Version: 4.2.2
+ * Version: 4.4.0
+ * Requires PHP: 7.4
  * Author: XWP
  * Author URI: https://xwp.co
  * License: GPLv2+
@@ -42,10 +43,13 @@ if ( ! defined( 'WP_STREAM_SETTINGS_CAPABILITY' ) ) {
 	define( 'WP_STREAM_SETTINGS_CAPABILITY', 'manage_options' );
 }
 
-const WP_STREAM_MIN_PHP_VERSION = '7.2';
+if ( ! defined( 'WP_STREAM_MIN_PHP_VERSION' ) ) {
+	define( 'WP_STREAM_MIN_PHP_VERSION', '7.4' );
+}
 
 if ( version_compare( PHP_VERSION, WP_STREAM_MIN_PHP_VERSION, '<' ) ) {
-	add_action( 'shutdown', 'wp_stream_fail_php_version' );
+	add_action( 'admin_notices', 'wp_stream_fail_php_version' );
+	add_action( 'network_admin_notices', 'wp_stream_fail_php_version' );
 } else {
 	require __DIR__ . '/classes/class-plugin.php';
 	$plugin_class_name = 'WP_Stream\Plugin';
@@ -57,23 +61,32 @@ if ( version_compare( PHP_VERSION, WP_STREAM_MIN_PHP_VERSION, '<' ) ) {
 /**
  * Invoked when the PHP version check fails.
  *
- * Load up the translations and add the error message to the admin notices.
+ * Renders an admin notice for users who can activate plugins. Hooked only to
+ * admin_notices and network_admin_notices so REST, feeds, AJAX, and WP-CLI
+ * responses are not polluted.
  */
 function wp_stream_fail_php_version() {
+	if ( ! current_user_can( 'activate_plugins' ) ) {
+		return;
+	}
+
 	load_plugin_textdomain( 'stream', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 
 	/* translators: %s is the minimum PHP version. */
 	$message      = sprintf( __( 'Stream requires PHP version %s or newer. Plugin is currently NOT ACTIVE.', 'stream' ), WP_STREAM_MIN_PHP_VERSION );
-	$html_message = sprintf( '<div class="error">%s</div>', wpautop( $message ) );
+	$html_message = sprintf( '<div class="notice notice-error">%s</div>', wpautop( $message ) );
 
-	echo wp_kses_post( $html_message );
+	echo wp_kses_post( $html_message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped by wp_kses_post().
 }
 
 /**
  * Helper for external plugins which wish to use Stream.
  *
- * @return WP_Stream\Plugin
+ * Returns null when the plugin global is not set, which avoids an undefined-index
+ * warning. Callers must check for null before calling a method on the result.
+ *
+ * @return WP_Stream\Plugin|null Plugin instance, or null if Stream has not finished constructing.
  */
 function wp_stream_get_instance() {
-	return $GLOBALS['wp_stream'];
+	return $GLOBALS['wp_stream'] ?? null;
 }

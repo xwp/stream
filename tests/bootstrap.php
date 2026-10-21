@@ -5,11 +5,39 @@
  * @package WP_Stream
  */
 
-// Defined in docker-compose.yml for the container running the tests.
-$_tests_dir = getenv( 'WP_TESTS_DIR' );
+/**
+ * Resolve the WordPress PHPUnit library directory.
+ *
+ * Prefers `WP_TESTS_DIR` (wp-env tests-cli), then wp-env's bundled
+ * `/wordpress-phpunit`, then Composer `wp-phpunit`.
+ *
+ * @return string Path containing `includes/`, or empty when not found.
+ */
+function wp_stream_resolve_wp_tests_dir() {
+	$candidates = array(
+		getenv( 'WP_TESTS_DIR' ),
+		'/wordpress-phpunit',
+		dirname( __DIR__ ) . '/vendor/wp-phpunit/wp-phpunit',
+	);
 
-if ( empty( $_tests_dir ) || ! file_exists( $_tests_dir . '/includes' ) ) {
+	foreach ( $candidates as $dir ) {
+		if ( ! empty( $dir ) && is_string( $dir ) && file_exists( $dir . '/includes' ) ) {
+			return $dir;
+		}
+	}
+
+	return '';
+}
+
+$_tests_dir = wp_stream_resolve_wp_tests_dir();
+
+if ( empty( $_tests_dir ) ) {
 	trigger_error( 'Unable to locate WP_TESTS_DIR', E_USER_ERROR ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
+}
+
+$wp_env_tests_config = __DIR__ . '/wp-tests-config-wp-env.php';
+if ( ! defined( 'WP_TESTS_CONFIG_FILE_PATH' ) && file_exists( '/wordpress-phpunit/includes' ) && file_exists( $wp_env_tests_config ) ) {
+	define( 'WP_TESTS_CONFIG_FILE_PATH', $wp_env_tests_config );
 }
 
 // Use in code to trigger custom actions.
@@ -19,40 +47,74 @@ define( 'WP_STEAM_TESTDATA', __DIR__ . '/data' );
 
 // Load the shared abilities trait at bootstrap. Production loads it via
 // Abilities::load_abilities() before any class-ability-*.php file is included.
-// PHPUnit's coverage post-processor with processUncoveredFiles="true" walks the
-// <coverage><include> directories directly via include_once, bypassing the
-// plugin's loader, so each ability class hits a fatal on `use
-// Trait_View_Stream_Permission`. Loading the trait here mirrors the production
-// chokepoint without per-file require_once noise.
+// Ability test/autoload paths that `use Trait_View_Stream_Permission` need the
+// trait declared first. Coverage no longer preloads every class-*.php file
+// (PHPUnit 11 dropped processUncoveredFiles); clover reports executed lines.
 require_once dirname( __DIR__ ) . '/abilities/trait-view-stream-permission.php';
 
 // @see https://core.trac.wordpress.org/browser/trunk/tests/phpunit/includes/functions.php
 require_once $_tests_dir . '/includes/functions.php';
 
 /**
- * Force plugins defined in a constant (supplied by phpunit.xml) to be active at runtime.
+ * Plugins forced active during PHPUnit runs via WP_TEST_ACTIVATED_PLUGINS.
  *
- * @filter site_option_active_sitewide_plugins
- * @filter option_active_plugins
- *
- * @param array $active_plugins
- * @return array
+ * @return string[] Plugin basenames (e.g. jetpack/jetpack.php).
  */
-function wp_stream_filter_active_plugins_for_phpunit( $active_plugins ) {
-	$forced_active_plugins = array();
-	if ( defined( 'WP_TEST_ACTIVATED_PLUGINS' ) ) {
-		$forced_active_plugins = preg_split( '/\s*,\s*/', WP_TEST_ACTIVATED_PLUGINS );
+function wp_stream_get_forced_active_plugins_for_phpunit() {
+	if ( ! defined( 'WP_TEST_ACTIVATED_PLUGINS' ) ) {
+		return array();
 	}
 
-	if ( ! empty( $forced_active_plugins ) ) {
-		foreach ( $forced_active_plugins as $forced_active_plugin ) {
-			$active_plugins[] = $forced_active_plugin;
-		}
+	$plugins = preg_split( '/\s*,\s*/', WP_TEST_ACTIVATED_PLUGINS );
+	if ( ! is_array( $plugins ) ) {
+		return array();
 	}
+
+	return array_values( array_filter( $plugins ) );
+}
+
+/**
+ * Force WP_TEST_ACTIVATED_PLUGINS onto the per-site active list.
+ *
+ * @filter option_active_plugins
+ *
+ * @param string[] $active_plugins Plugin basenames.
+ * @return string[]
+ */
+function wp_stream_filter_active_plugins_for_phpunit( $active_plugins ) {
+	foreach ( wp_stream_get_forced_active_plugins_for_phpunit() as $plugin ) {
+		$active_plugins[] = $plugin;
+	}
+
 	return $active_plugins;
 }
-tests_add_filter( 'site_option_active_sitewide_plugins', 'wp_stream_filter_active_plugins_for_phpunit' );
+
+/**
+ * Force WP_TEST_ACTIVATED_PLUGINS onto the network-wide map.
+ *
+ * WordPress stores sitewide plugins as path => activation timestamp. Appending
+ * list items (0, 1, 2...) makes Jetpack treat those keys as plugin paths.
+ *
+ * @filter site_option_active_sitewide_plugins
+ *
+ * @param array<string, int>|false $active_sitewide_plugins Plugin path => timestamp.
+ * @return array<string, int>
+ */
+function wp_stream_filter_active_sitewide_plugins_for_phpunit( $active_sitewide_plugins ) {
+	if ( ! is_array( $active_sitewide_plugins ) ) {
+		$active_sitewide_plugins = array();
+	}
+
+	foreach ( wp_stream_get_forced_active_plugins_for_phpunit() as $plugin ) {
+		if ( ! isset( $active_sitewide_plugins[ $plugin ] ) ) {
+			$active_sitewide_plugins[ $plugin ] = time();
+		}
+	}
+
+	return $active_sitewide_plugins;
+}
 tests_add_filter( 'option_active_plugins', 'wp_stream_filter_active_plugins_for_phpunit' );
+tests_add_filter( 'site_option_active_sitewide_plugins', 'wp_stream_filter_active_sitewide_plugins_for_phpunit' );
 
 tests_add_filter(
 	'muplugins_loaded',
@@ -121,6 +183,7 @@ define( 'EDD_DOING_TESTS', true );
 activate_plugin( 'easy-digital-downloads/easy-digital-downloads.php' );
 wp_stream_install_edd();
 
+// Single-site only. The multisite PHPUnit config does not activate Yoast.
 if ( ! is_multisite() ) {
 	activate_plugin( 'wordpress-seo/wp-seo.php' );
 }
@@ -128,5 +191,5 @@ if ( ! is_multisite() ) {
 require __DIR__ . '/testcase.php';
 
 // Base class for future tests
-require __DIR__ . '/phpunit/test-class-alert-trigger.php';
+require __DIR__ . '/phpunit/Alert_Trigger_TestCase.php';
 require __DIR__ . '/phpunit/abilities/abilities-testcase.php';
