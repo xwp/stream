@@ -97,12 +97,18 @@ class Stream_Hook_Docs_Generator {
 			$iterator = new RecursiveIteratorIterator(
 				new RecursiveDirectoryIterator( $absolute_dir, FilesystemIterator::SKIP_DOTS )
 			);
+			$paths = array();
 			foreach ( $iterator as $file ) {
 				if ( ! $file->isFile() || ! str_ends_with( $file->getPathname(), '.php' ) ) {
 					continue;
 				}
-				$relative = substr( $file->getPathname(), strlen( $this->root ) + 1 );
-				$calls    = array_merge( $calls, $this->extract_from_file( $file->getPathname(), $relative ) );
+				$paths[] = $file->getPathname();
+			}
+			// Directory order differs between filesystems, so sort for the same output everywhere.
+			sort( $paths, SORT_STRING );
+			foreach ( $paths as $path ) {
+				$relative = substr( $path, strlen( $this->root ) + 1 );
+				$calls    = array_merge( $calls, $this->extract_from_file( $path, $relative ) );
 			}
 		}
 		return $calls;
