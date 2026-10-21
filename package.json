@@ -29,7 +29,7 @@
     "@wordpress/e2e-test-utils-playwright": "^1.46.0",
     "@wordpress/env": "^10.39.0",
     "@wordpress/eslint-plugin": "^25.2.0",
-    "@wordpress/scripts": "^32.2.0",
+    "@wordpress/scripts": "^37.0.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.13.0",
     "jquery": "4.0.0",
