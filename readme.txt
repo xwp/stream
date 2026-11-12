@@ -4,7 +4,7 @@ Tags: activity log, audit log, event log, user tracking, security
 Requires at least: 4.6
 Requires PHP: 7.4
 Tested up to: 7.0
-Stable tag: 4.4.0
+Stable tag: 4.5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -159,9 +159,9 @@ Thank you for wanting to make Stream better for everyone!
 
 == Upgrade Notice ==
 
-= Unreleased =
+= 4.5.0 =
 
-Custom connectors, alert types, alert triggers, and exporters must declare typed properties, for example `public string $slug`. An untyped declaration causes a fatal error. See the changelog for details.
+Security fix for a stored cross-site scripting vulnerability in the records user filter (CVE-2026-119216). Also note: custom connectors, alert types, alert triggers, and exporters must now declare typed properties, for example `public string $slug`. An untyped declaration causes a fatal error. See the changelog for details.
 
 = 4.4.0 =
 
@@ -173,6 +173,24 @@ Use only `$_SERVER['REMOTE_ADDR']` as the client IP address for event logs witho
 
 
 == Changelog ==
+
+= 4.5.0 - November 12, 2026 =
+
+Security:
+
+* Fix a stored cross-site scripting vulnerability (CVE-2026-119216) in the records screen user filter. Reported by Mohamed Amgad Khater (`mamgad`) via Wordfence.
+
+Breaking Changes:
+
+* Raise the minimum PHP version from 7.2 to 7.4.
+* Custom connectors, alert types, alert triggers, and exporters must declare typed public properties, for example `public string $slug`. An untyped declaration now causes a fatal error.
+
+Enhancements:
+
+* Replace Select2 with native select controls across the admin, with an accessible Ajax user combobox on sites above the preload cap.
+* Add an Outgoing Webhook alert and an AI Client connector for WordPress 7.0+.
+
+[View the full release notes on GitHub.](https://github.com/xwp/stream/blob/master/changelog.md#450---november-12-2026)
 
 = 4.4.0 - August 31, 2026 =
 

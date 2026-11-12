@@ -1,6 +1,10 @@
 # Stream Changelog
 
-## [Unreleased]
+## 4.5.0 - November 12, 2026
+
+### Security
+
+- Fix a stored cross-site scripting vulnerability (CVE-2026-119216) in the records screen user filter. Reported by Mohamed Amgad Khater (`mamgad`) via Wordfence.
 
 ### New Features
 
