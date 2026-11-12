@@ -20,19 +20,20 @@ class Alert_Type_Error_Log extends Alert_Type {
 	public string $name = 'Error Log (example)';
 
 	/**
-	 * Alert type slug.
-	 *
-	 * @var string
-	 */
-	public string $slug = 'error-log';
-
-	/**
 	 * Class constructor.
+	 *
+	 * `$slug` is declared, with a type, on the parent `Alert_Type` class.
+	 * Assign it here instead of redeclaring it. A redeclared property must
+	 * match the parent's type exactly, so it fails on any Stream version where
+	 * that type differs (the property is untyped before Stream 4.5.0).
+	 * Assigning the value works with every version.
 	 *
 	 * @param Plugin $plugin Plugin object.
 	 */
 	public function __construct( Plugin $plugin ) {
 		parent::__construct( $plugin );
+
+		$this->slug = 'error-log';
 
 		add_filter(
 			'wp_stream_alerts_save_meta',
