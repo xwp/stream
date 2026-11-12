@@ -13,17 +13,13 @@ namespace WP_Stream;
 class Connector_Media extends Connector {
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'media';
+	public string $name = 'media';
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'add_attachment',
 		'edit_attachment',
 		'delete_attachment',

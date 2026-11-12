@@ -123,7 +123,7 @@ class Ability_Purge_Records extends Ability {
 			// Stream stores `created` in UTC (Log::log() writes current_time('mysql', true)).
 			// MySQL's NOW() uses the server timezone, so comparing against it can
 			// delete too many or too few rows on hosts where the server is not UTC.
-			// Mirror Admin::purge_scheduled_action(): compute a UTC cutoff in PHP
+			// Mirror Admin_Purge::purge_scheduled_action(): compute a UTC cutoff in PHP
 			// and bind it as a string.
 			$cutoff = ( new \DateTime( 'now', new \DateTimeZone( 'UTC' ) ) )
 				->sub( \DateInterval::createFromDateString( ( (int) $input['older_than_days'] ) . ' days' ) )
@@ -174,9 +174,9 @@ class Ability_Purge_Records extends Ability {
 		// Count matching parent rows up-front so the response reports the number
 		// of *records* deleted, independent of how many meta rows were attached.
 		// $params is guaranteed non-empty here by the $filter_count > 0 guard above.
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- reason: table name is $wpdb->stream; WHERE is assembled from allowlisted columns.
 		$count_sql = "SELECT COUNT(*) FROM {$wpdb->stream} AS stream WHERE {$where_sql}";
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared -- reason: $count_sql is prepared on the next call; Stream tables are not object-cached.
 		$deleted = (int) $wpdb->get_var( $wpdb->prepare( $count_sql, $params ) );
 
 		if ( 0 === $deleted ) {
@@ -184,15 +184,15 @@ class Ability_Purge_Records extends Ability {
 		}
 
 		// Delete matching stream rows AND their meta in a single multi-table DELETE,
-		// mirroring Admin::purge_scheduled_action(). Doing both sides in one statement
+		// mirroring Admin_Purge::purge_scheduled_action(). Doing both sides in one statement
 		// avoids a follow-up full-table scan over $wpdb->streammeta to clean up
 		// orphans, which on busy sites could lock the meta table for a long time.
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery -- reason: table names are $wpdb properties; WHERE is assembled from allowlisted columns.
 		$delete_sql = "DELETE stream, meta
 			FROM {$wpdb->stream} AS stream
 			LEFT JOIN {$wpdb->streammeta} AS meta ON meta.record_id = stream.ID
 			WHERE {$where_sql}";
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared -- reason: $delete_sql is prepared on the next call; Stream tables are not object-cached.
 		$result = $wpdb->query( $wpdb->prepare( $delete_sql, $params ) );
 
 		// $wpdb->query() returns false on database error. Don't report a

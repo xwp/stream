@@ -14,17 +14,13 @@ class Connector_Installer extends Connector {
 
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'installer';
+	public string $name = 'installer';
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'upgrader_process_complete', // plugins::installed | themes::installed.
 		'activate_plugin', // plugins::activated.
 		'deactivate_plugin', // plugins::deactivated.
@@ -37,10 +33,8 @@ class Connector_Installer extends Connector {
 
 	/**
 	 * Register connector in the WP Frontend
-	 *
-	 * @var bool
 	 */
-	public $register_frontend = false;
+	public bool $register_frontend = false;
 
 	/**
 	 * Return translated connector label
@@ -344,7 +338,7 @@ class Connector_Installer extends Connector {
 		/**
 		 * This is used as a hack to determine a theme was deleted.
 		 */
-		$backtrace = debug_backtrace(); // @codingStandardsIgnoreLine
+		$backtrace         = debug_backtrace(); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace -- reason: core has no delete_theme hook; the backtrace is the only way to detect a theme deletion.
 		$delete_theme_call = null;
 
 		foreach ( $backtrace as $call ) {
@@ -388,9 +382,7 @@ class Connector_Installer extends Connector {
 			return false;
 		}
 
-		// @codingStandardsIgnoreStart
-		$type = isset( $_POST['action2'] ) ? INPUT_POST : INPUT_GET;
-		// @codingStandardsIgnoreEnd
+		$type = isset( $_POST['action2'] ) ? INPUT_POST : INPUT_GET; // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.NonceVerification.Recommended -- reason: chooses which superglobal Filter_Input should read; the plugin list delete is already authorized by core.
 
 		$plugins  = wp_stream_filter_input( $type, 'checked' );
 		$_plugins = $this->get_plugins();

@@ -16,17 +16,13 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 
 	/**
 	 * Alert type name
-	 *
-	 * @var string
 	 */
-	public $name = 'Create Menu Alert';
+	public string $name = 'Create Menu Alert';
 
 	/**
 	 * Alert type slug
-	 *
-	 * @var string
 	 */
-	public $slug = 'menu-alert';
+	public string $slug = 'menu-alert';
 
 	/**
 	 * Class Constructor

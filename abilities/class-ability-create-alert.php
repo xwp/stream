@@ -54,7 +54,7 @@ class Ability_Create_Alert extends Ability {
 			'properties'           => array(
 				'alert_type'      => array(
 					'type'        => 'string',
-					'description' => 'Notifier slug. Built-in types are none, highlight, email, ifttt, slack. Other slugs may be registered by extensions.',
+					'description' => 'Notifier slug. Built-in types are none, highlight, email, slack, webhook. The ifttt type is deprecated and cannot be created; existing IFTTT alerts still fire. Other slugs may be registered by extensions.',
 				),
 				'trigger_author'  => array(
 					'type'        => 'string',
@@ -129,6 +129,21 @@ class Ability_Create_Alert extends Ability {
 					__( 'Unknown alert_type "%1$s". Registered types: %2$s.', 'stream' ),
 					(string) $input['alert_type'],
 					implode( ', ', $registered_types )
+				),
+				array( 'status' => 400 )
+			);
+		}
+
+		$type_objects = isset( $this->plugin->alerts->alert_types )
+			? (array) $this->plugin->alerts->alert_types
+			: array();
+		if ( isset( $type_objects[ $input['alert_type'] ] ) && empty( $type_objects[ $input['alert_type'] ]->creatable ) ) {
+			return new \WP_Error(
+				'stream_alert_type_not_creatable',
+				sprintf(
+					/* translators: %s: alert_type slug supplied by caller */
+					__( 'Alert type "%s" is deprecated and cannot be created.', 'stream' ),
+					(string) $input['alert_type']
 				),
 				array( 'status' => 400 )
 			);

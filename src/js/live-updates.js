@@ -101,7 +101,7 @@ $( document ).ready(
 					$( '.tablenav-pages .last-page' ).attr( 'href', data.last_page_link );
 				}
 
-				// Allow others to hook in, ie: timeago
+				// Allow others to hook in (relative time on new rows).
 				$( list_sel ).parent().trigger( 'updated' );
 
 				// Regenerate alternating row classes

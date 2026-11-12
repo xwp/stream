@@ -208,13 +208,13 @@ class CLI extends \WP_CLI_Command {
 	 * @param array $records The input array of records.
 	 */
 	private function csv_format( $records ) {
-		$output = fopen( 'php://output', 'w' ); // @codingStandardsIgnoreLine Clever output for WP CLI using php://output
+		$output = fopen( 'php://output', 'w' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- reason: WP-CLI CSV is written to php://output, not a filesystem path.
 
 		foreach ( $records as $line ) {
 			fputcsv( $output, $line, ',', '"', '\\' );
 		}
 
-		fclose( $output ); // @codingStandardsIgnoreLine
+		fclose( $output ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- reason: closing the php://output stream handle, not a WP_Filesystem file.
 	}
 
 	/**

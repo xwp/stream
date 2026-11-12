@@ -16,17 +16,13 @@ class Alert_Type_Die extends Alert_Type {
 
 	/**
 	 * Alert type name
-	 *
-	 * @var string
 	 */
-	public $name = 'Die Notifier';
+	public string $name = 'Die Notifier';
 
 	/**
 	 * Alert type slug
-	 *
-	 * @var string
 	 */
-	public $slug = 'die';
+	public string $slug = 'die';
 
 	/**
 	 * Triggers a script exit when an alert is triggered. Debugging use only.
@@ -38,7 +34,7 @@ class Alert_Type_Die extends Alert_Type {
 	 */
 	public function alert( $record_id, $recordarr, $options ) {
 		echo '<pre>';
-		print_r( $recordarr ); // @codingStandardsIgnoreLine debug not loaded in production
+		print_r( $recordarr ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- reason: die alert type is a debug notifier and dumps the record on purpose.
 		echo '</pre>';
 		die( 'You have been notified!' );
 	}

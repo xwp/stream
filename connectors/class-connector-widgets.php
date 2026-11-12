@@ -16,24 +16,18 @@ class Connector_Widgets extends Connector {
 	 * Whether or not 'created' and 'deleted' actions should be logged. Normally
 	 * the sidebar 'added' and 'removed' actions will correspond with these.
 	 * See note below with usage.
-	 *
-	 * @var bool
 	 */
-	public $verbose_widget_created_deleted_actions = false;
+	public bool $verbose_widget_created_deleted_actions = false;
 
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'widgets';
+	public string $name = 'widgets';
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'update_option_sidebars_widgets',
 		'updated_option',
 	);
@@ -42,9 +36,9 @@ class Connector_Widgets extends Connector {
 	 * Store the initial sidebars_widgets option when the customizer does its
 	 * multiple rounds of saving to the sidebars_widgets option.
 	 *
-	 * @var array
+	 * @var array|null
 	 */
-	protected $customizer_initial_sidebars_widgets = null;
+	protected ?array $customizer_initial_sidebars_widgets = null;
 
 	/**
 	 * Return translated connector label
@@ -847,9 +841,8 @@ class Connector_Widgets extends Connector {
 		 *
 		 * @todo Do we need this filter?
 		 *
-		 * @param  array  Sidebar Widgets in Options table
-		 * @param  array  Inserted Sidebar Widgets
-		 * @return array  Array of updated Sidebar Widgets
+		 * @param array $sidebars_widgets Sidebar Widgets in Options table
+		 * @param array $inserted         Inserted Sidebar Widgets
 		 */
 		return apply_filters( 'sidebars_widgets', get_option( 'sidebars_widgets', array() ) );
 	}

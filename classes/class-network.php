@@ -21,17 +21,13 @@ class Network {
 
 	/**
 	 * Network page slug
-	 *
-	 * @var string
 	 */
-	public $network_settings_page_slug = 'wp_stream_network_settings';
+	public string $network_settings_page_slug = 'wp_stream_network_settings';
 
 	/**
 	 * The option name for the network settings.
-	 *
-	 * @var string
 	 */
-	public $network_settings_option = 'wp_stream_network';
+	public string $network_settings_option = 'wp_stream_network';
 
 	/**
 	 * Class constructor
@@ -53,7 +49,7 @@ class Network {
 
 		// Actions.
 		add_action( 'init', array( $this, 'ajax_network_admin' ) );
-		add_action( 'network_admin_menu', array( $this->plugin->admin, 'register_menu' ) );
+		add_action( 'network_admin_menu', array( $this->plugin->admin->menu, 'register_menu' ) );
 		add_action( 'network_admin_menu', array( $this, 'admin_menu_screens' ) );
 		add_action( 'admin_menu', array( $this, 'admin_menu_screens' ) );
 		add_action( 'admin_bar_menu', array( $this, 'network_admin_bar_menu' ), 99 );
@@ -200,13 +196,13 @@ class Network {
 		remove_submenu_page( $this->plugin->admin->records_page_slug, 'wp_stream_settings' );
 		remove_submenu_page( $this->plugin->admin->records_page_slug, 'edit.php?post_type=wp_stream_alerts' );
 
-		$this->plugin->admin->screen_id['network_settings'] = add_submenu_page(
+		$this->plugin->admin->menu->screen_id['network_settings'] = add_submenu_page(
 			$this->plugin->admin->records_page_slug,
 			__( 'Stream Network Settings', 'stream' ),
 			__( 'Network Settings', 'stream' ),
 			$this->plugin->admin->settings_cap,
 			$this->network_settings_page_slug,
-			array( $this->plugin->admin, 'render_settings_page' )
+			array( $this->plugin->admin->settings, 'render_settings_page' )
 		);
 	}
 
@@ -279,6 +275,11 @@ class Network {
 			return $fields;
 		}
 
+		/**
+		 * Filter hidden option fields on per-site settings when network activated.
+		 *
+		 * @param array $stream_hidden_options Stream hidden options.
+		 */
 		$stream_hidden_options = apply_filters(
 			'wp_stream_hidden_option_fields',
 			array(
@@ -291,6 +292,11 @@ class Network {
 			)
 		);
 
+		/**
+		 * Filter hidden option fields on network settings when network activated.
+		 *
+		 * @param array $network_hidden_options Network hidden options.
+		 */
 		$network_hidden_options = apply_filters(
 			'wp_stream_network_option_fields',
 			array(
@@ -368,7 +374,7 @@ class Network {
 			$labels[ $network_key ] = array();
 		}
 
-		foreach ( $this->plugin->settings->get_fields() as $section_slug => $section ) {
+		foreach ( $this->plugin->settings->registry->get_fields() as $section_slug => $section ) {
 			foreach ( $section['fields'] as $field ) {
 				$labels[ $network_key ][ sprintf( '%s_%s', $section_slug, $field['name'] ) ] = $field['title'];
 			}
@@ -408,14 +414,14 @@ class Network {
 
 			$value          = array();
 			$posted_options = isset( $_POST[ $option ] ) && is_array( $_POST[ $option ] ) ? wp_unslash( $_POST[ $option ] ) : array();
-			$sections       = $this->plugin->settings->get_fields();
+			$sections       = $this->plugin->settings->registry->get_fields();
 
 			foreach ( $sections as $section_name => $section ) {
 				foreach ( $section['fields'] as $field_idx => $field ) {
 					$option_key = $section_name . '_' . $field['name'];
 
 					if ( isset( $posted_options[ $option_key ] ) ) {
-						$value[ $option_key ] = $this->plugin->settings->sanitize_setting_by_field_type( $posted_options[ $option_key ], $field['type'] );
+						$value[ $option_key ] = $this->plugin->settings->sanitizer->sanitize_setting_by_field_type( $posted_options[ $option_key ], $field['type'] );
 					} else {
 						$value[ $option_key ] = false;
 					}
@@ -563,8 +569,8 @@ class Network {
 	 */
 	public function network_admin_page_title( $page_title ) {
 		if ( is_network_admin() ) {
-			/* translators: %d: number of sites on the network (e.g. "42") */
-			$site_count = sprintf( _n( '%d site', '%d sites', get_blog_count(), 'stream' ), number_format( get_blog_count() ) );
+			/* translators: %s: number of sites on the network (e.g. "1,234") */
+			$site_count = sprintf( _n( '%s site', '%s sites', get_blog_count(), 'stream' ), number_format( get_blog_count() ) );
 			$page_title = sprintf( '%s (%s)', $page_title, $site_count );
 		}
 

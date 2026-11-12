@@ -20,6 +20,27 @@ class List_Table extends \WP_List_Table {
 	public $plugin;
 
 	/**
+	 * Builds DB::get_records() args from filter input.
+	 *
+	 * @var List_Table_Query_Builder
+	 */
+	private List_Table_Query_Builder $query_builder;
+
+	/**
+	 * Whether the user filter is using Ajax search.
+	 *
+	 * @var bool
+	 */
+	private bool $user_filter_ajax = false;
+
+	/**
+	 * Renders record cell HTML.
+	 *
+	 * @var List_Table_Column_Renderer
+	 */
+	private List_Table_Column_Renderer $column_renderer;
+
+	/**
 	 * Class constructor.
 	 *
 	 * @param Plugin $plugin Instance of plugin object.
@@ -33,7 +54,7 @@ class List_Table extends \WP_List_Table {
 		/**
 		 * Filter the list table screen ID
 		 *
-		 * @return string
+		 * @param string $screen_id Screen ID.
 		 */
 		$screen_id = apply_filters( 'wp_stream_list_table_screen_id', $screen_id );
 
@@ -44,6 +65,9 @@ class List_Table extends \WP_List_Table {
 				'screen'    => $screen_id,
 			)
 		);
+
+		$this->query_builder   = new List_Table_Query_Builder();
+		$this->column_renderer = new List_Table_Column_Renderer( $this->plugin );
 
 		add_screen_option(
 			'per_page',
@@ -115,7 +139,7 @@ class List_Table extends \WP_List_Table {
 		/**
 		 * Allows devs to add new columns to table
 		 *
-		 * @return array
+		 * @param array $columns Columns.
 		 */
 		return apply_filters(
 			'wp_stream_list_table_columns',
@@ -200,6 +224,21 @@ class List_Table extends \WP_List_Table {
 	 * @return array
 	 */
 	public function get_records() {
+		$args                     = $this->collect_filter_input();
+		$args['paged']            = $this->get_pagenum();
+		$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
+
+		$args = $this->query_builder->build_args( $args );
+
+		return $this->plugin->db->get_records( $args );
+	}
+
+	/**
+	 * Map request query vars into a sanitized args bag for the query builder.
+	 *
+	 * @return array
+	 */
+	private function collect_filter_input(): array {
 		$args = array();
 
 		// Parse sorting params.
@@ -256,31 +295,17 @@ class List_Table extends \WP_List_Table {
 			$value_in = wp_stream_filter_input( INPUT_GET, $property . '__in' );
 
 			if ( $value_in ) {
-				$args[ $property . '__in' ] = explode( ',', $value_in );
+				$args[ $property . '__in' ] = $value_in;
 			}
 
 			$value_not_in = wp_stream_filter_input( INPUT_GET, $property . '__not_in' );
 
 			if ( $value_not_in ) {
-				$args[ $property . '__not_in' ] = explode( ',', $value_not_in );
+				$args[ $property . '__not_in' ] = $value_not_in;
 			}
 		}
 
-		$args['paged'] = $this->get_pagenum();
-
-		if ( isset( $args['context'] ) && 0 === strpos( $args['context'], 'group-' ) ) {
-			$args['connector'] = str_replace( 'group-', '', $args['context'] );
-			$args['context']   = '';
-		}
-
-		if ( ! isset( $args['records_per_page'] ) ) {
-			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
-		}
-		$args['records_per_page'] = apply_filters( 'stream_records_per_page', $args['records_per_page'] );
-
-		$items = $this->plugin->db->get_records( $args );
-
-		return $items;
+		return $args;
 	}
 
 	/**
@@ -300,125 +325,7 @@ class List_Table extends \WP_List_Table {
 	 * @return void
 	 */
 	public function column_default( $item, $column_name ) {
-		$out    = '';
-		$record = new Record( $item );
-
-		switch ( $column_name ) {
-			case 'date':
-				$created     = gmdate( 'Y-m-d H:i:s', strtotime( $record->created ) );
-				$date_string = sprintf(
-					'<time datetime="%s" class="relative-time record-created">%s</time>',
-					wp_stream_get_iso_8601_extended_date( strtotime( $record->created ) ),
-					get_date_from_gmt( $created, 'Y/m/d' )
-				);
-				$out         = $this->column_link( $date_string, 'date', get_date_from_gmt( $created, 'Y/m/d' ) );
-				$out        .= '<br />';
-				$out        .= get_date_from_gmt( $created, 'h:i:s A T' );
-				break;
-
-			case 'summary':
-				$out          = $record->summary;
-				$object_title = $record->get_object_title();
-				/* translators: %s: the title of any object, like a Post (e.g. "Hello World") */
-				$view_all_text = $object_title ? sprintf( esc_html__( 'View all activity for "%s"', 'stream' ), esc_attr( $object_title ) ) : esc_html__( 'View all activity for this object', 'stream' );
-
-				if ( $record->object_id ) {
-					$out .= $this->column_link(
-						'<span class="dashicons dashicons-search stream-filter-object-id"></span>',
-						array(
-							'object_id' => $record->object_id,
-							'context'   => $record->context,
-						),
-						null,
-						esc_attr( $view_all_text )
-					);
-				}
-				$out .= $this->get_action_links( $record );
-				break;
-
-			case 'user_id':
-				$user = new Author( (int) $record->user_id, (array) $record->user_meta );
-
-				$filtered_records_url = add_query_arg(
-					array(
-						'page'    => $this->plugin->admin->records_page_slug,
-						'user_id' => absint( $user->id ),
-					),
-					self_admin_url( $this->plugin->admin->admin_parent_page )
-				);
-
-				$out = sprintf(
-					'<a href="%s">%s <span>%s</span></a>%s%s%s',
-					$filtered_records_url,
-					$user->get_avatar_img( 80 ),
-					$user->get_display_name(),
-					$user->is_deleted() ? sprintf( '<br /><small class="deleted">%s</small>', esc_html__( 'Deleted User', 'stream' ) ) : '',
-					sprintf( '<br /><small>%s</small>', $user->get_role() ),
-					sprintf( '<br /><small>%s</small>', $user->get_agent_label( $user->get_agent() ) )
-				);
-				break;
-
-			case 'context':
-				$connector_title = $this->get_term_title( $record->{'connector'}, 'connector' );
-				$context_title   = $this->get_term_title( $record->{'context'}, 'context' );
-
-				$out  = $this->column_link( $connector_title, 'connector', $item->{'connector'} );
-				$out .= '<br />&#8627;&nbsp;';
-				$out .= $this->column_link(
-					$context_title,
-					array(
-						'connector' => $record->{'connector'},
-						'context'   => $record->{'context'},
-					)
-				);
-				break;
-
-			case 'action':
-				$out = $this->column_link( $this->get_term_title( $record->{$column_name}, $column_name ), $column_name, $record->{$column_name} );
-				break;
-
-			case 'blog_id':
-				$blog = ( $record->blog_id && is_multisite() ) ? get_blog_details( $record->blog_id ) : $this->plugin->admin->network->get_network_blog();
-				$out  = $this->column_link( $blog->blogname, 'blog_id', $blog->blog_id );
-				break;
-
-			case 'ip':
-				$out = $this->column_link( $record->{$column_name}, 'ip', $record->{$column_name} );
-				break;
-
-			default:
-				/**
-				 * Registers new Columns to be inserted into the table. The cell contents of this column is set
-				 * below with 'wp_stream_insert_column_default_'
-				 *
-				 * @since      3.5.1
-				 * @deprecated 4.0.1 Use the {@see 'wp_stream_list_table_columns'} filter instead.
-				 *
-				 * @param array $new_columns Columns injected in the table.
-				 *
-				 * @return array
-				 */
-				apply_filters_deprecated(
-					'wp_stream_register_column_defaults',
-					array( array() ),
-					/* translators: %s is the Stream version number. It is part of a filter deprecation notice and is preceded by: "{hook_name} is deprecated since version %s of Stream". */
-					sprintf( __( '%s of Stream', 'stream' ), '4.0.1' ),
-					'wp_stream_list_table_columns',
-					__( 'This filter is being deprecated as it is redundant. You can define custom column names and titles using the `wp_stream_list_table_columns` filter then provide the value for the custom columns using the `wp_stream_insert_column_default_{$column_name}` filter.', 'stream' )
-				);
-
-				/**
-				 * Allows for the addition of content under a specified column.
-				 *
-				 * @param string $out         Column content.
-				 * @param object $record      Record with row content.
-				 * @param string $column_name Column name.
-				 *
-				 * @return string
-				 */
-				$out = (string) apply_filters( "wp_stream_insert_column_default_{$column_name}", $out, $record, $column_name );
-				break;
-		}
+		$out = $this->column_renderer->render( $item, $column_name );
 
 		$allowed_tags                  = wp_kses_allowed_html( 'post' );
 		$allowed_tags['time']          = array(
@@ -431,110 +338,27 @@ class List_Table extends \WP_List_Table {
 	}
 
 	/**
-	 * Returns the actions links for the provided record. (Eg. Edit, View)
+	 * Formats a summary for the admin list table: first line only.
 	 *
-	 * @param Record $record  Record.
-	 * @return string
-	 */
-	public function get_action_links( $record ) {
-		$out = '';
-
-		/**
-		 * Filter allows modification of action links for a specific connector
-		 *
-		 * @param array
-		 * @param Record
-		 *
-		 * @return array Action links for this connector
-		 */
-		$action_links = apply_filters( 'wp_stream_action_links_' . $record->connector, array(), $record );
-
-		/**
-		 * Filter allows addition of custom links for a specific connector
-		 *
-		 * @param array
-		 * @param Record
-		 *
-		 * @return array Custom links for this connector
-		 */
-		$custom_links = apply_filters( 'wp_stream_custom_action_links_' . $record->connector, array(), $record );
-
-		if ( $action_links || $custom_links ) {
-			$out .= '<div class="row-actions">';
-		}
-
-		$links = array();
-		if ( $action_links && is_array( $action_links ) ) {
-			foreach ( $action_links as $al_title => $al_href ) {
-				$links[] = sprintf(
-					'<span><a href="%s" class="action-link">%s</a></span>',
-					$al_href,
-					$al_title
-				);
-			}
-		}
-
-		if ( $custom_links && is_array( $custom_links ) ) {
-			foreach ( $custom_links as $key => $link ) {
-				$links[] = $link;
-			}
-		}
-
-		$out .= implode( ' | ', $links );
-
-		if ( $action_links || $custom_links ) {
-			$out .= '</div>';
-		}
-
-		return $out;
-	}
-
-	/**
-	 * Returns a link to be display in the table.
+	 * When the summary contains additional lines, an ellipsis is appended so it
+	 * is clear the stored record has more text than the feed preview shows.
 	 *
-	 * @param string       $display  Text to be displayed in link.
-	 * @param string|array $key      Query string variable(s).
-	 * @param string       $value    Single query string value.
-	 * @param string       $title    Tooltip value.
-	 * @return string
+	 * @param string $summary Full summary stored in the database.
+	 * @return string Summary preview text (plain text, not HTML).
 	 */
-	public function column_link( $display, $key, $value = null, $title = null ) {
-		$url = add_query_arg(
-			array(
-				'page' => $this->plugin->admin->records_page_slug,
-			),
-			self_admin_url( $this->plugin->admin->admin_parent_page )
-		);
-
-		$args = ! is_array( $key ) ? array(
-			$key => $value,
-		) : $key;
-
-		foreach ( $args as $k => $v ) {
-			$url = add_query_arg( $k, $v, $url );
+	public static function format_summary_preview( $summary ) {
+		if ( '' === $summary ) {
+			return '';
 		}
 
-		return sprintf(
-			'<a href="%s" title="%s">%s</a>',
-			esc_url( $url ),
-			esc_attr( $title ),
-			$display
-		);
-	}
+		$lines = preg_split( '/\R/u', $summary, 2 );
+		$first = isset( $lines[0] ) ? $lines[0] : $summary;
 
-	/**
-	 * Returns the label for a connector term.
-	 *
-	 * @param string $term  Connector label type.
-	 * @param string $type  Connector term.
-	 * @return string
-	 */
-	public function get_term_title( $term, $type ) {
-		if ( ! isset( $this->plugin->connectors->term_labels[ 'stream_' . $type ][ $term ] ) ) {
-			return $term;
+		if ( ! isset( $lines[1] ) || '' === $lines[1] ) {
+			return $summary;
 		}
 
-		return $this->plugin->connectors->term_labels[ 'stream_' . $type ][ $term ];
+		return $first . '…';
 	}
 
 	/**
@@ -553,21 +377,21 @@ class List_Table extends \WP_List_Table {
 		if ( 'user_id' === $column ) {
 			$all_records = array();
 
-			// If the number of users exceeds the max users constant value then return an empty array and use AJAX instead.
-			$user_count  = count_users();
-			$total_users = $user_count['total_users'];
+			// Over the preload cap the select becomes an Ajax combobox: preload
+			// only the currently selected user, if any.
+			$picker = $this->plugin->user_picker->get( $this->plugin->admin->get_preload_users_max() );
 
-			if ( $total_users > $this->plugin->admin->preload_users_max ) {
-				$selected_user = wp_stream_filter_input( INPUT_GET, 'user_id' );
-				if ( $selected_user ) {
-					$user = new Author( $selected_user );
-
-					return array(
-						$selected_user => $user->get_display_name(),
-					);
-				} else {
+			if ( $picker['ajax'] ) {
+				$this->user_filter_ajax = true;
+				$selected_user          = (string) wp_stream_filter_input( INPUT_GET, 'user_id' );
+				$selected_label         = $this->plugin->user_picker->label_for_value( $selected_user );
+				if ( '' === $selected_user || '' === $selected_label ) {
 					return array();
 				}
+
+				return array(
+					$selected_user => $selected_label,
+				);
 			}
 
 			$users = array_map(
@@ -601,7 +425,7 @@ class List_Table extends \WP_List_Table {
 			);
 
 			foreach ( $users as $user ) {
-				$all_records[ $user->id ] = $user->get_display_name();
+				$all_records[ $user->id ] = $this->plugin->user_picker->label( $user->id );
 			}
 		} else {
 			$prefixed_column = sprintf( 'stream_%s', $column );
@@ -673,7 +497,7 @@ class List_Table extends \WP_List_Table {
 		$filters['user_id'] = array(
 			'title' => __( 'users', 'stream' ),
 			'items' => $users,
-			'ajax'  => count( $users ) <= 0,
+			'ajax'  => $this->user_filter_ajax,
 		);
 
 		$filters['context'] = array(
@@ -691,7 +515,7 @@ class List_Table extends \WP_List_Table {
 		 * Note the format of the filters above, with they key and array
 		 * containing a title and array of items.
 		 *
-		 * @return array
+		 * @param array $filters Filters.
 		 */
 		return apply_filters( 'wp_stream_list_table_filters', $filters );
 	}
@@ -815,22 +639,55 @@ class List_Table extends \WP_List_Table {
 	 * @return void
 	 */
 	public function filter_select( $name, $title, $items, $ajax = false ) {
-		$selected = wp_stream_filter_input( INPUT_GET, $name );
+		$selected    = wp_stream_filter_input( INPUT_GET, $name );
+		$placeholder = sprintf(
+			/* translators: %s: the title of the dropdown menu (e.g. "users") */
+			__( 'Show all %s', 'stream' ),
+			$title
+		);
+		$select_id = 'stream-filter-' . $name;
+
+		echo '<div class="stream-filter-control">';
+
+		if ( $ajax && 'user_id' === $name ) {
+			$selected_label = isset( $items[ $selected ] ) && is_array( $items[ $selected ] )
+				? (string) $items[ $selected ]['label']
+				: ( is_string( $items[ $selected ] ?? null ) ? $items[ $selected ] : '' );
+
+			$form = new Form_Generator();
+			$html = $form->render_field(
+				'user_combobox',
+				array(
+					'name'           => $name,
+					'id'             => $select_id,
+					'value'          => $selected,
+					'selected_label' => $selected_label,
+					'classes'        => 'chosen-select',
+					'data'           => array(
+						'placeholder' => $placeholder,
+					),
+				),
+				false
+			);
+			echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- reason: Form_Generator returns HTML with escaped attributes.
+			echo '</div>';
+			return;
+		}
 
 		printf(
-			'<select name="%1$s" class="chosen-select" data-placeholder="%2$s">',
-			esc_attr( $name ),
-			esc_attr(
-				sprintf(
-					/* translators: %s: the title of the dropdown menu (e.g. "users") */
-					__( 'Show all %s', 'stream' ),
-					$title
-				)
-			)
+			'<label class="screen-reader-text" for="%1$s">%2$s</label>',
+			esc_attr( $select_id ),
+			esc_html( $placeholder )
 		);
 
-		// First option should be empty.
-		echo '<option value=""></option>';
+		printf(
+			'<select name="%1$s" id="%2$s" class="chosen-select" data-placeholder="%3$s">',
+			esc_attr( $name ),
+			esc_attr( $select_id ),
+			esc_attr( $placeholder )
+		);
+
+		printf( '<option value="">%s</option>', esc_html( $placeholder ) );
 
 		foreach ( $items as $key => $item ) {
 			$value       = isset( $item['children'] ) ? 'group-' . $key : $key;
@@ -864,6 +721,7 @@ class List_Table extends \WP_List_Table {
 		}
 
 		echo '</select>';
+		echo '</div>';
 	}
 
 	/**
@@ -912,7 +770,7 @@ class List_Table extends \WP_List_Table {
 				<input type="submit" name="" id="search-submit" class="button" value="%3$s" />
 			</p>',
 			esc_html__( 'Search Records', 'stream' ),
-			esc_attr( ! empty( $_GET['search'] ) ? sanitize_text_field( wp_unslash( $_GET['search'] ) ) : '' ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			esc_attr( ! empty( $_GET['search'] ) ? sanitize_text_field( wp_unslash( $_GET['search'] ) ) : '' ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- reason: search is a read-only records list filter, not a state-changing request.
 			esc_attr__( 'Search Records', 'stream' )
 		);
 	}
@@ -937,7 +795,7 @@ class List_Table extends \WP_List_Table {
 		<div class="date-interval">
 
 			<select class="field-predefined hide-if-no-js chosen-select" name="date_predefined" data-placeholder="<?php esc_attr_e( 'All Time', 'stream' ); ?>">
-				<option></option>
+				<option value=""><?php esc_html_e( 'All Time', 'stream' ); ?></option>
 				<option value="custom" <?php selected( 'custom' === $date_predefined ); ?>><?php esc_attr_e( 'Custom', 'stream' ); ?></option>
 				<?php
 				foreach ( $items as $key => $interval ) {
@@ -981,7 +839,7 @@ class List_Table extends \WP_List_Table {
 		/**
 		 * Filter the records screen actions dropdown menu
 		 *
-		 * @return array Should be in the format of action_slug => 'Action Name'
+		 * @param array $actions Should be in the format of action_slug => 'Action Name'
 		 */
 		$actions = apply_filters( 'wp_stream_record_actions_menu', array() );
 
@@ -1000,7 +858,6 @@ class List_Table extends \WP_List_Table {
 		}
 		echo '</select></div>';
 		wp_nonce_field( 'stream_record_actions_nonce', 'stream_record_actions_nonce' );
-		wp_nonce_field( 'stream_filters_user_search_nonce', 'stream_filters_user_search_nonce' );
 
 		printf( '<input type="hidden" name="page" value="%s">', esc_attr( wp_stream_filter_input( INPUT_GET, 'page' ) ) );
 		printf( '<input type="hidden" name="date_predefined" value="%s">', esc_attr( wp_stream_filter_input( INPUT_GET, 'date_predefined' ) ) );
@@ -1037,6 +894,12 @@ class List_Table extends \WP_List_Table {
 	 * @param array $item  Record data.
 	 */
 	public function single_row( $item ) {
+		/**
+		 * Filter CSS classes on a Stream list table row.
+		 *
+		 * @param array $classes
+		 * @param array $item
+		 */
 		$classes = apply_filters( 'wp_stream_record_classes', array(), $item );
 
 		if ( empty( $classes ) ) {
@@ -1109,18 +972,15 @@ class List_Table extends \WP_List_Table {
 	public function set_live_update_option( $dummy, $option, $value ) {
 		unset( $value );
 
-		// @codingStandardsIgnoreStart
 		if (
 			$this->plugin->admin->live_update->user_meta_key === $option
 			&&
-			isset( $_POST[ $this->plugin->admin->live_update->user_meta_key ] )
+			isset( $_POST[ $this->plugin->admin->live_update->user_meta_key ] ) // phpcs:ignore WordPress.Security.NonceVerification.Missing -- reason: screen-option save is handled by core; Stream only reads the posted toggle.
 		) {
-			$value = esc_attr( $_POST[ $this->plugin->admin->live_update->user_meta_key ] ); //input var okay
+			$value = esc_attr( $_POST[ $this->plugin->admin->live_update->user_meta_key ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- reason: value is escaped for storage; core already verified the screen-option request.
 
 			return $value;
 		}
-
-		// @codingStandardsIgnoreEnd
 
 		return $dummy;
 	}
@@ -1137,7 +997,7 @@ class List_Table extends \WP_List_Table {
 		unset( $args );
 
 		$user_id   = get_current_user_id();
-		$option    = $this->plugin->admin->get_user_meta( $user_id, $this->plugin->admin->live_update->user_meta_key, true );
+		$option    = get_user_meta( $user_id, $this->plugin->admin->live_update->user_meta_key, true );
 		$heartbeat = wp_script_is( 'heartbeat', 'done' ) ? 'true' : 'false';
 
 		if ( 'on' === $option && 'false' === $heartbeat ) {
@@ -1210,13 +1070,15 @@ class List_Table extends \WP_List_Table {
 		$record_meta = array();
 
 		foreach ( $users as $user_id => $args ) {
-			$user = new Author( $user_id );
+			// Picker labels keep user 0 ("WP-CLI") and deleted users readable.
+			$label = $this->plugin->user_picker->label( (int) $user_id );
+			$icon  = $this->plugin->user_picker->icon( (int) $user_id );
 
 			$record_meta[ $user_id ] = array(
-				'text'     => $user->get_display_name(),
+				'text'     => $label,
 				'id'       => $user_id,
-				'label'    => $user->get_display_name(),
-				'icon'     => $user->get_avatar_src( 32 ),
+				'label'    => $label,
+				'icon'     => $icon,
 				'title'    => '',
 				'disabled' => ! empty( $args['disabled'] ),
 			);

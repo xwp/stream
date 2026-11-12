@@ -20,10 +20,8 @@ class Install {
 
 	/**
 	 * Option key to store database version
-	 *
-	 * @var string
 	 */
-	public $option_key = 'wp_stream_db';
+	public string $option_key = 'wp_stream_db';
 
 	/**
 	 * Holds version of database at last update
@@ -48,10 +46,8 @@ class Install {
 
 	/**
 	 * Holds status of whether it's safe to run Stream or not
-	 *
-	 * @var bool
 	 */
-	public $update_required = false;
+	public bool $update_required = false;
 
 	/**
 	 * Holds status of whether the database update worked
@@ -318,8 +314,6 @@ class Install {
 		 * Filter to alter the DB update versions array
 		 *
 		 * @param array $db_update_versions
-		 *
-		 * @return array
 		 */
 		return apply_filters( 'wp_stream_db_update_versions', $db_update_versions );
 	}
@@ -345,7 +339,7 @@ class Install {
 			$function = 'wp_stream_update_' . ( 'user' === $update_args['type'] ? '' : $update_args['type'] . '_' ) . str_ireplace( '.', '', $version );
 
 			if ( version_compare( $db_version, $version, '<' ) ) {
-				$result = function_exists( $function ) ? call_user_func( $function, $db_version, $current_version ) : $current_version;
+				$result = function_exists( $function ) ? call_user_func( $function, $db_version, $current_version, $this ) : $current_version;
 
 				if ( $current_version !== $result ) {
 					return false;

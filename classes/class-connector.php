@@ -17,49 +17,61 @@ abstract class Connector {
 	 *
 	 * @var string
 	 */
-	public $name = null;
+	public string $name = '';
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array();
+	public array $actions = array();
 
 	/**
 	 * Store delayed logs
-	 *
-	 * @var array
 	 */
-	public $delayed = array();
+	public array $delayed = array();
 
 	/**
-	 * Previous Stream entry in same request
+	 * Previous Stream entry in same request.
+	 * Nothing in the plugin writes this property.
 	 *
-	 * @var int
+	 * @var int|null
 	 */
-	public $prev_stream = null;
+	public ?int $prev_stream = null;
 
 	/**
 	 * Register connector in the WP Admin
-	 *
-	 * @var bool
 	 */
-	public $register_admin = true;
+	public bool $register_admin = true;
 
 	/**
 	 * Register connector in the WP Frontend
-	 *
-	 * @var bool
 	 */
-	public $register_frontend = true;
+	public bool $register_frontend = true;
 
 	/**
 	 * Holds connector registration status flag.
-	 *
-	 * @var bool
 	 */
-	private $is_registered = false;
+	private bool $is_registered = false;
+
+	/**
+	 * Return translated connector label.
+	 *
+	 * @return string
+	 */
+	abstract public function get_label();
+
+	/**
+	 * Return translated context labels.
+	 *
+	 * @return array<string, string>
+	 */
+	abstract public function get_context_labels();
+
+	/**
+	 * Return translated action labels.
+	 *
+	 * @return array<string, string>
+	 */
+	abstract public function get_action_labels();
 
 	/**
 	 * Is the connector currently registered?
@@ -164,7 +176,7 @@ abstract class Connector {
 		 *
 		 * @see Connector_ACF::log_override()
 		 *
-		 * @return array|false An array of the data to be logged or false if it should not be logged.
+		 * @param array|false $data An array of the data to be logged or false if it should not be logged.
 		 */
 		$data = apply_filters(
 			'wp_stream_log_data',
@@ -400,10 +412,8 @@ abstract class Connector {
 		$result = array_filter(
 			$result,
 			function ( $value ) {
-				// @codingStandardsIgnoreStart
-				// check if is not valid number (is_int, is_numeric and ctype_digit are not enough)
+				// is_int, is_numeric and ctype_digit are not enough.
 				return (string) (int) $value !== (string) $value;
-				// @codingStandardsIgnoreEnd
 			}
 		);
 

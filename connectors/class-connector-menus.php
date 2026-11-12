@@ -13,17 +13,13 @@ namespace WP_Stream;
 class Connector_Menus extends Connector {
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'menus';
+	public string $name = 'menus';
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'wp_create_nav_menu',
 		'wp_update_nav_menu',
 		'delete_nav_menu',
@@ -31,10 +27,8 @@ class Connector_Menus extends Connector {
 
 	/**
 	 * Register connector in the WP Frontend
-	 *
-	 * @var bool
 	 */
-	public $register_frontend = false;
+	public bool $register_frontend = false;
 
 	/**
 	 * Return translated connector label

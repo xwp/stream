@@ -2,8 +2,9 @@
 Contributors: xwp
 Tags: activity log, audit log, event log, user tracking, security
 Requires at least: 4.6
-Tested up to: 7.0
-Stable tag: 4.4.0
+Requires PHP: 7.4
+Tested up to: 7.1
+Stable tag: 4.5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -41,6 +42,7 @@ With Stream’s powerful activity logging, you’ll have the information you nee
 
 = Built-In Tracking For Core Actions: =
 
+ * WordPress AI Client (WP 7.0+)
  * Posts
  * Pages
  * Custom Post Types
@@ -101,9 +103,34 @@ As a workaround, you can use the `wp_stream_client_ip_address` filter to adapt t
 ⚠️ **WARNING:** The above is an insecure workaround that you should only use when you fully understand what this implies. Relying on any variable with the `HTTP_*` prefix is prone to spoofing and cannot be trusted!
 
 
+= AI Client (WordPress 7.0+) =
+
+When WordPress 7.0+ provides the AI Client event dispatcher (`WP_AI_Client_Event_Dispatcher`), Stream logs each AI generation as an activity record under **AI Client → Prompts → Generated**. If the dispatcher is not available, the connector registers no hooks and has no effect.
+
+By default, Stream stores metadata for every generation: operation, provider, model, input/thought/output token counts, duration, finish reason, and other extended fields when present. The activity summary shows a one-line preview (for example, `chat via openai/gpt-4o (tokens: 120/0/45) in 842ms`); the three numbers are input, thought, then output. Multiline summaries display only the first line in the list table; open a record to see the full text.
+
+Prompt and response text are **not** logged by default. To opt in, enable **Log Prompt and Response text** under **Stream → Settings → AI Client**. When enabled, prompt and response text are appended to the activity summary (not stored in meta, which is size-limited) and may be forwarded to any configured Stream alerts or webhooks (e.g. Slack, IFTTT). HTML is stripped on insert, so stored and forwarded text is not a byte-for-byte copy of the generation. **Privacy Warning:** This content may include personally identifiable information (PII). Ensure your privacy policy covers AI data collection before enabling. Use the `wp_stream_ai_client_log_prompt` and `wp_stream_ai_client_log_response` filters below to redact or omit text before it is stored.
+
+Developers can filter stored text when the setting is enabled:
+
+* `wp_stream_ai_client_log_prompt` — filter prompt text before it is stored; return an empty string to omit it.
+* `wp_stream_ai_client_log_response` — filter response text before it is stored; return an empty string to omit it.
+
+
 == Known Issues ==
 
  * We have temporarily disabled the data removal feature through plugin uninstallation, starting with version 3.9.3. We identified a few edge cases that did not behave as expected and we decided that a temporary removal is preferable at this time for such an impactful and irreversible operation. Our team is actively working on refining this feature to ensure it performs optimally and securely. We plan to reintroduce it in a future update with enhanced safeguards.
+
+
+== Frequently Asked Questions ==
+
+= How do I use a custom translation? =
+
+Stream no longer ships translation files inside the plugin. WordPress loads translations from language packs installed in `wp-content/languages/plugins/` (for example `stream-fr_FR.mo`). Files in that directory survive plugin updates.
+
+To override a language pack, place your compiled `stream-{locale}.mo` in `wp-content/languages/plugins/`. To load a file from another location, use the [`load_textdomain_mofile`](https://developer.wordpress.org/reference/hooks/load_textdomain_mofile/) filter.
+
+Contributions belong on [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/stream/).
 
 
 == Contribute ==
@@ -132,6 +159,10 @@ Thank you for wanting to make Stream better for everyone!
 
 == Upgrade Notice ==
 
+= 4.5.0 =
+
+Security fix for a stored cross-site scripting vulnerability in the records user filter (CVE-2026-119216). Also note: custom connectors, alert types, alert triggers, and exporters must now declare typed properties, for example `public string $slug`. An untyped declaration causes a fatal error. See the changelog for details.
+
 = 4.4.0 =
 
 On multisite, access to the records of another site and changes to network-wide settings now need the `manage_network_options` capability. Stream no longer writes integration credentials, such as API keys and tokens, into option-change records. See the changelog for details.
@@ -142,6 +173,24 @@ Use only `$_SERVER['REMOTE_ADDR']` as the client IP address for event logs witho
 
 
 == Changelog ==
+
+= 4.5.0 - November 12, 2026 =
+
+Security:
+
+* Fix a stored cross-site scripting vulnerability (CVE-2026-119216) in the records screen user filter. Reported by Mohamed Amgad Khater (`mamgad`) via Wordfence.
+
+Breaking Changes:
+
+* Raise the minimum PHP version from 7.2 to 7.4.
+* Custom connectors, alert types, alert triggers, and exporters must declare typed public properties, for example `public string $slug`. An untyped declaration now causes a fatal error.
+
+Enhancements:
+
+* Replace Select2 with native select controls across the admin, with an accessible Ajax user combobox on sites above the preload cap.
+* Add an Outgoing Webhook alert and an AI Client connector for WordPress 7.0+.
+
+[View the full release notes on GitHub.](https://github.com/xwp/stream/blob/master/changelog.md#450---november-12-2026)
 
 = 4.4.0 - August 31, 2026 =
 

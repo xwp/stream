@@ -16,14 +16,14 @@ abstract class Exporter {
 	 *
 	 * @var string
 	 */
-	public $name;
+	public string $name = '';
 
 	/**
 	 * Exporter slug
 	 *
 	 * @var string
 	 */
-	public $slug;
+	public string $slug = '';
 
 	/**
 	 * Output formatted data for download

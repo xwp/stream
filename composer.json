@@ -11,7 +11,7 @@
     }
   ],
   "require": {
-    "php": ">=7.2",
+    "php": ">=7.4",
     "ext-json": "*",
     "composer/installers": "^1.0 || ^2.0",
     "woocommerce/action-scheduler": "^3.9"
@@ -24,7 +24,8 @@
     "php-coveralls/php-coveralls": "^2.5",
     "phpcompatibility/php-compatibility": "dev-develop as 9.99.99",
     "phpcompatibility/phpcompatibility-wp": "^2.1",
-    "phpunit/phpunit": "^9.6",
+    "phpunit/phpunit": "^11.3.3",
+    "rector/rector": "^2.6",
     "roots/wordpress": "^6.9",
     "wordpress/mcp-adapter": "^0.5",
     "wp-cli/wp-cli-bundle": "^2.6",
@@ -41,13 +42,14 @@
     "wp-plugin/wp-crontrol": "1.21.0",
     "wp-theme/twentytwentythree": "^1.0",
     "xwp/wait-for": "^0.0.1",
-    "yoast/phpunit-polyfills": "^1.1"
+    "yoast/phpunit-polyfills": "4.0.0 as 1.1.5",
+    "yoast/wp-test-utils": "^1.2"
   },
   "config": {
     "process-timeout": 600,
     "sort-packages": true,
     "platform": {
-      "php": "7.4"
+      "php": "8.2"
     },
     "allow-plugins": {
       "composer/installers": true,
@@ -87,19 +89,34 @@
     "lint-tests": [
       "phpcs ./tests --standard=./tests/phpcs.xml.dist"
     ],
+    "lint-rector": [
+      "rector process --dry-run"
+    ],
+    "rector": [
+      "rector process"
+    ],
     "format": [
       "phpcbf .",
       "phpcbf ./tests --standard=./tests/phpcs.xml.dist"
     ],
     "test": [
+      "phpunit --no-coverage"
+    ],
+    "test-unit": [
+      "phpunit -c phpunit-unit.xml"
+    ],
+    "test-one": [
+      "phpunit --no-coverage",
+      "WP_MULTISITE=1 phpunit -c phpunit-multisite.xml --no-coverage"
+    ],
+    "test-multisite": [
+      "WP_MULTISITE=1 phpunit -c phpunit-multisite.xml --no-coverage"
+    ],
+    "test-coverage": [
       "phpunit --coverage-text",
       "php local/scripts/make-clover-relative.php ./tests/reports/clover.xml"
     ],
-    "test-one": [
-      "phpunit",
-      "WP_MULTISITE=1 phpunit -c phpunit-multisite.xml"
-    ],
-    "test-multisite": [
+    "test-coverage-multisite": [
       "WP_MULTISITE=1 phpunit -c phpunit-multisite.xml --coverage-text",
       "php local/scripts/make-clover-relative.php ./tests/reports/clover.xml"
     ],

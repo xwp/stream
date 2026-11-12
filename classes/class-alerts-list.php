@@ -150,6 +150,13 @@ class Alerts_List {
 				<input type="hidden" name="wp_stream_trigger_context" value="<?php echo esc_attr( $trigger_context ); ?>" />
 				<input type="hidden" name="wp_stream_trigger_action" value="<?php echo esc_attr( $trigger_action ); ?>" />
 				<?php
+				$trigger_author = isset( $alert->alert_meta['trigger_author'] )
+					? (string) $alert->alert_meta['trigger_author']
+					: '';
+				?>
+				<input type="hidden" name="wp_stream_trigger_author" value="<?php echo esc_attr( $trigger_author ); ?>" />
+				<input type="hidden" name="wp_stream_trigger_author_label" value="<?php echo esc_attr( $this->plugin->user_picker->label_for_value( $trigger_author ) ); ?>" />
+				<?php
 				echo wp_kses_post( $this->custom_column_actions( $post_id ) );
 				break;
 			case 'alert_type':
@@ -206,6 +213,38 @@ class Alerts_List {
 				if ( ! empty( $alert->alert_meta['slack_icon'] ) ) {
 					?>
 					<input type="hidden" name="wp_stream_slack_icon" value="<?php echo esc_attr( $alert->alert_meta['slack_icon'] ); ?>" />
+					<?php
+				}
+				if ( ! empty( $alert->alert_meta['url'] ) ) {
+					?>
+					<input type="hidden" name="wp_stream_webhook_url" value="<?php echo esc_attr( $alert->alert_meta['url'] ); ?>" />
+					<?php
+				}
+				if ( ! empty( $alert->alert_meta['method'] ) ) {
+					?>
+					<input type="hidden" name="wp_stream_webhook_method" value="<?php echo esc_attr( $alert->alert_meta['method'] ); ?>" />
+					<?php
+				}
+				if ( ! empty( $alert->alert_meta['content_type'] ) ) {
+					?>
+					<input type="hidden" name="wp_stream_webhook_content_type" value="<?php echo esc_attr( $alert->alert_meta['content_type'] ); ?>" />
+					<?php
+				}
+				if ( ! empty( $alert->alert_meta['headers'] ) && is_array( $alert->alert_meta['headers'] ) ) {
+					$header_lines = array();
+					foreach ( $alert->alert_meta['headers'] as $header_row ) {
+						if ( is_array( $header_row ) && ! empty( $header_row['name'] ) ) {
+							$header_value   = isset( $header_row['value'] ) ? $header_row['value'] : '';
+							$header_lines[] = $header_row['name'] . ': ' . $header_value;
+						}
+					}
+					?>
+					<input type="hidden" name="wp_stream_webhook_headers" value="<?php echo esc_attr( implode( "\n", $header_lines ) ); ?>" />
+					<?php
+				}
+				if ( ! empty( $alert->alert_meta['body_template'] ) ) {
+					?>
+					<input type="hidden" name="wp_stream_webhook_body_template" value="<?php echo esc_attr( $alert->alert_meta['body_template'] ); ?>" />
 					<?php
 				}
 				break;
@@ -321,7 +360,11 @@ class Alerts_List {
 				<?php
 				$function_name = 'display_' . $type . '_box';
 				$the_post      = get_post();
-				call_user_func( array( $this->plugin->alerts, $function_name ), $the_post );
+				$args          = array( $the_post );
+				if ( 'notification' === $type ) {
+					$args[] = false;
+				}
+				call_user_func_array( array( $this->plugin->alerts->admin_ui, $function_name ), $args );
 				?>
 			</fieldset>
 			<?php
@@ -390,8 +433,21 @@ class Alerts_List {
 			'trigger_action'    => $trigger_action,
 			'trigger_context'   => $trigger_context,
 		);
+		/** This filter is documented in classes/class-alerts-admin-ui.php */
 		$alert_meta = apply_filters( 'wp_stream_alerts_save_meta', $alert_meta, $alert_type );
 		update_post_meta( $post_id, 'alert_meta', $alert_meta );
+
+		// Keep the generated title in sync with the saved triggers. The alerts
+		// list displays post_title, which was previously only built at creation,
+		// so editing a trigger left the list showing a stale summary.
+		$item  = (object) array(
+			'alert_type'   => $alert_type,
+			'alert_meta'   => $alert_meta,
+			'alert_status' => $alert_status,
+		);
+		$alert = new Alert( $item, $this->plugin );
+
+		$data['post_title'] = $alert->get_title();
 		return $data;
 	}
 }

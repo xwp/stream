@@ -20,17 +20,13 @@ class Live_Update {
 
 	/**
 	 * User meta key/identifier
-	 *
-	 * @var string
 	 */
-	public $user_meta_key = 'stream_live_update_records';
+	public string $user_meta_key = 'stream_live_update_records';
 
 	/**
 	 * List table object instance
-	 *
-	 * @var List_Table
 	 */
-	public $list_table = null;
+	public ?List_Table $list_table = null;
 
 	/**
 	 * Class constructor.
@@ -197,8 +193,8 @@ class Live_Update {
 
 		if ( isset( $data['wp-stream-heartbeat'] ) && isset( $total_items ) ) {
 			$response['total_items'] = $total_items;
-			/* translators: %d: number of items (e.g. "42") */
-			$response['total_items_i18n'] = sprintf( _n( '%d item', '%d items', $total_items, 'stream' ), number_format_i18n( $total_items ) );
+			/* translators: %s: number of items (e.g. "1,234") */
+			$response['total_items_i18n'] = sprintf( _n( '%s item', '%s items', $total_items, 'stream' ), number_format_i18n( $total_items ) );
 		}
 
 		if ( isset( $data['wp-stream-heartbeat'] ) && 'live-update' === $data['wp-stream-heartbeat'] && $enable_stream_update ) {

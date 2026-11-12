@@ -67,7 +67,7 @@ class Export {
 			return;
 		}
 
-		$this->plugin->admin->register_list_table();
+		$this->plugin->admin->records->register_list_table();
 		$list_table = $this->plugin->admin->list_table;
 		$list_table->prepare_items();
 		add_filter( 'stream_records_per_page', array( $this, 'disable_paginate' ) );
@@ -173,7 +173,7 @@ class Export {
 		 * Filter to change how many records are exported.
 		 * Increasing this too much could cause your export to time out.
 		 *
-		 * @return int The number of records to export.
+		 * @param int $limit The number of records to export.
 		 */
 		return apply_filters( 'wp_stream_export_limit', 10000 );
 	}

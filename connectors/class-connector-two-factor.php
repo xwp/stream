@@ -13,17 +13,13 @@ namespace WP_Stream;
 class Connector_Two_Factor extends Connector {
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'twofactor';
+	public string $name = 'twofactor';
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'update_user_meta', // Before user meta changes.
 		'updated_user_meta', // After user meta changes.
 		'added_user_meta', // After user meta is added.
@@ -34,17 +30,13 @@ class Connector_Two_Factor extends Connector {
 
 	/**
 	 * Tracked option keys
-	 *
-	 * @var array
 	 */
-	public $options = array();
+	public array $options = array();
 
 	/**
 	 * Record the user_meta meta_value before updates.
-	 *
-	 * @var array
 	 */
-	public $user_meta = array();
+	public array $user_meta = array();
 
 	/**
 	 * Check if plugin dependencies are satisfied and add an admin notice if not
@@ -332,6 +324,10 @@ class Connector_Two_Factor extends Connector {
 		$user = get_user_by( 'login', $user_login );
 		if ( ! $user && is_email( $user_login ) ) {
 			$user = get_user_by( 'email', $user_login );
+		}
+
+		if ( ! $user ) {
+			return;
 		}
 
 		/* Translators: %1$s is the user display name, %2$s is the error code, %3$s is the error message. */

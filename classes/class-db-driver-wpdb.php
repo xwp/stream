@@ -13,24 +13,18 @@ namespace WP_Stream;
 class DB_Driver_WPDB implements DB_Driver {
 	/**
 	 * Holds Query class
-	 *
-	 * @var Query
 	 */
-	protected $query;
+	protected Query $query;
 
 	/**
 	 * Hold records table name
-	 *
-	 * @var string
 	 */
-	public $table;
+	public string $table;
 
 	/**
 	 * Hold meta table name
-	 *
-	 * @var string
 	 */
-	public $table_meta;
+	public string $table_meta;
 
 	/**
 	 * Class constructor.
@@ -39,6 +33,11 @@ class DB_Driver_WPDB implements DB_Driver {
 		$this->query = new Query( $this );
 
 		global $wpdb;
+		/**
+		 * Filter the database table prefix used for Stream tables.
+		 *
+		 * @param string $prefix
+		 */
 		$prefix = apply_filters( 'wp_stream_db_tables_prefix', $wpdb->base_prefix );
 
 		$this->table      = $prefix . 'stream';
@@ -143,7 +142,7 @@ class DB_Driver_WPDB implements DB_Driver {
 		}
 
 		return (array) $wpdb->get_results(
-			"SELECT DISTINCT $column FROM $wpdb->stream", // @codingStandardsIgnoreLine can't prepare column name
+			"SELECT DISTINCT $column FROM $wpdb->stream", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- reason: $column is restricted to Query::ALLOWED_FIELDS.
 			'ARRAY_A'
 		);
 	}

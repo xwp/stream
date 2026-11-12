@@ -35,17 +35,15 @@ class Abilities {
 
 	/**
 	 * Holds instance of plugin object.
-	 *
-	 * @var Plugin
 	 */
-	public $plugin;
+	public Plugin $plugin;
 
 	/**
 	 * Registered ability objects keyed by namespaced name.
 	 *
 	 * @var array<string, Ability>
 	 */
-	public $abilities = array();
+	public array $abilities = array();
 
 	/**
 	 * Class constructor.

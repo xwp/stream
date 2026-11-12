@@ -13,17 +13,13 @@ namespace WP_Stream;
 class Connector_Blogs extends Connector {
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'blogs';
+	public string $name = 'blogs';
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'wp_initialize_site',
 		'wp_delete_site',
 		'wpmu_activate_blog',
@@ -43,10 +39,8 @@ class Connector_Blogs extends Connector {
 
 	/**
 	 * Register connector in the WP Frontend
-	 *
-	 * @var bool
 	 */
-	public $register_frontend = false;
+	public bool $register_frontend = false;
 
 	/**
 	 * Return translated connector label

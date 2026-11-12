@@ -122,6 +122,11 @@ class Log {
 			$role = '';
 		}
 
+		/**
+		 * Filter the blog ID stored on a Stream record.
+		 *
+		 * @param int $blog_id
+		 */
 		$recordarr = array(
 			'object_id' => (int) $object_id,
 			'site_id'   => (int) is_multisite() ? get_current_site()->id : 1,
@@ -219,8 +224,6 @@ class Log {
 		 *
 		 * @param array $exclude_record Whether the record should excluded.
 		 * @param array $recordarr The record to log.
-		 *
-		 * @return bool
 		 */
 		return apply_filters( 'wp_stream_is_record_excluded', $exclude_record, $record );
 	}
@@ -242,7 +245,9 @@ class Log {
 			}
 
 			if ( 'ip_address' === $exclude_key ) {
-				$ip_addresses = explode( ',', $exclude_value );
+				// Admin form joins multi-IP values with a comma; trim each
+				// one so "1.1.1.1, 8.8.8.8" still matches a real client IP.
+				$ip_addresses = array_filter( array_map( 'trim', explode( ',', (string) $exclude_value ) ) );
 
 				if ( in_array( $record['ip_address'], $ip_addresses, true ) ) {
 					++$matches_found;
@@ -302,10 +307,6 @@ class Log {
 	 * @return string
 	 */
 	public function debug_backtrace( $recordarr ) {
-		if ( version_compare( PHP_VERSION, '5.3.6', '<' ) ) {
-			return __( 'Debug backtrace requires at least PHP 5.3.6', 'stream' );
-		}
-
 		// Record details.
 		$summary   = isset( $recordarr['summary'] ) ? $recordarr['summary'] : null;
 		$author    = isset( $recordarr['author'] ) ? $recordarr['author'] : null;
@@ -345,9 +346,7 @@ class Log {
 		// Debug backtrace.
 		ob_start();
 
-		// @codingStandardsIgnoreStart
-		debug_print_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS ); // Option to ignore args requires PHP 5.3.6
-		// @codingStandardsIgnoreEnd
+		debug_print_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_print_backtrace -- reason: Stream debug log captures the backtrace when WP_STREAM_DEBUG is enabled.
 
 		$backtrace = ob_get_clean();
 		$backtrace = array_values( array_filter( explode( "\n", $backtrace ) ) );

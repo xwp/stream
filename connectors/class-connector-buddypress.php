@@ -14,10 +14,8 @@ class Connector_BuddyPress extends Connector {
 
 	/**
 	 * Connector slug
-	 *
-	 * @var string
 	 */
-	public $name = 'buddypress';
+	public string $name = 'buddypress';
 
 	/**
 	 * Holds tracked plugin minimum version required
@@ -28,10 +26,8 @@ class Connector_BuddyPress extends Connector {
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @var array
 	 */
-	public $actions = array(
+	public array $actions = array(
 		'update_option',
 		'add_option',
 		'delete_option',
@@ -70,10 +66,8 @@ class Connector_BuddyPress extends Connector {
 
 	/**
 	 * Tracked option keys
-	 *
-	 * @var array
 	 */
-	public $options = array(
+	public array $options = array(
 		'bp-active-components' => null,
 		'bp-pages'             => null,
 		'buddypress'           => null,
@@ -81,10 +75,8 @@ class Connector_BuddyPress extends Connector {
 
 	/**
 	 * Flag to stop logging update logic twice
-	 *
-	 * @var bool
 	 */
-	public $is_update = false;
+	public bool $is_update = false;
 
 	/**
 	 * Stores an activity to be deleted for use across multiple callbacks.
@@ -102,10 +94,8 @@ class Connector_BuddyPress extends Connector {
 
 	/**
 	 * Flag for ignoring irrelevant activity deletions.
-	 *
-	 * @var bool
 	 */
-	public $ignore_activity_bulk_deletion = false;
+	public bool $ignore_activity_bulk_deletion = false;
 
 	/**
 	 * Check if plugin dependencies are satisfied and add an admin notice if not
