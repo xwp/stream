@@ -33,6 +33,27 @@ Optional flags:
 - `$register_frontend` (default `true`) — run on the front end (also cron, REST, and WP-CLI, because those use `is_admin() === false`).
 - `is_dependency_satisfied()` — return `false` to skip registration when a required plugin is missing.
 
+### Assign properties in the constructor
+
+`$name`, `$actions`, `$register_admin`, and `$register_frontend` are declared, with types, on `WP_Stream\Connector`. Assign them in your connector's constructor. Do not redeclare them.
+
+```php
+class Connector_Example extends \WP_Stream\Connector {
+	public function __construct() {
+		$this->name              = 'example';
+		$this->actions           = array( 'example_action' );
+		$this->register_frontend = false;
+	}
+}
+```
+
+PHP requires a redeclared property to have exactly the same type as the parent's. Stream 4.5.0 added native types to these properties, so neither form of redeclaration works with every version:
+
+- `public $name = 'example';` causes a fatal error on Stream 4.5.0 and later.
+- `public string $name = 'example';` causes a fatal error on Stream 4.4.x and earlier.
+
+Assigning the values in the constructor works with every version, and keeps working if Stream changes a property's type again. `Connector` has no constructor, so there is no `parent::__construct()` to call.
+
 ## How a hook becomes a record
 
 ```
@@ -129,7 +150,7 @@ A complete sample plugin lives at [`docs/examples/stream-noop-connector/`](examp
 ### What the sample does
 
 - [`stream-noop-connector.php`](examples/stream-noop-connector/stream-noop-connector.php) registers `stream_noop_connector_register()` on `wp_stream_connectors` from `plugins_loaded`, adds a Tools page, and handles `admin-post.php` with a nonce and `manage_options`.
-- [`class-connector-noop.php`](examples/stream-noop-connector/class-connector-noop.php) is the connector: `$name = 'noop'`, one action `stream_noop_demo_clicked`, `$register_frontend = false`.
+- [`class-connector-noop.php`](examples/stream-noop-connector/class-connector-noop.php) is the connector. Its constructor sets `$name` to `noop`, listens to one action, `stream_noop_demo_clicked`, and sets `$register_frontend` to `false`.
 - Submitting the button runs `do_action( 'stream_noop_demo_clicked' )` → `callback_stream_noop_demo_clicked()` → `$this->log( …, 'demo', 'clicked' )`.
 
 Copy those two files into your own plugin, rename the slug / hooks / text domain, and replace the demo button with real events.

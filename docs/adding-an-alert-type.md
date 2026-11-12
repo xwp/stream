@@ -32,6 +32,29 @@ Optional:
 - `$creatable` (default `true`) — return `false` to hide the type from the new-alert UI. Existing alerts still fire and remain editable (IFTTT uses this).
 - `is_dependency_satisfied()` — return `false` to drop the type from the registry when a required plugin is missing.
 
+### Assign `$slug` in the constructor
+
+`$slug` and `$creatable` are declared, with types, on `WP_Stream\Alert_Type`. Assign them in your constructor, after calling `parent::__construct( $plugin )`. Do not redeclare them. `$name` is not declared on `Alert_Type`, so your class declares it.
+
+```php
+class Alert_Type_Example extends \WP_Stream\Alert_Type {
+	public string $name = 'Example';
+
+	public function __construct( \WP_Stream\Plugin $plugin ) {
+		parent::__construct( $plugin );
+
+		$this->slug = 'example';
+	}
+}
+```
+
+PHP requires a redeclared property to have exactly the same type as the parent's. Stream 4.5.0 added native types to these properties, so neither form of redeclaration works with every version:
+
+- `public $slug = 'example';` causes a fatal error on Stream 4.5.0 and later.
+- `public string $slug = 'example';` causes a fatal error on Stream 4.4.x and earlier.
+
+Assigning the value in the constructor works with every version, and keeps working if Stream changes a property's type again. The same applies to `$slug` on `Alert_Trigger`.
+
 ### Configuration is not `save_fields()`
 
 `Alert_Type::save_fields()` exists on the abstract class and **is never called**. Triggers persist through `Alert_Trigger::save_fields()` (a different class); alert types persist through the `wp_stream_alerts_save_meta` filter, applied from [`Alerts_Admin_UI::save_new_alert()`](../classes/class-alerts-admin-ui.php) and [`Alerts_List`](../classes/class-alerts-list.php).
@@ -126,6 +149,6 @@ A complete sample plugin lives at [`docs/examples/stream-error-log-alert/`](exam
 ### What the sample does
 
 - [`stream-error-log-alert.php`](examples/stream-error-log-alert/stream-error-log-alert.php) registers `stream_error_log_alert_register()` on `wp_stream_alert_types` from the plugin file, and skips registration when Stream is inactive.
-- [`class-alert-type-error-log.php`](examples/stream-error-log-alert/class-alert-type-error-log.php) is the type: `$slug = 'error-log'`, `$name = 'Error Log (example)'`, optional prefix field, `alert()` calls `error_log()`.
+- [`class-alert-type-error-log.php`](examples/stream-error-log-alert/class-alert-type-error-log.php) is the type. It declares `$name` as `Error Log (example)`, sets `$slug` to `error-log` in its constructor, adds an optional prefix field, and calls `error_log()` from `alert()`.
 
 Copy those two files into your own plugin, rename the slug / text domain, and replace `error_log()` with the real notifier (HTTP, email, …).

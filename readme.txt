@@ -161,7 +161,7 @@ Thank you for wanting to make Stream better for everyone!
 
 = 4.5.0 =
 
-Security fix for a stored cross-site scripting vulnerability in the records user filter (CVE-2026-119216). Also note: custom connectors, alert types, alert triggers, and exporters must now declare typed properties, for example `public string $slug`. An untyped declaration causes a fatal error. See the changelog for details.
+Security fix for a stored cross-site scripting vulnerability in the records user filter (CVE-2026-119216). Also note: custom connectors, alert types, alert triggers, and exporters must not redeclare Stream's properties. Assign them in the constructor. See the changelog.
 
 = 4.4.0 =
 
@@ -183,7 +183,7 @@ Security:
 Breaking Changes:
 
 * Raise the minimum PHP version from 7.2 to 7.4.
-* Custom connectors, alert types, alert triggers, and exporters must declare typed public properties, for example `public string $slug`. An untyped declaration now causes a fatal error.
+* Custom connectors, alert types, alert triggers, and exporters that redeclare Stream's public properties without matching types now cause a fatal error. Assign the values in the constructor instead, for example `$this->slug = 'my_alert';`, which works with Stream versions before and after 4.5.0.
 
 Enhancements:
 
