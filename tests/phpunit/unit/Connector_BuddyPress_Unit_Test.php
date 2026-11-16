@@ -243,4 +243,37 @@ class Connector_BuddyPress_Unit_Test extends TestCase {
 		$this->assertSame( 'activated', self::$captured_log['action'] );
 		$this->assertSame( '"User Groups" component activated', self::$captured_log['message'] );
 	}
+
+	/**
+	 * Component changes use the admin list when that function is loaded.
+	 */
+	public function test_component_change_prefers_admin_component_list() {
+		Functions\when( 'wp_json_encode' )->alias( 'json_encode' );
+		Functions\when( 'bp_core_admin_get_components' )->justReturn(
+			array(
+				'groups' => array(
+					'title' => 'User Groups',
+				),
+			)
+		);
+		Functions\when( 'bp_core_get_components' )->justReturn(
+			array(
+				'groups' => array(
+					'title' => 'Public Groups',
+				),
+			)
+		);
+
+		$this->connector()->check_bp_active_components(
+			array(
+				'members' => 1,
+			),
+			array(
+				'members' => 1,
+				'groups'  => 1,
+			)
+		);
+
+		$this->assertSame( '"User Groups" component activated', self::$captured_log['message'] );
+	}
 }

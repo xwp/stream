@@ -330,11 +330,14 @@ class List_Table extends \WP_List_Table {
 		$allowed_tags = wp_kses_allowed_html( 'post' );
 
 		// The date column is the only cell that emits a timestamp element.
+		// WordPress already allows time in the post context, so other columns drop it.
 		if ( 'date' === $column_name ) {
 			$allowed_tags['time'] = array(
 				'datetime' => true,
 				'class'    => true,
 			);
+		} else {
+			unset( $allowed_tags['time'] );
 		}
 
 		$allowed_tags['img']['srcset'] = true;

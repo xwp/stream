@@ -238,13 +238,32 @@ class List_Table_Column_Renderer_Unit_Test extends TestCase {
 	}
 
 	/**
+	 * Existing entities in a summary stay as single entities.
+	 */
+	public function test_render_summary_column_does_not_double_encode_entities() {
+		Functions\when( 'esc_html' )->alias( array( self::class, 'escape_html_text' ) );
+
+		$html = $this->renderer->render(
+			$this->make_item(
+				array(
+					'summary' => '&quot;Hello&quot;',
+				)
+			),
+			'summary'
+		);
+
+		$this->assertStringContainsString( '&quot;Hello&quot;', $html );
+		$this->assertStringNotContainsString( '&amp;quot;', $html );
+	}
+
+	/**
 	 * Escapes summary text for assertions.
 	 *
 	 * @param string $text Text to escape.
 	 * @return string
 	 */
 	public static function escape_html_text( $text ) {
-		return htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8' );
+		return htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8', false );
 	}
 
 	/**
