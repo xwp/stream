@@ -216,6 +216,57 @@ class List_Table_Column_Renderer_Unit_Test extends TestCase {
 	}
 
 	/**
+	 * Summary text is escaped before it is mixed with the cell markup.
+	 */
+	public function test_render_summary_column_escapes_summary_text() {
+		Functions\when( 'esc_html' )->alias( array( self::class, 'escape_html_text' ) );
+
+		$html = $this->renderer->render(
+			$this->make_item(
+				array(
+					'summary'   => 'Created "100% <done>"',
+					'object_id' => 42,
+					'context'   => 'post',
+				)
+			),
+			'summary'
+		);
+
+		$this->assertStringContainsString( 'Created &quot;100% &lt;done&gt;&quot;', $html );
+		$this->assertStringNotContainsString( '<time', $html );
+		$this->assertStringContainsString( 'stream-filter-object-id', $html );
+	}
+
+	/**
+	 * Existing entities in a summary stay as single entities.
+	 */
+	public function test_render_summary_column_does_not_double_encode_entities() {
+		Functions\when( 'esc_html' )->alias( array( self::class, 'escape_html_text' ) );
+
+		$html = $this->renderer->render(
+			$this->make_item(
+				array(
+					'summary' => '&quot;Hello&quot;',
+				)
+			),
+			'summary'
+		);
+
+		$this->assertStringContainsString( '&quot;Hello&quot;', $html );
+		$this->assertStringNotContainsString( '&amp;quot;', $html );
+	}
+
+	/**
+	 * Escapes summary text for assertions.
+	 *
+	 * @param string $text Text to escape.
+	 * @return string
+	 */
+	public static function escape_html_text( $text ) {
+		return htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8', false );
+	}
+
+	/**
 	 * Data provider for summary column object_id branches.
 	 *
 	 * @return array<string, array{0: array, 1: bool}>

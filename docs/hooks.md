@@ -93,7 +93,7 @@ Fires after all connectors have been registered.
 ### `wp_stream_after_list_table`
 
 - **Type:** action
-- **Location:** `classes/class-list-table.php:937`
+- **Location:** `classes/class-list-table.php:945`
 
 Fires after the list table is displayed.
 
@@ -461,7 +461,7 @@ Allows devs to add new columns to table
 ### `wp_stream_list_table_filters`
 
 - **Type:** filter
-- **Location:** `classes/class-list-table.php:520`
+- **Location:** `classes/class-list-table.php:528`
 - **Parameters:** `$filters` — Filters.
 
 Filter allows additional filters in the list table dropdowns Note the format of the filters above, with they key and array containing a title and array of items.
@@ -549,7 +549,7 @@ Filter allows additional query properties to be added
 ### `wp_stream_record_actions_menu`
 
 - **Type:** filter
-- **Location:** `classes/class-list-table.php:844`
+- **Location:** `classes/class-list-table.php:852`
 - **Parameters:** `$actions` — Should be in the format of action_slug =&gt; &#039;Action Name&#039;
 
 Filter the records screen actions dropdown menu
@@ -565,7 +565,7 @@ Filter allows modification of record information
 ### `wp_stream_record_classes`
 
 - **Type:** filter
-- **Location:** `classes/class-list-table.php:903`
+- **Location:** `classes/class-list-table.php:911`
 - **Parameters:** `$classes`; `$item`
 
 Filter CSS classes on a Stream list table row.

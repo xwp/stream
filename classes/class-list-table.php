@@ -327,11 +327,19 @@ class List_Table extends \WP_List_Table {
 	public function column_default( $item, $column_name ) {
 		$out = $this->column_renderer->render( $item, $column_name );
 
-		$allowed_tags                  = wp_kses_allowed_html( 'post' );
-		$allowed_tags['time']          = array(
-			'datetime' => true,
-			'class'    => true,
-		);
+		$allowed_tags = wp_kses_allowed_html( 'post' );
+
+		// The date column is the only cell that emits a timestamp element.
+		// WordPress already allows time in the post context, so other columns drop it.
+		if ( 'date' === $column_name ) {
+			$allowed_tags['time'] = array(
+				'datetime' => true,
+				'class'    => true,
+			);
+		} else {
+			unset( $allowed_tags['time'] );
+		}
+
 		$allowed_tags['img']['srcset'] = true;
 
 		echo wp_kses( $out, $allowed_tags );
