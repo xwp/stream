@@ -35,7 +35,7 @@ Optional flags:
 
 ### Assign properties in the constructor
 
-`$name`, `$actions`, `$register_admin`, and `$register_frontend` are declared, with types, on `WP_Stream\Connector`. Assign them in your connector's constructor. Do not redeclare them.
+`$name`, `$actions`, `$register_admin`, and `$register_frontend` are declared on `WP_Stream\Connector`, with types since Stream 4.5.0. Assign them in your connector's constructor. Do not redeclare them.
 
 ```php
 class Connector_Example extends \WP_Stream\Connector {

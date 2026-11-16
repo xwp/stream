@@ -34,7 +34,7 @@ Optional:
 
 ### Assign `$slug` in the constructor
 
-`$slug` and `$creatable` are declared, with types, on `WP_Stream\Alert_Type`. Assign them in your constructor, after calling `parent::__construct( $plugin )`. Do not redeclare them. `$name` is not declared on `Alert_Type`, so your class declares it.
+`$slug` is declared on `WP_Stream\Alert_Type`, with a type since Stream 4.5.0. `$creatable` was added in Stream 4.5.0. Assign them in your constructor, after calling `parent::__construct( $plugin )`. Do not redeclare them. `$name` is not declared on `Alert_Type`, so your class declares it.
 
 ```php
 class Alert_Type_Example extends \WP_Stream\Alert_Type {
