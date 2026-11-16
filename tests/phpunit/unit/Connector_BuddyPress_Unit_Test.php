@@ -178,4 +178,69 @@ class Connector_BuddyPress_Unit_Test extends TestCase {
 		$this->assertSame( 'Created profile field group "%s"', self::$captured_log['message'] );
 		$this->assertSame( 'Created profile field group "Appearance %"', $this->rendered_summary() );
 	}
+
+	/**
+	 * A field with no ID before save is logged as created, even after an ID is assigned.
+	 */
+	public function test_new_profile_field_is_logged_as_created() {
+		$field = (object) array(
+			'id'       => null,
+			'name'     => 'Job Title',
+			'group_id' => 1,
+		);
+
+		$connector = $this->connector();
+		$connector->callback_xprofile_field_before_save( $field );
+		$field->id = 9;
+		$connector->callback_xprofile_field_after_save( $field );
+
+		$this->assertSame( 'created', self::$captured_log['action'] );
+		$this->assertSame( 'Created profile field "%s"', self::$captured_log['message'] );
+	}
+
+	/**
+	 * A field that already has an ID is logged as updated.
+	 */
+	public function test_existing_profile_field_is_logged_as_updated() {
+		$field = (object) array(
+			'id'       => 9,
+			'name'     => 'Job Title',
+			'group_id' => 1,
+		);
+
+		$connector = $this->connector();
+		$connector->callback_xprofile_field_before_save( $field );
+		$connector->callback_xprofile_field_after_save( $field );
+
+		$this->assertSame( 'updated', self::$captured_log['action'] );
+		$this->assertSame( 'Updated profile field "%s"', self::$captured_log['message'] );
+	}
+
+	/**
+	 * Component changes log when only the always-loaded component list is available.
+	 */
+	public function test_component_change_logs_without_admin_component_list() {
+		Functions\when( 'wp_json_encode' )->alias( 'json_encode' );
+		Functions\when( 'bp_core_get_components' )->justReturn(
+			array(
+				'groups' => array(
+					'title' => 'User Groups',
+				),
+			)
+		);
+
+		$this->connector()->check_bp_active_components(
+			array(
+				'members' => 1,
+			),
+			array(
+				'members' => 1,
+				'groups'  => 1,
+			)
+		);
+
+		$this->assertSame( 'components', self::$captured_log['context'] );
+		$this->assertSame( 'activated', self::$captured_log['action'] );
+		$this->assertSame( '"User Groups" component activated', self::$captured_log['message'] );
+	}
 }

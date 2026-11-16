@@ -57,6 +57,7 @@ class Connector_BuddyPress extends Connector {
 		'groups_unban_member',
 		'groups_remove_member',
 
+		'xprofile_field_before_save',
 		'xprofile_field_after_save',
 		'xprofile_fields_deleted_field',
 
@@ -96,6 +97,16 @@ class Connector_BuddyPress extends Connector {
 	 * Flag for ignoring irrelevant activity deletions.
 	 */
 	public bool $ignore_activity_bulk_deletion = false;
+
+	/**
+	 * Profile fields that had no ID before save, keyed by object ID.
+	 *
+	 * BuddyPress assigns the ID before xprofile_field_after_save, so the
+	 * before-save hook is what distinguishes a new field from an update.
+	 *
+	 * @var array<int, bool>
+	 */
+	private array $new_profile_fields = array();
 
 	/**
 	 * Check if plugin dependencies are satisfied and add an admin notice if not
@@ -471,7 +482,7 @@ class Connector_BuddyPress extends Connector {
 			$options[ $field_key ] = $field_value;
 		}
 
-		$components = \bp_core_admin_get_components();
+		$components = $this->get_bp_components();
 
 		$actions = array(
 			true  => esc_html__( 'activated', 'stream' ),
@@ -1023,6 +1034,19 @@ class Connector_BuddyPress extends Connector {
 	}
 
 	/**
+	 * Remember whether a profile field is new before BuddyPress assigns its ID.
+	 *
+	 * @action xprofile_field_before_save
+	 *
+	 * @param object $field Field object.
+	 */
+	public function callback_xprofile_field_before_save( $field ) {
+		$field_id = isset( $field->id ) ? $field->id : null;
+
+		$this->new_profile_fields[ spl_object_id( $field ) ] = is_null( $field_id );
+	}
+
+	/**
 	 * Logs field writes
 	 *
 	 * @action xprofile_field_after_save
@@ -1030,7 +1054,11 @@ class Connector_BuddyPress extends Connector {
 	 * @param object $field  Field object.
 	 */
 	public function callback_xprofile_field_after_save( $field ) {
-		$action = isset( $field->id ) ? 'updated' : 'created';
+		$key    = spl_object_id( $field );
+		$action = ! empty( $this->new_profile_fields[ $key ] ) ? 'created' : 'updated';
+
+		unset( $this->new_profile_fields[ $key ] );
+
 		$this->field_action( $field, $action );
 	}
 
@@ -1110,6 +1138,26 @@ class Connector_BuddyPress extends Connector {
 	 */
 	public function callback_xprofile_groups_deleted_group( $group ) {
 		$this->field_group_action( $group, 'deleted' );
+	}
+
+	/**
+	 * Component titles for the active-components log.
+	 *
+	 * BuddyPress only loads bp_core_admin_get_components() in wp-admin. The
+	 * same titles are available from bp_core_get_components() everywhere else.
+	 *
+	 * @return array
+	 */
+	private function get_bp_components() {
+		if ( function_exists( 'bp_core_admin_get_components' ) ) {
+			return \bp_core_admin_get_components();
+		}
+
+		if ( function_exists( 'bp_core_get_components' ) ) {
+			return \bp_core_get_components();
+		}
+
+		return array();
 	}
 
 	/**
