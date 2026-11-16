@@ -709,10 +709,10 @@ class Connector_BuddyPress extends Connector {
 	/**
 	 * Logs group actions
 	 *
-	 * @param int|object $group   Group object or group ID.
-	 * @param string     $action  Action.
-	 * @param array      $meta    Meta data.
-	 * @param string     $message Message.
+	 * @param int|object  $group   Group object or group ID.
+	 * @param string      $action  Action.
+	 * @param array       $meta    Meta data.
+	 * @param string|null $message Summary template. Defaults to the template for $action.
 	 */
 	public function group_action( $group, $action, $meta = array(), $message = null ) {
 		if ( is_numeric( $group ) ) {
@@ -723,8 +723,10 @@ class Connector_BuddyPress extends Connector {
 			);
 		}
 
-		$replacements = array(
-			$group->name,
+		// Placeholder values come first so they line up with the summary template.
+		// id and slug stay in the record meta without shifting those placeholders.
+		$summary_args = array(
+			'name' => (string) $group->name,
 		);
 
 		if ( ! $message ) {
@@ -744,34 +746,47 @@ class Connector_BuddyPress extends Connector {
 				/* translators: %s: a group name (e.g. "Favourites") */
 				$message = esc_html__( 'Left group "%s"', 'stream' );
 			} elseif ( 'banned' === $action ) {
-				/* translators: %1$s: a user display name, %2$s: a group name (e.g. "Jane Doe", "Favourites") */
-				$message        = esc_html__( 'Banned "%2$s" from "%1$s"', 'stream' );
-				$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
+				$summary_args['user_display_name'] = (string) get_user_by( 'id', $meta['user_id'] )->display_name;
+				/* translators: %1$s: a group name, %2$s: a user display name (e.g. "Favourites", "Jane Doe") */
+				$message = esc_html__( 'Banned "%2$s" from "%1$s"', 'stream' );
 			} elseif ( 'unbanned' === $action ) {
-				/* translators: %1$s: a user display name, %2$s: a group name (e.g. "Jane Doe", "Favourites") */
-				$message        = esc_html__( 'Unbanned "%2$s" from "%1$s"', 'stream' );
-				$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
+				$summary_args['user_display_name'] = (string) get_user_by( 'id', $meta['user_id'] )->display_name;
+				/* translators: %1$s: a group name, %2$s: a user display name (e.g. "Favourites", "Jane Doe") */
+				$message = esc_html__( 'Unbanned "%2$s" from "%1$s"', 'stream' );
 			} elseif ( 'removed' === $action ) {
-				/* translators: %1$s: a user display name, %2$s: a group name (e.g. "Jane Doe", "Favourites") */
-				$message        = esc_html__( 'Removed "%2$s" from "%1$s"', 'stream' );
-				$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
+				$summary_args['user_display_name'] = (string) get_user_by( 'id', $meta['user_id'] )->display_name;
+				/* translators: %1$s: a group name, %2$s: a user display name (e.g. "Favourites", "Jane Doe") */
+				$message = esc_html__( 'Removed "%2$s" from "%1$s"', 'stream' );
+			} elseif ( 'promoted' === $action ) {
+				$summary_args = array(
+					'user_display_name' => (string) $meta['user_display_name'],
+					'role_label'        => (string) $meta['role_label'],
+					'name'              => (string) $group->name,
+				);
+				/* translators: %1$s: a user's display name, %2$s: a user role, %3$s: a group name (e.g. "Jane Doe", "subscriber", "Favourites") */
+				$message = __( 'Promoted "%1$s" to "%2$s" in "%3$s"', 'stream' );
+			} elseif ( 'demoted' === $action ) {
+				$summary_args = array(
+					'user_display_name' => (string) $meta['user_display_name'],
+					'role_label'        => (string) $meta['role_label'],
+					'name'              => (string) $group->name,
+				);
+				/* translators: %1$s: a user's display name, %2$s: a user role, %3$s: a group name (e.g. "Jane Doe", "Member", "Favourites") */
+				$message = __( 'Demoted "%1$s" to "%2$s" in "%3$s"', 'stream' );
 			} else {
 				return;
 			}
 		}
 
 		$this->log(
-			vsprintf(
-				$message,
-				$replacements
-			),
+			$message,
 			array_merge(
+				$summary_args,
+				$meta,
 				array(
 					'id'   => $group->id,
-					'name' => $group->name,
 					'slug' => $group->slug,
-				),
-				$meta
+				)
 			),
 			$group->id,
 			'groups',
@@ -881,24 +896,27 @@ class Connector_BuddyPress extends Connector {
 	 * @param string $status    Member's new user role.
 	 */
 	public function callback_groups_promote_member( $group_id, $user_id, $status ) {
-		$group   = \groups_get_group(
+		$group = \groups_get_group(
 			array(
 				'group_id' => $group_id,
 			)
 		);
-		$user    = new \WP_User( $user_id );
-		$roles   = array(
+		$user  = new \WP_User( $user_id );
+		$roles = array(
 			'admin' => esc_html_x( 'Administrator', 'buddypress', 'stream' ),
 			'mod'   => esc_html_x( 'Moderator', 'buddypress', 'stream' ),
 		);
-		$message = sprintf(
-			/* translators: %1$s: a user's display name, %2$s: a user role, %3$s: a group name (e.g. "Jane Doe", "subscriber", "Favourites") */
-			__( 'Promoted "%1$s" to "%2$s" in "%3$s"', 'stream' ),
-			$user->display_name,
-			$roles[ $status ],
-			$group->name
+
+		$this->group_action(
+			$group,
+			'promoted',
+			array(
+				'user_id'           => $user_id,
+				'status'            => $status,
+				'user_display_name' => $user->display_name,
+				'role_label'        => $roles[ $status ],
+			)
 		);
-		$this->group_action( $group_id, 'promoted', compact( 'user_id', 'status' ), $message );
 	}
 
 	/**
@@ -910,20 +928,22 @@ class Connector_BuddyPress extends Connector {
 	 * @param int $user_id   User ID of member.
 	 */
 	public function callback_groups_demote_member( $group_id, $user_id ) {
-		$group   = \groups_get_group(
+		$group = \groups_get_group(
 			array(
 				'group_id' => $group_id,
 			)
 		);
-		$user    = new \WP_User( $user_id );
-		$message = sprintf(
-			/* translators: %1$s: a user's display name, %2$s: a user role, %3$s: a group name (e.g. "Jane Doe", "Member", "Favourites") */
-			__( 'Demoted "%1$s" to "%2$s" in "%3$s"', 'stream' ),
-			$user->display_name,
-			_x( 'Member', 'buddypress', 'stream' ),
-			$group->name
+		$user  = new \WP_User( $user_id );
+
+		$this->group_action(
+			$group,
+			'demoted',
+			array(
+				'user_id'           => $user_id,
+				'user_display_name' => $user->display_name,
+				'role_label'        => _x( 'Member', 'buddypress', 'stream' ),
+			)
 		);
-		$this->group_action( $group_id, 'demoted', compact( 'user_id' ), $message );
 	}
 
 	/**
@@ -971,10 +991,6 @@ class Connector_BuddyPress extends Connector {
 	 * @param string $message  Message.
 	 */
 	public function field_action( $field, $action, $meta = array(), $message = null ) {
-		$replacements = array(
-			$field->name,
-		);
-
 		if ( ! $message ) {
 			if ( 'created' === $action ) {
 				/* translators: %s: a user profile field (e.g. "Job Title") */
@@ -991,14 +1007,11 @@ class Connector_BuddyPress extends Connector {
 		}
 
 		$this->log(
-			vsprintf(
-				$message,
-				$replacements
-			),
+			$message,
 			array_merge(
 				array(
+					'field_name' => (string) $field->name,
 					'field_id'   => $field->id,
-					'field_name' => $field->name,
 					'group_id'   => $field->group_id,
 				),
 				$meta
@@ -1041,10 +1054,6 @@ class Connector_BuddyPress extends Connector {
 	 * @param string $message  Message.
 	 */
 	public function field_group_action( $group, $action, $meta = array(), $message = null ) {
-		$replacements = array(
-			$group->name,
-		);
-
 		if ( ! $message ) {
 			if ( 'created' === $action ) {
 				/* translators: %s: a user profile field group (e.g. "Appearance") */
@@ -1061,14 +1070,11 @@ class Connector_BuddyPress extends Connector {
 		}
 
 		$this->log(
-			vsprintf(
-				$message,
-				$replacements
-			),
+			$message,
 			array_merge(
 				array(
+					'group_name' => (string) $group->name,
 					'group_id'   => $group->id,
-					'group_name' => $group->name,
 				),
 				$meta
 			),
