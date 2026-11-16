@@ -274,10 +274,16 @@ $( 'table.wp-list-table' ).on(
 				timeEl.removeClass( 'relative-time' );
 				const text = formatRelativeTime( timeEl.attr( 'datetime' ) );
 				if ( text ) {
-					$( '<strong><time datetime="' + timeEl.attr( 'datetime' ) + '" class="timeago"/></time></strong><br/>' )
-						.prependTo( timeEl.parent().parent() )
-						.find( 'time.timeago' )
-						.text( text );
+					const time = $( '<time>', {
+						class: 'timeago',
+						datetime: timeEl.attr( 'datetime' ),
+						text,
+					} );
+
+					timeEl.parent().parent().prepend(
+						$( '<strong>' ).append( time ),
+						'<br/>',
+					);
 				}
 			},
 		);

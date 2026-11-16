@@ -1,5 +1,21 @@
 # Stream Changelog
 
+## 4.5.1 - November 16, 2026
+
+### Security
+
+- Escape record summaries on the records screen. Only the date column can contain a `time` element. Relative timestamps are now built with DOM APIs instead of HTML string concatenation ([#2070](https://github.com/xwp/stream/pull/2070)). Custom connectors that put HTML in record summaries now show that HTML as text.
+
+### Bug Fixes
+
+- Format BuddyPress group and profile field summaries in one pass. Names that contain `%` or `<` now show as literal text and no longer cause an error during logging ([#2070](https://github.com/xwp/stream/pull/2070)).
+- Stop BuddyPress component changes from causing a fatal error outside wp-admin, for example from WP-CLI, REST, or cron ([#2070](https://github.com/xwp/stream/pull/2070)).
+- Log new BuddyPress profile fields as created instead of updated ([#2070](https://github.com/xwp/stream/pull/2070)).
+
+### Development
+
+- Update `@playwright/test` to `^1.65.1` ([#2069](https://github.com/xwp/stream/pull/2069)).
+
 ## 4.5.0 - November 12, 2026
 
 ### Security

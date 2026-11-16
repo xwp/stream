@@ -4,7 +4,7 @@ Tags: activity log, audit log, event log, user tracking, security
 Requires at least: 4.6
 Requires PHP: 7.4
 Tested up to: 7.1
-Stable tag: 4.5.0
+Stable tag: 4.5.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -159,6 +159,10 @@ Thank you for wanting to make Stream better for everyone!
 
 == Upgrade Notice ==
 
+= 4.5.1 =
+
+Fixes a fatal error when BuddyPress components change outside wp-admin. Record summaries on the records screen are now escaped, so custom connectors that put HTML in summaries show that HTML as text.
+
 = 4.5.0 =
 
 Security fix for a stored cross-site scripting vulnerability in the records user filter (CVE-2026-119216). Also note: custom connectors, alert types, alert triggers, and exporters must now declare typed properties, for example `public string $slug`. An untyped declaration causes a fatal error. See the changelog for details.
@@ -173,6 +177,20 @@ Use only `$_SERVER['REMOTE_ADDR']` as the client IP address for event logs witho
 
 
 == Changelog ==
+
+= 4.5.1 - November 16, 2026 =
+
+Security:
+
+* Escape record summaries on the records screen. Custom connectors that put HTML in record summaries now show that HTML as text.
+
+Bug Fixes:
+
+* Show BuddyPress group and profile field names that contain `%` or `<` as literal text, and stop errors during logging.
+* Stop BuddyPress component changes from causing a fatal error outside wp-admin.
+* Log new BuddyPress profile fields as created instead of updated.
+
+[View the full release notes on GitHub.](https://github.com/xwp/stream/blob/master/changelog.md#451---november-16-2026)
 
 = 4.5.0 - November 12, 2026 =
 
