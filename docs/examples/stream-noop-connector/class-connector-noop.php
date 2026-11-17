@@ -12,27 +12,23 @@ namespace WP_Stream;
  */
 class Connector_Noop extends Connector {
 	/**
-	 * Connector slug.
+	 * Set the connector slug, the actions it listens to, and where it runs.
 	 *
-	 * @var string
+	 * These properties are declared, with types, on the parent `Connector`
+	 * class. Assign them here instead of redeclaring them. A redeclared
+	 * property must match the parent's type exactly, so it fails on any Stream
+	 * version where that type differs (the properties are untyped before
+	 * Stream 4.5.0). Assigning the values works with every version.
 	 */
-	public string $name = 'noop';
+	public function __construct() {
+		$this->name    = 'noop';
+		$this->actions = array(
+			'stream_noop_demo_clicked',
+		);
 
-	/**
-	 * Actions registered for this connector.
-	 *
-	 * @var array<int, string>
-	 */
-	public array $actions = array(
-		'stream_noop_demo_clicked',
-	);
-
-	/**
-	 * This sample only fires from wp-admin.
-	 *
-	 * @var bool
-	 */
-	public bool $register_frontend = false;
+		// This sample only fires from wp-admin.
+		$this->register_frontend = false;
+	}
 
 	/**
 	 * Return translated connector label.
