@@ -187,16 +187,21 @@ class Connector_BbPress extends Connector {
 			$data['action']        = 'updated';
 		} elseif ( 'posts' === $data['connector'] && in_array( $data['context'], array( 'forum', 'topic', 'reply' ), true ) ) {
 			if ( 'reply' === $data['context'] ) {
-				if ( 'updated' === $data['action'] ) {
-					/* translators: %s: a post title (e.g. "Hello World") */
-					$data['message']            = esc_html__( 'Replied on "%s"', 'stream' );
-					$data['args']['post_title'] = get_post( wp_get_post_parent_id( $data['object_id'] ) )->post_title;
+				$topic_id = wp_get_post_parent_id( $data['object_id'] );
+				$topic    = $topic_id ? get_post( $topic_id ) : null;
+
+				// The parent topic may already be gone, e.g. purged by wp_scheduled_delete before its replies.
+				if ( $topic ) {
+					if ( 'updated' === $data['action'] ) {
+						/* translators: %s: a post title (e.g. "Hello World") */
+						$data['message'] = esc_html__( 'Replied on "%s"', 'stream' );
+					}
+					$data['args']['post_title'] = sprintf(
+						/* translators: %s a post title (e.g. "Hello World") */
+						__( 'Reply to: %s', 'stream' ),
+						$topic->post_title
+					);
 				}
-				$data['args']['post_title'] = sprintf(
-					/* translators: %s a post title (e.g. "Hello World") */
-					__( 'Reply to: %s', 'stream' ),
-					get_post( wp_get_post_parent_id( $data['object_id'] ) )->post_title
-				);
 			}
 
 			$data['connector'] = $this->name;
