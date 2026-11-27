@@ -80,23 +80,15 @@ jobs:
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
 
-      # After the deployment, we also want to create a zip and upload it to the release on GitHub.
+      # Attach the generated zip to the GitHub release (gh is preinstalled on runners).
       - name: Upload release asset
-        uses: actions/upload-release-asset@v1
         env:
-          # Note, this is an exception to action secrets: GITHUB_TOKEN is always available and provides access to
-          # the current repository this action runs in.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-        with:
-          # Get the URL for uploading assets to the current release.
-          upload_url: ${{ github.event.release.upload_url }}
-
-          # Provide the path to the file generated in the previous step using the output.
-          asset_path: ${{ steps.deploy.outputs.zip-path }}
-
-          # Provide what the file should be named when attached to the release (plugin-name.zip)
-          asset_name: ${{ github.event.repository.name }}.zip
-
-          # Provide the file type.
-          asset_content_type: application/zip
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          ZIP_PATH: ${{ steps.deploy.outputs.zip-path }}
+          ASSET_NAME: ${{ github.event.repository.name }}.zip
+        run: |
+          gh release upload \
+            "$RELEASE_TAG" \
+            "$ZIP_PATH#$ASSET_NAME" \
+            --clobber
