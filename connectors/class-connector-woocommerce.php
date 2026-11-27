@@ -775,6 +775,16 @@ class Connector_Woocommerce extends Connector {
 
 			foreach ( \WC_Admin_Settings::get_settings_pages() as $page ) {
 				/**
+				 * Skip malformed entries. Third-party plugins can hook the
+				 * `woocommerce_get_settings_pages` filter and (due to bugs of
+				 * their own) push non-object values onto the array; we
+				 * shouldn't fatal on data we don't control.
+				 */
+				if ( ! is_object( $page ) || ! method_exists( $page, 'add_settings_page' ) ) {
+					continue;
+				}
+
+				/**
 				 * Get ID / Label of the page, since they're protected, by hacking into
 				 * the callback filter for 'woocommerce_settings_tabs_array'.
 				 */
